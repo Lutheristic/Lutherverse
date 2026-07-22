@@ -177,6 +177,8 @@ The modding framework is currently the one Custom Pixel Dungeon ships — JSON m
 
 ## Development docs
 
+- **Changelog:** [`CHANGELOG.md`](CHANGELOG.md) — every substantive commit
+- **Project status:** [`PROJECT-STATUS.md`](PROJECT-STATUS.md) — near-term state, blockers, roadmap
 - Design notes: kept outside the repository.
 - Implementation plans: kept outside the repository.
 - Assets: [`docs/assets/`](docs/assets/)

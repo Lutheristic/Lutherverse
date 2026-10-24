@@ -22,6 +22,7 @@
 package com.qsr.customspd.items.weapon.enchantments;
 
 import com.qsr.customspd.actors.Char;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.items.weapon.Weapon;
 import com.qsr.customspd.sprites.CharSprite;
@@ -74,7 +75,7 @@ public class Vampiric extends Weapon.Enchantment {
 
 				attacker.HP += healAmt;
 				attacker.sprite.emitter().start( Speck.factory( Speck.HEALING ), 0.4f, 1 );
-				attacker.sprite.showStatus( CharSprite.POSITIVE, Integer.toString( healAmt ) );
+				attacker.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString( healAmt ), FloatingText.HEALING );
 
 			}
 		}

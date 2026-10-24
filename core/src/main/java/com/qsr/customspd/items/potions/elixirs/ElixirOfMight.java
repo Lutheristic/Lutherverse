@@ -26,6 +26,7 @@ import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.Asset;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.items.potions.AlchemicalCatalyst;
 import com.qsr.customspd.items.potions.PotionOfStrength;
 import com.qsr.customspd.messages.Messages;
@@ -51,14 +52,14 @@ public class ElixirOfMight extends Elixir {
 		identify();
 		
 		hero.STR++;
+		hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, "1", FloatingText.STRENGTH);
 		
 		Buff.affect(hero, HTBoost.class).reset();
 		HTBoost boost = Buff.affect(hero, HTBoost.class);
 		boost.reset();
 		
 		hero.updateHT( true );
-		hero.sprite.showStatus( CharSprite.POSITIVE, Messages.get(this, "msg_1", boost.boost() ));
-		GLog.p( Messages.get(this, "msg_2") );
+		GLog.p( Messages.get(this, "msg", hero.STR()) );
 
 		Badges.validateStrengthAttained();
 		Badges.validateDuelistUnlock();

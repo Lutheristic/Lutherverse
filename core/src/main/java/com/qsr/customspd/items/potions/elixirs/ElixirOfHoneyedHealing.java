@@ -52,9 +52,9 @@ public class ElixirOfHoneyedHealing extends Elixir {
 	
 	@Override
 	public void shatter(int cell) {
+		splash( cell );
 		if (Dungeon.level.heroFOV[cell]) {
 			Sample.INSTANCE.play( Assets.Sounds.SHATTER );
-			splash( cell );
 		}
 		
 		Char ch = Actor.findChar(cell);

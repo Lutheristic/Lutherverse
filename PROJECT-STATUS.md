@@ -15,6 +15,14 @@ historical record. Updated in the same commit as any substantive work — treat 
 
 ## Where we are
 
+**2026-10-24, AFK-inline waves 4–5: the 23 parked Slice 1 tuning batches are done.** The batches had been stuck since July on OpenRouter credits. They ran as four parallel lanes, with each batch adversarially reviewed: about 245 upstream commits were classified, roughly 170 ported, and every remaining one is mapped to a bead.
+- **Defects fixed.** The floor-20 Imp shop half-port (`cpdu-jw1e`) and the unseeded custom-level shuffle (`cpdu-s26z`).
+- **The lane merge produced green-but-wrong code.** The four lanes merged cleanly and passed 450 tests, but a read-only cross-lane hunt (wave 5) found 8 semantic conflicts and unblocked follow-ups, all now fixed with canary tests. The worst were a Remove Curse infinite-scroll dupe, a Scroll of Transmutation self-target exploit, and a format crash in the Enhanced Rings description in all 18 translated languages.
+- **Notable model changes ported.** Upstream's multi-step consumption overhaul (2879e9ae5); the Duelist sneak blink rework; `baseChargeUse`; the `buffedLvl` consolidation; BadgeType; `ItemButton` moved to `ui/`.
+- **Deferred work, beaded by blocking dependency.** The Duelist charge rework (`cpdu-ewor`), the T2 talent rework (`cpdu-v1as`), catalog (`cpdu-y0f`), alchemy UI (`cpdu-5xj9`), ring/wand upgrade info (`cpdu-7xwc`), the monk rework (`cpdu-2iw3`), and the InterlevelScene rework (`cpdu-57c`).
+- **New defects found.** Brawler's Stance has never drained charge since July (`cpdu-9hyd`). Stale translations show a literal `%s` (`cpdu-3vbh`). `core:test` ignores asset-only changes (`cpdu-3wjz`).
+- Core tests: 224 → 470. 66 upstream removals were reviewed into deletion-audit.
+
 **2026-10-23, AFK-inline wave 3 (branch `afk-inline/2026-10-23`).**
 - **Generator parity.** `randomWeapon(useDefaults)` now honours its argument; the Waterskin fits the potion bandolier (all of 213f7a2f6); and the v2.3.0 **two-deck potion/scroll drop system** plus `undoDrop` are ported. All three change seeded generation on purpose, as their commits state. The F4 golden digests were updated only after a scratch tree without these ports proved they were the sole cause.
 - **Remains and badges.** PhysicalEmpower no longer stacks with itself. Remains are left on amulet, challenged and labeled-seed runs and capped 5 floors above the deepest (upstream cd79b3bcd); daily runs are still excluded. Two hero-remains badges landed with their Statistics state.

@@ -29,6 +29,7 @@ import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.artifacts.Artifact;
 import com.qsr.customspd.items.remains.RemainsItem;
 import com.qsr.customspd.items.weapon.missiles.MissileWeapon;
+import com.qsr.customspd.modding.LevelScheme;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.FileUtils;
 import com.watabou.utils.Random;
@@ -37,6 +38,7 @@ import com.watabou.utils.Reflection;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 
 public class Bones {
 
@@ -53,10 +55,12 @@ public class Bones {
 
 	public static void leave() {
 
-		level = Dungeon.levelName;
+		//remains will usually drop on the floor the hero died on
+		// but are capped at 5 floors above the lowest depth reached (even when ascending)
+		level = cappedLevel(Math.max(Dungeon.depth, Statistics.deepestFloor-5));
 
-		//heroes drop no bones if they have the amulet, die far above their farthest depth, are challenged, or are playing with a custom seed.
-		if (Statistics.amuletObtained || (Statistics.deepestFloor - 5) >= Dungeon.depth || Dungeon.challenges > 0 || !Dungeon.customSeedText.isEmpty()) {
+		//daily runs do not interact with remains
+		if (Dungeon.daily) {
 			level = "surface";
 			return;
 		}
@@ -76,8 +80,34 @@ public class Bones {
 		}
 	}
 
+	//CPDU has no Dungeon.branch: remains are keyed by levelName, so the capped depth is mapped
+	// back onto a level of the layout (the current one when it is not capped)
+	private static String cappedLevel(int depth){
+		if (depth == Dungeon.depth) {
+			return Dungeon.levelName;
+		}
+		String name = String.valueOf(depth);
+		LevelScheme scheme = Dungeon.layout.getDungeon().get(name);
+		if (scheme != null && scheme.getDepth() == depth) {
+			return name;
+		}
+		for (Map.Entry<String, LevelScheme> entry : Dungeon.layout.getDungeon().entrySet()) {
+			if (entry.getValue().getDepth() == depth) {
+				return entry.getKey();
+			}
+		}
+		return Dungeon.levelName;
+	}
+
 	private static Item pickItem(Hero hero){
 		Item item = null;
+
+		//seeded runs don't leave items
+		//This is to prevent using specific seeds to transport items to regular runs
+		if (!Dungeon.customSeedText.isEmpty()){
+			return null;
+		}
+
 		if (Random.Int(3) != 0) {
 			switch (Random.Int(7)) {
 				case 0:
@@ -138,6 +168,11 @@ public class Bones {
 	}
 
 	public static ArrayList<Item> get() {
+		//daily runs do not interact with remains
+		if (Dungeon.daily){
+			return null;
+		}
+
 		if (level.equals("surface")) {
 
 			try {
@@ -221,6 +256,9 @@ public class Bones {
 
 				if (heroClass != null) {
 					result.add(RemainsItem.get(heroClass));
+					if (Dungeon.bossLevel()){
+						Statistics.qualifiedForBossRemainsBadge = true;
+					}
 				}
 
 				if (item != null) {

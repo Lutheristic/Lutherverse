@@ -26,6 +26,7 @@ import com.qsr.customspd.actors.buffs.Barrier;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.ShieldBuff;
 import com.qsr.customspd.assets.Asset;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.items.weapon.Weapon;
 import com.qsr.customspd.messages.Messages;
@@ -46,6 +47,7 @@ public class Blocking extends Weapon.Enchantment {
 		if (Random.Float() < probability){
 			BlockBuff b = Buff.affect(attacker, BlockBuff.class);
 			b.setShield(strength);
+			attacker.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(strength), FloatingText.SHIELDING);
 			attacker.sprite.emitter().burst(Speck.factory(Speck.LIGHT), 5);
 		}
 

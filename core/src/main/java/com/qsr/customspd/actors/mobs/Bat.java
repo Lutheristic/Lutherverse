@@ -23,10 +23,12 @@ package com.qsr.customspd.actors.mobs;
 
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.Char;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.potions.PotionOfHealing;
 import com.qsr.customspd.sprites.BatSprite;
+import com.qsr.customspd.sprites.CharSprite;
 import com.watabou.utils.Random;
 
 public class Bat extends Mob {
@@ -70,6 +72,7 @@ public class Bat extends Mob {
 		if (reg > 0) {
 			HP += reg;
 			sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
+			sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(reg), FloatingText.HEALING);
 		}
 		
 		return damage;

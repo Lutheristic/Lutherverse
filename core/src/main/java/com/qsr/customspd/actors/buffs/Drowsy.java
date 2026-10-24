@@ -23,12 +23,11 @@ package com.qsr.customspd.actors.buffs;
 
 import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.assets.Asset;
-import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.ui.BuffIndicator;
 
 import kotlin.Pair;
 
-public class Drowsy extends Buff {
+public class Drowsy extends FlavourBuff {
 
 	public static final float DURATION = 5f;
 
@@ -47,16 +46,8 @@ public class Drowsy extends Buff {
 		return Math.max(0, (DURATION - visualcooldown()) / DURATION);
 	}
 
-	@Override
-	public String iconTextDisplay() {
-		return Integer.toString((int)visualcooldown());
-	}
-
 	public boolean attachTo(Char target ) {
 		if (!target.isImmune(Sleep.class) && super.attachTo(target)) {
-			if (cooldown() == 0) {
-				spend(DURATION);
-			}
 			return true;
 		}
 		return false;
@@ -66,12 +57,6 @@ public class Drowsy extends Buff {
 	public boolean act(){
 		Buff.affect(target, MagicalSleep.class);
 
-		detach();
-		return true;
-	}
-
-	@Override
-	public String desc() {
-		return Messages.get(this, "desc", dispTurns(visualcooldown()));
+		return super.act();
 	}
 }

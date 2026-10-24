@@ -267,7 +267,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 	@Override
 	public int indicatorColor() {
 		if (abilitiesEmpowered(Dungeon.hero)){
-			return 0x99CC33;
+			return 0xAAEE22;
 		} else {
 			return 0xA08840;
 		}
@@ -293,7 +293,11 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 		}
 
 		public String desc(){
-			return Messages.get(this, "desc");
+			if (Buff.affect(Dungeon.hero, MonkEnergy.class).abilitiesEmpowered(Dungeon.hero)){
+				return Messages.get(this, "empower_desc");
+			} else {
+				return Messages.get(this, "desc");
+			}
 		}
 
 		public abstract int energyCost();
@@ -324,8 +328,14 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 			@Override
 			public String desc() {
-				//hero unarmed damage
-				return Messages.get(this, "desc", 1, Dungeon.hero.STR()-8);
+				if (Buff.affect(Dungeon.hero, MonkEnergy.class).abilitiesEmpowered(Dungeon.hero)){
+					//hero unarmed damage
+					return Messages.get(this, "empower_desc", 1, Dungeon.hero.STR()-8);
+				} else {
+					//hero unarmed damage
+					return Messages.get(this, "desc", 1, Dungeon.hero.STR()-8);
+				}
+
 			}
 
 			@Override
@@ -530,8 +540,13 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 			@Override
 			public String desc() {
-				//3x hero unarmed damage
-				return Messages.get(this, "desc", 3, 3*(Dungeon.hero.STR()-8));
+				if (Buff.affect(Dungeon.hero, MonkEnergy.class).abilitiesEmpowered(Dungeon.hero)){
+					//4.5x hero unarmed damage (rounds the result)
+					return Messages.get(this, "empower_desc", 5, Math.round(4.5f*(Dungeon.hero.STR()-8)));
+				} else {
+					//3x hero unarmed damage
+					return Messages.get(this, "desc", 3, 3*(Dungeon.hero.STR()-8));
+				}
 			}
 
 			@Override

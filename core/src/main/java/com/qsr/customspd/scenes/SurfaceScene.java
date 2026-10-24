@@ -24,10 +24,12 @@ package com.qsr.customspd.scenes;
 import com.qsr.customspd.Assets;
 import com.qsr.customspd.Badges;
 import com.qsr.customspd.Dungeon;
+import com.qsr.customspd.GamesInProgress;
 import com.qsr.customspd.actors.hero.HeroClass;
 import com.qsr.customspd.actors.hero.abilities.Ratmogrify;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.items.Amulet;
 import com.qsr.customspd.items.artifacts.DriedRose;
 import com.qsr.customspd.items.remains.RemainsItem;
 import com.qsr.customspd.items.wands.WandOfLivingEarth;
@@ -264,6 +266,9 @@ public class SurfaceScene extends PixelScene {
 		add( gameOver );
 		
 		Badges.validateHappyEnd();
+		Dungeon.win( Amulet.class );
+		Dungeon.deleteGame( GamesInProgress.curSlot, true );
+		Badges.saveGlobal();
 		
 		fadeIn();
 	}
@@ -285,8 +290,6 @@ public class SurfaceScene extends PixelScene {
 
 	@Override
 	public void destroy() {
-		Badges.saveGlobal();
-		
 		Camera.remove( viewport );
 		super.destroy();
 	}

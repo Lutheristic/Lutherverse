@@ -27,7 +27,7 @@ import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.HeroSubClass;
 import com.qsr.customspd.actors.mobs.Mob;
-import com.qsr.customspd.messages.Messages;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.sprites.CharSprite;
 
 //generic class for buffs which convert an enemy into an ally
@@ -68,7 +68,7 @@ public abstract class AllyBuff extends Buff {
 
 			int exp = hero.lvl <= enemy.maxLvl ? enemy.EXP : 0;
 			if (exp > 0) {
-				hero.sprite.showStatus(CharSprite.POSITIVE, Messages.get(enemy, "exp", exp));
+				hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, String.valueOf(exp), FloatingText.EXPERIENCE);
 			}
 			hero.earnExp(exp, enemy.getClass());
 

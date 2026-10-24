@@ -167,8 +167,12 @@ public class ChaliceOfBlood extends Artifact {
 		if (Random.Float() < heal%1){
 			heal++;
 		}
-		if (heal >= 1f) {
+		if (heal >= 1f && target.HP < target.HT) {
 			target.HP = Math.min(target.HT, target.HP + (int)heal);
+
+			if (target.HP == target.HT && target instanceof Hero) {
+				((Hero) target).resting = false;
+			}
 		}
 	}
 	

@@ -57,10 +57,10 @@ public class AquaBlast extends TargetedSpell {
 	public static class Recipe extends com.qsr.customspd.items.Recipe.SimpleRecipe {
 		
 		{
-			inputs =  new Class[]{PotionOfStormClouds.class, ArcaneCatalyst.class};
-			inQuantity = new int[]{1, 1};
+			inputs =  new Class[]{PotionOfStormClouds.class};
+			inQuantity = new int[]{1};
 			
-			cost = 2;
+			cost = 11;
 			
 			output = AquaBlast.class;
 			outQuantity = 8;

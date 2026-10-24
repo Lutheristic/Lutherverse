@@ -208,10 +208,10 @@ public class BeaconOfReturning extends Spell {
 	public static class Recipe extends com.qsr.customspd.items.Recipe.SimpleRecipe {
 		
 		{
-			inputs =  new Class[]{ScrollOfPassage.class, ArcaneCatalyst.class};
-			inQuantity = new int[]{1, 1};
+			inputs =  new Class[]{ScrollOfPassage.class};
+			inQuantity = new int[]{1};
 			
-			cost = 6;
+			cost = 15;
 			
 			output = BeaconOfReturning.class;
 			outQuantity = 5;

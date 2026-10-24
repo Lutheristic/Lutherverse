@@ -612,6 +612,7 @@ enum class GeneralAsset(override val path: String) : Asset {
     ICON_RANKINGS("interfaces/icons/rankings.png"),
     ICON_RENAME_OFF("interfaces/icons/rename_off.png"),
     ICON_RENAME_ON("interfaces/icons/rename_on.png"),
+    ICON_REPEAT("interfaces/icons/repeat.png"),
     ICON_RIGHTARROW("interfaces/icons/rightarrow.png"),
     ICON_ROGUE("interfaces/icons/rogue.png"),
     ICON_SCROLL_HOLDER("interfaces/icons/scroll_holder.png"),

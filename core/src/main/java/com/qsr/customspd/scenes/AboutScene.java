@@ -96,7 +96,7 @@ public class AboutScene extends PixelScene {
 		content.add(shpx);
 
 		CreditsBlock alex = new CreditsBlock(false, Window.SHPX_COLOR,
-				"Hero Art & Design:",
+				"Splash Art & Design:",
 			new Image(Asset.getAssetFilePath(GeneralAsset.ICON_ALEKS)),
 				"Aleksandar Komitov",
 				"akomitov.artstation.com",

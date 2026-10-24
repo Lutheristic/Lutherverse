@@ -36,6 +36,7 @@ import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.rings.RingOfEnergy;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
+import com.qsr.customspd.sprites.HeroSprite;
 import com.qsr.customspd.sprites.ItemSprite;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.utils.GLog;
@@ -228,6 +229,9 @@ abstract public class ClassArmor extends Armor {
 								armor.detach(hero.belongings.backpack);
 								if (hero.belongings.armor == armor){
 									hero.belongings.armor = null;
+									if (hero.sprite instanceof HeroSprite) {
+										((HeroSprite) hero.sprite).updateArmor();
+									}
 								}
 								level(armor.trueLevel());
 								tier = armor.tier;

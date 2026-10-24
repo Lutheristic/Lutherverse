@@ -17,12 +17,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Upstream 2879e9ae5 moved the "consume the scroll" step of inventory scrolls from the start of
- * the read to the moment an item is chosen. An upstream follow-up keeps that model honest and
- * is pinned here, observed through the scroll prompt (which needs a scene, so the prompt
+ * the read to the moment an item is chosen. Two upstream follow-ups keep that model honest and
+ * are pinned here, both observed through the scroll prompt (which needs a scene, so the prompt
  * itself is the NPE boundary the tests stop at):
  *
  *  - 295ac57f8: ScrollOfRemoveCurse.doRead must not detach up front - the consumption belongs to
  *    InventoryScroll (unknown: on read; known: on select), so a stacked read uses ONE scroll.
+ *  - 538914864: cancelling the item prompt of a KNOWN, non-anonymous inventory scroll costs no
+ *    time and consumes nothing (only anonymous reads, which already spent the scroll, spend a turn).
  */
 class InventoryScrollConsumptionPortTest {
 
@@ -104,5 +106,18 @@ class InventoryScrollConsumptionPortTest {
 		readUntilPrompt(hero, scroll);
 
 		assertEquals(3, scroll.quantity(), "a known scroll is only used up once an item is chosen");
+	}
+
+	@Test
+	void cancellingTheItemPromptOfAKnownScrollCostsNoTimeAndNoScroll() throws Exception {
+		Hero hero = hero();
+		ScrollOfIdentify scroll = stackOf(hero, new ScrollOfIdentify(), 3, true);
+		readUntilPrompt(hero, scroll);
+		float before = hero.cooldown();
+
+		scroll.itemSelector.onSelect(null);
+
+		assertEquals(before, hero.cooldown(), 0.0001f, "cancelling a known inventory scroll takes no time");
+		assertEquals(3, scroll.quantity(), "and consumes nothing");
 	}
 }

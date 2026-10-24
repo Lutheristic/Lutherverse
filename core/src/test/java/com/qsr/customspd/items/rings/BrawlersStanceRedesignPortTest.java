@@ -326,4 +326,15 @@ class BrawlersStanceRedesignPortTest {
 		charger.act();
 		assertEquals(1f / 37f, charger.partialCharge, 1e-6f, "full-speed charge once it is gone");
 	}
+
+	@Test
+	void unequippingTheLastRingOfForceDeactivatesTheStanceButKeepsItLingering() {
+		duelist();
+		toggle();
+		assertTrue(ring.doUnequip(hero, true, false), "test setup: the ring comes off");
+		assertNull(hero.buff(RingOfForce.Force.class), "test setup: no ring of force left");
+		assertNotNull(stance(), "25ef7a59e: RingOfForce.doUnequip no longer detaches the stance");
+		assertFalse(stance().active, "but it does switch it off");
+		assertFalse(RingOfForce.fightingUnarmed(hero));
+	}
 }

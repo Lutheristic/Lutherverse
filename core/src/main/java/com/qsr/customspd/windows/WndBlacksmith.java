@@ -180,7 +180,12 @@ public class WndBlacksmith extends Window {
 			bg.y = y;
 			bg.size( width, height );
 			
-			slot.setRect( x + 2, y + 2, width - 4, height - 4 );
+			slot.setRect(x, y, width, height);
+			if (width() >= 24 || height >= 24) {
+				slot.setMargins(2, 2, 2, 2);
+			} else {
+				slot.setMargins(1, 1, 1, 1);
+			}
 		}
 		
 		public void item( Item item ) {

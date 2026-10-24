@@ -27,6 +27,7 @@ import com.qsr.customspd.actors.buffs.Hunger;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.effects.BlobEmitter;
 import com.qsr.customspd.effects.CellEmitter;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.effects.particles.ShadowParticle;
 import com.qsr.customspd.effects.particles.ShaftParticle;
@@ -37,6 +38,7 @@ import com.qsr.customspd.items.potions.PotionOfHealing;
 import com.qsr.customspd.items.scrolls.ScrollOfRemoveCurse;
 import com.qsr.customspd.journal.Notes.Landmark;
 import com.qsr.customspd.messages.Messages;
+import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 
@@ -55,7 +57,8 @@ public class WaterOfHealth extends WellWater {
 
 		hero.HP = hero.HT;
 		hero.sprite.emitter().start( Speck.factory( Speck.HEALING ), 0.4f, 4 );
-		
+		hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(hero.HT), FloatingText.HEALING);
+
 		CellEmitter.get( hero.pos ).start( ShaftParticle.FACTORY, 0.2f, 3 );
 
 		Dungeon.hero.interrupt();

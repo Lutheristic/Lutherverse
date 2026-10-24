@@ -23,6 +23,7 @@ package com.qsr.customspd.actors.buffs;
 
 import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.assets.Asset;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.ui.BuffIndicator;
 
@@ -40,6 +41,7 @@ public class Corruption extends AllyBuff {
 	//corrupted enemies are usually fully healed and cleansed of most debuffs
 	public static void corruptionHeal(Char target){
 		target.HP = target.HT;
+		target.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(target.HT), FloatingText.HEALING);
 		for (Buff buff : target.buffs()) {
 			if (buff.type == Buff.buffType.NEGATIVE
 					&& !(buff instanceof SoulMark)) {

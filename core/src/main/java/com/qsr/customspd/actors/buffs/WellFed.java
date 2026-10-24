@@ -25,7 +25,9 @@ import com.qsr.customspd.Challenges;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.Asset;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.messages.Messages;
+import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.ui.BuffIndicator;
 import com.watabou.utils.Bundle;
 
@@ -51,6 +53,7 @@ public class WellFed extends Buff {
 			return true;
 		} else if (left % 18 == 0 && target.HP < target.HT){
 			target.HP += 1;
+			target.sprite.showStatusWithIcon(CharSprite.POSITIVE, "1", FloatingText.HEALING);
 
 			if (target.HP == target.HT && target instanceof Hero) {
 				((Hero) target).resting = false;

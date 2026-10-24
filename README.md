@@ -182,10 +182,12 @@ Everything glowed green over an empty cell. So now every gate has to prove it ca
 - **`desktop-smoke`** boots the real jar to 120 rendered frames. It was the first automated proof that the game starts at all.
 - **`port-verify`** answers "did we port all of it?", which nothing else could.
 - **`content-audit`** checks that every creature and item is fully wired up. On 2026-10-23 it got caught in a lie of its own: a class named only in a code comment counted as registered. That's fixed.
+- **`core:test`** used to skip itself when only game text or assets changed, and replayed the last green result instead. It now treats the asset tree and the build version as inputs.
+- **Green merges aren't trusted either.** In October four parallel upstream-port branches merged cleanly and passed 450 tests. A separate read-only hunt still found 8 conflicts between them, including a scroll of remove curse that was never used up when it cleansed a tormented spirit. Each fix landed with a test that fails without it.
 - **Android Lint** now runs as a ratcheted gate over `core` and `android`.
 - **`options.release = 8`** holds the game modules to the Java 8 *API*, not just the language level, so nothing ships that an old Android phone can't run.
 - **CI** runs on every push to `main` and on pull requests, and every step asserts it actually analysed something.
-- **Tests in `core`** went from zero to 181.
+- **Tests in `core`** went from zero to 545.
 
 <details>
   <summary><strong>The rest of the toolbelt, and earlier milestones</strong></summary>
@@ -206,10 +208,10 @@ Everything glowed green over an empty cell. So now every gate has to prove it ca
 Short bulletin. The full log is in [project_progress.md](project_progress.md), and the reasoning behind it is in [PROJECT-STATUS.md](PROJECT-STATUS.md).
 
 - **Landed:** the Keybearer prototype, with keyblades, dual-wield, the sphere grid, Insight and the five residents above.
-- **Landed from upstream:** the remains and bones catch-up from v2.3.0, and the floating-text damage-icon framework.
+- **Landed from upstream:** most of Slice 1, the catch-up to Shattered v2.5.4. All 23 batches that sat parked since July are worked through: about 245 upstream commits checked, roughly 170 ported, and each of the rest tracked on its own. Also in: the remains and bones catch-up from v2.3.0, the floating-text damage icons, and translations synced to v2.5.4.
 - **Landed:** a headless test harness that runs the real dungeon setup, save and load with no display, and pins same-seed level generation.
-- **In progress: seeded runs.** The bugs that broke seeded generation are fixed: guaranteed floors were being picked with an unseeded RNG before the dungeon seed existed, and actor order varied between runs. Layouts reproduce now, but full-run determinism is still being pinned down, so the same seed doesn't promise the same run yet.
-- **Parked: upstream sync, Slice 1** (catching up to Shattered v2.5.4). About 230 commits in 22 batches are still to port. The bulk batches are parked while smaller clusters, like the remains catch-up, land one at a time.
+- **In progress: seeded runs.** The bugs that broke seeded generation are fixed: guaranteed floors were being picked with an unseeded RNG before the dungeon seed existed, actor order varied between runs, and the shop could pick a different bag for the same seed. Layouts reproduce now, but full-run determinism is still being pinned down, so the same seed doesn't promise the same run yet.
+- **Still to port for Slice 1:** a handful of upstream reworks that each wait on another piece landing first, such as the Duelist's charge system, the tier-2 talents, the item catalog, the alchemy screen and the Monk.
 
 <details>
   <summary><strong>Roadmap to v0.1, and what comes after</strong></summary>
@@ -219,7 +221,7 @@ Short bulletin. The full log is in [project_progress.md](project_progress.md), a
 | | Sub-project | Status | Notes |
 |---|---|---|---|
 | A | Fork infrastructure | ✅ done | Attribution, docs, build paths verified, `margarita` renamed to `main`. |
-| B | Upstream sync (toward Shattered v3.3.8, in 7 slices) | 🟡 Slice 1 of 7 | Slice 0 shipped. Slice 1 targets Shattered v2.5.4. Engine, hero, dungeon, level generation and enemy behaviour are integrated; about 230 commits remain. Slice 1 turned out about 9x its original estimate. |
+| B | Upstream sync (toward Shattered v3.3.8, in 7 slices) | 🟡 Slice 1 of 7 | Slice 0 shipped. Slice 1 targets Shattered v2.5.4. Engine, hero, dungeon, level generation, enemy behaviour and all 23 tuning batches are integrated; the remaining reworks are tracked one by one. Slice 1 turned out about 9x its original estimate. |
 | C | Broad modding-platform API | ⏳ next | Java hooks on top of CPD's JSON-manifest framework: cutscenes, dialogue, dual-wield, story flags, biome swapping, NPC insertion. |
 | D | God Mode addon | ⏳ | Top-tier starter gear. Flagged as a cheat in coop lobbies. |
 | E | Hard Mode addon | ⏳ | Balance tuning. Coop-fair. |

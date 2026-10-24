@@ -5,8 +5,8 @@
 and dated design docs, plans and CHANGELOG entries deliberately keep the original name as a
 historical record. Updated in the same commit as any substantive work — treat as ground truth for near-term state.*
 
-**Last update:** 2026-10-23
-**Current tip:** `main` is at `9f4b9f381` (pushed, CI green). AFK-inline marathon work is on branch `afk-inline/2026-10-23`: gate-verified locally, **not merged to `main` and not pushed**, awaiting LO review.
+**Last update:** 2026-10-24
+**Current tip:** `main` includes the AFK-inline marathon (waves 3–7, branch `afk-inline/2026-10-23`, merged as `ce427f052`) and the README/theme-bible overhaul. The full gate set was re-run on the merge commit before the push: 76/76 tasks with `--rerun-tasks` (core 545, SPD-classes 8, content-audit 36 and content-scaffold 54 tests; both lints; desktop and Android builds). deletion-audit PASS over 1,050 files, and FAIL with 121 findings against an empty allowlist. content-audit 1/1, with the ceiling-0 control failing and the canary OK. asset-audit PASS, canary OK. desktop-smoke reached 120 frames.
 
 > The dated sections further down are a **historical log** and are deliberately not rewritten.
 > Where an older entry contradicts this header, the header wins.
@@ -14,6 +14,10 @@ historical record. Updated in the same commit as any substantive work — treat 
 ---
 
 ## Where we are
+
+**2026-10-24: the marathon is on `main`, and the README has a theme.**
+- `afk-inline/2026-10-23` (308 commits; waves 3–7 below) is merged into `main` as `ce427f052`. The other side was docs only and the two touched disjoint files, so the merge had no textual conflicts.
+- **README overhaul and theme bible** (`cpdu-m52v`, `cpdu-ey2x`). The README leads with the cosmic-horror identity, and [docs/THEME.md](docs/THEME.md) holds the house rules, tone, naming and palette. Three follow-ups cover surfaces that disagree with the code or the theme: `cpdu-jot4` (Keybearer strings), `cpdu-lm64` (warden's sigil text vs Cripple, needs a decision) and `cpdu-341c` (contributor docs).
 
 **2026-10-24, AFK-inline wave 7.**
 - **i18n.** Level-name messages take `%s`, so the Beacon of Returning text no longer breaks, even in English (`cpdu-866z`). Translations are synced to v2.5.4 wherever CPDU's English matches: 1,154 keys imported, 516 stale lines updated, 6,762 translator revisions (in their own revertable commit), and 414 orphans dropped (`cpdu-fz84`).
@@ -503,7 +507,10 @@ dispatcher at a time.
 
 ## Awaiting LO input
 
-- **⛔ BLOCKING — OpenRouter credits exhausted.** The bead pipeline stopped mid-run on
+- **Resolved 2026-10-24: the 23 credit-blocked batches were worked inline** by the AFK-inline
+  marathon (waves 4–5), and no bead is parked `worker-failed` any more. The note below is
+  kept for the re-arm command in case the pipeline is used again.
+- ~~**⛔ BLOCKING — OpenRouter credits exhausted.**~~ The bead pipeline stopped mid-run on
   `AI_APICallError: Insufficient credits`. 23 beads across Tasks 17–20 failed for this
   reason alone; their specs were never actually attempted against a working provider and
   should NOT be re-specced. After topping up at <https://openrouter.ai/settings/credits>,
@@ -515,7 +522,7 @@ dispatcher at a time.
 
 - **Slice 1 scope decision.** The 541 triaged commits mean Slice 1 is roughly an order of magnitude larger than planned. Options: review and integrate them inside Slice 1, split them into a Slice 1b, or push the non-engine areas to a later slice. Task 25's re-estimation should not be the first time this is confronted.
 - **Conditional music as pack config** (`cpdu-15l`). Should amulet-obtained / quest-active track selection become a pack-config surface rather than hardcoded level code? Landing upstream's form would hardcode what CPDU deliberately made configurable, and would not apply to configured dungeons at all. Touches the frozen DSL.
-- **Make CI content-audit blocking?** (`cpdu-wez`). The over-report that justified `|| true` is fixed, and the ceiling (24) equals the real count. Advisory mode is how the ceiling drifted to 189 while the real count was 194.
+- **Make CI content-audit blocking?** (`cpdu-wez`). The over-report that justified `|| true` is fixed, and the ceiling (now 1, `Pickaxe#I3`) equals the real count. Advisory mode is how the ceiling drifted to 189 while the real count was 194.
 - **Aggression target order** (`cpdu-p4bm`). `Actor.chars()` returns `HashSet` copies, so a mob choosing among 2+ aggression-marked targets picks in hash order. Fix as a determinism divergence, like the ShopRoom bag fix? The default per precedent is yes.
 - **Headless hero damage** (`cpdu-xbs4`). `GameScene.resetKeyHold` NPEs headless on any hit to the hero. Should it get a one-line production null guard, or a test seam? This blocks the WS-4 combat tests.
 - **Seeds vs player progress** (`cpdu-w3ol`). Floors 1–2 entrance doors depend on the intro/guide-page state, so a shared or daily seed differs between new and returning players. Accept that (faithful), or neutralise it for seeded runs (a divergence)?
@@ -529,6 +536,6 @@ dispatcher at a time.
 
 ## Contribution status
 
-- ★ Star and 👁 Watch → Releases are welcome. See [README's alpha-tester section](README.md#alpha-testers-and-watchers).
+- ★ Star and 👁 Watch → Releases are welcome. See [README's keeping-watch section](README.md#007--keeping-watch).
 - Issues welcome (bugs, feature ideas, cameo requests)
 - **PRs currently not accepted** — modding API is not stable, every hook is subject to change; this loosens up when Sub-C ships

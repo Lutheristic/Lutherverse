@@ -12,6 +12,30 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 
 Work-in-progress on `main` since the fork base (`cpd-sync-base-2025-08-15`, CPD commit `c97fb83`).
 
+### Slice 1 catch-up: AFK-inline marathon, waves 3 to 7 (2026-10-23/24)
+
+Merged from `afk-inline/2026-10-23`. PROJECT-STATUS has the per-wave detail.
+
+- **Ported from upstream (v2.5.4 target).** The 23 tuning batches parked since July:
+  about 245 upstream commits classified, roughly 170 ported, and every remainder mapped
+  to a bead (`cpdu-ewor`, `cpdu-v1as`, `cpdu-y0f`, `cpdu-5xj9`, `cpdu-7xwc`, `cpdu-2iw3`,
+  `cpdu-57c` and others). Also the v2.3.0 two-deck potion/scroll drops, the
+  damage-icon call sites, trap depth scaling, shop and Warlock parity, the badge ending
+  flow (with upstream d029c0d7d pulled forward so a window resize can't record a second
+  win), and the hero-null guards.
+- **Translations** synced to v2.5.4 wherever CPDU's English matches upstream's.
+- **Fixed.** The shop could choose a different bag for the same seed (identity-hashed tie
+  break, now a `LinkedHashMap`; upstream has the same bug). Floor 20 walled itself off
+  after the boss. Custom levels shuffled with an unseeded RNG. Brawler's Stance never
+  drained charge. Level-name messages formatted a string with `%d`. Eight semantic
+  conflicts between the parallel port branches, among them a remove curse scroll that
+  was never used up when it cleansed a tormented spirit.
+- **Gates.** `core:test` declares the asset tree and root build script as inputs, so
+  asset-only and version-only changes re-run it. New tests guard translated format
+  placeholders and reject message values split across lines. F5 `StubSprite`/`TurnPump`
+  pins mob AI, and F4 covers boss floors with golden levelgen digests. Core tests
+  181 to 545.
+
 ### Docs: theme bible and README overhaul (2026-10-24)
 
 - `docs/THEME.md` is new: the project's theme in one place. Pitch, five house rules,

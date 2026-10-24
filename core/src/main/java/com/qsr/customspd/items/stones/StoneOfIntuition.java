@@ -67,7 +67,7 @@ public class StoneOfIntuition extends InventoryStone {
 	
 	@Override
 	protected void onItemSelected(Item item) {
-		
+
 		GameScene.show( new WndGuess(item));
 		
 	}
@@ -124,12 +124,12 @@ public class StoneOfIntuition extends InventoryStone {
 					} else {
 						GLog.w( Messages.get(WndGuess.class, "incorrect") );
 					}
-					//CPDU's InventoryStone detaches the stone when it is used, so the free use
-					// gives a stone back rather than skipping upstream's curItem.detach
+					//InventoryStone no longer detaches the stone when it is used (2879e9ae5),
+					// so the first use is free simply by not detaching it here
 					if (curUser.buff(IntuitionUseTracker.class) == null){
-						new StoneOfIntuition().collect();
 						Buff.affect(curUser, IntuitionUseTracker.class);
 					} else {
+						curItem.detach( curUser.belongings.backpack );
 						curUser.buff(IntuitionUseTracker.class).detach();
 					}
 					curGuess = null;
@@ -215,11 +215,5 @@ public class StoneOfIntuition extends InventoryStone {
 			
 		}
 		
-		
-		@Override
-		public void onBackPressed() {
-			super.onBackPressed();
-			new StoneOfIntuition().collect();
-		}
 	}
 }

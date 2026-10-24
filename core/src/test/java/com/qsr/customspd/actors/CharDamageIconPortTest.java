@@ -12,6 +12,7 @@ import com.qsr.customspd.actors.buffs.Corrosion;
 import com.qsr.customspd.actors.buffs.Corruption;
 import com.qsr.customspd.actors.buffs.Frost;
 import com.qsr.customspd.actors.buffs.Hunger;
+import com.qsr.customspd.actors.buffs.LifeLink;
 import com.qsr.customspd.actors.buffs.Ooze;
 import com.qsr.customspd.actors.buffs.Poison;
 import com.qsr.customspd.actors.hero.Hero;
@@ -105,6 +106,12 @@ class CharDamageIconPortTest {
 		assertEquals(FloatingText.PHYS_DMG_NO_BLOCK, iconFor(new Heap()), "wraith spawn blocked by a heap");
 		assertEquals(FloatingText.PHYS_DMG_NO_BLOCK, iconFor(new DwarfKing.KingDamager()), "king's minion link");
 		assertEquals(FloatingText.PHYS_DMG_NO_BLOCK, iconFor(new DwarfKing.Summoning()), "king's summoning circle");
+	}
+
+	@Test
+	void lifeLinkDamageUsesTheNoBlockIcon() {
+		// upstream f6e82d0e4: damage shared through Life Link is not reduced by armor
+		assertEquals(FloatingText.PHYS_DMG_NO_BLOCK, iconFor(new LifeLink()), "damage shared over a life link");
 	}
 
 	@Test

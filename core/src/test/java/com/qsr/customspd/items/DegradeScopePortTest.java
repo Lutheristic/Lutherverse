@@ -100,4 +100,36 @@ class DegradeScopePortTest {
 		assertEquals(4, armor.buffedLvl());
 		assertEquals(4, sword.buffedLvl());
 	}
+
+	/**
+	 * Upstream 3307d2d2f (v2.2.0, "fixed degradation not properly applying to the mage's staff"),
+	 * written on top of 1ec5434c1. The wand imbued in a Mage's Staff lives in MagesStaff.wand, not
+	 * in the hero's belongings, so the ownership check above no longer sees it; Wand.buffedLvl
+	 * applies the hero's Degrade itself when its charger serves the hero from inside the staff.
+	 */
+	@Test
+	void theWandInsideAnEquippedMagesStaffIsDegraded() {
+		Hero hero = degradedHero();
+		com.qsr.customspd.items.wands.WandOfMagicMissile wand = new com.qsr.customspd.items.wands.WandOfMagicMissile();
+		com.qsr.customspd.items.weapon.melee.MagesStaff staff = new com.qsr.customspd.items.weapon.melee.MagesStaff(wand);
+		staff.level(7);
+		staff.updateWand(false); // the imbued wand takes the staff's level
+		hero.belongings.weapon = staff;
+		staff.activate(hero);
+
+		assertEquals(7, wand.level(), "fixture: a +7 wand in a +7 staff");
+		assertEquals(false, hero.belongings.contains(wand), "fixture: the imbued wand is not in the hero's belongings");
+		assertEquals(4, wand.buffedLvl(), "the staff's wand feels the hero's Degrade too");
+	}
+
+	@Test
+	void aWandInThePackIsDegradedOnlyOnce() {
+		Hero hero = degradedHero();
+		com.qsr.customspd.items.wands.WandOfMagicMissile wand = new com.qsr.customspd.items.wands.WandOfMagicMissile();
+		wand.level(7);
+		hero.belongings.backpack.items.add(wand);
+		wand.charge(hero);
+
+		assertEquals(4, wand.buffedLvl(), "Item.buffedLvl degrades a carried wand; the staff clause must not add a second step");
+	}
 }

@@ -26,6 +26,8 @@ import com.qsr.customspd.actors.buffs.Barrier;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.effects.FloatingText;
+import com.qsr.customspd.sprites.CharSprite;
 import com.watabou.noosa.audio.Sample;
 
 public class SealShard extends RemainsItem {
@@ -37,6 +39,7 @@ public class SealShard extends RemainsItem {
 	@Override
 	protected void doEffect(Hero hero) {
 		Buff.affect(hero, Barrier.class).incShield(hero.HT/10);
+		hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, String.valueOf(hero.HT/10), FloatingText.SHIELDING );
 		Sample.INSTANCE.play(Assets.Sounds.UNLOCK);
 	}
 

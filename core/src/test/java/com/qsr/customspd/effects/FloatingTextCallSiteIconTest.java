@@ -10,6 +10,8 @@ import com.qsr.customspd.actors.mobs.Rat;
 import com.qsr.customspd.items.Dewdrop;
 import com.qsr.customspd.items.EnergyCrystal;
 import com.qsr.customspd.items.Gold;
+import com.qsr.customspd.items.potions.PotionOfStrength;
+import com.qsr.customspd.items.potions.elixirs.ElixirOfMight;
 import com.qsr.customspd.items.potions.exotic.PotionOfShielding;
 import com.qsr.customspd.items.wands.WandOfWarding;
 import com.qsr.customspd.sprites.CharSprite;
@@ -132,6 +134,20 @@ class FloatingTextCallSiteIconTest {
 		invoke(brute, Brute.class, "triggerEnrage");
 		assertEquals(FloatingText.SHIELDING, firstIcon(bruteSprite), "an enraged brute's shield");
 		assertEquals(Integer.toString(brute.HT / 2 + 4), bruteSprite.texts.get(0));
+	}
+
+	@Test
+	void strengthGainsShowTheStrengthIcon() {
+		int str = hero.STR;
+		new PotionOfStrength().apply(hero);
+		assertEquals(FloatingText.STRENGTH, firstIcon(heroSprite), "a potion of strength");
+		assertEquals("1", heroSprite.texts.get(0));
+		assertEquals(str + 1, hero.STR, "and the potion still grants the point (d7bd161f2)");
+
+		heroSprite.icons.clear();
+		new ElixirOfMight().apply(hero);
+		assertEquals(FloatingText.STRENGTH, firstIcon(heroSprite), "an elixir of might");
+		assertEquals(str + 2, hero.STR);
 	}
 
 	@Test

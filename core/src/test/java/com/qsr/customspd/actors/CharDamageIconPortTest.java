@@ -17,13 +17,17 @@ import com.qsr.customspd.actors.buffs.Poison;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.HeroSubClass;
 import com.qsr.customspd.actors.mobs.DwarfKing;
+import com.qsr.customspd.actors.mobs.Necromancer;
 import com.qsr.customspd.actors.mobs.Rat;
 import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.items.Heap;
 import com.qsr.customspd.items.armor.glyphs.Viscosity;
+import com.qsr.customspd.items.artifacts.DriedRose;
 import com.qsr.customspd.items.quest.Pickaxe;
+import com.qsr.customspd.items.wands.WandOfBlastWave;
 import com.qsr.customspd.items.weapon.enchantments.Chilling;
 import com.qsr.customspd.items.weapon.missiles.darts.Dart;
+import com.qsr.customspd.items.weapon.missiles.darts.ShockingDart;
 import com.qsr.customspd.levels.features.Chasm;
 import com.qsr.customspd.levels.traps.DisintegrationTrap;
 import com.qsr.customspd.levels.traps.GeyserTrap;
@@ -46,10 +50,12 @@ class CharDamageIconPortTest {
 	/** Records the icon instead of drawing it. */
 	private static final class RecordingSprite extends CharSprite {
 		int icon = Integer.MIN_VALUE;
+		int first = Integer.MIN_VALUE;
 
 		@Override
 		public void showStatusWithIcon(int color, String text, int icon, Object... args) {
 			this.icon = icon;
+			if (first == Integer.MIN_VALUE) first = icon;
 		}
 	}
 
@@ -93,6 +99,26 @@ class CharDamageIconPortTest {
 		assertEquals(FloatingText.PHYS_DMG_NO_BLOCK, iconFor(new Heap()), "wraith spawn blocked by a heap");
 		assertEquals(FloatingText.PHYS_DMG_NO_BLOCK, iconFor(new DwarfKing.KingDamager()), "king's minion link");
 		assertEquals(FloatingText.PHYS_DMG_NO_BLOCK, iconFor(new DwarfKing.Summoning()), "king's summoning circle");
+	}
+
+	@Test
+	void damageSourcesSplitOffBy3dc39de06IgnoreArmor() {
+		assertEquals(FloatingText.PHYS_DMG_NO_BLOCK, iconFor(new WandOfBlastWave.Knockback()),
+				"slamming into a wall after a blast wave");
+		assertEquals(FloatingText.PHYS_DMG_NO_BLOCK, iconFor(new Necromancer.SummoningBlockDamage()),
+				"standing on a necromancer's summoning cell");
+		assertEquals(FloatingText.PHYS_DMG_NO_BLOCK, iconFor(new DriedRose.GhostHero.NoRoseDamage()),
+				"the ghost fading without its rose");
+	}
+
+	@Test
+	void shockingDartDealsElectricDamage() {
+		Rat rat = new Rat();
+		rat.HP = rat.HT = 100000;
+		RecordingSprite sprite = new RecordingSprite();
+		rat.sprite = sprite;
+		new ShockingDart().proc(new Rat(), rat, 1);
+		assertEquals(FloatingText.SHOCKING, sprite.first, "the dart's shock, now sourced from Electricity");
 	}
 
 	@Test

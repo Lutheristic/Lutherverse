@@ -123,6 +123,7 @@ public class BuffIndicator extends Component {
 	public static final Pair<Asset, Asset> MONK_ENERGY = new Pair<>(GeneralAsset.BUFF_MONK_ENERGY, GeneralAsset.LARGE_BUFF_MONK_ENERGY);
 	public static final Pair<Asset, Asset> DUEL_COMBO = new Pair<>(GeneralAsset.BUFF_DUEL_COMBO, GeneralAsset.LARGE_BUFF_DUEL_COMBO);
 	public static final Pair<Asset, Asset> DAZE = new Pair<>(GeneralAsset.BUFF_DAZE, GeneralAsset.LARGE_BUFF_DAZE);
+	public static final Pair<Asset, Asset> WAND = new Pair<>(GeneralAsset.BUFF_WAND, GeneralAsset.LARGE_BUFF_WAND);
 
 	public static final int SIZE_SMALL  = 7;
 	public static final int SIZE_LARGE  = 16;

@@ -22,6 +22,7 @@
 package com.qsr.customspd.items.weapon.enchantments;
 
 import com.qsr.customspd.actors.Char;
+import com.qsr.customspd.actors.mobs.Mimic;
 import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.items.weapon.Weapon;
@@ -63,7 +64,9 @@ public class Vampiric extends Weapon.Enchantment {
 
 		healChance *= procChanceMultiplier(attacker);
 
-		if (Random.Float() < healChance){
+		if (Random.Float() < healChance
+				&& attacker.alignment != defender.alignment
+				&& (defender.alignment != Char.Alignment.NEUTRAL || defender instanceof Mimic)){
 
 			float powerMulti = Math.max(1f, healChance);
 

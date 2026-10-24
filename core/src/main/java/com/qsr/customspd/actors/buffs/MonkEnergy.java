@@ -57,6 +57,7 @@ import com.watabou.noosa.Visual;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
+import com.watabou.utils.GameMath;
 
 import kotlin.Pair;
 
@@ -88,7 +89,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 	@Override
 	public float iconFadePercent() {
-		return Math.max(0, cooldown/MAX_COOLDOWN);
+		return GameMath.gate(0, cooldown/MAX_COOLDOWN, 1);
 	}
 
 	@Override
@@ -208,7 +209,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 	public void abilityUsed( MonkAbility abil ){
 		energy -= abil.energyCost();
-		cooldown = abil.cooldown();
+		cooldown = abil.cooldown() + (int)target.cooldown();
 
 		if (target instanceof Hero && ((Hero) target).hasTalent(Talent.COMBINED_ENERGY)
 				&& abil.energyCost() >= 5-((Hero) target).pointsInTalent(Talent.COMBINED_ENERGY)) {
@@ -318,7 +319,6 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 			@Override
 			public int cooldown() {
-				//1 less turn as no time is spent flurrying
 				return Dungeon.hero.buff(JustHitTracker.class) != null ? 0 : 5;
 			}
 
@@ -405,8 +405,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 			@Override
 			public int cooldown() {
-				//1 less if focus was instant
-				return Buff.affect(Dungeon.hero, MonkEnergy.class).abilitiesEmpowered(Dungeon.hero) ? 5 : 6;
+				return 5;
 			}
 
 			@Override
@@ -465,7 +464,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 			@Override
 			public int cooldown() {
-				return 5; //1 less turn as no time is spent dashing
+				return 5;
 			}
 
 			@Override
@@ -526,7 +525,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 			@Override
 			public int cooldown() {
-				return 6;
+				return 5;
 			}
 
 			@Override
@@ -617,9 +616,8 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 			}
 
 			@Override
-			//longer to account for turns spent meditating
 			public int cooldown() {
-				return 10;
+				return 5;
 			}
 
 			@Override
@@ -650,6 +648,11 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 				}
 
 				Actor.addDelayed(new Actor() {
+
+					{
+						actPriority = VFX_PRIO;
+					}
+
 					@Override
 					protected boolean act() {
 						Buff.affect(hero, Recharging.class, 8f);

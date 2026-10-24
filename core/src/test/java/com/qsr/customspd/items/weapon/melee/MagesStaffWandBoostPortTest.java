@@ -51,8 +51,8 @@ class MagesStaffWandBoostPortTest {
 		Buff.affect(hero, ScrollEmpower.class); // +3 levels on the carried wand
 
 		assertEquals(3, wand.buffedLvl(), "fixture: the wand is boosted by 3");
-		assertEquals(3, staff.buffedVisiblyUpgraded(), "the boost is still shown on the staff");
 		assertEquals(0, staff.buffedLvl(),
 				"upstream 7a05cdb41: melee scaling uses the staff's own level, not the wand's boost");
+		assertEquals(3, staff.buffedVisiblyUpgraded(), "the boost is still shown on the staff");
 	}
 }

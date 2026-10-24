@@ -137,6 +137,45 @@ class RemainsBadgesTest {
 	}
 
 	@Test
+	void tasteVengeanceIsRecordedAndEndorsedOnEveryQualifyingRunNotJustTheFirst() {
+		try (HeadlessRun run = HeadlessRun.start(20261023L)) {
+			Dungeon.customSeedText = "";
+			Dungeon.hero.belongings.backpack.items.add(new SealShard());
+			Statistics.qualifiedForBossRemainsBadge = true;
+
+			List<String> log = new ArrayList<>();
+			Signal.Listener<String> listener = log::add;
+			GLog.update.add(listener);
+			try {
+				Badges.validateBossSlain(Goo.class);
+				assertTrue(Badges.isUnlocked(Badges.Badge.BOSS_SLAIN_REMAINS), "test setup: first unlock");
+				assertTrue(localBadgeNames().contains("BOSS_SLAIN_REMAINS"), "the run records the badge");
+				assertTrue(log.contains(unlockedLine(Badges.Badge.BOSS_SLAIN_REMAINS)));
+
+				// v2.4.0 (6fc6fb1fc): a later run must record and endorse it again; the badge being
+				// unlocked already used to skip both, so the run's badge list never showed it.
+				Badges.loadLocal(new Bundle()); // a new run's empty local set; global stays unlocked
+				assertFalse(localBadgeNames().contains("BOSS_SLAIN_REMAINS"), "test setup: fresh run");
+				log.clear();
+				Badges.validateBossSlain(Goo.class);
+				assertTrue(localBadgeNames().contains("BOSS_SLAIN_REMAINS"),
+						"killing a boss while qualified must record the badge again on a later run");
+				assertTrue(log.contains(GLog.HIGHLIGHT + Messages.get(Badges.class, "endorsed",
+						Badges.Badge.BOSS_SLAIN_REMAINS.title())),
+						"an already-unlocked badge is endorsed, not silently skipped; log was " + log);
+			} finally {
+				GLog.update.remove(listener);
+			}
+		}
+	}
+
+	private static List<String> localBadgeNames() {
+		Bundle local = new Bundle();
+		Badges.saveLocal(local);
+		return Arrays.asList(local.getStringArray("badges"));
+	}
+
+	@Test
 	void reachingTheSurfaceHoldingRemainsUnlocksYouMadeItToo() {
 		try (HeadlessRun run = HeadlessRun.start(20261023L)) {
 			Dungeon.customSeedText = "";

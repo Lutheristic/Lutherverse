@@ -294,7 +294,11 @@ public class Potion extends Item {
 			
 		} else  {
 
-			Dungeon.level.pressCell( cell );
+			//storm clouds specifically doesn't press cells, so it can disarm traps
+			//(upstream also excludes AquaBrew here; add it when upstream e67d25967 is ported)
+			if (!(this instanceof PotionOfStormClouds)){
+				Dungeon.level.pressCell( cell );
+			}
 			shatter( cell );
 			
 		}

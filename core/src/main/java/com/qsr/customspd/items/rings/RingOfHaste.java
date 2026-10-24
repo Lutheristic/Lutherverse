@@ -21,6 +21,7 @@
 
 package com.qsr.customspd.items.rings;
 
+import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.messages.Messages;
@@ -33,7 +34,13 @@ public class RingOfHaste extends Ring {
 
 	public String statsInfo() {
 		if (isIdentified()){
-			return Messages.get(this, "stats", Messages.decimalFormat("#.##", 100f * (Math.pow(1.2f, soloBuffedBonus()) - 1f)));
+			String info = Messages.get(this, "stats",
+					Messages.decimalFormat("#.##", 100f * (Math.pow(1.2f, soloBuffedBonus()) - 1f)));
+			if (isEquipped(Dungeon.hero) && soloBuffedBonus() != getBuffedBonus(Dungeon.hero, Haste.class)){
+				info += "\n\n" + Messages.get(this, "combined_stats",
+						Messages.decimalFormat("#.##", 100f * (Math.pow(1.2f, getBuffedBonus(Dungeon.hero, Haste.class)) - 1f)));
+			}
+			return info;
 		} else {
 			return Messages.get(this, "typical_stats", Messages.decimalFormat("#.##", 20f));
 		}

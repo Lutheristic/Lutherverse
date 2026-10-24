@@ -50,8 +50,16 @@ class MissileDownedGhoulPortTest {
 		try {
 			dart.rangedHit(target, cell);
 		} catch (NullPointerException e) {
-			// A dropped missile ends with Heap.sprite.drop(); the headless level has no heap
-			// sprites. By then the item is already in the heap, which is all the tests read.
+			// A dropped missile ends in Level.drop() -> Game.scene(), which reads Game.instance; the
+			// headless run has no Game. By then the item is already in the heap, which is all the
+			// tests read. Only that NPE is tolerated: one thrown anywhere else is a real failure.
+			StackTraceElement[] st = e.getStackTrace();
+			boolean headlessGame = st.length > 1
+					&& st[0].getClassName().endsWith(".Game") && "scene".equals(st[0].getMethodName())
+					&& st[1].getClassName().endsWith(".Level") && "drop".equals(st[1].getMethodName());
+			if (!headlessGame) {
+				throw e;
+			}
 		}
 	}
 

@@ -234,9 +234,9 @@ abstract public class ClassArmor extends Armor {
 									inscribe(armor.glyph);
 									seal = armor.checkSeal();
 								} else if (checkSeal() != null){
-									//automates the process of detaching the glyph manually
+									//automates the process of detaching the seal manually
 									// and re-affixing it to the new armor
-									if (seal.level() > 0 && trueLevel() <= armor.trueLevel()){
+									if (seal.level() > 0){
 										int newLevel = trueLevel() + 1;
 										level(newLevel);
 										Badges.validateItemLevelAquired(ClassArmor.this);

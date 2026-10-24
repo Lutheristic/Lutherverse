@@ -45,7 +45,7 @@ public class Pasty extends Food {
 	public void reset() {
 		super.reset();
 		switch(Holiday.getCurrentHoliday()){
-			case NONE:
+			case NONE: default:
 				image = GeneralAsset.PASTY;
 				break;
 			case HALLOWEEN:

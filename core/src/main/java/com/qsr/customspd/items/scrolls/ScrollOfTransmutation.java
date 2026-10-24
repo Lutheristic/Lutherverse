@@ -132,7 +132,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 		if (item instanceof MagesStaff) {
 			return changeStaff((MagesStaff) item);
 		}else if (item instanceof TippedDart){
-			return changeTippeDart( (TippedDart)item );
+			return changeTippedDart( (TippedDart)item );
 		} else if (item instanceof MeleeWeapon || item instanceof MissileWeapon) {
 			return changeWeapon( (Weapon)item );
 		} else if (item instanceof Scroll) {
@@ -183,7 +183,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 		return staff;
 	}
 
-	private static TippedDart changeTippeDart( TippedDart dart ){
+	private static TippedDart changeTippedDart( TippedDart dart ){
 		TippedDart n;
 		do {
 			n = TippedDart.randomTipped(1);
@@ -193,7 +193,6 @@ public class ScrollOfTransmutation extends InventoryScroll {
 	}
 	
 	private static Weapon changeWeapon( Weapon w ) {
-		
 		Weapon n;
 		Generator.Category c;
 		if (w instanceof MeleeWeapon) {
@@ -277,7 +276,6 @@ public class ScrollOfTransmutation extends InventoryScroll {
 	}
 	
 	private static Wand changeWand( Wand w ) {
-		
 		Wand n;
 		do {
 			n = (Wand)Generator.random( Generator.Category.WAND );
@@ -301,7 +299,6 @@ public class ScrollOfTransmutation extends InventoryScroll {
 	}
 	
 	private static Plant.Seed changeSeed( Plant.Seed s ) {
-		
 		Plant.Seed n;
 		
 		do {
@@ -312,7 +309,6 @@ public class ScrollOfTransmutation extends InventoryScroll {
 	}
 	
 	private static Runestone changeStone( Runestone r ) {
-		
 		Runestone n;
 		
 		do {

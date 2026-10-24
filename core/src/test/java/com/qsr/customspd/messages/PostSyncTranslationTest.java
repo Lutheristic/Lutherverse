@@ -5,6 +5,7 @@ import com.badlogic.gdx.utils.PropertiesUtils;
 import com.qsr.customspd.Assets;
 import com.qsr.customspd.actors.buffs.Barkskin;
 import com.qsr.customspd.actors.buffs.Charm;
+import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.test.HeadlessGdx;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -137,5 +138,16 @@ class PostSyncTranslationTest {
 	void charmCantAttackShipsInEveryLanguage() throws IOException {
 		assertKeyShipsEverywhere(Charm.class, "cant_attack",
 				"You are charmed by that enemy and can't attack them.");
+	}
+
+	/**
+	 * Char.attack (upstream 1466dea4b, v2.5.0) floats Messages.get(CombinedLethalityAbilityTracker
+	 * .class, "executed") over an enemy Combined Lethality executes. CPDU took the code (6426be57e)
+	 * but kept only v2.1.0's key, talent$combinedlethalitytriggertracker.executed, so the text read
+	 * "java.lang.object.executed".
+	 */
+	@Test
+	void combinedLethalityExecutedShipsInEveryLanguage() throws IOException {
+		assertKeyShipsEverywhere(Talent.CombinedLethalityAbilityTracker.class, "executed", "executed");
 	}
 }

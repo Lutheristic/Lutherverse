@@ -56,9 +56,10 @@ public class Healing extends Buff {
 			if (target.HP == target.HT && target instanceof Hero) {
 				((Hero) target).resting = false;
 			}
+
+			target.sprite.showStatusWithIcon(CharSprite.POSITIVE, String.valueOf(healingThisTick()), FloatingText.HEALING);
 		}
 
-		target.sprite.showStatusWithIcon(CharSprite.POSITIVE, String.valueOf(healingThisTick()), FloatingText.HEALING);
 		healingLeft -= healingThisTick();
 		
 		if (healingLeft <= 0){

@@ -181,8 +181,10 @@ class RemainsBadgesTest {
 		try (HeadlessRun run = HeadlessRun.start(20261023L)) {
 			Dungeon.customSeedText = "";
 
-			// v2.4.0: the surface scene alone awards both badges. There is no silent pre-step that
-			// records the remains badge for it to find, so it reads the hero's pack.
+			// v2.4.0: validateHappyEnd alone awards both badges, run once from the ending in
+			// Hero.actTransition's SurfaceScene switch callback (d029c0d7d, see HappyEndTransitionTest).
+			// There is no silent pre-step that records the remains badge for it to find, so it reads
+			// the hero's pack.
 			List<String> log = new ArrayList<>();
 			Signal.Listener<String> listener = log::add;
 			GLog.update.add(listener);
@@ -208,9 +210,12 @@ class RemainsBadgesTest {
 
 	@Test
 	void happyEndBadgesAreAddedToTheRunsLocalBadgesSoTheWinRankingKeepsThem() {
-		// v2.5.0 (1c2e5e9be). SurfaceScene runs validateHappyEnd and THEN Dungeon.win, and the
-		// ranking record copies the run's local badges, so a badge that was only displayed (or
-		// only globally unlocked) never reached the Rankings screen's badge list.
+		// v2.5.0 (1c2e5e9be). The ending runs validateHappyEnd and THEN Dungeon.win (then
+		// deleteGame, saveGlobal) in the afterCreate of Hero.actTransition's
+		// Game.switchScene(SurfaceScene.class, ...) callback - upstream d029c0d7d, pulled forward;
+		// upstream's SewerLevel.activateTransition is CPDU's Hero.actTransition. The ranking record
+		// copies the run's local badges, so a badge that was only displayed (or only globally
+		// unlocked) never reached the Rankings screen's badge list.
 		try (HeadlessRun run = HeadlessRun.start(20261023L)) {
 			run.enterFirstLevel(); // Dungeon.win needs a level; a seeded run records no global badges
 			Dungeon.hero.belongings.backpack.items.add(new SealShard());

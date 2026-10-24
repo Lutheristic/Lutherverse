@@ -2,14 +2,21 @@ package com.qsr.customspd.levels;
 
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.mobs.Mob;
+import com.qsr.customspd.actors.mobs.npcs.ImpShopkeeper;
 import com.qsr.customspd.items.Heap;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.journal.Guidebook;
 import com.qsr.customspd.levels.features.LevelTransition;
+import com.qsr.customspd.levels.rooms.standard.ImpShopRoom;
 import com.qsr.customspd.test.HeadlessRun;
+import com.qsr.customspd.test.SaveRoundtrip;
+import com.watabou.noosa.Game;
 import com.watabou.utils.PathFinder;
+import com.watabou.utils.PlatformSupport;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -113,13 +120,13 @@ class LevelgenDeterminismTest {
 	private static final String[] BOSS_FLOORS = {"5", "10", "15", "20", "25"};
 
 	/**
-	 * Parked, not passing: boss floors whose exit stays cut off even with the gate open. Floor 20:
-	 * CPDU's ImpShopRoom.paint still walls its whole rect (the pre-v2 standalone-room paint;
-	 * v2.5.4's paint only picks the stock), and CityBossLevel places that rect across the exit
-	 * hallway, so after the Dwarf King the stairs and the imp shop are boxed in. Filed as a
-	 * follow-up; this ratchet fails once it is fixed, so the entry gets removed then.
+	 * Parked, not passing: boss floors whose exit stays cut off even with the gate open. Empty now.
+	 * Floor 20 used to be here: CPDU's ImpShopRoom.paint still walled its whole rect (the
+	 * pre-baea3b7e8 standalone-room paint) across CityBossLevel's exit hallway, boxing in the stairs
+	 * after the Dwarf King (cpdu-jw1e). A parked floor must be named here; this ratchet then fails
+	 * once the floor is fixed, so the entry gets removed.
 	 */
-	private static final Set<String> KNOWN_DISCONNECTED_BOSS_FLOORS = Collections.singleton("20");
+	private static final Set<String> KNOWN_DISCONNECTED_BOSS_FLOORS = Collections.emptySet();
 
 	/**
 	 * Boss floors are sealed by design: the exit cannot be reached until the boss falls (a locked
@@ -152,6 +159,66 @@ class LevelgenDeterminismTest {
 			}
 		}
 		assertEquals(10 * BOSS_FLOORS.length, checked);
+	}
+
+	/**
+	 * baea3b7e8: the imp shop decides its stock during levelgen (so a seed's shop is fixed before
+	 * the city boss falls), keeps it through a save, and once the shop spawns its items sit on
+	 * for-sale heaps the hero can walk to with the boss gate open.
+	 */
+	@Test
+	void theImpShopDecidesItsItemsAtLevelgenAndIsReachableOnceSpawned() throws Exception {
+		try (HeadlessRun run = HeadlessRun.start(7919L)) {
+			CityBossLevel level = (CityBossLevel) run.generate("20");
+			Field shopField = CityBossLevel.class.getDeclaredField("impShop");
+			shopField.setAccessible(true);
+			ImpShopRoom shop = (ImpShopRoom) shopField.get(level);
+
+			// Stock is decided but not yet placed: no for-sale heaps, shop not spawned.
+			assertTrue(shop.itemCount() > 0, "the imp shop has items from levelgen");
+			assertFalse(shop.shopSpawned());
+			for (Heap h : level.heaps.valueList()) {
+				assertTrue(h.type != Heap.Type.FOR_SALE, "nothing is for sale before the Imp quest completes");
+			}
+
+			// The stock survives a save/load of the room (the 'items' bundle key).
+			ImpShopRoom reloaded = SaveRoundtrip.of(shop);
+			assertEquals(shop.itemCount(), reloaded.itemCount(), "stock count after a save roundtrip");
+
+			Method spawn = CityBossLevel.class.getDeclaredMethod("spawnShop");
+			spawn.setAccessible(true);
+			// ImpShopRoom.placeShopkeeper asks Game.scene() (null here, so the shopkeeper goes to
+			// level.mobs); give it a bare Game and put the statics back afterwards.
+			Game priorInstance = Game.instance;
+			PlatformSupport priorPlatform = Game.platform;
+			try {
+				new Game(null, null);
+				spawn.invoke(level);
+			} finally {
+				Game.instance = priorInstance;
+				Game.platform = priorPlatform;
+			}
+			assertTrue(shop.shopSpawned());
+			boolean shopkeeper = false;
+			for (Mob m : level.mobs) shopkeeper |= m instanceof ImpShopkeeper;
+			assertTrue(shopkeeper, "an ImpShopkeeper stands in the shop");
+
+			boolean[] gate = bossGate(level);
+			boolean[] walkable = new boolean[level.length()];
+			for (int i = 0; i < walkable.length; i++) {
+				walkable[i] = level.passable[i] || level.avoid[i] || gate[i];
+			}
+			PathFinder.setMapSize(level.width(), level.height());
+			PathFinder.buildDistanceMap(level.entrance(), walkable);
+			int forSale = 0;
+			for (Heap h : level.heaps.valueList()) {
+				if (h.type != Heap.Type.FOR_SALE) continue;
+				forSale++;
+				assertTrue(PathFinder.distance[h.pos] != Integer.MAX_VALUE,
+						"for-sale heap at " + h.pos + " is unreachable with the gate open");
+			}
+			assertTrue(forSale >= shop.itemCount() - 1, "the shop's items were placed (" + forSale + " of " + shop.itemCount() + ")");
+		}
 	}
 
 	// ------------------------------------------------------------------------------ helpers

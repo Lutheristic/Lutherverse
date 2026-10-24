@@ -33,6 +33,7 @@ import com.qsr.customspd.levels.traps.DisintegrationTrap;
 import com.qsr.customspd.levels.traps.GeyserTrap;
 import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.test.HeadlessGdx;
+import com.qsr.customspd.test.HeadlessLevel;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -78,7 +79,12 @@ class CharDamageIconPortTest {
 	}
 
 	private static int iconFor(Object src) {
+		return iconFor(src, 0);
+	}
+
+	private static int iconFor(Object src, int ratPos) {
 		Rat rat = new Rat();
+		rat.pos = ratPos;
 		rat.HP = rat.HT = 100000; // never dies, never crosses HT/2
 		RecordingSprite sprite = new RecordingSprite();
 		rat.sprite = sprite;
@@ -123,16 +129,27 @@ class CharDamageIconPortTest {
 
 	@Test
 	void sniperRangedHitsUseTheNoBlockIcon() {
-		Hero hero = new Hero();
-		Dungeon.hero = hero;
-		hero.subClass = HeroSubClass.SNIPER;
-		assertEquals(FloatingText.PHYS_DMG, iconFor(hero), "sniper in melee keeps the plain icon");
+		// the sniper case asks the level whether the target is adjacent (11e526df0)
+		HeadlessLevel.install(8, 8);
+		try {
+			Hero hero = new Hero();
+			Dungeon.hero = hero;
+			hero.pos = 2 * 8 + 2;
+			int far = 5 * 8 + 5;
+			int adjacent = hero.pos + 1;
+			hero.subClass = HeroSubClass.SNIPER;
+			assertEquals(FloatingText.PHYS_DMG, iconFor(hero, far), "sniper in melee keeps the plain icon");
 
-		hero.belongings.thrownWeapon = new Dart();
-		assertEquals(FloatingText.PHYS_DMG_NO_BLOCK, iconFor(hero), "sniper ranged attacks ignore armor");
+			hero.belongings.thrownWeapon = new Dart();
+			assertEquals(FloatingText.PHYS_DMG_NO_BLOCK, iconFor(hero, far), "sniper ranged attacks ignore armor");
+			assertEquals(FloatingText.PHYS_DMG, iconFor(hero, adjacent),
+					"a sniper throwing at an adjacent target gets no armor bypass, so no no-block icon (11e526df0)");
 
-		hero.subClass = HeroSubClass.NONE;
-		assertEquals(FloatingText.PHYS_DMG, iconFor(hero), "only the sniper subclass gets the special case");
+			hero.subClass = HeroSubClass.NONE;
+			assertEquals(FloatingText.PHYS_DMG, iconFor(hero, far), "only the sniper subclass gets the special case");
+		} finally {
+			HeadlessLevel.uninstall();
+		}
 	}
 
 	@Test

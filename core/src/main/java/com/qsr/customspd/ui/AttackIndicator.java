@@ -201,6 +201,8 @@ public class AttackIndicator extends Tag {
 	}
 	
 	public static void updateState() {
+		//no HUD yet (headless tests drive hero abilities without a scene); nothing to refresh
+		if (instance == null) return;
 		instance.checkEnemies();
 	}
 }

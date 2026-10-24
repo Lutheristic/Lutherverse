@@ -38,6 +38,7 @@ import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.KindOfWeapon;
+import com.qsr.customspd.items.rings.RingOfForce;
 import com.qsr.customspd.items.weapon.Weapon;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.CellSelector;
@@ -440,7 +441,14 @@ public class MeleeWeapon extends Weapon {
 		public boolean act() {
 			if (charges < chargeCap()){
 				if (Regeneration.regenOn()){
-					partialCharge += 1/(40f-(chargeCap()-charges)); // 40 to 30 turns per charge
+					float chargeToGain = 1/(40f-(chargeCap()-charges)); // 40 to 30 turns per charge
+
+					//50% slower charge gain with brawler's stance enabled, even if buff is inactive
+					if (Dungeon.hero.buff(RingOfForce.BrawlersStance.class) != null){
+						chargeToGain *= 0.50f;
+					}
+
+					partialCharge += chargeToGain;
 				}
 
 				int points = ((Hero)target).pointsInTalent(Talent.WEAPON_RECHARGING);
@@ -463,7 +471,16 @@ public class MeleeWeapon extends Weapon {
 				if (Regeneration.regenOn()) {
 					// 80 to 60 turns per charge without talent
 					// up to 53.333 to 40 turns per charge at max talent level
-					secondPartialCharge += secondChargeMultiplier() / (40f-(secondChargeCap()-secondCharges));
+					float chargeToGain = secondChargeMultiplier() / (40f-(secondChargeCap()-secondCharges));
+
+					//50% slower charge gain with brawler's stance enabled, even if buff is inactive
+					//(upstream applies this to its single shared pool; CPDU still has the pre-11a410f07
+					// separate champion pool, so it applies to both regen-driven gains here)
+					if (Dungeon.hero.buff(RingOfForce.BrawlersStance.class) != null){
+						chargeToGain *= 0.50f;
+					}
+
+					secondPartialCharge += chargeToGain;
 				}
 
 				if (secondPartialCharge >= 1) {

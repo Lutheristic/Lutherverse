@@ -372,6 +372,32 @@ public class HeroSelectScene extends PixelScene {
 		}
 	}
 
+	//CPDU divergence from upstream 5830f5db3: upstream's splash art is a fixed 800x450 set, so
+	//it sizes the background once from the 800x450 placeholder. CPDU splashes come from packs and
+	//can be any size (Texture.texture() resets the image to the real size), so scale and
+	//position are recomputed from whatever texture actually loaded.
+	private void fitBackground(){
+		background.scale.set(Camera.main.height/background.height);
+
+		float baseX = (Camera.main.width - background.width())/2f;
+		background.x = baseX;
+		background.y = (Camera.main.height - background.height())/2f;
+		PixelScene.align(background);
+
+		fadeLeft.x = background.x-2;
+		fadeLeft.scale.set(3, background.height());
+		fadeRight.x = background.x + background.width() + 2;
+		fadeRight.y = background.y + background.height();
+
+		if (landscape()){
+			float leftArea = Math.max(100, Camera.main.width/3f);
+			background.x += leftArea/6f;
+
+			float fadeLeftScale = 47 * (leftArea - background.x)/leftArea;
+			fadeLeft.scale = new PointF(3 + Math.max(0, fadeLeftScale), background.height());
+		}
+	}
+
 	private void setSelectedHero(HeroClass cl){
 		GamesInProgress.selectedClass = cl;
 
@@ -382,6 +408,7 @@ public class HeroSelectScene extends PixelScene {
 			background.texture(TextureCache.createSolid(0xFF2d2f31));
 			background.frame(0, 0, 800, 450);
 		}
+		fitBackground();
 		background.visible = true;
 		background.hardlight(1.5f,1.5f,1.5f);
 

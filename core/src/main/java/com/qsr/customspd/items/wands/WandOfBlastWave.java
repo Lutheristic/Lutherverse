@@ -27,6 +27,7 @@ import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.buffs.Paralysis;
+import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.effects.MagicMissile;
 import com.qsr.customspd.effects.Pushing;
@@ -185,6 +186,13 @@ public class WandOfBlastWave extends DamageWand {
 
 	@Override
 	public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
+
+		Talent.EmpoweredStrikeTracker tracker = attacker.buff(Talent.EmpoweredStrikeTracker.class);
+
+		if (tracker != null){
+			tracker.delayedDetach = true;
+		}
+
 		//acts like elastic enchantment
 		//we delay this with an actor to prevent conflicts with regular elastic
 		//so elastic always fully resolves first, then this effect activates
@@ -199,6 +207,7 @@ public class WandOfBlastWave extends DamageWand {
 				if (defender.isAlive()) {
 					new BlastWaveOnHit().proc(staff, attacker, defender, damage);
 				}
+				if (tracker != null) tracker.detach();
 				return true;
 			}
 		}, -1);

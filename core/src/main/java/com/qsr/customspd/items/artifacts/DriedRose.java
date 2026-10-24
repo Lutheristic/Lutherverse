@@ -63,12 +63,12 @@ import com.qsr.customspd.sprites.GhostSprite;
 import com.qsr.customspd.sprites.ItemSprite;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.ui.BossHealthBar;
+import com.qsr.customspd.ui.ItemButton;
 import com.qsr.customspd.ui.RenderedTextBlock;
 import com.qsr.customspd.ui.Window;
 import com.qsr.customspd.utils.GLog;
 import com.qsr.customspd.windows.IconTitle;
 import com.qsr.customspd.windows.WndBag;
-import com.qsr.customspd.windows.WndBlacksmith;
 import com.qsr.customspd.windows.WndQuest;
 import com.qsr.customspd.windows.WndUseItem;
 import com.watabou.noosa.Game;
@@ -866,8 +866,8 @@ public class DriedRose extends Artifact {
 		private static final float BTN_GAP	= 12;
 		private static final int WIDTH		= 116;
 		
-		private WndBlacksmith.ItemButton btnWeapon;
-		private WndBlacksmith.ItemButton btnArmor;
+		private ItemButton btnWeapon;
+		private ItemButton btnArmor;
 		
 		WndGhostHero(final DriedRose rose){
 			
@@ -883,7 +883,7 @@ public class DriedRose extends Artifact {
 			message.setPos(0, titlebar.bottom() + GAP);
 			add( message );
 			
-			btnWeapon = new WndBlacksmith.ItemButton(){
+			btnWeapon = new ItemButton(){
 				@Override
 				protected void onClick() {
 					if (rose.weapon != null){
@@ -949,7 +949,7 @@ public class DriedRose extends Artifact {
 			}
 			add( btnWeapon );
 			
-			btnArmor = new WndBlacksmith.ItemButton(){
+			btnArmor = new ItemButton(){
 				@Override
 				protected void onClick() {
 					if (rose.armor != null){

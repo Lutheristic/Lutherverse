@@ -26,6 +26,7 @@ import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.mobs.Mob;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.messages.Messages;
 import com.watabou.utils.Random;
 
 public class AssassinsBlade extends MeleeWeapon {
@@ -66,13 +67,22 @@ public class AssassinsBlade extends MeleeWeapon {
 	}
 
 	@Override
+	public String targetingPrompt() {
+		return Messages.get(this, "prompt");
+	}
+
+	public boolean useTargeting(){
+		return false;
+	}
+
+	@Override
 	protected int baseChargeUse(Hero hero, Char target){
 		return 2;
 	}
 
 	@Override
 	protected void duelistAbility(Hero hero, Integer target) {
-		Dagger.sneakAbility(hero, 6, this);
+		Dagger.sneakAbility(hero, target, 3, this);
 	}
 
 }

@@ -2,6 +2,7 @@ package com.qsr.customspd.items;
 
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.items.bombs.Bomb;
+import com.qsr.customspd.items.food.Food;
 import com.qsr.customspd.items.potions.PotionOfHealing;
 import com.qsr.customspd.items.potions.brews.BlizzardBrew;
 import com.qsr.customspd.items.potions.elixirs.ElixirOfMight;
@@ -229,6 +230,36 @@ class GeneratorParityTest {
 		} finally {
 			Random.popGenerator();
 			Dungeon.depth = savedDepth;
+		}
+	}
+
+	// ------------------------------------------------------------------------ undoDrop, da0968702
+
+	@Test
+	void undoDropShufflesTheCardBackIntoItsDeck() {
+		Generator.Category food = Generator.Category.FOOD;
+		Generator.Category potion = Generator.Category.POTION;
+		Random.pushGenerator(0x5EEDL);
+		try {
+			Generator.fullReset();
+			food.probs = new float[food.classes.length];
+			food.probs[indexOf(food, Food.class)] = 1;
+			Item drawn = Generator.random(food);
+			assertEquals(Food.class, drawn.getClass());
+			assertEquals(0f, food.probs[indexOf(food, Food.class)], "the draw took the only card");
+
+			Generator.undoDrop(drawn);
+			assertEquals(1f, food.probs[indexOf(food, Food.class)], "undoDrop must put the card back");
+
+			// Faithful to upstream (unchanged as of v3.3.8): the category check is
+			// cls.isAssignableFrom(cat.superClass), so undoDrop only matches a class that IS its
+			// category's superclass, like Food in FOOD. For any other item it changes nothing. Kept as
+			// ported and reported upstream-side; a fix must change this assertion on purpose.
+			float[] potions = potion.probs.clone();
+			Generator.undoDrop(new PotionOfHealing());
+			assertArrayEquals(potions, potion.probs);
+		} finally {
+			Random.popGenerator();
 		}
 	}
 

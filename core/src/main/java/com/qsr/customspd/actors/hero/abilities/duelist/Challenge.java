@@ -38,8 +38,8 @@ import com.qsr.customspd.actors.mobs.Mob;
 import com.qsr.customspd.actors.mobs.npcs.NPC;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.effects.CellEmitter;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.Speck;
-import com.qsr.customspd.items.Dewdrop;
 import com.qsr.customspd.items.armor.ClassArmor;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
@@ -271,7 +271,7 @@ public class Challenge extends ArmorAbility {
 						if (hpToHeal > 0){
 							Dungeon.hero.HP += hpToHeal;
 							Dungeon.hero.sprite.emitter().start( Speck.factory( Speck.HEALING ), 0.33f, 6 );
-							Dungeon.hero.sprite.showStatus( CharSprite.POSITIVE, Messages.get(Dewdrop.class, "heal", hpToHeal) );
+							Dungeon.hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, String.valueOf(hpToHeal), FloatingText.HEALING );
 						}
 					}
 				}

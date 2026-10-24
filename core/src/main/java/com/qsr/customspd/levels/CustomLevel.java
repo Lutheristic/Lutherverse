@@ -64,7 +64,6 @@ import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 import com.watabou.utils.SparseArray;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -332,7 +331,9 @@ public class CustomLevel extends Level {
 	@Override
 	protected void createItems() {
 		List<ItemSpawn> itemsToSpawn = new ArrayList<>(layout.getItems());
-		if (layout.getShuffleItems()) Collections.shuffle(itemsToSpawn);
+		// The level's pushed generator (Level.create), not Collections.shuffle's own unseeded one: a
+		// seeded run must place the same items at the same cells every time (cpdu-s26z).
+		if (layout.getShuffleItems()) Random.shuffle(itemsToSpawn);
 		for (int i = 0; i < itemsToSpawn.size(); i++) {
 			ItemSpawn itemSpawn = itemsToSpawn.get(i);
 			int pos = layout.getItems().get(i).getX() + layout.getItems().get(i).getY() * layout.getWidth();

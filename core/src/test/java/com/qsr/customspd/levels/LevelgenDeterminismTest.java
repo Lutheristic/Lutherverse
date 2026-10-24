@@ -176,7 +176,7 @@ class LevelgenDeterminismTest {
 			shopField.setAccessible(true);
 			ImpShopRoom shop = (ImpShopRoom) shopField.get(level);
 
-			// Stock is decided at levelgen, not lazily. Read the field itself: itemCount() would
+			// Stock is decided at levelgen, not lazily. Read the field itself: spacesNeeded() would
 			// generate the stock on first call and hide a paint() that decides nothing.
 			List<String> decided = stockOf(shop);
 			assertNotNull(decided, "ImpShopRoom.paint must decide itemsToSpawn during levelgen");
@@ -187,7 +187,7 @@ class LevelgenDeterminismTest {
 			}
 
 			// The stock survives a save/load of the room (the 'items' bundle key): the field is read
-			// before any itemCount() call, so a missing key shows up as null, not as regenerated stock.
+			// before any spacesNeeded() call, so a missing key shows up as null, not as regenerated stock.
 			ImpShopRoom reloaded = SaveRoundtrip.of(shop);
 			assertEquals(decided, stockOf(reloaded), "stock after a save roundtrip, item by item and in order");
 

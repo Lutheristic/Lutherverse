@@ -105,8 +105,8 @@ public class AboutScene extends PixelScene {
 				"Hero Art & Design:",
 			new Image(Asset.getAssetFilePath(GeneralAsset.ICON_ALEKS)),
 				"Aleksandar Komitov",
-				"alekskomitov.com",
-				"https://www.alekskomitov.com");
+				"akomitov.artstation.com",
+				"https://akomitov.artstation.com/");
 		alex.setSize(colWidth/2f, 0);
 		if (landscape()){
 			alex.setPos(shpx.right(), shpx.top() + (shpx.height() - alex.height()*2)/2f);

@@ -8,6 +8,8 @@ import com.qsr.customspd.actors.buffs.MonkEnergy;
 import com.qsr.customspd.actors.buffs.Terror;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.items.stones.StoneOfAggression;
+import com.qsr.customspd.levels.Level;
+import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.test.HeadlessRun;
 import com.qsr.customspd.test.StubSprite;
@@ -157,6 +159,18 @@ class MobAiTest {
 			Dungeon.level.mobs.remove(m);
 			Actor.remove(m);
 		}
+		// Stepping on high grass tramples it through HighGrass.trample, which reaches for the live
+		// scene (Game.scene()) that a headless run does not have. Where the floor's grass falls
+		// depends on the generated layout, so any levelgen change could put it under a fleeing rat;
+		// flatten it so no seed's layout decides whether a pin can run.
+		Level level = Dungeon.level;
+		for (int i = 0; i < level.length(); i++) {
+			if (level.map[i] == Terrain.HIGH_GRASS || level.map[i] == Terrain.FURROWED_GRASS) {
+				level.map[i] = Terrain.GRASS;
+			}
+		}
+		level.buildFlagMaps();
+		Dungeon.observe();
 		StubSprite.attachAll();
 		return Dungeon.hero;
 	}

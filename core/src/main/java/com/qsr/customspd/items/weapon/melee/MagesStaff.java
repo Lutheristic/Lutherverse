@@ -121,7 +121,11 @@ public class MagesStaff extends MeleeWeapon {
 
 	@Override
 	public int targetingPos(Hero user, int dst) {
-		return wand.targetingPos(user, dst);
+		if (wand != null) {
+			return wand.targetingPos(user, dst);
+		} else {
+			return super.targetingPos(user, dst);
+		}
 	}
 
 	@Override
@@ -148,11 +152,11 @@ public class MagesStaff extends MeleeWeapon {
 	}
 
 	@Override
-	public int buffedLvl() {
+	public int buffedVisiblyUpgraded() {
 		if (wand != null){
-			return Math.max(super.buffedLvl(), wand.buffedLvl());
+			return Math.max(super.buffedVisiblyUpgraded(), wand.buffedVisiblyUpgraded());
 		} else {
-			return super.buffedLvl();
+			return super.buffedVisiblyUpgraded();
 		}
 	}
 
@@ -218,7 +222,7 @@ public class MagesStaff extends MeleeWeapon {
 
 	public Item imbueWand(Wand wand, Char owner){
 
-		int oldStaffcharges = this.wand.curCharges;
+		int oldStaffcharges = this.wand != null ? this.wand.curCharges : 0;
 
 		if (owner == Dungeon.hero && Dungeon.hero.hasTalent(Talent.WAND_PRESERVATION)){
 			Talent.WandPreservationCounter counter = Buff.affect(Dungeon.hero, Talent.WandPreservationCounter.class);

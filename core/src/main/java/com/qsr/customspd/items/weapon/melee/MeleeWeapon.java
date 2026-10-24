@@ -251,6 +251,8 @@ public class MeleeWeapon extends Weapon {
 			}
 		}
 		if (hero.buff(Talent.CounterAbilityTacker.class) != null){
+			Charger charger = Buff.affect(hero, Charger.class);
+			charger.gainCharge(hero.pointsInTalent(Talent.COUNTER_ABILITY)*0.375f);
 			hero.buff(Talent.CounterAbilityTacker.class).detach();
 		}
 	}
@@ -262,12 +264,12 @@ public class MeleeWeapon extends Weapon {
 		}
 	}
 
-	public float abilityChargeUse(Hero hero, Char target){
-		float chargeUse = 1f;
-		if (hero.buff(Talent.CounterAbilityTacker.class) != null){
-			chargeUse = Math.max(0, chargeUse-0.5f*hero.pointsInTalent(Talent.COUNTER_ABILITY));
-		}
-		return chargeUse;
+	protected int baseChargeUse(Hero hero, Char target){
+		return 1; //abilities use 1 charge by default
+	}
+
+	public final float abilityChargeUse(Hero hero, Char target){
+		return baseChargeUse(hero, target);
 	}
 
 	public int tier;
@@ -377,7 +379,7 @@ public class MeleeWeapon extends Weapon {
 
 		//the mage's staff has no ability as it can only be gained by the mage
 		if (Dungeon.hero.heroClass == HeroClass.DUELIST && !(this instanceof MagesStaff)){
-			info += "\n\n" + Messages.get(this, "ability_desc");
+			info += "\n\n" + abilityInfo();
 		}
 		
 		return info;
@@ -385,6 +387,10 @@ public class MeleeWeapon extends Weapon {
 	
 	public String statsInfo(){
 		return Messages.get(this, "stats_desc");
+	}
+
+	public String abilityInfo() {
+		return Messages.get(this, "ability_desc");
 	}
 
 	@Override
@@ -439,8 +445,8 @@ public class MeleeWeapon extends Weapon {
 
 				int points = ((Hero)target).pointsInTalent(Talent.WEAPON_RECHARGING);
 				if (points > 0 && target.buff(Recharging.class) != null || target.buff(ArtifactRecharge.class) != null){
-					//1 every 10 turns at +1, 6 turns at +2
-					partialCharge += 1/(14f - 4f*points);
+					//1 every 15 turns at +1, 10 turns at +2
+					partialCharge += 1/(20f - 5f*points);
 				}
 
 				if (partialCharge >= 1){

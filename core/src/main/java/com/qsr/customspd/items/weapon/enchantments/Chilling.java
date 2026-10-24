@@ -45,7 +45,9 @@ public class Chilling extends Weapon.Enchantment {
 				durationToAdd = Math.min(durationToAdd, (2 * strength)-existing.cooldown());
 			}
 
-			Buff.affect( defender, Chill.class, durationToAdd );
+			if (durationToAdd > 0) {
+				Buff.affect(defender, Chill.class, durationToAdd);
+			}
 			Splash.at( defender.sprite.center(), 0xFFB2D6FF, 5);
 
 		}
@@ -71,7 +73,9 @@ public class Chilling extends Weapon.Enchantment {
 				durationToAdd = Math.min(durationToAdd, (6f*powerMulti)-existing.cooldown());
 			}
 
-			Buff.affect( defender, Chill.class, durationToAdd );
+			if (durationToAdd > 0) {
+				Buff.affect(defender, Chill.class, durationToAdd);
+			}
 			Splash.at( defender.sprite.center(), 0xFFB2D6FF, 5);
 
 		}

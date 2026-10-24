@@ -78,4 +78,21 @@ class BadgeTypeTest {
 			}
 		}
 	}
+
+	@Test
+	void journalBadgesUnlockEvenInSeededRuns() {
+		// CPDU has no JOURNAL badge yet, so retype one for the duration of the test.
+		Badges.Badge probe = Badges.Badge.NO_MONSTERS_SLAIN;
+		Badges.BadgeType original = probe.type;
+		try (HeadlessRun run = HeadlessRun.start(20261024L)) {
+			assertFalse(Dungeon.customSeedText.isEmpty(), "test setup: HeadlessRun plays a custom-seeded run");
+			probe.type = Badges.BadgeType.JOURNAL;
+			Badges.unlock(probe);
+			assertTrue(Badges.isUnlocked(probe), "a journal badge is profile-based and unlocks even in a seeded run");
+			Badges.disown(probe);
+		} finally {
+			probe.type = original;
+		}
+		assertEquals(Badges.BadgeType.LOCAL, probe.type);
+	}
 }

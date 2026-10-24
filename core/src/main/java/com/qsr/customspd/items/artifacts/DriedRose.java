@@ -69,6 +69,7 @@ import com.qsr.customspd.ui.Window;
 import com.qsr.customspd.utils.GLog;
 import com.qsr.customspd.windows.IconTitle;
 import com.qsr.customspd.windows.WndBag;
+import com.qsr.customspd.windows.WndInfoItem;
 import com.qsr.customspd.windows.WndQuest;
 import com.qsr.customspd.windows.WndUseItem;
 import com.watabou.noosa.Game;
@@ -942,6 +943,15 @@ public class DriedRose extends Artifact {
 							}
 						});
 					}
+				}
+
+				@Override
+				protected boolean onLongClick() {
+					if (item() != null && item().name() != null){
+						GameScene.show(new WndInfoItem(item()));
+						return true;
+					}
+					return false;
 				}
 			};
 			btnWeapon.setRect( (WIDTH - BTN_GAP) / 2 - BTN_SIZE, message.top() + message.height() + GAP, BTN_SIZE, BTN_SIZE );

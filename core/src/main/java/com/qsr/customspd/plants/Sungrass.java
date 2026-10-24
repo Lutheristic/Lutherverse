@@ -29,9 +29,10 @@ import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.HeroSubClass;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.effects.CellEmitter;
-import com.qsr.customspd.effects.Speck;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.particles.ShaftParticle;
 import com.qsr.customspd.messages.Messages;
+import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.ui.BuffIndicator;
 import com.watabou.utils.Bundle;
@@ -97,7 +98,7 @@ public class Sungrass extends Plant {
 				target.HP += (int)partialHeal;
 				level -= (int)partialHeal;
 				partialHeal -= (int)partialHeal;
-				target.sprite.emitter().burst(Speck.factory(Speck.HEALING), 1);
+				target.sprite.showStatusWithIcon(CharSprite.POSITIVE, "1", FloatingText.HEALING);
 				
 				if (target.HP >= target.HT) {
 					target.HP = target.HT;

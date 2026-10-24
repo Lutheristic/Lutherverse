@@ -23,6 +23,7 @@ package com.qsr.customspd.actors.buffs;
 
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.Asset;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.ui.BuffIndicator;
@@ -56,7 +57,8 @@ public class Healing extends Buff {
 				((Hero) target).resting = false;
 			}
 		}
-		
+
+		target.sprite.showStatusWithIcon(CharSprite.POSITIVE, String.valueOf(healingThisTick()), FloatingText.HEALING);
 		healingLeft -= healingThisTick();
 		
 		if (healingLeft <= 0){

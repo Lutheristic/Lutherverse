@@ -25,7 +25,6 @@ import com.qsr.customspd.Badges;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.messages.Messages;
-import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.utils.GLog;
 
 public class PotionOfStrength extends Potion {
@@ -39,10 +38,10 @@ public class PotionOfStrength extends Potion {
 	@Override
 	public void apply( Hero hero ) {
 		identify();
-		
+
 		hero.STR++;
-		hero.sprite.showStatus( CharSprite.POSITIVE, Messages.get(this, "msg_1") );
-		GLog.p( Messages.get(this, "msg_2") );
+
+		GLog.p( Messages.get(this, "msg", hero.STR()) );
 		
 		Badges.validateStrengthAttained();
 		Badges.validateDuelistUnlock();

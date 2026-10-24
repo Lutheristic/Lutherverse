@@ -32,6 +32,7 @@ import com.qsr.customspd.actors.buffs.Charm;
 import com.qsr.customspd.actors.mobs.Mob;
 import com.qsr.customspd.effects.Beam;
 import com.qsr.customspd.effects.CellEmitter;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.effects.particles.BloodParticle;
 import com.qsr.customspd.effects.particles.ShadowParticle;
@@ -92,7 +93,12 @@ public class WandOfTransfusion extends Wand {
 				ch.HP += healing;
 				
 				ch.sprite.emitter().burst(Speck.factory(Speck.HEALING), 2 + buffedLvl() / 2);
-				ch.sprite.showStatus(CharSprite.POSITIVE, "+%dHP", healing + shielding);
+				if (healing > 0) {
+					ch.sprite.showStatusWithIcon(CharSprite.POSITIVE, String.valueOf(healing), FloatingText.HEALING);
+				}
+				if (shielding > 0){
+					ch.sprite.showStatusWithIcon(CharSprite.POSITIVE, String.valueOf(shielding), FloatingText.SHIELDING);
+				}
 				
 				if (!freeCharge) {
 					damageHero(selfDmg);

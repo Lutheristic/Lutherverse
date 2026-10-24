@@ -99,7 +99,7 @@ public class WndResurrect extends Window {
 		btnContinue = new RedButton( Messages.get(this, "confirm") ) {
 			@Override
 			protected void onClick() {
-				if (btnItem1.item == null || btnItem2.item == null){
+				if (btnItem1.item() == null || btnItem2.item() == null){
 					GameScene.show(new WndOptions(new Image(Asset.getAssetFilePath(GeneralAsset.ICON_WARNING)),
 							Messages.get(WndResurrect.class, "warn_title"),
 							Messages.get(WndResurrect.class, "warn_body"),

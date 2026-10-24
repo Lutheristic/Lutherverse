@@ -16,6 +16,7 @@ import com.qsr.customspd.actors.mobs.Succubus;
 import com.qsr.customspd.items.artifacts.ChaliceOfBlood;
 import com.qsr.customspd.items.food.PhantomMeat;
 import com.qsr.customspd.items.weapon.enchantments.Blocking;
+import com.qsr.customspd.items.weapon.enchantments.Vampiric;
 import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.test.HeadlessRun;
 import com.watabou.noosa.particles.Emitter;
@@ -202,6 +203,19 @@ class HealShieldCallSiteIconTest {
 		new Blocking().proc(1f, 5, hero, rat, 3);
 		assertEquals(FloatingText.SHIELDING, firstIcon(heroSprite));
 		assertEquals("5", heroSprite.texts.get(0));
+	}
+
+	@Test
+	void vampiricStrengthOverloadShowsItsHeal() {
+		// CPDU's proc(probability, strength, ...) overload, which pack custom mobs reach through
+		// CustomMob's enchantments: the same heal as the weapon path (upstream 1c8b13fa6's icon)
+		Rat rat = new Rat();
+		rat.pos = freeCellNextToHero();
+		hero.HP = 1;
+		new Vampiric().proc(1f, 50, hero, rat, 10); // heals strength% of damage = 5
+		assertEquals(FloatingText.HEALING, firstIcon(heroSprite));
+		assertEquals("5", heroSprite.texts.get(0));
+		assertEquals(6, hero.HP);
 	}
 
 	// ---------------------------------------------------------------- mob heals

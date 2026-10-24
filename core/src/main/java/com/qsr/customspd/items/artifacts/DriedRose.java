@@ -42,6 +42,7 @@ import com.qsr.customspd.actors.mobs.npcs.DirectableAlly;
 import com.qsr.customspd.actors.mobs.npcs.Ghost;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.effects.CellEmitter;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.effects.particles.ShaftParticle;
 import com.qsr.customspd.items.Item;
@@ -59,6 +60,7 @@ import com.qsr.customspd.scenes.AlchemyScene;
 import com.qsr.customspd.scenes.CellSelector;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.scenes.PixelScene;
+import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.sprites.GhostSprite;
 import com.qsr.customspd.sprites.ItemSprite;
 import com.qsr.customspd.assets.GeneralAsset;
@@ -315,6 +317,7 @@ public class DriedRose extends Artifact {
 		} else if (ghost.HP < ghost.HT) {
 			int heal = Math.round((1 + level()/3f)*amount);
 			ghost.HP = Math.min( ghost.HT, ghost.HP + heal);
+			ghost.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(heal), FloatingText.HEALING);
 			updateQuickslot();
 		}
 	}

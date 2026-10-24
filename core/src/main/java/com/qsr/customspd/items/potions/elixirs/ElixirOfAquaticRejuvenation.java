@@ -27,10 +27,12 @@ import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.Asset;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.items.potions.PotionOfHealing;
 import com.qsr.customspd.items.quest.GooBlob;
 import com.qsr.customspd.messages.Messages;
+import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.ui.BuffIndicator;
 import com.watabou.noosa.Image;
@@ -83,6 +85,7 @@ public class ElixirOfAquaticRejuvenation extends Elixir {
 				target.HP += (int)healAmt;
 				left -= (int)healAmt;
 				target.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
+				target.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString((int)healAmt), FloatingText.HEALING );
 
 				if (target.HP >= target.HT) {
 					target.HP = target.HT;

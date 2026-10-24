@@ -27,12 +27,14 @@ import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.buffs.MagicImmune;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.particles.ShadowParticle;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.wands.WandOfLivingEarth;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.plants.Earthroot;
 import com.qsr.customspd.scenes.GameScene;
+import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.sprites.ItemSprite;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.utils.GLog;
@@ -169,6 +171,7 @@ public class ChaliceOfBlood extends Artifact {
 		}
 		if (heal >= 1f && target.HP < target.HT) {
 			target.HP = Math.min(target.HT, target.HP + (int)heal);
+			target.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString((int)heal), FloatingText.HEALING);
 
 			if (target.HP == target.HT && target instanceof Hero) {
 				((Hero) target).resting = false;

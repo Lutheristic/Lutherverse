@@ -36,6 +36,7 @@ import com.qsr.customspd.actors.hero.HeroClass;
 import com.qsr.customspd.actors.hero.HeroSubClass;
 import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.Asset;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.KindOfWeapon;
 import com.qsr.customspd.items.rings.RingOfForce;
@@ -44,6 +45,7 @@ import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.CellSelector;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.scenes.PixelScene;
+import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.sprites.ItemSprite;
 import com.qsr.customspd.ui.ActionIndicator;
 import com.qsr.customspd.ui.AttackIndicator;
@@ -217,6 +219,7 @@ public class MeleeWeapon extends Weapon {
 				&& hero.hasTalent(Talent.AGGRESSIVE_BARRIER)
 				&& (hero.HP / (float)hero.HT) < 0.20f*(1+hero.pointsInTalent(Talent.AGGRESSIVE_BARRIER))){
 			Buff.affect(hero, Barrier.class).setShield(3);
+			hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, "3", FloatingText.SHIELDING);
 		}
 
 		if (hero.buff(Talent.CombinedLethalityAbilityTracker.class) != null

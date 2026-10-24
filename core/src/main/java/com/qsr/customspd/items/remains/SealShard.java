@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,8 @@ import com.qsr.customspd.actors.buffs.Barrier;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.effects.FloatingText;
+import com.qsr.customspd.sprites.CharSprite;
 import com.watabou.noosa.audio.Sample;
 
 public class SealShard extends RemainsItem {
@@ -37,6 +39,7 @@ public class SealShard extends RemainsItem {
 	@Override
 	protected void doEffect(Hero hero) {
 		Buff.affect(hero, Barrier.class).incShield(hero.HT/10);
+		hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(hero.HT/10), FloatingText.SHIELDING );
 		Sample.INSTANCE.play(Assets.Sounds.UNLOCK);
 	}
 

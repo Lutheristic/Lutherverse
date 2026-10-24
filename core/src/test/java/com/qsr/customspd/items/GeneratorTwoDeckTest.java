@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * What this pins and why:
  *  - Each deck is dealt exactly, and an exhausted deck reshuffles into the OTHER one, so two
  *    cycles together deal defaultProbs + defaultProbs2.
+ *  - Non-deck generation (randomUsingDefaults) rolls both decks' cards together (9b7344958).
  *  - Which deck is live is save state ("_using_probs2"): it must round-trip, and a save written
  *    before the key existed must still load, onto the first deck, with its saved probs intact.
  *
@@ -117,6 +118,30 @@ class GeneratorTwoDeckTest {
 					Random.popGenerator();
 				}
 			}
+		}
+	}
+
+	@Test
+	void nonDeckGenerationRollsFromBothDecksTogether() {
+		// upstream 9b7344958: randomUsingDefaults must roll the whole 30-card table
+		// (defaultProbsTotal), not just the first deck, and must not touch the live deck.
+		// Frost and liquid flame are 1+2 and 2+1 cards: equal overall, but 1:2 in the first deck.
+		Generator.Category potion = Generator.Category.POTION;
+		int frost = Arrays.asList(potion.classes).indexOf(com.qsr.customspd.items.potions.PotionOfFrost.class);
+		int flame = Arrays.asList(potion.classes).indexOf(com.qsr.customspd.items.potions.PotionOfLiquidFlame.class);
+		Random.pushGenerator(0x70741L);
+		try {
+			Generator.fullReset();
+			float[] live = potion.probs.clone();
+			float[] counts = new float[potion.classes.length];
+			for (int n = 0; n < 3000; n++) {
+				counts[Arrays.asList(potion.classes).indexOf(Generator.randomUsingDefaults(potion).getClass())]++;
+			}
+			assertTrue(Math.abs(counts[frost] - counts[flame]) < 60,
+					"frost and liquid flame must roll equally often: " + counts[frost] + " vs " + counts[flame]);
+			assertArrayEquals(live, potion.probs, "non-deck generation must not draw from the live deck");
+		} finally {
+			Random.popGenerator();
 		}
 	}
 

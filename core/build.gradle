@@ -41,13 +41,22 @@ test {
     //(:core has no resources source set pointing at it; processResources is NO-SOURCE). So
     //a change to only a .properties/.json/asset file left core:test UP-TO-DATE (or
     //FROM-CACHE) and replayed the previous result -- a translation break went unseen.
-    //Declare exactly what the tests read at runtime. Source-set test resources
-    //(src/test/resources) are already inputs through the test runtime classpath.
+    //Declare the two things the tests read from outside the classpath: the asset tree, and the
+    //root build script (HeadlessRunHygieneTest.theRunsVersionCodeIsTheBuildsVersionCode reads
+    //appVersionCode from it, four levels up from the working dir). Source-set test resources
+    //(src/test/resources) are already inputs through the test runtime classpath. If a test
+    //starts reading another file outside these, declare it here too -- a grep for
+    //Paths.get("..", ...) in core/src/test finds them.
     //RELATIVE path sensitivity: only content + relative layout matter, not the checkout
-    //location, so the build cache stays valid across worktrees.
+    //location, so the build cache stays valid across worktrees. ignoreEmptyDirectories: tests
+    //never read an empty folder, so creating one must not invalidate the result.
     inputs.dir('src/main/assets')
         .withPropertyName('gameAssets')
         .withPathSensitivity(PathSensitivity.RELATIVE)
+        .ignoreEmptyDirectories()
+    inputs.file(rootProject.file('build.gradle'))
+        .withPropertyName('rootBuildScript')
+        .withPathSensitivity(PathSensitivity.NONE)
 }
 
 dependencies {

@@ -22,6 +22,7 @@
 package com.qsr.customspd.ui;
 
 import com.qsr.customspd.Chrome;
+import com.qsr.customspd.scenes.GameScene;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.NinePatch;
 
@@ -55,7 +56,12 @@ public class Tag extends Button {
 		bg.hardlight( r, g, b );
 		add( bg );
 	}
-	
+
+	@Override
+	protected void onClick() {
+		GameScene.tagDisappeared = false;
+	}
+
 	@Override
 	protected void layout() {
 		

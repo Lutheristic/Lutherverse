@@ -463,7 +463,7 @@ public enum Talent {
 			Dungeon.observe();
 		}
 
-		if (talent == SECONDARY_CHARGE || talent == TWIN_UPGRADES){
+		if (talent == SECONDARY_CHARGE || talent == TWIN_UPGRADES || talent == STRONGMAN){
 			Item.updateQuickslot();
 		}
 

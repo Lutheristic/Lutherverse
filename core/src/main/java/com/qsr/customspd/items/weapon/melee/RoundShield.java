@@ -32,6 +32,7 @@ import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.ui.BuffIndicator;
 import com.watabou.noosa.Image;
+import com.watabou.utils.Bundle;
 
 import kotlin.Pair;
 
@@ -112,6 +113,20 @@ public class RoundShield extends MeleeWeapon {
 		@Override
 		public float iconFadePercent() {
 			return Math.max(0, (5 - visualcooldown()) / 5);
+		}
+
+		private static final String BLOCKED = "blocked";
+
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(BLOCKED, hasBlocked);
+		}
+
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			hasBlocked = bundle.getBoolean(BLOCKED);
 		}
 	}
 }

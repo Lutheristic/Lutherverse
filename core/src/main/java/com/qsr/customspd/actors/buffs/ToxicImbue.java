@@ -21,6 +21,7 @@
 
 package com.qsr.customspd.actors.buffs;
 
+import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.blobs.Blob;
 import com.qsr.customspd.actors.blobs.ToxicGas;
 import com.qsr.customspd.assets.Asset;
@@ -103,5 +104,15 @@ public class ToxicImbue extends Buff {
 	{
 		immunities.add( ToxicGas.class );
 		immunities.add( Poison.class );
+	}
+
+	@Override
+	public boolean attachTo(Char target) {
+		if (super.attachTo(target)){
+			Buff.detach(target, Poison.class);
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

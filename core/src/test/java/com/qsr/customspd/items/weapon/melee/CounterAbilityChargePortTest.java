@@ -13,13 +13,18 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
- * Port regression for upstream 9067a486c (v2.1.4, "fixed Counter Ability talent incorrectly
- * applying 0 charge at +2"). The talent's discount was applied to the base cost of 1 before the
- * double-cost weapons multiplied it by 2, so at +2 a Dagger ability cost 2 * max(0, 1 - 1) = 0
- * charge. Weapons now only state their base cost (baseChargeUse) and MeleeWeapon applies the
- * discount to that, so the same Dagger costs max(0, 2 - 1) = 1.
+ * Counter Ability history, as upstream shipped it:
+ *  - 9067a486c (v2.1.4) fixed the talent's per-ability discount being applied before double-cost
+ *    weapons multiplied it (a +2 Dagger ability cost 0), by moving the discount onto the doubled
+ *    base cost via baseChargeUse().
+ *  - 20cd08c32 (v2.4.0, "adjusted counter ability talent now that all abilities cost 1")
+ *    replaced the discount entirely: abilityChargeUse() is just baseChargeUse(), and using an
+ *    ability within 3 turns of the afterimage being attacked refunds charge instead.
+ * Weapons keep stating only their base cost, which is what the first two tests pin; the rest pin
+ * the refund.
  */
 class CounterAbilityChargePortTest {
 
@@ -58,18 +63,32 @@ class CounterAbilityChargePortTest {
 	}
 
 	@Test
-	void theDiscountIsAppliedToTheDoubledBaseCost() {
-		Hero hero = duelist(2, true);
-		assertEquals(1f, new Dagger().abilityChargeUse(hero, null), 0f,
-				"upstream 9067a486c: 2 - 1, not 2 * (1 - 1)");
-		assertEquals(0f, new Sword().abilityChargeUse(hero, null), 0f, "1 - 1, as before");
+	void theTalentNoLongerDiscountsTheCost() {
+		Hero hero = duelist(4, true);
+		assertEquals(2f, new Dagger().abilityChargeUse(hero, null), 0f,
+				"upstream 20cd08c32: the cost is the weapon's base cost, primed or not");
+		assertEquals(1f, new Sword().abilityChargeUse(hero, null), 0f);
+	}
+
+	/** Charges after using a weapon ability, starting from 1 full charge and nothing partial. */
+	private static float chargeAfterAbility(int points, boolean primed) {
+		Hero hero = duelist(points, primed);
+		MeleeWeapon.Charger charger = Buff.affect(hero, MeleeWeapon.Charger.class);
+		charger.charges = 1;
+		charger.partialCharge = 0f;
+		new Sword().afterAbilityUsed(hero);
+		assertNull(hero.buff(Talent.CounterAbilityTacker.class), "using an ability consumes the window");
+		return charger.charges + charger.partialCharge;
 	}
 
 	@Test
-	void theHalfPointDiscountAlsoSubtractsFromTheDoubledCost() {
-		Hero hero = duelist(1, true);
-		assertEquals(1.5f, new Dagger().abilityChargeUse(hero, null), 0f,
-				"upstream 9067a486c: 2 - 0.5, not 2 * (1 - 0.5)");
-		assertEquals(0.5f, new Sword().abilityChargeUse(hero, null), 0f);
+	void usingAnAbilityInsideTheWindowRefundsOnlyAtFourPoints() {
+		assertEquals(1f, chargeAfterAbility(3, true), 0f, "upstream 20cd08c32: nothing below +4");
+		assertEquals(1f + 4f / 3f, chargeAfterAbility(4, true), 0.0001f, "+4: 1.33 charges");
+	}
+
+	@Test
+	void usingAnAbilityOutsideTheWindowRefundsNothing() {
+		assertEquals(1f, chargeAfterAbility(4, false), 0f);
 	}
 }

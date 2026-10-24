@@ -67,7 +67,7 @@ The Keybearer is the only character in the dungeon whose job is opening things. 
 | **Kit** | Always unlocked. Starts with the fire keyblade in hand, the frost keyblade in the off-hand and the storm keyblade in the pack. |
 | **True dual-wield** | The off-hand keyblade strikes on every hit too, at half its damage roll, with its own elemental effect. Keybearer only, so no other class changes. |
 | **Three keyblades** | Fire sets targets burning and frost chills and slows, from the first swing. Storm adds shock damage that arcs into an adjacent enemy once its sphere-grid nodes are active. |
-| **Keyblade nova** | One of three armor abilities on offer once the Dwarf King's crown upgrades your armor (the other two are borrowed from the Warrior). It hits every enemy within 4 tiles and ignites, chills or shocks them depending on which element your build leans on, and hits harder the more of the grid you've invested in. |
+| **Keyblade nova** | One of three armor abilities on offer once the Dwarf King's crown upgrades your armor (the other two are borrowed from the Warrior). It hits every enemy within 4 tiles that a wall isn't hiding, and ignites, chills or shocks them depending on which element your build leans on, and hits harder the more of the grid you've invested in. |
 | **Sphere grid** | 20 nodes rooted at Attunement, with Ember, Frost and Storm branches (capped by Conflagration, Permafrost and Tempest) plus Might, Vigor and Ability. The keystone, Elemental Conflux, needs Ember II, Frost II and Storm II. It's shown as a plain list for now; the web comes later. |
 | **Insight** | Every node starts locked. Spending 1 Insight unlocks one for good, and run points activate it each descent. Insight comes from Keybearer level-ups and from shattering an insight crystal. It carries over between runs, and nothing in the game takes it back. |
 
@@ -117,7 +117,7 @@ That's the feeling I'm after, and these are the rules I'm writing toward. The lo
 4. **Indifference over malice.** The original residents hurt you because you're in the way. The one thing down there that really sees you is the last thing with a name.
 5. **Repetition is the haunting.** The dead down here keep repeating duties that stopped meaning anything long ago. You die and walk down the same stairs again. You're making rounds too.
 
-What it isn't: a gore game or a jump-scare game. No sanity meter that takes your turns away.
+It isn't a gore game or a jump-scare game, and there's no sanity meter that takes your turns away.
 
 ---
 

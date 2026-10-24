@@ -39,6 +39,7 @@ import com.qsr.customspd.items.rings.RingOfEnergy;
 import com.qsr.customspd.levels.traps.Trap;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.plants.Plant;
+import com.qsr.customspd.plants.Rotberry;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.sprites.ItemSprite;
@@ -378,7 +379,10 @@ public class TimekeepersHourglass extends Artifact {
 
 		public void disarmPresses(){
 			for (int cell : presses){
-				Dungeon.level.uproot(cell);
+				Plant p = Dungeon.level.plants.get(cell);
+				if (p != null && !(p instanceof Rotberry)) {
+					Dungeon.level.uproot(cell);
+				}
 				Trap t = Dungeon.level.traps.get(cell);
 				if (t != null && t.disarmedByActivation) {
 					t.disarm();

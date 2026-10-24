@@ -193,7 +193,9 @@ public class InterlevelScene extends PixelScene {
         else if (lastRegion == 2)    loadingAsset = Asset.getAssetFilePath(GeneralAsset.LOADING_PRISON);
 		else if (lastRegion == 3)    loadingAsset = Asset.getAssetFilePath(GeneralAsset.LOADING_CAVES);
 		else if (lastRegion == 4)    loadingAsset = Asset.getAssetFilePath(GeneralAsset.LOADING_CITY);
-		else                         loadingAsset = Asset.getAssetFilePath(GeneralAsset.LOADING_HALLS);
+		else if (lastRegion >= 5)    loadingAsset = Asset.getAssetFilePath(GeneralAsset.LOADING_HALLS);
+		//region -1 (no transition: new game, continue, restart, fall, return, resurrect) has no art of its own
+		else                         loadingAsset = Asset.getAssetFilePath(GeneralAsset.SHADOW);
 
 		//slow down transition when displaying an install prompt
 		if (Updates.isInstallable()){

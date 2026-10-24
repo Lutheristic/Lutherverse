@@ -161,3 +161,14 @@ FloatingText#reset(float, float, String, int)
 FloatingText#show(float, float, String, int)
 FloatingText#show(float, float, int, String, int)
 CharSprite#showStatus(int, String, Object[])
+
+# --- Generator and dew upstream simplifications (2 entries) ---
+# Reviewed 2026-10-23. Both shrinks are exactly the named upstream hunks, each checked
+# against the upstream commit.
+# upstream 213f7a2f6 (cpdu-1be): stones of intuition always get two uses, so WndGuess's guess
+# handler drops the separate preserved/incorrect branches and runs the use-tracker once after
+# either outcome.
+StoneOfIntuition.WndGuess#WndGuess(Item)
+# upstream 1c8b13fa6 (cpdu-ixv): consumeDew's three-way heal/shield/both showStatus branch and
+# Speck burst became two independent showStatusWithIcon calls (HEALING, SHIELDING).
+Dewdrop#consumeDew(int, Hero, boolean)

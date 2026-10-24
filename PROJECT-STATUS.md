@@ -15,6 +15,14 @@ historical record. Updated in the same commit as any substantive work — treat 
 
 ## Where we are
 
+**2026-10-24, AFK-inline wave 6.**
+- **A gate that could not fail, closed.** `core:test` now declares the asset tree and the root build script as inputs, so a translation-only or version-only change re-runs the tests instead of replaying a stale green result (`cpdu-3wjz`).
+- **Translation placeholders are guarded.** A new test checks every translated format string against its English one. It found 346 offending keys in 18 languages, now fixed from v2.5.4 or dropped to English (`cpdu-3vbh`).
+- **Brawler's Stance drains charge again**, via upstream's redesign (`cpdu-9hyd`).
+- **Smaller items.** The hero-null guards are ported, as are the LifeLink/Dewdrop/Challenge icon leftovers.
+- Core tests: 470 → 492.
+- New defect, beaded: the Beacon of Returning formats a level-name String with `%d`, even in English (`cpdu-866z`).
+
 **2026-10-24, AFK-inline waves 4–5: the 23 parked Slice 1 tuning batches are done.** The batches had been stuck since July on OpenRouter credits. They ran as four parallel lanes, with each batch adversarially reviewed: about 245 upstream commits were classified, roughly 170 ported, and every remaining one is mapped to a bead.
 - **Defects fixed.** The floor-20 Imp shop half-port (`cpdu-jw1e`) and the unseeded custom-level shuffle (`cpdu-s26z`).
 - **The lane merge produced green-but-wrong code.** The four lanes merged cleanly and passed 450 tests, but a read-only cross-lane hunt (wave 5) found 8 semantic conflicts and unblocked follow-ups, all now fixed with canary tests. The worst were a Remove Curse infinite-scroll dupe, a Scroll of Transmutation self-target exploit, and a format crash in the Enhanced Rings description in all 18 translated languages.

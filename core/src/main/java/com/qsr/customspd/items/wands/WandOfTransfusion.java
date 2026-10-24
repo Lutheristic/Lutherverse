@@ -29,6 +29,7 @@ import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.buffs.Barrier;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.Charm;
+import com.qsr.customspd.actors.mobs.Mimic;
 import com.qsr.customspd.actors.mobs.Mob;
 import com.qsr.customspd.effects.Beam;
 import com.qsr.customspd.effects.CellEmitter;
@@ -107,7 +108,8 @@ public class WandOfTransfusion extends Wand {
 				}
 
 			//for enemies...
-			} else {
+			//(or for mimics which are hiding, special case)
+			} else if (ch.alignment == Char.Alignment.ENEMY || ch instanceof Mimic) {
 
 				//grant a self-shield, and...
 				Buff.affect(curUser, Barrier.class).setShield((5 + buffedLvl()));

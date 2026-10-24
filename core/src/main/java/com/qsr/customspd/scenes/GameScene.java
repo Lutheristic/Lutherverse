@@ -1053,11 +1053,11 @@ public class GameScene extends PixelScene {
 		}
 	}
 	
-	public static SpellSprite spellSprite() {
+	public static synchronized SpellSprite spellSprite() {
 		return (SpellSprite)scene.spells.recycle( SpellSprite.class );
 	}
 	
-	public static Emitter emitter() {
+	public static synchronized Emitter emitter() {
 		if (scene != null) {
 			Emitter emitter = (Emitter)scene.emitters.recycle( Emitter.class );
 			emitter.revive();
@@ -1067,7 +1067,7 @@ public class GameScene extends PixelScene {
 		}
 	}
 
-	public static Emitter floorEmitter() {
+	public static synchronized Emitter floorEmitter() {
 		if (scene != null) {
 			Emitter emitter = (Emitter)scene.floorEmitters.recycle( Emitter.class );
 			emitter.revive();

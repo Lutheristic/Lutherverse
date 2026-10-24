@@ -295,3 +295,19 @@ RingOfForce.BrawlersStance#tintIcon(Image)
 RingOfForce.BrawlersStance#iconFadePercent()
 RingOfForce.BrawlersStance#iconTextDisplay()
 RingOfForce.BrawlersStance#desc()
+
+# --- wave 7 (5 entries), reviewed 2026-10-24 ---
+# upstream e8c824e6e (v2.4.0, cpdu-jtik): the whole ending (validateHappyEnd, Dungeon.win,
+# deleteGame, Badges.saveGlobal) moved into SurfaceScene.create, so silentValidateHappyEnd is gone
+# and Hero.actTransition (CPDU's equivalent of upstream's SewerLevel.activateTransition) lost its
+# silent-validate / win / deleteGame calls.
+Badges#silentValidateHappyEnd()
+Hero#actTransition(HeroAction.LvlTransition)
+# upstream cf7ddd4db (v2.2.0, cpdu-xmif): Warlock.createLoot re-rolls a rejected healing potion
+# instead of adding it back into POTION.probs (it draws with randomUsingDefaults; no deck entry).
+Warlock#createLoot()
+# upstream f23962ec5 (v2.4.0, cpdu-38j6): ShopRoom.itemCount() became spacesNeeded().
+ShopRoom#itemCount()
+# upstream 6a05169b5 (v2.3.2, cpdu-38j6): ShopRoom.generateItems drops the 63-item hard-limit
+# throw; the new placeItems fill-in pass and reportException replace it.
+ShopRoom#generateItems()

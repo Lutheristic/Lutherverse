@@ -25,6 +25,7 @@ import com.qsr.customspd.Assets;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.Char;
+import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.Invisibility;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.levels.Terrain;
@@ -142,10 +143,15 @@ public class Rapier extends MeleeWeapon {
 						}
 					});
 				} else {
-					wep.beforeAbilityUsed(hero, null);
+					//spends charge but otherwise does not count as an ability use
+					Charger charger = Buff.affect(hero, Charger.class);
+					charger.partialCharge -= 1;
+					while (charger.partialCharge < 0 && charger.charges > 0) {
+						charger.charges--;
+						charger.partialCharge++;
+					}
 					GLog.w(Messages.get(Rapier.class, "ability_no_target"));
 					hero.spendAndNext(1/hero.speed());
-					wep.afterAbilityUsed(hero);
 				}
 			}
 		});

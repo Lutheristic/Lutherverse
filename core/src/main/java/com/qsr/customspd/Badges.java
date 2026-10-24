@@ -36,6 +36,7 @@ import com.qsr.customspd.items.bags.MagicalHolster;
 import com.qsr.customspd.items.bags.PotionBandolier;
 import com.qsr.customspd.items.bags.ScrollHolder;
 import com.qsr.customspd.items.bags.VelvetPouch;
+import com.qsr.customspd.items.remains.RemainsItem;
 import com.qsr.customspd.items.weapon.melee.MeleeWeapon;
 import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
@@ -90,6 +91,7 @@ public class Badges {
 
 		//silver
 		NO_MONSTERS_SLAIN           ( GeneralAsset.NO_MONSTERS_SLAIN ),
+		BOSS_SLAIN_REMAINS          ( GeneralAsset.BOSS_SLAIN_REMAINS ),
 		MONSTERS_SLAIN_3            ( GeneralAsset.MONSTERS_SLAIN_3 ),
 		MONSTERS_SLAIN_4            ( GeneralAsset.MONSTERS_SLAIN_4 ),
 		GOLD_COLLECTED_3            ( GeneralAsset.GOLD_COLLECTED_3 ),
@@ -153,6 +155,7 @@ public class Badges {
 		ITEM_LEVEL_5                ( GeneralAsset.ITEM_LEVEL_5 ),
 		LEVEL_REACHED_5             ( GeneralAsset.LEVEL_REACHED_5 ),
 		HAPPY_END                   ( GeneralAsset.HAPPY_END ),
+		HAPPY_END_REMAINS           ( GeneralAsset.HAPPY_END_REMAINS ),
 		ALL_WEAPONS_IDENTIFIED      ( GeneralAsset.ALL_WEAPONS_IDENTIFIED ),
 		ALL_ARMOR_IDENTIFIED        ( GeneralAsset.ALL_ARMOR_IDENTIFIED ),
 		ALL_WANDS_IDENTIFIED        ( GeneralAsset.ALL_WANDS_IDENTIFIED ),
@@ -798,6 +801,14 @@ public class Badges {
 					}
 				}
 			}
+
+			if (Statistics.qualifiedForBossRemainsBadge && Dungeon.hero.belongings.getItem(RemainsItem.class) != null){
+				badge = Badge.BOSS_SLAIN_REMAINS;
+				if (!isUnlocked( badge )) {
+					displayBadge( badge );
+				}
+			}
+
 		}
 	}
 
@@ -992,10 +1003,17 @@ public class Badges {
 		if (!local.contains( Badge.HAPPY_END )){
 			local.add( Badge.HAPPY_END );
 		}
+
+		if(!local.contains( Badge.HAPPY_END_REMAINS ) && Dungeon.hero.belongings.getItem(RemainsItem.class) != null){
+			local.add( Badge.HAPPY_END_REMAINS );
+		}
 	}
 	
 	public static void validateHappyEnd() {
 		displayBadge( Badge.HAPPY_END );
+		if (local.contains(Badge.HAPPY_END_REMAINS)) {
+			displayBadge(Badge.HAPPY_END_REMAINS);
+		}
 	}
 
 	public static void validateChampion( int challenges ) {

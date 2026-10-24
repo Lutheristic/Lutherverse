@@ -311,3 +311,7 @@ ShopRoom#itemCount()
 # upstream 6a05169b5 (v2.3.2, cpdu-38j6): ShopRoom.generateItems drops the 63-item hard-limit
 # throw; the new placeItems fill-in pass and reportException replace it.
 ShopRoom#generateItems()
+# upstream d029c0d7d (v3.0.0, pulled forward): the ending calls (validateHappyEnd, Dungeon.win,
+# deleteGame, saveGlobal) move out of SurfaceScene.create into the switchScene afterCreate
+# callback in Hero.actTransition, so a scene reset (window resize) cannot record the win again.
+SurfaceScene#create()

@@ -80,6 +80,7 @@ public class ReclaimTrap extends TargetedSpell {
 			storedTrap = null;
 			
 			t.pos = bolt.collisionPos;
+			t.reclaimed = true;
 			t.activate();
 			
 		}

@@ -22,6 +22,7 @@
 package com.qsr.customspd.levels.traps;
 
 import com.qsr.customspd.Assets;
+import com.qsr.customspd.Badges;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.Char;
@@ -103,6 +104,7 @@ public class RockfallTrap extends Trap {
 				if (!ch.isAlive() && ch == Dungeon.hero){
 					Dungeon.fail( this );
 					GLog.n( Messages.get(this, "ondeath") );
+					if (reclaimed) Badges.validateDeathFromFriendlyMagic();
 				}
 			}
 		}

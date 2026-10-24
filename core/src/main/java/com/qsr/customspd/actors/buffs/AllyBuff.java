@@ -26,6 +26,7 @@ import com.qsr.customspd.Statistics;
 import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.HeroSubClass;
+import com.qsr.customspd.actors.mobs.Mimic;
 import com.qsr.customspd.actors.mobs.Mob;
 import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.sprites.CharSprite;
@@ -54,7 +55,7 @@ public abstract class AllyBuff extends Buff {
 	//for when applying an ally buff should also cause that enemy to give exp/loot as if they had died
 	//consider that chars with the ally alignment do not drop items or award exp on death
 	public static void affectAndLoot(Mob enemy, Hero hero, Class<?extends AllyBuff> buffCls){
-		boolean wasEnemy = enemy.alignment == Char.Alignment.ENEMY;
+		boolean wasEnemy = enemy.alignment == Char.Alignment.ENEMY || enemy instanceof Mimic;
 		Buff.affect(enemy, buffCls);
 
 		if (enemy.buff(buffCls) != null && wasEnemy){

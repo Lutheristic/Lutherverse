@@ -10,6 +10,7 @@ import com.qsr.customspd.actors.mobs.Rat;
 import com.qsr.customspd.items.Dewdrop;
 import com.qsr.customspd.items.EnergyCrystal;
 import com.qsr.customspd.items.Gold;
+import com.qsr.customspd.items.food.SupplyRation;
 import com.qsr.customspd.items.potions.PotionOfStrength;
 import com.qsr.customspd.items.potions.elixirs.ElixirOfMight;
 import com.qsr.customspd.items.potions.exotic.PotionOfShielding;
@@ -113,6 +114,12 @@ class FloatingTextCallSiteIconTest {
 		hero.buff(Healing.class).act();
 		assertEquals(FloatingText.HEALING, firstIcon(heroSprite), "a Healing buff tick");
 
+		heroSprite.icons.clear();
+		heroSprite.texts.clear();
+		invoke(new SupplyRation(), SupplyRation.class, "satisfy", hero);
+		assertEquals(FloatingText.HEALING, firstIcon(heroSprite), "a supply ration's +5 HP");
+		assertEquals("5", heroSprite.texts.get(0));
+
 		WandOfWarding.Ward ward = new WandOfWarding.Ward();
 		RecordingSprite wardSprite = new RecordingSprite();
 		ward.sprite = wardSprite;
@@ -171,6 +178,16 @@ class FloatingTextCallSiteIconTest {
 			Method m = owner.getDeclaredMethod(method);
 			m.setAccessible(true);
 			m.invoke(target);
+		} catch (ReflectiveOperationException e) {
+			throw new AssertionError(e);
+		}
+	}
+
+	private static void invoke(Object target, Class<?> owner, String method, Hero arg) {
+		try {
+			Method m = owner.getDeclaredMethod(method, Hero.class);
+			m.setAccessible(true);
+			m.invoke(target, arg);
 		} catch (ReflectiveOperationException e) {
 			throw new AssertionError(e);
 		}

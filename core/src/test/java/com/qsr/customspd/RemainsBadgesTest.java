@@ -3,6 +3,7 @@ package com.qsr.customspd;
 import com.qsr.customspd.actors.hero.HeroClass;
 import com.qsr.customspd.actors.mobs.Goo;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.items.Amulet;
 import com.qsr.customspd.items.remains.SealShard;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.test.HeadlessRun;
@@ -202,6 +203,90 @@ class RemainsBadgesTest {
 			} finally {
 				GLog.update.remove(listener);
 			}
+		}
+	}
+
+	@Test
+	void happyEndBadgesAreAddedToTheRunsLocalBadgesSoTheWinRankingKeepsThem() {
+		// v2.5.0 (1c2e5e9be). SurfaceScene runs validateHappyEnd and THEN Dungeon.win, and the
+		// ranking record copies the run's local badges, so a badge that was only displayed (or
+		// only globally unlocked) never reached the Rankings screen's badge list.
+		try (HeadlessRun run = HeadlessRun.start(20261023L)) {
+			run.enterFirstLevel(); // Dungeon.win needs a level; a seeded run records no global badges
+			Dungeon.hero.belongings.backpack.items.add(new SealShard());
+			Rankings rankings = Rankings.INSTANCE;
+			Rankings.Record rec = null;
+			try {
+				Badges.validateHappyEnd();
+				Dungeon.win(Amulet.class);
+				rec = rankings.records.get(rankings.lastRecord);
+				assertTrue(rec.win, "test setup: the win was ranked");
+				List<String> ranked = Arrays.asList(
+						rec.gameData.getBundle(Rankings.BADGES).getStringArray("badges"));
+				assertTrue(ranked.contains("HAPPY_END"), "the ranking must keep HAPPY_END; has " + ranked);
+				assertTrue(ranked.contains("HAPPY_END_REMAINS"),
+						"the ranking must keep HAPPY_END_REMAINS; has " + ranked);
+			} finally {
+				if (rec != null) rankings.records.remove(rec);
+				FileUtils.deleteFile(Rankings.RANKINGS_FILE);
+			}
+		}
+	}
+
+	@Test
+	void happyEndIsRecordedAndEndorsedAgainOnALaterRun() {
+		try (HeadlessRun run = HeadlessRun.start(20261023L)) {
+			Dungeon.customSeedText = "";
+			Dungeon.hero.belongings.backpack.items.add(new SealShard());
+			List<String> log = new ArrayList<>();
+			Signal.Listener<String> listener = log::add;
+			GLog.update.add(listener);
+			try {
+				Badges.validateHappyEnd();
+				assertTrue(localBadgeNames().containsAll(Arrays.asList("HAPPY_END", "HAPPY_END_REMAINS")));
+
+				Badges.loadLocal(new Bundle()); // the next run: empty local set, global still unlocked
+				log.clear();
+				Badges.validateHappyEnd();
+				assertTrue(localBadgeNames().containsAll(Arrays.asList("HAPPY_END", "HAPPY_END_REMAINS")),
+						"a later win must record both badges again");
+				for (Badges.Badge b : new Badges.Badge[]{Badges.Badge.HAPPY_END, Badges.Badge.HAPPY_END_REMAINS}) {
+					assertTrue(log.contains(GLog.HIGHLIGHT + Messages.get(Badges.class, "endorsed", b.title())),
+							b + " must be endorsed, not skipped; log was " + log);
+				}
+			} finally {
+				GLog.update.remove(listener);
+			}
+		}
+	}
+
+	@Test
+	void localBadgesSurviveAGameSaveAndASavePredatingThePortStillLoads() {
+		// The run's local badge set is part of game.dat. The happy-end rework changes WHEN badges
+		// join it, not how it is stored: it must round-trip, and a save with no badge bundle (or
+		// only old badge names) must keep loading.
+		try (HeadlessRun run = HeadlessRun.start(20261023L)) {
+			run.enterFirstLevel();
+			Bundle withNew = new Bundle();
+			withNew.put("badges", new String[]{"HAPPY_END", "HAPPY_END_REMAINS", "BOSS_SLAIN_REMAINS"});
+			Badges.loadLocal(withNew);
+			run.saveAll();
+			Badges.loadLocal(new Bundle());
+			assertTrue(localBadgeNames().isEmpty(), "test setup: local set cleared");
+			run.loadGame();
+			assertTrue(localBadgeNames().containsAll(
+					Arrays.asList("HAPPY_END", "HAPPY_END_REMAINS", "BOSS_SLAIN_REMAINS")),
+					"the local set must survive Dungeon.saveAll/loadGame; has " + localBadgeNames());
+
+			// a save written before this port: local badges by old names only
+			Bundle old = new Bundle();
+			old.put("badges", new String[]{"NO_MONSTERS_SLAIN", "HAPPY_END"});
+			Badges.loadLocal(old);
+			run.saveAll();
+			Badges.loadLocal(new Bundle());
+			run.loadGame();
+			assertTrue(localBadgeNames().containsAll(Arrays.asList("NO_MONSTERS_SLAIN", "HAPPY_END")));
+			assertFalse(localBadgeNames().contains("HAPPY_END_REMAINS"));
 		}
 	}
 

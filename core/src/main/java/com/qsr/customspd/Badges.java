@@ -1004,9 +1004,11 @@ public class Badges {
 	}
 	
 	public static void validateHappyEnd() {
+		local.add( Badge.HAPPY_END );
 		displayBadge( Badge.HAPPY_END );
 
 		if( Dungeon.hero.belongings.getItem(RemainsItem.class) != null ){
+			local.add( Badge.HAPPY_END_REMAINS );
 			displayBadge( Badge.HAPPY_END_REMAINS );
 		}
 	}

@@ -3,6 +3,7 @@ package com.qsr.customspd.test;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.GamesInProgress;
 import com.qsr.customspd.SPDSettings;
+import com.qsr.customspd.ShatteredPixelDungeon;
 import com.qsr.customspd.actors.hero.HeroClass;
 import com.qsr.customspd.actors.mobs.Mob;
 import com.qsr.customspd.journal.Document;
@@ -45,8 +46,14 @@ public final class HeadlessRun implements AutoCloseable {
 	/** A slot the game's UI never offers (slots are 1..MAX_SLOTS), so no real save collides. */
 	public static final int SLOT = GamesInProgress.MAX_SLOTS + 1;
 
-	/** Launchers set Game.versionCode; headless it is 0, which Level.restoreFromBundle rejects as an "old save". */
-	public static final int VERSION_CODE = 900;
+	/**
+	 * Launchers set Game.versionCode; headless it is 0, which Level.restoreFromBundle rejects as an
+	 * "old save". Uses the real build's version code (build.gradle appVersionCode, which the
+	 * launchers pass through), so saves are stamped as a shipped build would stamp them and any
+	 * ported {@code version < vX} gate sees the current build. HeadlessRunHygieneTest pins the two
+	 * together.
+	 */
+	public static final int VERSION_CODE = ShatteredPixelDungeon.v2_1_0_1_0;
 
 	public final long seed;
 	private final StaticSnapshot saved;

@@ -542,16 +542,22 @@ public class Armor extends EquipableItem {
 			}
 		}
 		level(n);
-		
-		//30% chance to be cursed
-		//15% chance to be inscribed
-		float effectRoll = Random.Float();
-		if (effectRoll < 0.3f) {
-			inscribe(Glyph.randomCurse());
-			cursed = true;
-		} else if (effectRoll >= 0.85f){
-			inscribe();
-		}
+
+		//we use a separate RNG here so that variance due to things like parchment scrap
+		//does not affect levelgen
+		Random.pushGenerator(Random.Long());
+
+			//30% chance to be cursed
+			//15% chance to be inscribed
+			float effectRoll = Random.Float();
+			if (effectRoll < 0.3f) {
+				inscribe(Glyph.randomCurse());
+				cursed = true;
+			} else if (effectRoll >= 0.85f){
+				inscribe();
+			}
+
+		Random.popGenerator();
 
 		return this;
 	}

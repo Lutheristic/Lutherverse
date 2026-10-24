@@ -102,4 +102,108 @@ class DaggerSneakPortTest {
 
 		assertEquals(target, hero.pos, "control: with no fire in the way the blink lands");
 	}
+
+	private static <T extends MeleeWeapon> T identifiedAt(T weapon, int level) {
+		weapon.level(level);
+		weapon.identify();
+		return weapon;
+	}
+
+	/** Upstream 59fadf083 (v2.2.0): the sneak is instantaneous; it no longer spends a turn. */
+	@Test
+	void sneakIsInstant() {
+		int start = 4 * W + 2;
+		Dagger dagger = new Dagger();
+		Hero hero = heroAt(start, dagger);
+		int target = 4 * W + 6;
+		level.heroFOV[target] = true;
+		float before = hero.cooldown();
+
+		sneak(dagger, hero, target);
+
+		assertEquals(target, hero.pos, "fixture: the blink landed");
+		assertEquals(before, hero.cooldown(), 0.0001f, "the blink costs no time");
+	}
+
+	/**
+	 * Upstream aa507c7ef (v2.4.0) and 289a43def (v2.4.0, "added scaling to all non-damage based
+	 * duelist abilities"): the sneak grants 2+level turns of invisibility, one of which is the
+	 * instant ability's own turn, so the buff itself lasts 1+level.
+	 */
+	@Test
+	void sneakInvisibilityScalesWithLevel() {
+		int start = 4 * W + 2;
+		Dagger dagger = identifiedAt(new Dagger(), 2);
+		Hero hero = heroAt(start, dagger);
+		int target = 4 * W + 6;
+		level.heroFOV[target] = true;
+
+		sneak(dagger, hero, target);
+
+		assertEquals(3f, hero.buff(com.qsr.customspd.actors.buffs.Invisibility.class).cooldown(), 0.0001f,
+				"a +2 dagger grants 4 turns of invisibility: 3 on the buff plus the instant blink's turn");
+	}
+
+	/** Upstream eb7a86451 (v2.3.0, "fixed duelist's sneak ability working while rooted"). */
+	@Test
+	void aRootedDuelistCannotSneak() {
+		int start = 4 * W + 2;
+		Dagger dagger = new Dagger();
+		Hero hero = heroAt(start, dagger);
+		hero.rooted = true;
+		int target = 4 * W + 6;
+		level.heroFOV[target] = true;
+		MeleeWeapon.Charger charger = hero.buff(MeleeWeapon.Charger.class);
+		int chargesBefore = charger.charges;
+		// The refusal shakes the screen; headless there is no main camera, so give it one.
+		com.watabou.noosa.Camera prevCamera = com.watabou.noosa.Camera.main;
+		com.watabou.noosa.Camera.main = new com.watabou.noosa.Camera(0, 0, 100, 100, 1f);
+		try {
+			sneak(dagger, hero, target);
+		} finally {
+			com.watabou.noosa.Camera.main = prevCamera;
+		}
+
+		assertEquals(start, hero.pos, "a rooted Duelist cannot blink away");
+		assertEquals(chargesBefore, charger.charges, "and the refused sneak costs no charge");
+	}
+
+	/** 289a43def: Dirk and Assassin's Blade keep their 4 / 3 tile range and scale like the dagger. */
+	@Test
+	void dirkAndAssassinsBladeKeepTheirRangeAndScale() {
+		int start = 4 * W + 2;
+		AssassinsBlade blade = identifiedAt(new AssassinsBlade(), 1);
+		Hero hero = heroAt(start, blade);
+		level.heroFOV[start + 4] = true;
+		level.heroFOV[start + 3] = true;
+		sneak(blade, hero, start + 4);
+		assertEquals(start, hero.pos, "4 tiles is past the assassin's blade's range of 3");
+
+		sneak(blade, hero, start + 3);
+		assertEquals(start + 3, hero.pos);
+		assertEquals(2f, hero.buff(com.qsr.customspd.actors.buffs.Invisibility.class).cooldown(), 0.0001f,
+				"a +1 blade grants 3 turns of invisibility");
+
+		Dirk dirk = identifiedAt(new Dirk(), 0);
+		hero = heroAt(start, dirk);
+		level.heroFOV[start + 5] = true;
+		level.heroFOV[start + 4] = true;
+		sneak(dirk, hero, start + 5);
+		assertEquals(start, hero.pos, "5 tiles is past the dirk's range of 4");
+		sneak(dirk, hero, start + 4);
+		assertEquals(start + 4, hero.pos);
+	}
+
+	/** The descriptions are format strings, so they are only proven by rendering them. */
+	@Test
+	void sneakDescriptionsStateTheScaledInvisibility() {
+		heroAt(4 * W + 2, null); // buffedLvl asks whether the hero holds the weapon
+		assertTrue(identifiedAt(new Dagger(), 3).abilityInfo().contains("_5 turns of invisibility_"),
+				new Dagger().abilityInfo());
+		assertTrue(identifiedAt(new Dirk(), 1).abilityInfo().contains("_3 turns of invisibility_"));
+		assertTrue(identifiedAt(new AssassinsBlade(), 0).abilityInfo().contains("_2 turns of invisibility,_"));
+		String typical = new Dagger().abilityInfo();
+		assertTrue(typical.contains("typically grants her _2 turns of invisibility_"), typical);
+		assertTrue(typical.contains("instantly blink up to 5 tiles"), typical);
+	}
 }

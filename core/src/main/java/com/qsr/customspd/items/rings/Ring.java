@@ -291,7 +291,7 @@ public class Ring extends KindofMisc {
 		levelsToID -= levelPercent;
 		if (levelsToID <= 0){
 			identify();
-			GLog.p( Messages.get(Ring.class, "identify", title()) );
+			GLog.p( Messages.get(Ring.class, "identify") );
 			Badges.validateItemLevelAquired( this );
 		}
 	}
@@ -337,6 +337,30 @@ public class Ring extends KindofMisc {
 		} else {
 			return Ring.this.buffedLvl()+1;
 		}
+	}
+
+	//just used for ring descriptions
+	public int combinedBonus(Hero hero){
+		int bonus = 0;
+		if (hero.belongings.ring() != null && hero.belongings.ring().getClass() == getClass()){
+			bonus += hero.belongings.ring().soloBonus();
+		}
+		if (hero.belongings.misc() != null && hero.belongings.misc().getClass() == getClass()){
+			bonus += ((Ring)hero.belongings.misc()).soloBonus();
+		}
+		return bonus;
+	}
+
+	//just used for ring descriptions
+	public int combinedBuffedBonus(Hero hero){
+		int bonus = 0;
+		if (hero.belongings.ring() != null && hero.belongings.ring().getClass() == getClass()){
+			bonus += hero.belongings.ring().soloBuffedBonus();
+		}
+		if (hero.belongings.misc() != null && hero.belongings.misc().getClass() == getClass()){
+			bonus += ((Ring)hero.belongings.misc()).soloBuffedBonus();
+		}
+		return bonus;
 	}
 
 	public class RingBuff extends Buff {

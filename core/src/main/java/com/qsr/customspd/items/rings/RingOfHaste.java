@@ -21,6 +21,7 @@
 
 package com.qsr.customspd.items.rings;
 
+import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.messages.Messages;
@@ -33,9 +34,15 @@ public class RingOfHaste extends Ring {
 
 	public String statsInfo() {
 		if (isIdentified()){
-			return Messages.get(this, "stats", Messages.decimalFormat("#.##", 100f * (Math.pow(1.2f, soloBuffedBonus()) - 1f)));
+			String info = Messages.get(this, "stats",
+					Messages.decimalFormat("#.##", 100f * (Math.pow(1.175f, soloBuffedBonus()) - 1f)));
+			if (isEquipped(Dungeon.hero) && soloBuffedBonus() != combinedBuffedBonus(Dungeon.hero)){
+				info += "\n\n" + Messages.get(this, "combined_stats",
+						Messages.decimalFormat("#.##", 100f * (Math.pow(1.175f, combinedBuffedBonus(Dungeon.hero)) - 1f)));
+			}
+			return info;
 		} else {
-			return Messages.get(this, "typical_stats", Messages.decimalFormat("#.##", 20f));
+			return Messages.get(this, "typical_stats", Messages.decimalFormat("#.##", 17.5f));
 		}
 	}
 	
@@ -45,7 +52,7 @@ public class RingOfHaste extends Ring {
 	}
 	
 	public static float speedMultiplier( Char target ){
-		return (float)Math.pow(1.2, getBuffedBonus(target, Haste.class));
+		return (float)Math.pow(1.175, getBuffedBonus(target, Haste.class));
 	}
 	
 	public class Haste extends RingBuff {

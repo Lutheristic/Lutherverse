@@ -21,6 +21,7 @@
 
 package com.qsr.customspd.items.rings;
 
+import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.blobs.Electricity;
 import com.qsr.customspd.actors.blobs.ToxicGas;
@@ -45,7 +46,13 @@ public class RingOfElements extends Ring {
 
 	public String statsInfo() {
 		if (isIdentified()){
-			return Messages.get(this, "stats", Messages.decimalFormat("#.##", 100f * (1f - Math.pow(0.825f, soloBuffedBonus()))));
+			String info = Messages.get(this, "stats",
+					Messages.decimalFormat("#.##", 100f * (1f - Math.pow(0.825f, soloBuffedBonus()))));
+			if (isEquipped(Dungeon.hero) && soloBuffedBonus() != combinedBuffedBonus(Dungeon.hero)){
+				info += "\n\n" + Messages.get(this, "combined_stats",
+						Messages.decimalFormat("#.##", 100f * (1f - Math.pow(0.825f, combinedBuffedBonus(Dungeon.hero)))));
+			}
+			return info;
 		} else {
 			return Messages.get(this, "typical_stats", Messages.decimalFormat("#.##", 17.5f));
 		}

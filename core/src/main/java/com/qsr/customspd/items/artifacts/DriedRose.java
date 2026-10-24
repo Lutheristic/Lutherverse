@@ -63,12 +63,13 @@ import com.qsr.customspd.sprites.GhostSprite;
 import com.qsr.customspd.sprites.ItemSprite;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.ui.BossHealthBar;
+import com.qsr.customspd.ui.ItemButton;
 import com.qsr.customspd.ui.RenderedTextBlock;
 import com.qsr.customspd.ui.Window;
 import com.qsr.customspd.utils.GLog;
 import com.qsr.customspd.windows.IconTitle;
 import com.qsr.customspd.windows.WndBag;
-import com.qsr.customspd.windows.WndBlacksmith;
+import com.qsr.customspd.windows.WndInfoItem;
 import com.qsr.customspd.windows.WndQuest;
 import com.qsr.customspd.windows.WndUseItem;
 import com.watabou.noosa.Game;
@@ -245,14 +246,17 @@ public class DriedRose extends Artifact {
 			desc += "\n";
 
 			if (weapon != null) {
-				desc += "\n" + Messages.get(this, "desc_weapon", weapon.title());
+				desc += "\n" + Messages.get(this, "desc_weapon", Messages.titleCase(weapon.title()));
 			}
 
 			if (armor != null) {
-				desc += "\n" + Messages.get(this, "desc_armor", armor.title());
+				desc += "\n" + Messages.get(this, "desc_armor", Messages.titleCase(armor.title()));
 			}
+
+			desc += "\n" + Messages.get(this, "desc_strength", ghostStrength());
+
 		}
-		
+
 		return desc;
 	}
 	
@@ -308,7 +312,7 @@ public class DriedRose extends Artifact {
 				}
 				updateQuickslot();
 			}
-		} else {
+		} else if (ghost.HP < ghost.HT) {
 			int heal = Math.round((1 + level()/3f)*amount);
 			ghost.HP = Math.min( ghost.HT, ghost.HP + heal);
 			updateQuickslot();
@@ -866,8 +870,8 @@ public class DriedRose extends Artifact {
 		private static final float BTN_GAP	= 12;
 		private static final int WIDTH		= 116;
 		
-		private WndBlacksmith.ItemButton btnWeapon;
-		private WndBlacksmith.ItemButton btnArmor;
+		private ItemButton btnWeapon;
+		private ItemButton btnArmor;
 		
 		WndGhostHero(final DriedRose rose){
 			
@@ -883,7 +887,7 @@ public class DriedRose extends Artifact {
 			message.setPos(0, titlebar.bottom() + GAP);
 			add( message );
 			
-			btnWeapon = new WndBlacksmith.ItemButton(){
+			btnWeapon = new ItemButton(){
 				@Override
 				protected void onClick() {
 					if (rose.weapon != null){
@@ -940,6 +944,15 @@ public class DriedRose extends Artifact {
 						});
 					}
 				}
+
+				@Override
+				protected boolean onLongClick() {
+					if (item() != null && item().name() != null){
+						GameScene.show(new WndInfoItem(item()));
+						return true;
+					}
+					return false;
+				}
 			};
 			btnWeapon.setRect( (WIDTH - BTN_GAP) / 2 - BTN_SIZE, message.top() + message.height() + GAP, BTN_SIZE, BTN_SIZE );
 			if (rose.weapon != null) {
@@ -949,7 +962,7 @@ public class DriedRose extends Artifact {
 			}
 			add( btnWeapon );
 			
-			btnArmor = new WndBlacksmith.ItemButton(){
+			btnArmor = new ItemButton(){
 				@Override
 				protected void onClick() {
 					if (rose.armor != null){

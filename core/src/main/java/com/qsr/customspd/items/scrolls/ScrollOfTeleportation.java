@@ -55,6 +55,7 @@ public class ScrollOfTeleportation extends Scroll {
 	@Override
 	public void doRead() {
 
+		detach(curUser.belongings.backpack);
 		Sample.INSTANCE.play( Assets.Sounds.READ );
 		
 		if (teleportPreferringUnseen( curUser )){

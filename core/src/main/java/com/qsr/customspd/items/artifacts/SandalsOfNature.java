@@ -30,11 +30,13 @@ import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.effects.CellEmitter;
+import com.qsr.customspd.effects.Splash;
 import com.qsr.customspd.effects.particles.LeafParticle;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.bags.Bag;
 import com.qsr.customspd.items.bags.VelvetPouch;
 import com.qsr.customspd.items.rings.RingOfEnergy;
+import com.qsr.customspd.mechanics.Ballistica;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.plants.Blindweed;
 import com.qsr.customspd.plants.Earthroot;
@@ -53,12 +55,12 @@ import com.qsr.customspd.scenes.CellSelector;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.sprites.ItemSprite;
 import com.qsr.customspd.assets.GeneralAsset;
-import com.qsr.customspd.utils.BArray;
+import com.qsr.customspd.tiles.DungeonTilemap;
 import com.qsr.customspd.utils.GLog;
 import com.qsr.customspd.windows.WndBag;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.PathFinder;
+import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
@@ -229,14 +231,14 @@ public class SandalsOfNature extends Artifact {
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle(bundle);
-		bundle.put(SEEDS, seeds.toArray(new Class[seeds.size()]));
+		bundle.put(SEEDS, seeds.toArray(new Class[0]));
 		bundle.put(CUR_SEED_EFFECT, curSeedEffect);
 	}
 
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle(bundle);
-		if (bundle.contains(SEEDS)) {
+		if (bundle.contains(SEEDS) && bundle.getClassArray(SEEDS) != null) {
 			Collections.addAll(seeds, bundle.getClassArray(SEEDS));
 		}
 		curSeedEffect = bundle.getClass(CUR_SEED_EFFECT);
@@ -314,17 +316,23 @@ public class SandalsOfNature extends Artifact {
 		@Override
 		public void onSelect(Integer cell) {
 			if (cell != null){
-				PathFinder.buildDistanceMap(curUser.pos, BArray.not(Dungeon.level.solid,null), 3);
 
-				if (PathFinder.distance[cell] == Integer.MAX_VALUE){
+				if (!Dungeon.level.heroFOV[cell] || Dungeon.level.distance(curUser.pos, cell) > 3){
 					GLog.w(Messages.get(SandalsOfNature.class, "out_of_range"));
 				} else {
-					CellEmitter.get( cell ).burst( LeafParticle.GENERAL, 6 );
+
+					Ballistica aim = new Ballistica(curUser.pos, cell, Ballistica.STOP_TARGET);
+					for (int c : aim.subPath(0, aim.dist)){
+						CellEmitter.get( c ).burst( LeafParticle.GENERAL, 6 );
+					}
+
+					Splash.at(DungeonTilemap.tileCenterToWorld( cell ), -PointF.PI/2, PointF.PI/2, seedColors.get(curSeedEffect), 6);
 					Invisibility.dispel(curUser);
 
 					Plant plant = ((Plant.Seed) Reflection.newInstance(curSeedEffect)).couch(cell, null);
 					plant.activate(Actor.findChar(cell));
-					Sample.INSTANCE.play(Assets.Sounds.TRAMPLE, 1, Random.Float( 0.96f, 1.05f ) );
+					Sample.INSTANCE.play(Assets.Sounds.PLANT);
+					Sample.INSTANCE.playDelayed(Assets.Sounds.TRAMPLE, 0.25f, 1, Random.Float( 0.96f, 1.05f ) );
 
 					charge -= seedChargeReqs.get(curSeedEffect);
 					Talent.onArtifactUsed(Dungeon.hero);

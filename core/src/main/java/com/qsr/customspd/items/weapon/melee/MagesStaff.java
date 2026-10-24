@@ -48,7 +48,6 @@ import com.qsr.customspd.items.weapon.Weapon;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.sprites.ItemSprite;
-import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.utils.GLog;
 import com.qsr.customspd.windows.WndBag;
 import com.qsr.customspd.windows.WndOptions;
@@ -184,7 +183,7 @@ public class MagesStaff extends MeleeWeapon {
 		}
 
 		if (empoweredStrike != null){
-			empoweredStrike.detach();
+			if (!empoweredStrike.delayedDetach) empoweredStrike.detach();
 			if (!(defender instanceof Mob) || !((Mob) defender).surprisedBy(attacker)){
 				Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG, 0.75f, 1.2f);
 			}

@@ -86,13 +86,23 @@ public class ElixirOfAquaticRejuvenation extends Elixir {
 				} else {
 					healAmt = (float)Math.floor(healAmt);
 				}
-				target.HP += healAmt;
-				left -= healAmt;
+				target.HP += (int)healAmt;
+				left -= (int)healAmt;
 				target.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
+
+				if (target.HP >= target.HT) {
+					target.HP = target.HT;
+					if (target instanceof Hero) {
+						((Hero) target).resting = false;
+					}
+				}
 			}
 			
 			if (left <= 0){
 				detach();
+				if (target instanceof Hero) {
+					((Hero) target).resting = false;
+				}
 			} else {
 				spend(TICK);
 			}

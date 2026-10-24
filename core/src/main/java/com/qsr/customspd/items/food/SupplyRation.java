@@ -26,6 +26,7 @@ import com.qsr.customspd.actors.buffs.Hunger;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.items.artifacts.CloakOfShadows;
 import com.qsr.customspd.items.scrolls.ScrollOfRecharging;
 import com.qsr.customspd.sprites.CharSprite;
@@ -57,10 +58,7 @@ public class SupplyRation extends Food {
 		super.satisfy(hero);
 
 		hero.HP = Math.min(hero.HP + 5, hero.HT);
-		//CPDU divergence: upstream calls sprite.showStatusWithIcon(POSITIVE, "5", FloatingText.HEALING).
-		//The icon overload belongs to the FloatingText damage-icon framework (cpdu-ta6.2), which is not
-		//yet ported, so use the plain showStatus here. Upgrade to the icon form when ta6.2 lands.
-		hero.sprite.showStatus( CharSprite.POSITIVE, "5" );
+		hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, "5", FloatingText.HEALING );
 
 		CloakOfShadows cloak = hero.belongings.getItem(CloakOfShadows.class);
 		if (cloak != null) {

@@ -26,8 +26,9 @@ import com.qsr.customspd.Statistics;
 import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.HeroSubClass;
+import com.qsr.customspd.actors.mobs.Mimic;
 import com.qsr.customspd.actors.mobs.Mob;
-import com.qsr.customspd.messages.Messages;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.sprites.CharSprite;
 
 //generic class for buffs which convert an enemy into an ally
@@ -54,7 +55,7 @@ public abstract class AllyBuff extends Buff {
 	//for when applying an ally buff should also cause that enemy to give exp/loot as if they had died
 	//consider that chars with the ally alignment do not drop items or award exp on death
 	public static void affectAndLoot(Mob enemy, Hero hero, Class<?extends AllyBuff> buffCls){
-		boolean wasEnemy = enemy.alignment == Char.Alignment.ENEMY;
+		boolean wasEnemy = enemy.alignment == Char.Alignment.ENEMY || enemy instanceof Mimic;
 		Buff.affect(enemy, buffCls);
 
 		if (enemy.buff(buffCls) != null && wasEnemy){
@@ -68,7 +69,7 @@ public abstract class AllyBuff extends Buff {
 
 			int exp = hero.lvl <= enemy.maxLvl ? enemy.EXP : 0;
 			if (exp > 0) {
-				hero.sprite.showStatus(CharSprite.POSITIVE, Messages.get(enemy, "exp", exp));
+				hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(exp), FloatingText.EXPERIENCE);
 			}
 			hero.earnExp(exp, enemy.getClass());
 

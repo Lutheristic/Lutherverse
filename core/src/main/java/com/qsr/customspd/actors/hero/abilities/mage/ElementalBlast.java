@@ -47,6 +47,7 @@ import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.actors.hero.abilities.ArmorAbility;
 import com.qsr.customspd.actors.mobs.Mob;
 import com.qsr.customspd.assets.Asset;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.MagicMissile;
 import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.effects.SpellSprite;
@@ -346,7 +347,13 @@ public class ElementalBlast extends ArmorAbility {
 										mob.HP += healing;
 
 										mob.sprite.emitter().burst(Speck.factory(Speck.HEALING), 4);
-										mob.sprite.showStatus(CharSprite.POSITIVE, "+%dHP", healing + shielding);
+
+										if (healing > 0) {
+											mob.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(healing), FloatingText.HEALING);
+										}
+										if (shielding > 0){
+											mob.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shielding), FloatingText.SHIELDING);
+										}
 									} else {
 										if (!mob.properties().contains(Char.Property.UNDEAD)) {
 											Charm charm = Buff.affect(mob, Charm.class, effectMulti*Charm.DURATION/2f);
@@ -410,6 +417,7 @@ public class ElementalBlast extends ArmorAbility {
 						charsHit = Math.min(4 + hero.pointsInTalent(Talent.REACTIVE_BARRIER), charsHit);
 						if (charsHit > 0 && hero.hasTalent(Talent.REACTIVE_BARRIER)){
 							int shielding = Math.round(charsHit*2.5f*hero.pointsInTalent(Talent.REACTIVE_BARRIER));
+							hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shielding), FloatingText.SHIELDING);
 							Buff.affect(hero, Barrier.class).setShield(shielding);
 						}
 

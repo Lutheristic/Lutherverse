@@ -6,7 +6,7 @@ and dated design docs, plans and CHANGELOG entries deliberately keep the origina
 historical record. Updated in the same commit as any substantive work — treat as ground truth for near-term state.*
 
 **Last update:** 2026-10-23
-**Current tip:** working branch `dev/2026-10-23` (off `main` at `3144f95da`), gate-verified locally; not yet merged to `main` or pushed.
+**Current tip:** `main` is at `9f4b9f381` (pushed, CI green). AFK-inline marathon work is on branch `afk-inline/2026-10-23`: gate-verified locally, **not merged to `main` and not pushed**, awaiting LO review.
 
 > The dated sections further down are a **historical log** and are deliberately not rewritten.
 > Where an older entry contradicts this header, the header wins.
@@ -14,6 +14,41 @@ historical record. Updated in the same commit as any substantive work — treat 
 ---
 
 ## Where we are
+
+**2026-10-24, AFK-inline wave 7.**
+- **i18n.** Level-name messages take `%s`, so the Beacon of Returning text no longer breaks, even in English (`cpdu-866z`). Translations are synced to v2.5.4 wherever CPDU's English matches: 1,154 keys imported, 516 stale lines updated, 6,762 translator revisions (in their own revertable commit), and 414 orphans dropped (`cpdu-fz84`).
+- **Guards and tests.** All of `b6f7e7462`'s hero-null guards are in (`cpdu-u7bm`), and `RemainsItemTest` now really detects a missing key (`cpdu-xc02`).
+- **Floating text.** About 26 heal/shield floating-text sites ported (`cpdu-9k44`).
+- **Traps and shops.** Traps scale by `Trap.scalingDepth()` (upstream 5a1d6e5d9, entirely missing before), reclaimed traps award their badge, shop placement and minimum size match v2.5.4, and the Warlock re-rolls instead of refilling the deck (`cpdu-s1kq`, `cpdu-38j6`, `cpdu-xmif`).
+- **Badge ending flow** matches v2.5.4 (`cpdu-jtik`). It reintroduced a duplicate-win-in-Rankings bug on window resize, fixed by pulling forward upstream d029c0d7d.
+- **A new gate.** `PropertiesKeyShapeTest` rejects message values split across lines. It caught the truncated `barkskin.desc`.
+- Core tests: 492 → 539.
+- **Cross-track check after waves 6–7.** It found one merge-ordering gap: `barkskin.desc` was repaired after the translation sync's snapshot, so its 18 translations missed the new paragraph. It also found two older missing message keys that showed `java.lang.object.…` in the log (`charm.cant_attack`, the renamed combined-lethality `executed`), and an icon gap in Vampiric. All are fixed, and the once-only win at the surface transition is now pinned by `HappyEndTransitionTest`. Core tests: 545. New: Indonesian translations may never load on Java 17+, because the locale code `in` maps to `id` (`cpdu-7p2g`).
+
+**2026-10-24, AFK-inline wave 6.**
+- **A gate that could not fail, closed.** `core:test` now declares the asset tree and the root build script as inputs, so a translation-only or version-only change re-runs the tests instead of replaying a stale green result (`cpdu-3wjz`).
+- **Translation placeholders are guarded.** A new test checks every translated format string against its English one. It found 346 offending keys in 18 languages, now fixed from v2.5.4 or dropped to English (`cpdu-3vbh`).
+- **Brawler's Stance drains charge again**, via upstream's redesign (`cpdu-9hyd`).
+- **Smaller items.** The hero-null guards are ported, as are the LifeLink/Dewdrop/Challenge icon leftovers.
+- Core tests: 470 → 492.
+- New defect, beaded: the Beacon of Returning formats a level-name String with `%d`, even in English (`cpdu-866z`).
+
+**2026-10-24, AFK-inline waves 4–5: the 23 parked Slice 1 tuning batches are done.** The batches had been stuck since July on OpenRouter credits. They ran as four parallel lanes, with each batch adversarially reviewed: about 245 upstream commits were classified, roughly 170 ported, and every remaining one is mapped to a bead.
+- **Defects fixed.** The floor-20 Imp shop half-port (`cpdu-jw1e`) and the unseeded custom-level shuffle (`cpdu-s26z`).
+- **The lane merge produced green-but-wrong code.** The four lanes merged cleanly and passed 450 tests, but a read-only cross-lane hunt (wave 5) found 8 semantic conflicts and unblocked follow-ups, all now fixed with canary tests. The worst were a Remove Curse infinite-scroll dupe, a Scroll of Transmutation self-target exploit, and a format crash in the Enhanced Rings description in all 18 translated languages.
+- **Notable model changes ported.** Upstream's multi-step consumption overhaul (2879e9ae5); the Duelist sneak blink rework; `baseChargeUse`; the `buffedLvl` consolidation; BadgeType; `ItemButton` moved to `ui/`.
+- **Deferred work, beaded by blocking dependency.** The Duelist charge rework (`cpdu-ewor`), the T2 talent rework (`cpdu-v1as`), catalog (`cpdu-y0f`), alchemy UI (`cpdu-5xj9`), ring/wand upgrade info (`cpdu-7xwc`), the monk rework (`cpdu-2iw3`), and the InterlevelScene rework (`cpdu-57c`).
+- **New defects found.** Brawler's Stance has never drained charge since July (`cpdu-9hyd`). Stale translations show a literal `%s` (`cpdu-3vbh`). `core:test` ignores asset-only changes (`cpdu-3wjz`).
+- Core tests: 224 → 470. 66 upstream removals were reviewed into deletion-audit.
+
+**2026-10-23, AFK-inline wave 3 (branch `afk-inline/2026-10-23`).**
+- **Generator parity.** `randomWeapon(useDefaults)` now honours its argument; the Waterskin fits the potion bandolier (all of 213f7a2f6); and the v2.3.0 **two-deck potion/scroll drop system** plus `undoDrop` are ported. All three change seeded generation on purpose, as their commits state. The F4 golden digests were updated only after a scratch tree without these ports proved they were the sole cause.
+- **Remains and badges.** PhysicalEmpower no longer stacks with itself. Remains are left on amulet, challenged and labeled-seed runs and capped 5 floors above the deepest (upstream cd79b3bcd); daily runs are still excluded. Two hero-remains badges landed with their Statistics state.
+- **Damage-icon call sites.** All of them are ported: heal/shield/exp/gold/energy icons, and armor-ignoring damage sources with their own classes.
+- **F5 StubSprite + TurnPump.** The first mob-AI pins are in place, and F4 now covers boss floors, a richer same-seed comparison, golden digests and a CustomLevel end-to-end test.
+- **Integration found a real determinism defect.** The shop's bag choice broke ties through a `HashMap` keyed by object identity, so the same seed could sell a different bag. It is fixed with a `LinkedHashMap`, a documented divergence because upstream has the same bug.
+- New defects, all beaded: floor 20 walls off after the boss (`cpdu-jw1e`, a half-port), an unseeded shuffle in custom levels (`cpdu-s26z`), and a hash-ordered aggression target pick (`cpdu-p4bm`).
+- Core tests: 181 → 224.
 
 **2026-10-23: two Slice 1 epics landed, F4 HeadlessRun exists, content-audit is at one real finding.**
 - **RemainsItem + Bones v2.3.0** (`cpdu-bsb`). Remains now carry a hero-class item, and stacks are capped at 3. Every level caller was adapted, and legacy `bones.dat` files still load. The five boss/shop levels now push their own RNG stream around remains, so seeded layouts of those floors from before this change will not reproduce (upstream's own consequence).
@@ -481,6 +516,8 @@ dispatcher at a time.
 - **Slice 1 scope decision.** The 541 triaged commits mean Slice 1 is roughly an order of magnitude larger than planned. Options: review and integrate them inside Slice 1, split them into a Slice 1b, or push the non-engine areas to a later slice. Task 25's re-estimation should not be the first time this is confronted.
 - **Conditional music as pack config** (`cpdu-15l`). Should amulet-obtained / quest-active track selection become a pack-config surface rather than hardcoded level code? Landing upstream's form would hardcode what CPDU deliberately made configurable, and would not apply to configured dungeons at all. Touches the frozen DSL.
 - **Make CI content-audit blocking?** (`cpdu-wez`). The over-report that justified `|| true` is fixed, and the ceiling (24) equals the real count. Advisory mode is how the ceiling drifted to 189 while the real count was 194.
+- **Aggression target order** (`cpdu-p4bm`). `Actor.chars()` returns `HashSet` copies, so a mob choosing among 2+ aggression-marked targets picks in hash order. Fix as a determinism divergence, like the ShopRoom bag fix? The default per precedent is yes.
+- **Headless hero damage** (`cpdu-xbs4`). `GameScene.resetKeyHold` NPEs headless on any hit to the hero. Should it get a one-line production null guard, or a test seam? This blocks the WS-4 combat tests.
 - **Seeds vs player progress** (`cpdu-w3ol`). Floors 1–2 entrance doors depend on the intro/guide-page state, so a shared or daily seed differs between new and returning players. Accept that (faithful), or neutralise it for seeded runs (a divergence)?
 - **Keybearer remains item** (`cpdu-pvf4`). Upstream's default arm gives it the Warrior's SealShard. Keep that, or give it its own item?
 - **SpectralNecromancer divergence** (`cpdu-66a`). Upstream left it without the impassable-tile guard. Fix it as a documented CPDU divergence, or leave it faithful?

@@ -24,6 +24,7 @@ package com.qsr.customspd.items;
 import com.qsr.customspd.Assets;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.hero.Hero;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.watabou.noosa.audio.Sample;
@@ -32,8 +33,6 @@ import com.watabou.utils.Random;
 import java.util.ArrayList;
 
 public class EnergyCrystal extends Item {
-
-	private static final String TXT_VALUE	= "%+d";
 
 	{
 		image = GeneralAsset.ENERGY;
@@ -60,7 +59,7 @@ public class EnergyCrystal extends Item {
 		//TODO track energy collected maybe? We do already track recipes crafted though..
 
 		GameScene.pickUp( this, pos );
-		hero.sprite.showStatus( 0x44CCFF, TXT_VALUE, quantity );
+		hero.sprite.showStatusWithIcon( 0x44CCFF, Integer.toString(quantity), FloatingText.ENERGY );
 		hero.spendAndNext( TIME_TO_PICK_UP );
 
 		Sample.INSTANCE.play( Assets.Sounds.ITEM );

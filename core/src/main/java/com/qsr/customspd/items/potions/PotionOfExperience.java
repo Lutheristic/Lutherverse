@@ -24,6 +24,8 @@ package com.qsr.customspd.items.potions;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.effects.Flare;
+import com.qsr.customspd.effects.FloatingText;
+import com.qsr.customspd.sprites.CharSprite;
 
 public class PotionOfExperience extends Potion {
 
@@ -36,6 +38,7 @@ public class PotionOfExperience extends Potion {
 	@Override
 	public void apply( Hero hero ) {
 		identify();
+		hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(hero.maxExp()), FloatingText.EXPERIENCE);
 		hero.earnExp( hero.maxExp(), getClass() );
 		new Flare( 6, 32 ).color(0xFFFF00, true).show( curUser.sprite, 2f );
 	}
@@ -47,6 +50,6 @@ public class PotionOfExperience extends Potion {
 
 	@Override
 	public int energyVal() {
-		return isKnown() ? 8 * quantity : super.energyVal();
+		return isKnown() ? 10 * quantity : super.energyVal();
 	}
 }

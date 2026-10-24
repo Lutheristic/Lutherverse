@@ -55,15 +55,15 @@ public class AscensionChallenge extends Buff {
 		modifiers.put(Crab.class,           8f);
 		modifiers.put(Slime.class,          8f);
 
-		modifiers.put(Skeleton.class,       6f);
-		modifiers.put(Thief.class,          6f);
-		modifiers.put(DM100.class,          5f);
+		modifiers.put(Skeleton.class,       5f);
+		modifiers.put(Thief.class,          5f);
+		modifiers.put(DM100.class,          4.5f);
 		modifiers.put(Guard.class,          4f);
 		modifiers.put(Necromancer.class,    4f);
 
-		modifiers.put(Bat.class,            3f);
-		modifiers.put(Brute.class,          2.5f);
-		modifiers.put(Shaman.class,         2.5f);
+		modifiers.put(Bat.class,            2.5f);
+		modifiers.put(Brute.class,          2.25f);
+		modifiers.put(Shaman.class,         2.25f);
 		modifiers.put(Spinner.class,        2f);
 		modifiers.put(DM200.class,          2f);
 
@@ -128,7 +128,7 @@ public class AscensionChallenge extends Buff {
 	//hero speed is halved and capped at 1x at 6+ stacks
 	public static float modifyHeroSpeed(float speed){
 		if (Dungeon.hero.buff(AscensionChallenge.class) != null
-				&& Dungeon.hero.buff(AscensionChallenge.class).stacks > 6f){
+				&& Dungeon.hero.buff(AscensionChallenge.class).stacks >= 6f){
 			return Math.min(speed/2f, 1f);
 		}
 
@@ -141,6 +141,7 @@ public class AscensionChallenge extends Buff {
 
 		if (enemy instanceof Ratmogrify.TransmogRat){
 			enemy = ((Ratmogrify.TransmogRat) enemy).getOriginal();
+			if (enemy == null) return;
 		}
 
 		//only enemies that are boosted count

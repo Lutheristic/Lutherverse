@@ -41,24 +41,13 @@ public class ElixirOfToxicEssence extends Elixir {
 		hero.sprite.emitter().burst(PoisonParticle.SPLASH, 10);
 	}
 	
-	@Override
-	protected int splashColor() {
-		return 0xFF00B34A;
-	}
-	
-	@Override
-	public int value() {
-		//prices of ingredients
-		return quantity * (30 + 40);
-	}
-	
 	public static class Recipe extends com.qsr.customspd.items.Recipe.SimpleRecipe {
 		
 		{
-			inputs =  new Class[]{PotionOfToxicGas.class, AlchemicalCatalyst.class};
-			inQuantity = new int[]{1, 1};
+			inputs =  new Class[]{PotionOfToxicGas.class};
+			inQuantity = new int[]{1};
 			
-			cost = 6;
+			cost = 14;
 			
 			output = ElixirOfToxicEssence.class;
 			outQuantity = 1;

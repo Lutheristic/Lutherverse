@@ -25,6 +25,7 @@ import com.qsr.customspd.Assets;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.Char;
+import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.Invisibility;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.levels.Terrain;
@@ -109,6 +110,7 @@ public class Rapier extends MeleeWeapon {
 		}
 
 		final int dest = lungeCell;
+
 		hero.busy();
 		Sample.INSTANCE.play(Assets.Sounds.MISS);
 		hero.sprite.jump(hero.pos, dest, 0, 0.1f, new Callback() {
@@ -119,7 +121,9 @@ public class Rapier extends MeleeWeapon {
 				}
 				hero.pos = dest;
 				Dungeon.level.occupyCell(hero);
+				Dungeon.observe();
 
+				hero.belongings.abilityWeapon = wep; //set this early to we can check canAttack
 				if (enemy != null && hero.canAttack(enemy)) {
 					hero.sprite.attack(enemy.pos, new Callback() {
 						@Override
@@ -139,10 +143,27 @@ public class Rapier extends MeleeWeapon {
 						}
 					});
 				} else {
-					wep.beforeAbilityUsed(hero, null);
+					//spends charge but otherwise does not count as an ability use
+					//CPDU keeps separate primary/second-weapon charge pools (upstream 11a410f07's
+					//shared pool is not ported), so pay from the pool of the weapon that lunged,
+					//selected exactly as MeleeWeapon.beforeAbilityUsed does.
+					Charger charger = Buff.affect(hero, Charger.class);
+					if (hero.belongings.weapon == wep) {
+						charger.partialCharge -= 1;
+						while (charger.partialCharge < 0 && charger.charges > 0) {
+							charger.charges--;
+							charger.partialCharge++;
+						}
+					} else {
+						charger.secondPartialCharge -= 1;
+						while (charger.secondPartialCharge < 0 && charger.secondCharges > 0) {
+							charger.secondCharges--;
+							charger.secondPartialCharge++;
+						}
+					}
+					updateQuickslot();
 					GLog.w(Messages.get(Rapier.class, "ability_no_target"));
-					hero.spendAndNext(hero.speed());
-					wep.afterAbilityUsed(hero);
+					hero.spendAndNext(1/hero.speed());
 				}
 			}
 		});

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,10 +22,9 @@
 package com.qsr.customspd.items.remains;
 
 import com.qsr.customspd.Assets;
-import com.qsr.customspd.actors.buffs.Buff;
+import com.qsr.customspd.actors.buffs.ArtifactRecharge;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.GeneralAsset;
-import com.qsr.customspd.items.artifacts.Artifact;
 import com.qsr.customspd.items.scrolls.ScrollOfRecharging;
 import com.watabou.noosa.audio.Sample;
 
@@ -37,11 +36,7 @@ public class CloakScrap extends RemainsItem {
 
 	@Override
 	protected void doEffect(Hero hero) {
-		for (Buff b : hero.buffs()){
-			if (b instanceof Artifact.ArtifactBuff){
-				if (!((Artifact.ArtifactBuff) b).isCursed()) ((Artifact.ArtifactBuff) b).charge(hero, 4);
-			}
-		}
+		ArtifactRecharge.chargeArtifacts(hero, 4f);
 		ScrollOfRecharging.charge(hero);
 		Sample.INSTANCE.play( Assets.Sounds.CHARGEUP );
 	}

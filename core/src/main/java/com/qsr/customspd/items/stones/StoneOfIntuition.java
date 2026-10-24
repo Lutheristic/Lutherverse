@@ -21,6 +21,7 @@
 
 package com.qsr.customspd.items.stones;
 
+import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.effects.Identification;
@@ -66,9 +67,22 @@ public class StoneOfIntuition extends InventoryStone {
 	
 	@Override
 	protected void onItemSelected(Item item) {
-		
+
 		GameScene.show( new WndGuess(item));
 		
+	}
+
+	@Override
+	public String desc() {
+		String text = super.desc();
+		if (Dungeon.hero != null){
+			if (Dungeon.hero.buff(IntuitionUseTracker.class) == null){
+				text += "\n\n" + Messages.get(this, "break_info");
+			} else {
+				text += "\n\n" + Messages.get(this, "break_warn");
+			}
+		}
+		return text;
 	}
 
 	public static class IntuitionUseTracker extends Buff {{ revivePersists = true; }};
@@ -107,19 +121,16 @@ public class StoneOfIntuition extends InventoryStone {
 						}
 						GLog.p( Messages.get(WndGuess.class, "correct") );
 						curUser.sprite.parent.add( new Identification( curUser.sprite.center().offset( 0, -16 ) ) );
-
-						if (curUser.buff(IntuitionUseTracker.class) == null){
-							GLog.h( Messages.get(WndGuess.class, "preserved") );
-							new StoneOfIntuition().collect();
-							Buff.affect(curUser, IntuitionUseTracker.class);
-						} else {
-							curUser.buff(IntuitionUseTracker.class).detach();
-						}
 					} else {
-						if (curUser.buff(IntuitionUseTracker.class) != null) {
-							curUser.buff(IntuitionUseTracker.class).detach();
-						}
-						GLog.n( Messages.get(WndGuess.class, "incorrect") );
+						GLog.w( Messages.get(WndGuess.class, "incorrect") );
+					}
+					//InventoryStone no longer detaches the stone when it is used (2879e9ae5),
+					// so the first use is free simply by not detaching it here
+					if (curUser.buff(IntuitionUseTracker.class) == null){
+						Buff.affect(curUser, IntuitionUseTracker.class);
+					} else {
+						curItem.detach( curUser.belongings.backpack );
+						curUser.buff(IntuitionUseTracker.class).detach();
 					}
 					curGuess = null;
 					hide();
@@ -204,11 +215,5 @@ public class StoneOfIntuition extends InventoryStone {
 			
 		}
 		
-		
-		@Override
-		public void onBackPressed() {
-			super.onBackPressed();
-			new StoneOfIntuition().collect();
-		}
 	}
 }

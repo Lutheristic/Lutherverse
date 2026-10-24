@@ -26,6 +26,7 @@ import com.qsr.customspd.Badges;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.Statistics;
 import com.qsr.customspd.actors.hero.Hero;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.assets.GeneralAsset;
@@ -36,8 +37,6 @@ import java.util.ArrayList;
 
 public class Gold extends Item {
 
-	private static final String TXT_VALUE	= "%+d";
-	
 	{
 		image = GeneralAsset.GOLD;
 		stackable = true;
@@ -64,7 +63,7 @@ public class Gold extends Item {
 		Badges.validateGoldCollected();
 
 		GameScene.pickUp( this, pos );
-		hero.sprite.showStatus( CharSprite.NEUTRAL, TXT_VALUE, quantity );
+		hero.sprite.showStatusWithIcon( CharSprite.NEUTRAL, Integer.toString(quantity), FloatingText.GOLD );
 		hero.spendAndNext( TIME_TO_PICK_UP );
 		
 		Sample.INSTANCE.play( Assets.Sounds.GOLD, 1, 1, Random.Float( 0.9f, 1.1f ) );

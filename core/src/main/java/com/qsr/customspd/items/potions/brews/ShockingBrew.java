@@ -41,8 +41,8 @@ public class ShockingBrew extends Brew {
 	
 	@Override
 	public void shatter(int cell) {
+		splash( cell );
 		if (Dungeon.level.heroFOV[cell]) {
-			splash( cell );
 			Sample.INSTANCE.play( Assets.Sounds.SHATTER );
 			Sample.INSTANCE.play(Assets.Sounds.LIGHTNING);
 		}
@@ -54,19 +54,13 @@ public class ShockingBrew extends Brew {
 		}
 	}
 	
-	@Override
-	public int value() {
-		//prices of ingredients
-		return quantity * (40 + 40);
-	}
-	
 	public static class Recipe extends com.qsr.customspd.items.Recipe.SimpleRecipe {
 		
 		{
-			inputs =  new Class[]{PotionOfParalyticGas.class, AlchemicalCatalyst.class};
-			inQuantity = new int[]{1, 1};
+			inputs =  new Class[]{PotionOfParalyticGas.class};
+			inQuantity = new int[]{1};
 			
-			cost = 6;
+			cost = 14;
 			
 			output = ShockingBrew.class;
 			outQuantity = 1;

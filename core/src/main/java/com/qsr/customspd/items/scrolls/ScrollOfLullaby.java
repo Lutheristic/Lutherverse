@@ -40,18 +40,19 @@ public class ScrollOfLullaby extends Scroll {
 
 	@Override
 	public void doRead() {
-		
+
+		detach(curUser.belongings.backpack);
 		curUser.sprite.centerEmitter().start( Speck.factory( Speck.NOTE ), 0.3f, 5 );
 		Sample.INSTANCE.play( Assets.Sounds.LULLABY );
 
 		for (Mob mob : Dungeon.level.mobs.toArray( new Mob[0] )) {
 			if (Dungeon.level.heroFOV[mob.pos]) {
-				Buff.affect( mob, Drowsy.class );
+				Buff.affect( mob, Drowsy.class, Drowsy.DURATION );
 				mob.sprite.centerEmitter().start( Speck.factory( Speck.NOTE ), 0.3f, 5 );
 			}
 		}
 
-		Buff.affect( curUser, Drowsy.class );
+		Buff.affect( curUser, Drowsy.class, Drowsy.DURATION );
 
 		GLog.i( Messages.get(this, "sooth") );
 

@@ -82,6 +82,7 @@ import com.qsr.customspd.actors.hero.abilities.warrior.Endure;
 import com.qsr.customspd.actors.mobs.Brute;
 import com.qsr.customspd.actors.mobs.DwarfKing;
 import com.qsr.customspd.actors.mobs.Elemental;
+import com.qsr.customspd.actors.mobs.Necromancer;
 import com.qsr.customspd.actors.mobs.Tengu;
 import com.qsr.customspd.actors.mobs.YogDzewa;
 import com.qsr.customspd.actors.mobs.npcs.MirrorImage;
@@ -92,6 +93,7 @@ import com.qsr.customspd.items.Heap;
 import com.qsr.customspd.items.armor.glyphs.AntiMagic;
 import com.qsr.customspd.items.armor.glyphs.Potential;
 import com.qsr.customspd.items.armor.glyphs.Viscosity;
+import com.qsr.customspd.items.artifacts.DriedRose;
 import com.qsr.customspd.items.artifacts.TimekeepersHourglass;
 import com.qsr.customspd.items.potions.exotic.PotionOfCleansing;
 import com.qsr.customspd.items.quest.Pickaxe;
@@ -101,6 +103,7 @@ import com.qsr.customspd.items.scrolls.ScrollOfTeleportation;
 import com.qsr.customspd.items.scrolls.exotic.ScrollOfChallenge;
 import com.qsr.customspd.items.scrolls.exotic.ScrollOfPsionicBlast;
 import com.qsr.customspd.items.stones.StoneOfAggression;
+import com.qsr.customspd.items.wands.WandOfBlastWave;
 import com.qsr.customspd.items.wands.WandOfFireblast;
 import com.qsr.customspd.items.wands.WandOfFrost;
 import com.qsr.customspd.items.wands.WandOfLightning;
@@ -828,7 +831,10 @@ public abstract class Char extends Actor {
 			if (src instanceof Pickaxe)                                 icon = FloatingText.PICK_DMG;
 
 			//special case for sniper when using ranged attacks
-			if (src == Dungeon.hero && Dungeon.hero.subClass == HeroSubClass.SNIPER && Dungeon.hero.belongings.attackingWeapon() instanceof MissileWeapon){
+			if (src == Dungeon.hero
+					&& Dungeon.hero.subClass == HeroSubClass.SNIPER
+					&& !Dungeon.level.adjacent(Dungeon.hero.pos, pos)
+					&& Dungeon.hero.belongings.attackingWeapon() instanceof MissileWeapon){
 				icon = FloatingText.PHYS_DMG_NO_BLOCK;
 			}
 
@@ -866,13 +872,16 @@ public abstract class Char extends Actor {
 	//these are misc. sources of physical damage which do not apply armor, they get a different icon
 	private static HashSet<Class> NO_ARMOR_PHYSICAL_SOURCES = new HashSet<>();
 	{
-		//CPDU: upstream also lists CrystalSpire.SpireSpike and GnollGeomancer.Boulder (classes CPDU
-		//does not have), and WandOfBlastWave.Knockback, Necromancer.SummoningBlockDamage and
-		//DriedRose.GhostHero.NoRoseDamage, which arrive with their call sites in cpdu-ta6.3.
+		//CPDU: upstream also lists CrystalSpire.SpireSpike and GnollGeomancer.Boulder, classes CPDU
+		//does not have (v2.2 caves quest).
 		NO_ARMOR_PHYSICAL_SOURCES.add(DwarfKing.KingDamager.class);
 		NO_ARMOR_PHYSICAL_SOURCES.add(DwarfKing.Summoning.class);
+		NO_ARMOR_PHYSICAL_SOURCES.add(LifeLink.class);
 		NO_ARMOR_PHYSICAL_SOURCES.add(Chasm.class);
+		NO_ARMOR_PHYSICAL_SOURCES.add(WandOfBlastWave.Knockback.class);
 		NO_ARMOR_PHYSICAL_SOURCES.add(Heap.class); //damage from wraiths attempting to spawn from heaps
+		NO_ARMOR_PHYSICAL_SOURCES.add(Necromancer.SummoningBlockDamage.class);
+		NO_ARMOR_PHYSICAL_SOURCES.add(DriedRose.GhostHero.NoRoseDamage.class);
 	}
 
 	public void destroy() {

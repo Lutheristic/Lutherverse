@@ -23,6 +23,7 @@ package com.qsr.customspd.actors.buffs;
 
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.Asset;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.ui.BuffIndicator;
@@ -55,11 +56,16 @@ public class Healing extends Buff {
 			if (target.HP == target.HT && target instanceof Hero) {
 				((Hero) target).resting = false;
 			}
+
+			target.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(healingThisTick()), FloatingText.HEALING);
 		}
-		
+
 		healingLeft -= healingThisTick();
 		
 		if (healingLeft <= 0){
+			if (target instanceof Hero) {
+				((Hero) target).resting = false;
+			}
 			detach();
 		}
 		
@@ -75,9 +81,10 @@ public class Healing extends Buff {
 	}
 	
 	public void setHeal(int amount, float percentPerTick, int flatPerTick){
-		healingLeft = amount;
-		percentHealPerTick = percentPerTick;
-		flatHealPerTick = flatPerTick;
+		//multiple sources of healing do not overlap, but do combine the best of their properties
+		healingLeft = Math.max(healingLeft, amount);
+		percentHealPerTick = Math.max(percentHealPerTick, percentPerTick);
+		flatHealPerTick = Math.max(flatHealPerTick, flatPerTick);
 	}
 	
 	public void increaseHeal( int amount ){

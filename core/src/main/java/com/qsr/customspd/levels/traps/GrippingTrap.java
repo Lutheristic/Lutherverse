@@ -21,7 +21,6 @@
 
 package com.qsr.customspd.levels.traps;
 
-import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.buffs.Bleeding;
@@ -45,7 +44,7 @@ public class GrippingTrap extends Trap {
 		Char c = Actor.findChar( pos );
 
 		if (c != null && !c.flying) {
-			int damage = Math.max( 0,  (2 + Dungeon.depth/2) - c.drRoll()/2 );
+			int damage = Math.max( 0,  (2 + scalingDepth()/2) - c.drRoll()/2 );
 			Buff.affect( c, Bleeding.class ).set( damage );
 			Buff.prolong( c, Cripple.class, Cripple.DURATION);
 			Wound.hit( c );

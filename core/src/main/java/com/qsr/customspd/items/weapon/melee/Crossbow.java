@@ -22,10 +22,15 @@
 package com.qsr.customspd.items.weapon.melee;
 
 import com.qsr.customspd.Assets;
+import com.qsr.customspd.actors.Actor;
+import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.items.wands.WandOfBlastWave;
+import com.qsr.customspd.items.weapon.missiles.darts.Dart;
+import com.qsr.customspd.mechanics.Ballistica;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.ui.BuffIndicator;
@@ -59,7 +64,49 @@ public class Crossbow extends MeleeWeapon {
 			return false;
 		}
 	}
-	
+
+	@Override
+	public float accuracyFactor(Char owner, Char target) {
+		if (owner.buff(Crossbow.ChargedShot.class) != null){
+			Actor.add(new Actor() {
+				{ actPriority = VFX_PRIO; }
+				@Override
+				protected boolean act() {
+					if (owner instanceof Hero && !target.isAlive()){
+						onAbilityKill((Hero)owner, target);
+					}
+					Actor.remove(this);
+					return true;
+				}
+			});
+			return Float.POSITIVE_INFINITY;
+		} else {
+			return super.accuracyFactor(owner, target);
+		}
+	}
+
+	@Override
+	public int proc(Char attacker, Char defender, int damage) {
+		int dmg = super.proc(attacker, defender, damage);
+
+		//stronger elastic effect
+		if (attacker.buff(ChargedShot.class) != null && !(curItem instanceof Dart)){
+			//trace a ballistica to our target (which will also extend past them
+			Ballistica trajectory = new Ballistica(attacker.pos, defender.pos, Ballistica.STOP_TARGET);
+			//trim it to just be the part that goes past them
+			trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size()-1), Ballistica.PROJECTILE);
+			//knock them back along that ballistica
+			WandOfBlastWave.throwChar(defender,
+					trajectory,
+					3,
+					true,
+					true,
+					this);
+			attacker.buff(Crossbow.ChargedShot.class).detach();
+		}
+		return dmg;
+	}
+
 	@Override
 	public int max(int lvl) {
 		return  4*(tier+1) +    //20 base, down from 25
@@ -78,6 +125,15 @@ public class Crossbow extends MeleeWeapon {
 		hero.sprite.operate(hero.pos);
 		hero.next();
 		afterAbilityUsed(hero);
+	}
+
+	@Override
+	public String abilityInfo() {
+		if (levelKnown){
+			return Messages.get(this, "ability_desc", 3+buffedLvl());
+		} else {
+			return Messages.get(this, "typical_ability_desc", 3);
+		}
 	}
 
 	public static class ChargedShot extends Buff{

@@ -32,7 +32,13 @@ import com.qsr.customspd.actors.mobs.Mob;
 import com.qsr.customspd.effects.CellEmitter;
 import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.messages.Messages;
+import com.qsr.customspd.scenes.GameScene;
+import com.qsr.customspd.utils.BArray;
+import com.qsr.customspd.utils.GLog;
+import com.watabou.noosa.Camera;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 public class Dagger extends MeleeWeapon {
@@ -75,22 +81,66 @@ public class Dagger extends MeleeWeapon {
 	}
 
 	@Override
-	public float abilityChargeUse(Hero hero, Char target) {
-		return 2*super.abilityChargeUse(hero, target);
+	public String targetingPrompt() {
+		return Messages.get(this, "prompt");
+	}
+
+	public boolean useTargeting(){
+		return false;
+	}
+
+	@Override
+	protected int baseChargeUse(Hero hero, Char target){
+		return 2;
 	}
 
 	@Override
 	protected void duelistAbility(Hero hero, Integer target) {
-		sneakAbility(hero, 10, this);
+		sneakAbility(hero, target, 5, 2+buffedLvl(), this);
 	}
 
-	public static void sneakAbility(Hero hero, int invisTurns, MeleeWeapon wep){
+	@Override
+	public String abilityInfo() {
+		if (levelKnown){
+			return Messages.get(this, "ability_desc", 2+buffedLvl());
+		} else {
+			return Messages.get(this, "typical_ability_desc", 2);
+		}
+	}
+
+	public static void sneakAbility(Hero hero, Integer target, int maxDist, int invisTurns, MeleeWeapon wep){
+		if (target == null) {
+			return;
+		}
+
+		if (Actor.findChar(target) != null || !Dungeon.level.heroFOV[target] || hero.rooted) {
+			GLog.w(Messages.get(wep, "ability_bad_position"));
+			//CPDU has no PixelScene.shake (upstream 02210b0a8's screen-shake setting); Camera.main.shake is its equivalent
+			if (Dungeon.hero.rooted) Camera.main.shake( 1, 1f );
+			return;
+		}
+
+		PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null), maxDist);
+		if (PathFinder.distance[target] == Integer.MAX_VALUE) {
+			GLog.w(Messages.get(wep, "ability_bad_position"));
+			return;
+		}
+
 		wep.beforeAbilityUsed(hero, null);
-		Buff.affect(hero, Invisibility.class, invisTurns);
-		hero.spendAndNext(Actor.TICK);
+		Buff.affect(hero, Invisibility.class, invisTurns-1); //1 fewer turns as ability is instant
+
+		Dungeon.hero.sprite.turnTo( Dungeon.hero.pos, target);
+		Dungeon.hero.pos = target;
+		Dungeon.level.occupyCell(Dungeon.hero);
+		Dungeon.observe();
+		GameScene.updateFog();
+		Dungeon.hero.checkVisibleMobs();
+
+		Dungeon.hero.sprite.place( Dungeon.hero.pos );
 		CellEmitter.get( Dungeon.hero.pos ).burst( Speck.factory( Speck.WOOL ), 6 );
 		Sample.INSTANCE.play( Assets.Sounds.PUFF );
+
+		hero.next();
 		wep.afterAbilityUsed(hero);
 	}
-
 }

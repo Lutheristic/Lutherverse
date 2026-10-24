@@ -80,6 +80,7 @@ public class ReclaimTrap extends TargetedSpell {
 			storedTrap = null;
 			
 			t.pos = bolt.collisionPos;
+			t.reclaimed = true;
 			t.activate();
 			
 		}
@@ -116,8 +117,12 @@ public class ReclaimTrap extends TargetedSpell {
 	
 	@Override
 	public int value() {
-		//prices of ingredients, divided by output quantity, rounds down
-		return (int)((40 + 50) * (quantity/4f));
+		return (int)(60 * (quantity/4f));
+	}
+
+	@Override
+	public int energyVal() {
+		return (int)(12 * (quantity/4f));
 	}
 	
 	private static final String STORED_TRAP = "stored_trap";

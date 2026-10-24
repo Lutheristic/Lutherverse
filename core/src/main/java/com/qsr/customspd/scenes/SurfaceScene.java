@@ -22,13 +22,13 @@
 package com.qsr.customspd.scenes;
 
 import com.qsr.customspd.Assets;
-import com.qsr.customspd.Badges;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.hero.HeroClass;
 import com.qsr.customspd.actors.hero.abilities.Ratmogrify;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.artifacts.DriedRose;
+import com.qsr.customspd.items.remains.RemainsItem;
 import com.qsr.customspd.items.wands.WandOfLivingEarth;
 import com.qsr.customspd.items.wands.WandOfWarding;
 import com.qsr.customspd.items.weapon.melee.MagesStaff;
@@ -62,6 +62,7 @@ import com.watabou.utils.Random;
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class SurfaceScene extends PixelScene {
 
@@ -110,7 +111,8 @@ public class SurfaceScene extends PixelScene {
 		window.camera = viewport;
 		add( window );
 		
-		boolean dayTime = Calendar.getInstance().get(Calendar.HOUR_OF_DAY) >= 7;
+		Calendar cal = GregorianCalendar.getInstance();
+		boolean dayTime = cal.get(Calendar.HOUR_OF_DAY) >= 7 && cal.get(Calendar.HOUR_OF_DAY) <= 20;
 		
 		Sky sky = new Sky( dayTime );
 		sky.scale.set( SKY_WIDTH, SKY_HEIGHT );
@@ -214,6 +216,14 @@ public class SurfaceScene extends PixelScene {
 			align(allySprite);
 			window.add(allySprite);
 		}
+
+		if (Dungeon.hero.belongings.getItem(RemainsItem.class) != null){
+			Image grave = new Image(Asset.getAssetFilePath(GeneralAsset.SURFACE_GRAVE));
+
+			grave.x = a.x + a.width() + 10;
+			grave.y = a.y + a.height() - grave.height();
+			window.add(grave);
+		}
 		
 		window.add( a );
 		window.add( pet );
@@ -251,9 +261,7 @@ public class SurfaceScene extends PixelScene {
 		gameOver.setSize( SKY_WIDTH - FRAME_MARGIN_X * 2, BUTTON_HEIGHT );
 		gameOver.setPos( frame.x + FRAME_MARGIN_X * 2, frame.y + frame.height + 4 );
 		add( gameOver );
-		
-		Badges.validateHappyEnd();
-		
+
 		fadeIn();
 	}
 
@@ -274,8 +282,6 @@ public class SurfaceScene extends PixelScene {
 
 	@Override
 	public void destroy() {
-		Badges.saveGlobal();
-		
 		Camera.remove( viewport );
 		super.destroy();
 	}

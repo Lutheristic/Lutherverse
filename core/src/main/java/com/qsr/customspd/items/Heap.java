@@ -31,7 +31,6 @@ import com.qsr.customspd.effects.CellEmitter;
 import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.effects.particles.ElmoParticle;
 import com.qsr.customspd.effects.particles.ShadowParticle;
-import com.qsr.customspd.items.armor.Armor;
 import com.qsr.customspd.items.artifacts.Artifact;
 import com.qsr.customspd.items.bombs.Bomb;
 import com.qsr.customspd.items.food.ChargrilledMeat;
@@ -275,8 +274,8 @@ public class Heap implements Bundlable {
 
 			for (Item item : items.toArray( new Item[0] )) {
 
-				//unique items aren't affect by explosions
-				if (item.unique || (item instanceof Armor && ((Armor) item).checkSeal() != null)){
+				//unique items and equipment aren't affect by explosions
+				if (item.unique || item.isUpgradable() || item instanceof EquipableItem){
 					continue;
 				}
 
@@ -296,8 +295,7 @@ public class Heap implements Bundlable {
 						return;
 					}
 
-				//upgraded items can endure the blast
-				} else if (item.level() <= 0) {
+				} else {
 					items.remove( item );
 				}
 
@@ -326,7 +324,7 @@ public class Heap implements Bundlable {
 				items.remove(item);
 				((Potion) item).shatter(pos);
 				frozen = true;
-			} else if (item instanceof Bomb){
+			} else if (item instanceof Bomb && ((Bomb) item).fuse != null){
 				frozen = frozen || ((Bomb) item).fuse.freeze();
 			}
 		}

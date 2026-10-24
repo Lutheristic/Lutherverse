@@ -34,6 +34,7 @@ import com.qsr.customspd.actors.buffs.Terror;
 import com.qsr.customspd.actors.buffs.Vertigo;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.mobs.npcs.NPC;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.MagicMissile;
 import com.qsr.customspd.items.weapon.melee.MagesStaff;
 import com.qsr.customspd.mechanics.Ballistica;
@@ -118,11 +119,7 @@ public class WandOfWarding extends Wand {
 			}
 		}
 
-		if (!Dungeon.level.passable[target]){
-			GLog.w( Messages.get(this, "bad_location"));
-			Dungeon.level.pressCell(target);
-			
-		} else if (ch != null){
+		if (ch != null){
 			if (ch instanceof Ward){
 				if (wardAvailable) {
 					((Ward) ch).upgrade( buffedLvl() );
@@ -135,6 +132,10 @@ public class WandOfWarding extends Wand {
 				Dungeon.level.pressCell(target);
 			}
 			
+		} else if (!Dungeon.level.passable[target]){
+			GLog.w( Messages.get(this, "bad_location"));
+			Dungeon.level.pressCell(target);
+
 		} else {
 			Ward ward = new Ward();
 			ward.pos = target;
@@ -286,7 +287,7 @@ public class WandOfWarding extends Wand {
 			}
 
 			HP = Math.min(HT, HP+heal);
-			if (sprite != null) sprite.showStatus(CharSprite.POSITIVE, Integer.toString(heal));
+			if (sprite != null) sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(heal), FloatingText.HEALING);
 
 		}
 
@@ -338,7 +339,8 @@ public class WandOfWarding extends Wand {
 
 			if (!enemy.isAlive() && enemy == Dungeon.hero) {
 				Badges.validateDeathFromFriendlyMagic();
-				Dungeon.fail( this );
+				GLog.n(Messages.capitalize(Messages.get( this, "kill", name() )));
+				Dungeon.fail( WandOfWarding.class );
 			}
 
 			totalZaps++;

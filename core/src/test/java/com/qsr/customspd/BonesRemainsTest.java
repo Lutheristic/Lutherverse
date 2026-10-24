@@ -4,6 +4,7 @@ import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.HeroClass;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.potions.PotionOfHealing;
+import com.qsr.customspd.items.remains.BrokenHilt;
 import com.qsr.customspd.items.remains.BrokenStaff;
 import com.qsr.customspd.items.remains.CloakScrap;
 import com.qsr.customspd.modding.DungeonLayout;
@@ -37,7 +38,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *    report an exception and return WARRIOR, inventing a seal shard);
  *  - leave() -> get() across a simulated restart must hand back the dead hero's class remains
  *    item, first, alongside any picked item;
- *  - a stackable item left in remains is capped at 3.
+ *  - a stackable item left in remains is capped at 3;
+ *  - (upstream cd79b3bcd, v2.1.3, in its v2.5.4 form) amulet holders, challenged and seeded heroes
+ *    all leave remains - seeded runs the class item only - remains of a hero who died far above
+ *    the deepest floor drop 5 floors above it instead, and daily runs neither leave nor find any.
  *
  * Statics discipline: every Dungeon/Statistics field Bones reads, and Bones' own private
  * level/item/heroClass (via reflection - a fresh process starts at "surface"), are snapshotted
@@ -52,6 +56,7 @@ class BonesRemainsTest {
 	private Hero prevHero;
 	private int prevDepth;
 	private int prevChallenges;
+	private boolean prevDaily;
 	private String prevLevelName;
 	private String prevSeedText;
 	private DungeonLayout prevLayout;
@@ -70,6 +75,7 @@ class BonesRemainsTest {
 		prevHero = Dungeon.hero;
 		prevDepth = Dungeon.depth;
 		prevChallenges = Dungeon.challenges;
+		prevDaily = Dungeon.daily;
 		prevLevelName = Dungeon.levelName;
 		prevSeedText = Dungeon.customSeedText;
 		prevLayout = Dungeon.layout;
@@ -84,6 +90,7 @@ class BonesRemainsTest {
 
 		Dungeon.depth = 3;
 		Dungeon.challenges = 0;
+		Dungeon.daily = false;
 		Dungeon.levelName = LEVEL_NAME;
 		Dungeon.customSeedText = "";
 		Dungeon.layout = JsonConfigRetriever.INSTANCE.retrieveDungeonLayout();
@@ -98,6 +105,7 @@ class BonesRemainsTest {
 		Dungeon.hero = prevHero;
 		Dungeon.depth = prevDepth;
 		Dungeon.challenges = prevChallenges;
+		Dungeon.daily = prevDaily;
 		Dungeon.levelName = prevLevelName;
 		Dungeon.customSeedText = prevSeedText;
 		Dungeon.layout = prevLayout;
@@ -251,5 +259,98 @@ class BonesRemainsTest {
 		assertTrue(withItem > 0, "test setup: some seed must have left the carried stack");
 		// NormalIntRange(1, 20) is almost never below 3, so the cap must actually be doing the work.
 		assertTrue(atCap > 0, "the cap at 3 must be reached for a 40-stack");
+	}
+
+	@Test
+	void challengedHeroLeavesFullRemainsButAChallengedFinderGetsOnlyTheClassItem() throws Exception {
+		Dungeon.challenges = 1;
+		int withItem = 0;
+		for (long seed = 1; seed <= 40; seed++) {
+			FileUtils.deleteFile(BONES_FILE);
+			freshProcess();
+			Hero hero = hero(HeroClass.MAGE);
+			hero.belongings.backpack.items.add(new PotionOfHealing());
+			leave(seed);
+
+			assertTrue(FileUtils.fileExists(BONES_FILE), "seed " + seed + ": a challenged hero must leave remains");
+			Bundle onDisk = FileUtils.bundleFromFile(BONES_FILE);
+			assertEquals(LEVEL_NAME, onDisk.getString("level"));
+			assertEquals("MAGE", onDisk.getString("hero_class"));
+			if (onDisk.contains("item")) withItem++;
+
+			freshProcess();
+			ArrayList<Item> found = get(seed);
+			assertNotNull(found, "seed " + seed);
+			assertEquals(1, found.size(), "seed " + seed + ": a challenged finder gets no prior-run item: " + found);
+			assertTrue(found.get(0) instanceof BrokenStaff, "seed " + seed + ": " + found);
+		}
+		assertTrue(withItem > 0, "a challenged hero's remains must carry a picked item for some seed");
+	}
+
+	@Test
+	void seededHeroLeavesOnlyTheClassItem() throws Exception {
+		Dungeon.customSeedText = "ABC-DEF-GHI";
+		for (long seed = 1; seed <= 40; seed++) {
+			FileUtils.deleteFile(BONES_FILE);
+			freshProcess();
+			Hero hero = hero(HeroClass.ROGUE);
+			hero.belongings.backpack.items.add(new PotionOfHealing());
+			leave(seed);
+
+			assertTrue(FileUtils.fileExists(BONES_FILE), "seed " + seed + ": a seeded hero must leave remains");
+			Bundle onDisk = FileUtils.bundleFromFile(BONES_FILE);
+			assertEquals("ROGUE", onDisk.getString("hero_class"));
+			assertFalse(onDisk.contains("item"), "seed " + seed + ": seeded runs must never leave an item");
+		}
+	}
+
+	@Test
+	void amuletHolderStillLeavesRemains() throws Exception {
+		Statistics.amuletObtained = true;
+		hero(HeroClass.HUNTRESS);
+		leave(20261023L);
+
+		assertTrue(FileUtils.fileExists(BONES_FILE), "a hero carrying the amulet must leave remains");
+		assertEquals(LEVEL_NAME, FileUtils.bundleFromFile(BONES_FILE).getString("level"));
+		assertEquals("HUNTRESS", FileUtils.bundleFromFile(BONES_FILE).getString("hero_class"));
+	}
+
+	@Test
+	void remainsOfAHeroFarAboveTheDeepestFloorDropFiveFloorsAboveIt() throws Exception {
+		Statistics.deepestFloor = 12; // died on depth 3 after reaching 12
+		hero(HeroClass.DUELIST);
+		leave(20261023L);
+
+		assertTrue(FileUtils.fileExists(BONES_FILE), "a hero dying far above the deepest floor must leave remains");
+		assertEquals("7", FileUtils.bundleFromFile(BONES_FILE).getString("level"),
+				"remains are capped at 5 floors above the deepest floor reached");
+
+		freshProcess();
+		assertNull(get(1L), "the remains must not be on the floor the hero died on");
+
+		Dungeon.levelName = "7";
+		Dungeon.depth = 7;
+		ArrayList<Item> found = get(2L);
+		assertNotNull(found, "the remains must be found on the capped floor");
+		assertTrue(found.get(0) instanceof BrokenHilt, "a duelist's remains item, got " + found);
+	}
+
+	@Test
+	void dailyRunsNeitherLeaveNorFindRemains() throws Exception {
+		Dungeon.daily = true;
+		Dungeon.customSeedText = "2026-10-23"; // what Dungeon.init sets for a daily run
+		hero(HeroClass.WARRIOR);
+		leave(20261023L);
+		assertFalse(FileUtils.fileExists(BONES_FILE), "a daily run must not leave remains");
+
+		// bones from an earlier regular run must survive a daily run reaching their floor
+		Bundle earlier = new Bundle();
+		earlier.put("level", LEVEL_NAME);
+		earlier.put("hero_class", HeroClass.MAGE);
+		FileUtils.bundleToFile(BONES_FILE, earlier);
+		freshProcess();
+		assertNull(get(1L), "a daily run must not find remains");
+		assertEquals(LEVEL_NAME, FileUtils.bundleFromFile(BONES_FILE).getString("level"),
+				"a daily run must not consume another run's remains");
 	}
 }

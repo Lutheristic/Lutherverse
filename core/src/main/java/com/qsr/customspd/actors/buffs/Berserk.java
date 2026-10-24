@@ -26,6 +26,7 @@ import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.Asset;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.SpellSprite;
 import com.qsr.customspd.items.BrokenSeal.WarriorShield;
 import com.qsr.customspd.messages.Messages;
@@ -217,6 +218,7 @@ public class Berserk extends Buff implements ActionIndicator.Action {
 		WarriorShield shield = target.buff(WarriorShield.class);
 		int shieldAmount = Math.round(shield.maxShield() * shieldMultiplier);
 		shield.supercharge(shieldAmount);
+		target.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(shieldAmount), FloatingText.SHIELDING );
 
 		BuffIndicator.refreshHero();
 	}
@@ -271,7 +273,7 @@ public class Berserk extends Buff implements ActionIndicator.Action {
 	@Override
 	public void doAction() {
 		WarriorShield shield = target.buff(WarriorShield.class);
-		if (shield != null) {
+		if (shield != null && shield.maxShield() > 0) {
 			startBerserking();
 			ActionIndicator.clearAction(this);
 		} else {

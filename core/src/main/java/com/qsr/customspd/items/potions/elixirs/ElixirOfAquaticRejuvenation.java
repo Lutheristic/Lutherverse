@@ -27,10 +27,12 @@ import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.Asset;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.items.potions.PotionOfHealing;
 import com.qsr.customspd.items.quest.GooBlob;
 import com.qsr.customspd.messages.Messages;
+import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.ui.BuffIndicator;
 import com.watabou.noosa.Image;
@@ -54,12 +56,6 @@ public class ElixirOfAquaticRejuvenation extends Elixir {
 			Buff.affect(hero, AquaHealing.class).set(Math.round(hero.HT * 1.5f));
 		}
 		Talent.onHealingPotionUsed( hero );
-	}
-	
-	@Override
-	public int value() {
-		//prices of ingredients
-		return quantity * (30 + 30);
 	}
 	
 	public static class AquaHealing extends Buff {
@@ -86,13 +82,24 @@ public class ElixirOfAquaticRejuvenation extends Elixir {
 				} else {
 					healAmt = (float)Math.floor(healAmt);
 				}
-				target.HP += healAmt;
-				left -= healAmt;
+				target.HP += (int)healAmt;
+				left -= (int)healAmt;
 				target.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
+				target.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString((int)healAmt), FloatingText.HEALING );
+
+				if (target.HP >= target.HT) {
+					target.HP = target.HT;
+					if (target instanceof Hero) {
+						((Hero) target).resting = false;
+					}
+				}
 			}
 			
 			if (left <= 0){
 				detach();
+				if (target instanceof Hero) {
+					((Hero) target).resting = false;
+				}
 			} else {
 				spend(TICK);
 			}

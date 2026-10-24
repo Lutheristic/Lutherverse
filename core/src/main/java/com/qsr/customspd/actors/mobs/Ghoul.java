@@ -27,11 +27,13 @@ import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.blobs.SacrificialFire;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.hero.abilities.duelist.Challenge;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.Pushing;
 import com.qsr.customspd.items.Gold;
 import com.qsr.customspd.items.artifacts.MasterThievesArmband;
 import com.qsr.customspd.levels.features.Chasm;
 import com.qsr.customspd.scenes.GameScene;
+import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.sprites.GhoulSprite;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
@@ -293,6 +295,7 @@ public class Ghoul extends Mob {
 				Dungeon.level.mobs.add(ghoul);
 				Dungeon.level.occupyCell( ghoul );
 				ghoul.sprite.idle();
+				ghoul.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(Math.round(ghoul.HT/10f)), FloatingText.HEALING);
 				super.detach();
 				return true;
 			}

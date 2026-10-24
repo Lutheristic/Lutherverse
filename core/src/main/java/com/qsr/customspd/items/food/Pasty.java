@@ -25,9 +25,11 @@ import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.Hunger;
 import com.qsr.customspd.actors.buffs.Recharging;
 import com.qsr.customspd.actors.hero.Hero;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.items.scrolls.ScrollOfRecharging;
 import com.qsr.customspd.messages.Messages;
+import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.utils.Holiday;
 
@@ -45,7 +47,7 @@ public class Pasty extends Food {
 	public void reset() {
 		super.reset();
 		switch(Holiday.getCurrentHoliday()){
-			case NONE:
+			case NONE: default:
 				image = GeneralAsset.PASTY;
 				break;
 			case HALLOWEEN:
@@ -66,8 +68,10 @@ public class Pasty extends Food {
 				break; //do nothing extra
 			case HALLOWEEN:
 				//heals for 10% max hp
-				hero.HP = Math.min(hero.HP + hero.HT/10, hero.HT);
+				int toHeal = hero.HT/10;
+				hero.HP = Math.min(hero.HP + toHeal, hero.HT);
 				hero.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
+				hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(toHeal), FloatingText.HEALING );
 				break;
 			case WINTER_HOLIDAYS:
 				Buff.affect( hero, Recharging.class, 2f ); //half of a charge

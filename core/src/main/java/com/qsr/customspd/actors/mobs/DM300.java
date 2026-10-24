@@ -45,6 +45,7 @@ import com.qsr.customspd.actors.buffs.Slow;
 import com.qsr.customspd.actors.buffs.Terror;
 import com.qsr.customspd.actors.buffs.Vertigo;
 import com.qsr.customspd.effects.CellEmitter;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.effects.TargetedCell;
 import com.qsr.customspd.effects.particles.EarthParticle;
@@ -342,6 +343,7 @@ public class DM300 extends Mob {
 				}
 				Sample.INSTANCE.play(Assets.Sounds.LIGHTNING);
 				sprite.emitter().start(SparkParticle.STATIC, 0.05f, 20);
+				sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(30 + (HT - HP)/10), FloatingText.SHIELDING);
 			}
 
 			Buff.affect(this, Barrier.class).setShield( 30 + (HT - HP)/10);

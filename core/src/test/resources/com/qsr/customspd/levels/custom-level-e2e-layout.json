@@ -1,0 +1,58 @@
+{
+  "start": "c1",
+  "dungeon": {
+    "c1": {
+      "depth": 1,
+      "type": "custom",
+      "entrances": ["surface"],
+      "exits": ["c2"],
+      "chasm": "c2",
+      "passage": "c1",
+      "custom_layout": {
+        "width": 9,
+        "height": 7,
+        "region": 1,
+        "music": { "tracks": [], "probs": [] },
+        "map": [
+          4, 4, 4, 4,  4, 4, 4, 4, 4,
+          4, 7, 1, 1,  1, 1, 1, 1, 4,
+          4, 1, 1, 1,  1, 1, 1, 1, 4,
+          4, 1, 1, 17, 1, 29, 1, 1, 4,
+          4, 1, 1, 1,  1, 1, 1, 1, 4,
+          4, 1, 1, 1,  1, 1, 1, 8, 4,
+          4, 4, 4, 4,  4, 4, 4, 4, 4
+        ],
+        "entrances": [ { "x": 1, "y": 1 } ],
+        "exits": [ { "x": 7, "y": 5 } ],
+        "mobs": [ { "x": 6, "y": 2, "type": "Rat", "hp": 3, "ai_state": "wandering" } ],
+        "items": [ { "x": 2, "y": 4, "type": "potions.PotionOfHealing", "quantity": 2 } ],
+        "hidden_traps": [ { "x": 3, "y": 3, "type": "WornDartTrap" } ],
+        "plants": [ { "x": 6, "y": 4, "type": "Sungrass" } ]
+      }
+    },
+    "c2": {
+      "depth": 2,
+      "type": "custom",
+      "entrances": ["c1"],
+      "exits": ["c3"],
+      "chasm": "c3",
+      "passage": "c1",
+      "custom_layout": {
+        "width": 7,
+        "height": 5,
+        "region": 2,
+        "view_distance": 5,
+        "music": { "tracks": [], "probs": [] },
+        "map": [
+          4, 4, 4, 4, 4, 4, 4,
+          4, 7, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 1, 8, 4,
+          4, 4, 4, 4, 4, 4, 4
+        ],
+        "entrances": [ { "x": 1, "y": 1 } ],
+        "exits": [ { "x": 5, "y": 3 } ]
+      }
+    }
+  }
+}

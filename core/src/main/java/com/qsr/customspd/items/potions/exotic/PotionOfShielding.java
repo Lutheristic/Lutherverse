@@ -28,7 +28,9 @@ import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.items.potions.PotionOfHealing;
+import com.qsr.customspd.sprites.CharSprite;
 
 public class PotionOfShielding extends ExoticPotion {
 	
@@ -45,6 +47,7 @@ public class PotionOfShielding extends ExoticPotion {
 		} else {
 			//~75% of a potion of healing
 			Buff.affect(hero, Barrier.class).setShield((int) (0.6f * hero.HT + 10));
+			hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString((int) (0.6f * hero.HT + 10)), FloatingText.SHIELDING );
 		}
 		Talent.onHealingPotionUsed( hero );
 	}

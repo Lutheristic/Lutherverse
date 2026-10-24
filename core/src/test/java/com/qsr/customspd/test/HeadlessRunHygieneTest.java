@@ -3,8 +3,13 @@ package com.qsr.customspd.test;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,7 +17,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -64,6 +72,18 @@ class HeadlessRunHygieneTest {
 			}
 			fail(sb.toString());
 		}
+	}
+
+	/** HeadlessRun stamps saves with the real build's version code (the root build.gradle's). */
+	@Test
+	void theRunsVersionCodeIsTheBuildsVersionCode() throws IOException {
+		// core:test runs in core/src/main/assets; the root build script is four levels up.
+		Path script = Paths.get("..", "..", "..", "..", "build.gradle");
+		String text = new String(Files.readAllBytes(script), StandardCharsets.UTF_8);
+		Matcher m = Pattern.compile("appVersionCode\\s*=\\s*(\\d+)").matcher(text);
+		assertTrue(m.find(), "appVersionCode not found in " + script.toAbsolutePath());
+		assertEquals(Integer.parseInt(m.group(1)), HeadlessRun.VERSION_CODE,
+				"HeadlessRun.VERSION_CODE must follow build.gradle's appVersionCode");
 	}
 
 	// ------------------------------------------------------------------------------ fingerprint

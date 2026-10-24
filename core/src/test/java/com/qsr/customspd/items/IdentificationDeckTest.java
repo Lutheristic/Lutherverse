@@ -384,8 +384,10 @@ class IdentificationDeckTest {
 			Generator.fullReset();
 
 			Generator.Category cat = Generator.Category.POTION;
+			// potions alternate between two decks (upstream 27312460f); fullReset deals either one
+			float[] deck = cat.using2ndProbs ? cat.defaultProbs2 : cat.defaultProbs;
 			int deckSize = 0;
-			for (float p : cat.defaultProbs) deckSize += (int) p;
+			for (float p : deck) deckSize += (int) p;
 
 			Map<Class<?>, Integer> counts = new LinkedHashMap<>();
 			for (Class<?> drawn : drawPotions(deckSize)) {
@@ -398,7 +400,7 @@ class IdentificationDeckTest {
 			// rolls would fail it almost surely.
 			for (int i = 0; i < cat.classes.length; i++) {
 				Integer got = counts.get(cat.classes[i]);
-				assertEquals((int) cat.defaultProbs[i], got == null ? 0 : got.intValue(),
+				assertEquals((int) deck[i], got == null ? 0 : got.intValue(),
 						cat.classes[i].getSimpleName() + " must appear exactly its deck weight");
 			}
 			assertFalse(counts.containsKey(PotionOfStrength.class),

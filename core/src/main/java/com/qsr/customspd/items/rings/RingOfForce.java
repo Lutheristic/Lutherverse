@@ -316,6 +316,13 @@ public class RingOfForce extends Ring {
 			super.restoreFromBundle(bundle);
 			active = bundle.getBoolean(ACTIVE);
 			minTurnsLeft = bundle.getInt(MIN_TURNS_LEFT);
+			//CPDU divergence (upstream v2.4.0-v2.5.4 lacks this): the pre-redesign stance never
+			//overrode act(), so Buff.act() diactivate()d it on its first turn and saves stored
+			//time = Float.MAX_VALUE. Restored as-is it would never act again: never detach, and
+			//silently halve weapon charge forever. Reschedule it so act() clears it next turn.
+			if (!bundle.contains(ACTIVE)){
+				clearTime();
+			}
 		}
 	}
 }

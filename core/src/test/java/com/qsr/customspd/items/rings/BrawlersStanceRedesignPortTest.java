@@ -14,6 +14,7 @@ import com.qsr.customspd.test.HeadlessGdx;
 import com.qsr.customspd.test.HeadlessLevel;
 import com.qsr.customspd.test.SaveRoundtrip;
 import com.qsr.customspd.test.StubSprite;
+import com.qsr.customspd.test.TurnPump;
 import com.qsr.customspd.ui.BuffIndicator;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -283,29 +284,46 @@ class BrawlersStanceRedesignPortTest {
 	}
 
 	@Test
-	void aStanceFromAPreRedesignSaveRestoresInactiveAndClearsItself() throws Exception {
+	void aStanceFromAPreRedesignSaveIsClearedByTheScheduler() throws Exception {
 		duelist();
 		toggle();
-		// A pre-redesign BrawlersStance bundled only Buff/Actor state: strip the two new keys.
+		// Write the hero, then rewrite its stance entry the way a pre-redesign build stored it.
+		// That buff had no act() of its own: Buff.act() diactivate()d it on its first turn, so a
+		// save taken any later holds time = Float.MAX_VALUE and neither of the two new keys.
 		Bundle parent = new Bundle();
-		parent.put("obj", stance());
-		Bundle old = parent.getBundle("obj");
-		assertTrue(old.remove(RingOfForce.BrawlersStance.ACTIVE));
-		assertTrue(old.remove(RingOfForce.BrawlersStance.MIN_TURNS_LEFT));
-		stance().detach();
+		parent.put("hero", hero);
+		int rewritten = 0;
+		for (Bundle buff : parent.getBundle("hero").getBundleArray("buffs")) {
+			if (RingOfForce.BrawlersStance.class.getName().equals(buff.getString("__className"))) {
+				assertTrue(buff.remove(RingOfForce.BrawlersStance.ACTIVE));
+				assertTrue(buff.remove(RingOfForce.BrawlersStance.MIN_TURNS_LEFT));
+				buff.put("time", Float.MAX_VALUE);
+				rewritten++;
+			}
+		}
+		assertEquals(1, rewritten, "test setup: exactly one stance in the hero bundle");
 
-		RingOfForce.BrawlersStance restored =
-				(RingOfForce.BrawlersStance) SaveRoundtrip.writeRead(parent).get("obj");
+		// Load it the way a save loads: the hero bundle restores the buffs, then the hero joins
+		// a level, which schedules them.
+		Bundle loaded = SaveRoundtrip.writeRead(parent);
+		HeadlessLevel.uninstall();
+		Dungeon.hero = null;
+		HeadlessLevel level = HeadlessLevel.install(10, 10);
+		hero = (Hero) loaded.get("hero");
+		Dungeon.hero = hero;
+		StubSprite.attach(hero);
+		HeadlessLevel.at(hero, 4 * level.width() + 4);
+
+		RingOfForce.BrawlersStance restored = stance();
 		assertNotNull(restored, "the class name is unchanged, so the old buff still loads");
 		assertFalse(restored.active, "missing key -> inactive, as upstream's own migration");
-
-		restored.attachTo(hero);
 		assertFalse(RingOfForce.fightingUnarmed(hero));
 		assertSame(BuffIndicator.NONE, restored.icon());
-		restored.act();
-		assertNull(stance(), "0 turns left -> it clears on its first turn instead of lingering forever");
 
-		toggle();
-		assertTrue(stance().active, "and the stance can be taken up again normally");
+		new TurnPump().runUntil(() -> stance() == null, 10);
+
+		MeleeWeapon.Charger charger = emptyCharger();
+		charger.act();
+		assertEquals(1f / 37f, charger.partialCharge, 1e-6f, "full-speed charge once it is gone");
 	}
 }

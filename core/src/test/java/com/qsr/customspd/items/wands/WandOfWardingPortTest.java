@@ -4,11 +4,14 @@ import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.Rankings;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.HeroClass;
+import com.qsr.customspd.levels.Terrain;
+import com.qsr.customspd.mechanics.Ballistica;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.test.HeadlessGdx;
 import com.qsr.customspd.test.HeadlessLevel;
 import com.qsr.customspd.test.StubSprite;
 import com.qsr.customspd.utils.GLog;
+import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Random;
 import com.watabou.utils.Signal;
 import org.junit.jupiter.api.AfterEach;
@@ -38,6 +41,18 @@ class WandOfWardingPortTest {
 
 		@Override
 		public void die(Object cause) {
+		}
+	}
+
+	/** A stub sprite whose particle emitter swallows bursts (there is no scene to host one). */
+	private static final class EmitterStubSprite extends StubSprite {
+		@Override
+		public Emitter emitter() {
+			return new Emitter() {
+				@Override
+				public void burst(Factory factory, int quantity) {
+				}
+			};
 		}
 	}
 
@@ -102,5 +117,34 @@ class WandOfWardingPortTest {
 		Rankings rankings = Rankings.INSTANCE;
 		Rankings.Record rec = rankings.records.get(rankings.lastRecord);
 		assertEquals(WandOfWarding.class, rec.cause, "the run is ranked as killed by the wand of warding");
+	}
+
+	@Test
+	void aWardInsideSolidTerrainCanStillBeTargeted() throws Exception {
+		HeadlessLevel level = HeadlessLevel.install(8, 8);
+		Hero hero = new Hero();
+		Dungeon.hero = hero;
+		hero.pos = 3 * level.width() + 2;
+		StubSprite.attach(hero);
+		int wall = 3 * level.width() + 5; // a pillar inside the room (border walls are outside insideMap)
+		level.map[wall] = Terrain.WALL;
+		level.buildFlagMaps();
+		assertTrue(!level.passable[wall], "fixture sanity: the target cell is solid");
+
+		WandOfWarding.Ward ward = HeadlessLevel.at(new WandOfWarding.Ward(), wall);
+		// a greater sentry (tier 6) is healed by the wand rather than upgraded, which keeps the
+		// check clear of WardSprite.updateTier (no scene); it is hurt so healing is observable
+		ward.tier = 6;
+		ward.HT = 100;
+		ward.HP = 10;
+		EmitterStubSprite sprite = new EmitterStubSprite();
+		sprite.ch = ward;
+		ward.sprite = sprite;
+
+		WandOfWarding wand = new WandOfWarding();
+		wand.onZap(new Ballistica(hero.pos, wall, Ballistica.STOP_TARGET));
+
+		assertTrue(ward.HP > 10, "the wand must heal a ward even though it stands in a wall; HP=" + ward.HP);
+		assertTrue(StubSprite.of(ward).statuses.size() > 0, "the heal is shown on the ward");
 	}
 }

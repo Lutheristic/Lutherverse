@@ -22,7 +22,6 @@
 package com.qsr.customspd.items.armor;
 
 import com.qsr.customspd.Assets;
-import com.qsr.customspd.Badges;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.Char;
@@ -235,11 +234,6 @@ abstract public class ClassArmor extends Armor {
 								masteryPotionBonus = armor.masteryPotionBonus;
 								if (armor.checkSeal() != null) {
 									seal = armor.checkSeal();
-									if (seal.level() > 0) {
-										int newLevel = trueLevel() + 1;
-										level(newLevel);
-										Badges.validateItemLevelAquired(ClassArmor.this);
-									}
 								}
 
 								identify();

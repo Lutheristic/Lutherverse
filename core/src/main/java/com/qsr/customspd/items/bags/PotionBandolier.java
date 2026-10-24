@@ -24,6 +24,7 @@ package com.qsr.customspd.items.bags;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.LiquidMetal;
+import com.qsr.customspd.items.Waterskin;
 import com.qsr.customspd.items.potions.Potion;
 import com.qsr.customspd.assets.GeneralAsset;
 
@@ -35,7 +36,7 @@ public class PotionBandolier extends Bag {
 
 	@Override
 	public boolean canHold( Item item ) {
-		if (item instanceof Potion || item instanceof LiquidMetal){
+		if (item instanceof Potion || item instanceof LiquidMetal || item instanceof Waterskin){
 			return super.canHold(item);
 		} else {
 			return false;

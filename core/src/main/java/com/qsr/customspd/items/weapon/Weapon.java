@@ -258,16 +258,6 @@ abstract public class Weapon extends KindOfWeapon {
 		return level;
 	}
 	
-	//overrides as other things can equip these
-	@Override
-	public int buffedLvl() {
-		if (isEquipped( Dungeon.hero ) || Dungeon.hero.belongings.contains( this )){
-			return super.buffedLvl();
-		} else {
-			return level();
-		}
-	}
-	
 	@Override
 	public Item upgrade() {
 		return upgrade(false);
@@ -310,16 +300,22 @@ abstract public class Weapon extends KindOfWeapon {
 			}
 		}
 		level(n);
-		
-		//30% chance to be cursed
-		//10% chance to be enchanted
-		float effectRoll = Random.Float();
-		if (effectRoll < 0.3f) {
-			enchant(Enchantment.randomCurse());
-			cursed = true;
-		} else if (effectRoll >= 0.9f){
-			enchant();
-		}
+
+		//we use a separate RNG here so that variance due to things like parchment scrap
+		//does not affect levelgen
+		Random.pushGenerator(Random.Long());
+
+			//30% chance to be cursed
+			//10% chance to be enchanted
+			float effectRoll = Random.Float();
+			if (effectRoll < 0.3f) {
+				enchant(Enchantment.randomCurse());
+				cursed = true;
+			} else if (effectRoll >= 0.9f){
+				enchant();
+			}
+
+		Random.popGenerator();
 
 		return this;
 	}
@@ -359,17 +355,17 @@ abstract public class Weapon extends KindOfWeapon {
 
 	public static abstract class Enchantment implements Bundlable {
 		
-		private static final Class<?>[] common = new Class<?>[]{
+		public static final Class<?>[] common = new Class<?>[]{
 				Blazing.class, Chilling.class, Kinetic.class, Shocking.class};
 		
-		private static final Class<?>[] uncommon = new Class<?>[]{
+		public static final Class<?>[] uncommon = new Class<?>[]{
 				Blocking.class, Blooming.class, Elastic.class,
 				Lucky.class, Projecting.class, Unstable.class};
 		
-		private static final Class<?>[] rare = new Class<?>[]{
+		public static final Class<?>[] rare = new Class<?>[]{
 				Corrupting.class, Grim.class, Vampiric.class};
 		
-		private static final float[] typeChances = new float[]{
+		public static final float[] typeChances = new float[]{
 				50, //12.5% each
 				40, //6.67% each
 				10  //3.33% each
@@ -400,7 +396,7 @@ abstract public class Weapon extends KindOfWeapon {
 			}
 
 			if (attacker.buff(RunicBlade.RunicSlashTracker.class) != null){
-				multi += 3f;
+				multi += attacker.buff(RunicBlade.RunicSlashTracker.class).boost;
 				attacker.buff(RunicBlade.RunicSlashTracker.class).detach();
 			}
 

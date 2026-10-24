@@ -63,7 +63,6 @@ import com.qsr.customspd.items.Generator;
 import com.qsr.customspd.items.Heap;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.Stylus;
-import com.qsr.customspd.items.Torch;
 import com.qsr.customspd.items.artifacts.TalismanOfForesight;
 import com.qsr.customspd.items.artifacts.TimekeepersHourglass;
 import com.qsr.customspd.items.bombs.Bomb;

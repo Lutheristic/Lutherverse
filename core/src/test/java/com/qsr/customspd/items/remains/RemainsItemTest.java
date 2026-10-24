@@ -2,15 +2,18 @@ package com.qsr.customspd.items.remains;
 
 import com.qsr.customspd.actors.hero.HeroClass;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.test.HeadlessGdx;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -58,12 +61,28 @@ class RemainsItemTest {
 		for (HeroClass cls : HeroClass.values()) {
 			RemainsItem item = RemainsItem.get(cls);
 			assertEquals(sprites.get(item.getClass()), item.image(), item.getClass().getSimpleName() + " sprite");
-			assertFalse(item.name().contains("NO TEXT FOUND"), item.getClass().getSimpleName() + " name key");
-			assertFalse(item.desc().contains("NO TEXT FOUND"), item.getClass().getSimpleName() + " desc key");
+			assertTranslated(item.getClass(), "name", item.name());
+			assertTranslated(item.getClass(), "desc", item.desc());
 			assertTrue(item.isIdentified());
 			assertFalse(item.bones, "remains items must never be picked as bones themselves");
 			assertEquals(RemainsItem.AC_USE, item.defaultAction());
 			assertEquals(50, item.value());
+		}
+	}
+
+	/**
+	 * Messages.get never returns {@link Messages#NO_TEXT_FOUND}. For a missing string it walks up the
+	 * class chain and finally returns the lower-cased key of the last class tried (java.lang.Object),
+	 * e.g. "java.lang.object.name". So the only way to see that a key is missing is to compare the
+	 * text against the lower-cased key of every class in the chain, which is what that fallback is.
+	 */
+	private static void assertTranslated(Class<?> cls, String key, String text) {
+		String label = cls.getSimpleName() + " " + key;
+		assertFalse(text.isEmpty(), label + " is empty");
+		assertFalse(text.contains(Messages.NO_TEXT_FOUND), label + " hit the no-text marker");
+		for (Class<?> c = cls; c != null; c = c.getSuperclass()) {
+			String fallback = (c.getName().replace("com.qsr.customspd.", "") + "." + key).toLowerCase(Locale.ENGLISH);
+			assertNotEquals(fallback, text, label + " is missing from the message bundles (got the key fallback)");
 		}
 	}
 

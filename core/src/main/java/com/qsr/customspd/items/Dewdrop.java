@@ -27,7 +27,7 @@ import com.qsr.customspd.actors.buffs.Barrier;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.Talent;
-import com.qsr.customspd.effects.Speck;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
@@ -86,13 +86,11 @@ public class Dewdrop extends Item {
 		if (effect > 0 || shield > 0) {
 			hero.HP += effect;
 			if (shield > 0) Buff.affect(hero, Barrier.class).incShield(shield);
-			hero.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
-			if (effect > 0 && shield > 0){
-				hero.sprite.showStatus( CharSprite.POSITIVE, Messages.get(Dewdrop.class, "both", effect, shield) );
-			} else if (effect > 0){
-				hero.sprite.showStatus( CharSprite.POSITIVE, Messages.get(Dewdrop.class, "heal", effect) );
-			} else {
-				hero.sprite.showStatus( CharSprite.POSITIVE, Messages.get(Dewdrop.class, "shield", shield) );
+			if (effect > 0){
+				hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(effect), FloatingText.HEALING);
+			}
+			if (shield > 0) {
+				hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(shield), FloatingText.SHIELDING );
 			}
 
 		} else if (!force) {

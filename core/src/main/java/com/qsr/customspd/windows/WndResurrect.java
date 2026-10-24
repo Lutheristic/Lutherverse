@@ -23,6 +23,8 @@ package com.qsr.customspd.windows;
 
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.Statistics;
+import com.qsr.customspd.assets.Asset;
+import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.Ankh;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.bags.Bag;
@@ -31,10 +33,12 @@ import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.scenes.InterlevelScene;
 import com.qsr.customspd.scenes.PixelScene;
 import com.qsr.customspd.sprites.ItemSprite;
+import com.qsr.customspd.ui.ItemButton;
 import com.qsr.customspd.ui.RedButton;
 import com.qsr.customspd.ui.RenderedTextBlock;
 import com.qsr.customspd.ui.Window;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.Image;
 
 public class WndResurrect extends Window {
 	
@@ -47,9 +51,9 @@ public class WndResurrect extends Window {
 
 	public static Object instance;
 
-	private WndBlacksmith.ItemButton btnItem1;
-	private WndBlacksmith.ItemButton btnItem2;
-	private WndBlacksmith.ItemButton btnPressed;
+	private ItemButton btnItem1;
+	private ItemButton btnItem2;
+	private ItemButton btnPressed;
 
 	RedButton btnContinue;
 	
@@ -70,7 +74,7 @@ public class WndResurrect extends Window {
 		message.setPos(0, titlebar.bottom() + GAP);
 		add( message );
 
-		btnItem1 = new WndBlacksmith.ItemButton() {
+		btnItem1 = new ItemButton() {
 			@Override
 			protected void onClick() {
 				btnPressed = btnItem1;
@@ -81,7 +85,7 @@ public class WndResurrect extends Window {
 		btnItem1.setRect( (WIDTH - BTN_GAP) / 2 - BTN_SIZE, message.bottom() + BTN_GAP, BTN_SIZE, BTN_SIZE );
 		add( btnItem1 );
 
-		btnItem2 = new WndBlacksmith.ItemButton() {
+		btnItem2 = new ItemButton() {
 			@Override
 			protected void onClick() {
 				btnPressed = btnItem2;
@@ -95,27 +99,46 @@ public class WndResurrect extends Window {
 		btnContinue = new RedButton( Messages.get(this, "confirm") ) {
 			@Override
 			protected void onClick() {
-				hide();
-				
-				Statistics.ankhsUsed++;
-
-				ankh.detach(Dungeon.hero.belongings.backpack);
-
-				if (btnItem1.item != null){
-					btnItem1.item.keptThoughLostInvent = true;
+				if (btnItem1.item() == null || btnItem2.item() == null){
+					GameScene.show(new WndOptions(new Image(Asset.getAssetFilePath(GeneralAsset.ICON_WARNING)),
+							Messages.get(WndResurrect.class, "warn_title"),
+							Messages.get(WndResurrect.class, "warn_body"),
+							Messages.get(WndResurrect.class, "warn_yes"),
+							Messages.get(WndResurrect.class, "warn_no")){
+						@Override
+						protected void onSelect(int index) {
+							if (index == 0){
+								resurrect(ankh);
+							}
+						}
+					});
+				} else {
+					resurrect( ankh );
 				}
-				if (btnItem2.item != null){
-					btnItem2.item.keptThoughLostInvent = true;
-				}
-				
-				InterlevelScene.mode = InterlevelScene.Mode.RESURRECT;
-				Game.switchScene( InterlevelScene.class );
 			}
 		};
 		btnContinue.setRect( 0, btnItem1.bottom() + BTN_GAP, WIDTH, BTN_HEIGHT );
 		add( btnContinue );
 
 		resize( WIDTH, (int)btnContinue.bottom() );
+	}
+
+	private void resurrect( final Ankh ankh ){
+		hide();
+
+		Statistics.ankhsUsed++;
+
+		ankh.detach(Dungeon.hero.belongings.backpack);
+
+		if (btnItem1.item() != null){
+			btnItem1.item().keptThoughLostInvent = true;
+		}
+		if (btnItem2.item() != null){
+			btnItem2.item().keptThoughLostInvent = true;
+		}
+
+		InterlevelScene.mode = InterlevelScene.Mode.RESURRECT;
+		Game.switchScene( InterlevelScene.class );
 	}
 
 	protected WndBag.ItemSelector itemSelector = new WndBag.ItemSelector() {
@@ -136,7 +159,7 @@ public class WndResurrect extends Window {
 			if (item != null && btnPressed.parent != null) {
 				btnPressed.item( item );
 
-				if (btnItem1.item == btnItem2.item){
+				if (btnItem1.item() == btnItem2.item()){
 					if (btnPressed == btnItem1){
 						btnItem2.clear();
 					} else {

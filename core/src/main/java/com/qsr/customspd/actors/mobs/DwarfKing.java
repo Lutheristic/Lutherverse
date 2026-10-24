@@ -517,6 +517,7 @@ public class DwarfKing extends Mob {
 			sprite.centerEmitter().start( Speck.factory( Speck.SCREAM ), 0.4f, 2 );
 			Sample.INSTANCE.play( Assets.Sounds.CHALLENGE );
 			yell(  Messages.get(this, "enraged", Dungeon.hero.name()) );
+			BossHealthBar.bleed(true);
 		} else if (phase == 3 && preHP > 20 && HP < 20){
 			yell( Messages.get(this, "losing") );
 		}
@@ -676,7 +677,7 @@ public class DwarfKing extends Mob {
 					}
 				} else {
 					Char ch = Actor.findChar(pos);
-					ch.damage(Random.NormalIntRange(20, 40), target);
+					ch.damage(Random.NormalIntRange(20, 40), this);
 					if (((DwarfKing)target).phase == 2){
 						if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)){
 							target.damage(target.HT/18, new KingDamager());

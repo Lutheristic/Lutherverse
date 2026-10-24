@@ -48,6 +48,7 @@ public class StoneOfEnchantment extends InventoryStone {
 	
 	@Override
 	protected void onItemSelected(Item item) {
+		curItem.detach( curUser.belongings.backpack );
 		
 		if (item instanceof Weapon) {
 			
@@ -79,7 +80,7 @@ public class StoneOfEnchantment extends InventoryStone {
 
 	@Override
 	public int energyVal() {
-		return 4 * quantity;
+		return 5 * quantity;
 	}
 
 }

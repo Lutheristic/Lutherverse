@@ -25,6 +25,7 @@ import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.Hunger;
 import com.qsr.customspd.actors.hero.Hero;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.items.armor.Armor;
 import com.qsr.customspd.items.armor.Armor.Glyph;
@@ -56,7 +57,7 @@ public class Metabolism extends Glyph {
 					
 					defender.HP += healing;
 					defender.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
-					defender.sprite.showStatus( CharSprite.POSITIVE, Integer.toString( healing ) );
+					defender.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString( healing ), FloatingText.HEALING);
 				}
 			}
 

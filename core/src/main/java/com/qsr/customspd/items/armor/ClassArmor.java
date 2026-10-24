@@ -32,11 +32,11 @@ import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.abilities.ArmorAbility;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.effects.Speck;
-import com.qsr.customspd.items.BrokenSeal;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.rings.RingOfEnergy;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
+import com.qsr.customspd.sprites.HeroSprite;
 import com.qsr.customspd.sprites.ItemSprite;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.utils.GLog;
@@ -102,10 +102,6 @@ abstract public class ClassArmor extends Armor {
 		switch (owner.heroClass) {
 			case WARRIOR:
 				classArmor = new WarriorArmor();
-				BrokenSeal seal = armor.checkSeal();
-				if (seal != null) {
-					classArmor.affixSeal(seal);
-				}
 				break;
 			case ROGUE:
 				classArmor = new RogueArmor();
@@ -124,11 +120,19 @@ abstract public class ClassArmor extends Armor {
 		classArmor.level(armor.trueLevel());
 		classArmor.tier = armor.tier;
 		classArmor.augment = armor.augment;
-		classArmor.inscribe( armor.glyph );
+		classArmor.inscribe(armor.glyph);
+		if (armor.seal != null) {
+			classArmor.seal = armor.seal;
+		}
 		classArmor.cursed = armor.cursed;
 		classArmor.curseInfusionBonus = armor.curseInfusionBonus;
 		classArmor.masteryPotionBonus = armor.masteryPotionBonus;
-		classArmor.identify();
+		if (armor.levelKnown && armor.cursedKnown) {
+			classArmor.identify();
+		} else {
+			classArmor.levelKnown = armor.levelKnown;
+			classArmor.cursedKnown = true;
+		}
 
 		classArmor.charge = 50;
 		
@@ -225,24 +229,48 @@ abstract public class ClassArmor extends Armor {
 								armor.detach(hero.belongings.backpack);
 								if (hero.belongings.armor == armor){
 									hero.belongings.armor = null;
+									if (hero.sprite instanceof HeroSprite) {
+										((HeroSprite) hero.sprite).updateArmor();
+									}
 								}
 								level(armor.trueLevel());
 								tier = armor.tier;
 								augment = armor.augment;
-								inscribe( armor.glyph );
 								cursed = armor.cursed;
 								curseInfusionBonus = armor.curseInfusionBonus;
 								masteryPotionBonus = armor.masteryPotionBonus;
 								if (armor.checkSeal() != null) {
+									inscribe(armor.glyph);
 									seal = armor.checkSeal();
-									if (seal.level() > 0) {
+								} else if (checkSeal() != null){
+									//automates the process of detaching the seal manually
+									// and re-affixing it to the new armor
+									if (seal.level() > 0){
 										int newLevel = trueLevel() + 1;
 										level(newLevel);
 										Badges.validateItemLevelAquired(ClassArmor.this);
 									}
+
+									//if both source and destination armor have glyphs
+									// we assume the player wants the glyph on the destination armor
+									// they can always manually detach first if they don't.
+									// otherwise we automate glyph transfer just like upgrades
+									if (armor.glyph == null && seal.canTransferGlyph()){
+										//do nothing, keep our glyph
+									} else {
+										inscribe(armor.glyph);
+										seal.setGlyph(null);
+									}
+								} else {
+									inscribe(armor.glyph);
 								}
 
-								identify();
+								if (armor.levelKnown && armor.cursedKnown) {
+									identify();
+								} else {
+									levelKnown = armor.levelKnown;
+									cursedKnown = true;
+								}
 
 								GLog.p( Messages.get(ClassArmor.class, "transfer_complete") );
 								hero.sprite.operate(hero.pos);
@@ -264,7 +292,7 @@ abstract public class ClassArmor extends Armor {
 	public String desc() {
 		String desc = super.desc();
 
-		if (Dungeon.hero.belongings.contains(this)) {
+		if (Dungeon.hero != null && Dungeon.hero.belongings.contains(this)) {
 			ArmorAbility ability = Dungeon.hero.armorAbility;
 			if (ability != null) {
 				desc += "\n\n" + ability.shortDesc();
@@ -276,11 +304,6 @@ abstract public class ClassArmor extends Armor {
 		}
 
 		return desc;
-	}
-	
-	@Override
-	public boolean isIdentified() {
-		return true;
 	}
 	
 	@Override

@@ -12,23 +12,29 @@ import com.qsr.customspd.actors.buffs.Corrosion;
 import com.qsr.customspd.actors.buffs.Corruption;
 import com.qsr.customspd.actors.buffs.Frost;
 import com.qsr.customspd.actors.buffs.Hunger;
+import com.qsr.customspd.actors.buffs.LifeLink;
 import com.qsr.customspd.actors.buffs.Ooze;
 import com.qsr.customspd.actors.buffs.Poison;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.HeroSubClass;
 import com.qsr.customspd.actors.mobs.DwarfKing;
+import com.qsr.customspd.actors.mobs.Necromancer;
 import com.qsr.customspd.actors.mobs.Rat;
 import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.items.Heap;
 import com.qsr.customspd.items.armor.glyphs.Viscosity;
+import com.qsr.customspd.items.artifacts.DriedRose;
 import com.qsr.customspd.items.quest.Pickaxe;
+import com.qsr.customspd.items.wands.WandOfBlastWave;
 import com.qsr.customspd.items.weapon.enchantments.Chilling;
 import com.qsr.customspd.items.weapon.missiles.darts.Dart;
+import com.qsr.customspd.items.weapon.missiles.darts.ShockingDart;
 import com.qsr.customspd.levels.features.Chasm;
 import com.qsr.customspd.levels.traps.DisintegrationTrap;
 import com.qsr.customspd.levels.traps.GeyserTrap;
 import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.test.HeadlessGdx;
+import com.qsr.customspd.test.HeadlessLevel;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,10 +52,12 @@ class CharDamageIconPortTest {
 	/** Records the icon instead of drawing it. */
 	private static final class RecordingSprite extends CharSprite {
 		int icon = Integer.MIN_VALUE;
+		int first = Integer.MIN_VALUE;
 
 		@Override
 		public void showStatusWithIcon(int color, String text, int icon, Object... args) {
 			this.icon = icon;
+			if (first == Integer.MIN_VALUE) first = icon;
 		}
 	}
 
@@ -72,7 +80,12 @@ class CharDamageIconPortTest {
 	}
 
 	private static int iconFor(Object src) {
+		return iconFor(src, 0);
+	}
+
+	private static int iconFor(Object src, int ratPos) {
 		Rat rat = new Rat();
+		rat.pos = ratPos;
 		rat.HP = rat.HT = 100000; // never dies, never crosses HT/2
 		RecordingSprite sprite = new RecordingSprite();
 		rat.sprite = sprite;
@@ -96,17 +109,54 @@ class CharDamageIconPortTest {
 	}
 
 	@Test
+	void lifeLinkDamageUsesTheNoBlockIcon() {
+		// upstream f6e82d0e4: damage shared through Life Link is not reduced by armor
+		assertEquals(FloatingText.PHYS_DMG_NO_BLOCK, iconFor(new LifeLink()), "damage shared over a life link");
+	}
+
+	@Test
+	void damageSourcesSplitOffBy3dc39de06IgnoreArmor() {
+		assertEquals(FloatingText.PHYS_DMG_NO_BLOCK, iconFor(new WandOfBlastWave.Knockback()),
+				"slamming into a wall after a blast wave");
+		assertEquals(FloatingText.PHYS_DMG_NO_BLOCK, iconFor(new Necromancer.SummoningBlockDamage()),
+				"standing on a necromancer's summoning cell");
+		assertEquals(FloatingText.PHYS_DMG_NO_BLOCK, iconFor(new DriedRose.GhostHero.NoRoseDamage()),
+				"the ghost fading without its rose");
+	}
+
+	@Test
+	void shockingDartDealsElectricDamage() {
+		Rat rat = new Rat();
+		rat.HP = rat.HT = 100000;
+		RecordingSprite sprite = new RecordingSprite();
+		rat.sprite = sprite;
+		new ShockingDart().proc(new Rat(), rat, 1);
+		assertEquals(FloatingText.SHOCKING, sprite.first, "the dart's shock, now sourced from Electricity");
+	}
+
+	@Test
 	void sniperRangedHitsUseTheNoBlockIcon() {
-		Hero hero = new Hero();
-		Dungeon.hero = hero;
-		hero.subClass = HeroSubClass.SNIPER;
-		assertEquals(FloatingText.PHYS_DMG, iconFor(hero), "sniper in melee keeps the plain icon");
+		// the sniper case asks the level whether the target is adjacent (11e526df0)
+		HeadlessLevel.install(8, 8);
+		try {
+			Hero hero = new Hero();
+			Dungeon.hero = hero;
+			hero.pos = 2 * 8 + 2;
+			int far = 5 * 8 + 5;
+			int adjacent = hero.pos + 1;
+			hero.subClass = HeroSubClass.SNIPER;
+			assertEquals(FloatingText.PHYS_DMG, iconFor(hero, far), "sniper in melee keeps the plain icon");
 
-		hero.belongings.thrownWeapon = new Dart();
-		assertEquals(FloatingText.PHYS_DMG_NO_BLOCK, iconFor(hero), "sniper ranged attacks ignore armor");
+			hero.belongings.thrownWeapon = new Dart();
+			assertEquals(FloatingText.PHYS_DMG_NO_BLOCK, iconFor(hero, far), "sniper ranged attacks ignore armor");
+			assertEquals(FloatingText.PHYS_DMG, iconFor(hero, adjacent),
+					"a sniper throwing at an adjacent target gets no armor bypass, so no no-block icon (11e526df0)");
 
-		hero.subClass = HeroSubClass.NONE;
-		assertEquals(FloatingText.PHYS_DMG, iconFor(hero), "only the sniper subclass gets the special case");
+			hero.subClass = HeroSubClass.NONE;
+			assertEquals(FloatingText.PHYS_DMG, iconFor(hero, far), "only the sniper subclass gets the special case");
+		} finally {
+			HeadlessLevel.uninstall();
+		}
 	}
 
 	@Test

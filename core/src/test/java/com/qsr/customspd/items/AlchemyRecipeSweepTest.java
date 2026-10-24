@@ -121,15 +121,15 @@ class AlchemyRecipeSweepTest {
 
 		// Floors, not exact counts, so adding recipes stays free — their job is catching the
 		// enumeration silently going empty (this repo's recurring gate failure) or a registry
-		// restructure that strands the sweep. 37/26 are the counts at the time of writing.
+		// restructure that strands the sweep. 37/25 are the counts at the time of writing (26 before Alchemize.Recipe became a hand-written Recipe in upstream 1c5404335).
 		assertTrue(totalRecipes >= 37, "recipe registry shrank? saw only " + totalRecipes);
-		assertTrue(simpleRecipes >= 26, "SimpleRecipe population shrank? saw only " + simpleRecipes);
+		assertTrue(simpleRecipes >= 25, "SimpleRecipe population shrank? saw only " + simpleRecipes);
 	}
 
 	@Test
 	void unidentifiedIngredientIsRejected() {
 		Recipe.SimpleRecipe recipe = new ElixirOfMight.Recipe();
-		ArrayList<Item> ingredients = recipe.getIngredients(); // PotionOfStrength + AlchemicalCatalyst
+		ArrayList<Item> ingredients = recipe.getIngredients(); // PotionOfStrength (catalyst removed in upstream 1c5404335)
 
 		PotionOfStrength strength = null;
 		for (Item i : ingredients) {

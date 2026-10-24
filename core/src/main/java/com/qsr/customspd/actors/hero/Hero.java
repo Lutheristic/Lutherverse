@@ -1229,10 +1229,20 @@ public class Hero extends Char {
 					ready();
 				} else {
 					Statistics.ascended = true;
-					Badges.silentValidateHappyEnd();
-					Dungeon.win( Amulet.class );
-					Dungeon.deleteGame( GamesInProgress.curSlot, true );
-					Game.switchScene( SurfaceScene.class );
+					Game.switchScene(SurfaceScene.class, new Game.SceneChangeCallback() {
+						@Override
+						public void beforeCreate() {
+
+						}
+
+						@Override
+						public void afterCreate() {
+							Badges.validateHappyEnd();
+							Dungeon.win( Amulet.class );
+							Dungeon.deleteGame( GamesInProgress.curSlot, true );
+							Badges.saveGlobal();
+						}
+					});
 				}
 
 			} else if (belongings.getItem(Amulet.class) != null

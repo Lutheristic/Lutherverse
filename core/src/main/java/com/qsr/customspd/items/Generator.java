@@ -235,6 +235,14 @@ public class Generator {
 		//Artifacts in particular don't reset, no duplicates!
 		public float[] probs;
 		public float[] defaultProbs = null;
+
+		//some items types have two decks and swap between them
+		// this enforces more consistency while still allowing for better precision
+		public float[] defaultProbs2 = null;
+		public boolean using2ndProbs = false;
+		//but in such cases we still need a reference to the full deck in case of non-deck generation
+		public float[] defaultProbsTotal = null;
+
 		//These variables are used as a part of the deck system, to ensure that drops are consistent
 		// regardless of when they occur (either as part of seeded levelgen, or random item drops)
 		public Long seed = null;
@@ -256,12 +264,12 @@ public class Generator {
 		//some generator categories can have ordering within that category as well
 		// note that sub category ordering doesn't need to always include items that belong
 		// to that categories superclass, e.g. bombs are ordered within thrown weapons
-		//(upstream also orders Trinket/TrinketCatalyst here, and since 213f7a2f6 lists Waterskin first among
-		// potions; CPDU has no trinket subsystem and does not port the Waterskin/bandolier change yet)
+		//(upstream also orders Trinket/TrinketCatalyst here; CPDU has no trinket subsystem.
+		// Waterskin sorts first among potions since 213f7a2f6, when it began to fit in the potion bandolier)
 		private static HashMap<Class, ArrayList<Class>> subOrderings = new HashMap<>();
 		static {
 			subOrderings.put(MissileWeapon.class, new ArrayList<>(Arrays.asList(MissileWeapon.class, Bomb.class)));
-			subOrderings.put(Potion.class, new ArrayList<>(Arrays.asList(Potion.class, ExoticPotion.class, Brew.class, Elixir.class, LiquidMetal.class)));
+			subOrderings.put(Potion.class, new ArrayList<>(Arrays.asList(Waterskin.class, Potion.class, ExoticPotion.class, Brew.class, Elixir.class, LiquidMetal.class)));
 			subOrderings.put(Scroll.class, new ArrayList<>(Arrays.asList(Scroll.class, ExoticScroll.class, Spell.class, ArcaneResin.class)));
 		}
 
@@ -308,7 +316,8 @@ public class Generator {
 					PotionOfParalyticGas.class,
 					PotionOfPurity.class,
 					PotionOfExperience.class};
-			POTION.defaultProbs = new float[]{ 0, 6, 4, 3, 3, 3, 2, 2, 2, 2, 2, 1 };
+			POTION.defaultProbs  = new float[]{ 0, 3, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1 };
+			POTION.defaultProbs2 = new float[]{ 0, 3, 2, 2, 1, 2, 1, 1, 1, 1, 1, 0 };
 			POTION.probs = POTION.defaultProbs.clone();
 			
 			SEED.classes = new Class<?>[]{
@@ -324,7 +333,7 @@ public class Generator {
 					Earthroot.Seed.class,
 					Mageroyal.Seed.class,
 					Starflower.Seed.class};
-			SEED.defaultProbs = new float[]{ 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2 };
+			SEED.defaultProbs = new float[]{ 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1 };
 			SEED.probs = SEED.defaultProbs.clone();
 			
 			SCROLL.classes = new Class<?>[]{
@@ -341,7 +350,8 @@ public class Generator {
 					ScrollOfTerror.class,
 					ScrollOfTransmutation.class
 			};
-			SCROLL.defaultProbs = new float[]{ 0, 6, 4, 3, 3, 3, 2, 2, 2, 2, 2, 1 };
+			SCROLL.defaultProbs  = new float[]{ 0, 3, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1 };
+			SCROLL.defaultProbs2 = new float[]{ 0, 3, 2, 2, 1, 2, 1, 1, 1, 1, 1, 0 };
 			SCROLL.probs = SCROLL.defaultProbs.clone();
 			
 			STONE.classes = new Class<?>[]{
@@ -360,7 +370,8 @@ public class Generator {
 					InsightCrystal.class,       //meta-progression faucet: shatters into Insight
 					WardensSigil.class          //aimed lock-stone: cripples where it lands
 			};
-			STONE.defaultProbs = new float[]{ 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 2, 2 };
+			//CPDU's own stones (the last two) shrink with upstream's 5 -> 2 deck, rounded to one whole card
+			STONE.defaultProbs = new float[]{ 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 1, 1 };
 			STONE.probs = STONE.defaultProbs.clone();
 
 			WAND.classes = new Class<?>[]{
@@ -542,6 +553,15 @@ public class Generator {
 			};
 			ARTIFACT.defaultProbs = new float[]{ 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1 };
 			ARTIFACT.probs = ARTIFACT.defaultProbs.clone();
+
+			for (Category cat : Category.values()){
+				if (cat.defaultProbs2 != null){
+					cat.defaultProbsTotal = new float[cat.defaultProbs.length];
+					for (int i = 0; i < cat.defaultProbs.length; i++){
+						cat.defaultProbsTotal[i] = cat.defaultProbs[i] + cat.defaultProbs2[i];
+					}
+				}
+			}
 		}
 	}
 
@@ -561,6 +581,7 @@ public class Generator {
 		usingFirstDeck = Random.Int(2) == 0;
 		generalReset();
 		for (Category cat : Category.values()) {
+			cat.using2ndProbs =  cat.defaultProbs2 != null && Random.Int(2) == 0;
 			reset(cat);
 			if (cat.defaultProbs != null) {
 				cat.seed = Random.Long();
@@ -577,7 +598,33 @@ public class Generator {
 	}
 
 	public static void reset(Category cat){
-		if (cat.defaultProbs != null) cat.probs = cat.defaultProbs.clone();
+		if (cat.defaultProbs != null) {
+			if (cat.defaultProbs2 != null){
+				cat.using2ndProbs = !cat.using2ndProbs;
+				cat.probs = cat.using2ndProbs ? cat.defaultProbs2.clone() : cat.defaultProbs.clone();
+			} else {
+				cat.probs = cat.defaultProbs.clone();
+			}
+		}
+	}
+
+	//reverts changes to drop chances generates by this item
+	//equivalent of shuffling the card back into the deck, does not preserve order!
+	public static void undoDrop(Item item){
+		undoDrop(item.getClass());
+	}
+
+	public static void undoDrop(Class cls){
+		for (Category cat : Category.values()){
+			if (cls.isAssignableFrom(cat.superClass)){
+				if (cat.defaultProbs == null) continue;
+				for (int i = 0; i < cat.classes.length; i++){
+					if (cls == cat.classes[i]){
+						cat.probs[i]++;
+					}
+				}
+			}
+		}
 	}
 	
 	public static Item random() {
@@ -646,6 +693,8 @@ public class Generator {
 			return randomMissile(true);
 		} else if (cat.defaultProbs == null || cat == Category.ARTIFACT) {
 			return random(cat);
+		} else if (cat.defaultProbsTotal != null){
+			return ((Item) Reflection.newInstance(cat.classes[Random.chances(cat.defaultProbsTotal)])).random();
 		} else {
 			return ((Item) Reflection.newInstance(cat.classes[Random.chances(cat.defaultProbs)])).random();
 		}
@@ -685,7 +734,7 @@ public class Generator {
 	}
 
 	public static MeleeWeapon randomWeapon(boolean useDefaults) {
-		return randomWeapon(Dungeon.depth / 5, false);
+		return randomWeapon(Dungeon.depth / 5, useDefaults);
 	}
 
 	public static MeleeWeapon randomWeapon(int floorSet, boolean useDefaults) {
@@ -775,6 +824,7 @@ public class Generator {
 	private static final String FIRST_DECK = "first_deck";
 	private static final String GENERAL_PROBS = "general_probs";
 	private static final String CATEGORY_PROBS = "_probs";
+	private static final String CATEGORY_USING_PROBS2 = "_using_probs2";
 	private static final String CATEGORY_SEED = "_seed";
 	private static final String CATEGORY_DROPPED = "_dropped";
 
@@ -791,7 +841,12 @@ public class Generator {
 		for (Category cat : Category.values()){
 			if (cat.defaultProbs == null) continue;
 
-			bundle.put(cat.name().toLowerCase(Locale.ROOT) + CATEGORY_PROBS,   cat.probs);
+			bundle.put(cat.name().toLowerCase(Locale.ROOT) + CATEGORY_PROBS, cat.probs);
+
+			if (cat.defaultProbs2 != null){
+				bundle.put(cat.name().toLowerCase(Locale.ROOT) + CATEGORY_USING_PROBS2, cat.using2ndProbs);
+			}
+
 			if (cat.seed != null) {
 				bundle.put(cat.name().toLowerCase(Locale.ROOT) + CATEGORY_SEED, cat.seed);
 				bundle.put(cat.name().toLowerCase(Locale.ROOT) + CATEGORY_DROPPED, cat.dropped);
@@ -806,8 +861,10 @@ public class Generator {
 
 		if (bundle.contains(GENERAL_PROBS)){
 			float[] probs = bundle.getFloatArray(GENERAL_PROBS);
-			for (int i = 0; i < probs.length; i++){
-				categoryProbs.put(Category.values()[i], probs[i]);
+			if (probs.length == Category.values().length) {
+				for (int i = 0; i < probs.length; i++) {
+					categoryProbs.put(Category.values()[i], probs[i]);
+				}
 			}
 		}
 
@@ -816,6 +873,11 @@ public class Generator {
 				float[] probs = bundle.getFloatArray(cat.name().toLowerCase(Locale.ROOT) + CATEGORY_PROBS);
 				if (cat.defaultProbs != null && probs.length == cat.defaultProbs.length){
 					cat.probs = probs;
+				}
+				if (bundle.contains(cat.name().toLowerCase(Locale.ROOT) + CATEGORY_USING_PROBS2)){
+					cat.using2ndProbs = bundle.getBoolean(cat.name().toLowerCase(Locale.ROOT) + CATEGORY_USING_PROBS2);
+				} else {
+					cat.using2ndProbs = false;
 				}
 				if (bundle.contains(cat.name().toLowerCase(Locale.ROOT) + CATEGORY_SEED)){
 					cat.seed = bundle.getLong(cat.name().toLowerCase(Locale.ROOT) + CATEGORY_SEED);

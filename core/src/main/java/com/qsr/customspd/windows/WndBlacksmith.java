@@ -21,8 +21,6 @@
 
 package com.qsr.customspd.windows;
 
-import com.qsr.customspd.Assets;
-import com.qsr.customspd.Chrome;
 import com.qsr.customspd.actors.hero.Belongings;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.mobs.npcs.Blacksmith;
@@ -31,13 +29,10 @@ import com.qsr.customspd.items.bags.Bag;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.scenes.PixelScene;
-import com.qsr.customspd.ui.ItemSlot;
+import com.qsr.customspd.ui.ItemButton;
 import com.qsr.customspd.ui.RedButton;
 import com.qsr.customspd.ui.RenderedTextBlock;
 import com.qsr.customspd.ui.Window;
-import com.watabou.noosa.NinePatch;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.noosa.ui.Component;
 
 public class WndBlacksmith extends Window {
 
@@ -90,7 +85,7 @@ public class WndBlacksmith extends Window {
 		btnReforge = new RedButton( Messages.get(this, "reforge") ) {
 			@Override
 			protected void onClick() {
-				Blacksmith.upgrade( btnItem1.item, btnItem2.item );
+				Blacksmith.upgrade( btnItem1.item(), btnItem2.item() );
 				hide();
 			}
 		};
@@ -124,8 +119,8 @@ public class WndBlacksmith extends Window {
 			if (item != null && btnPressed.parent != null) {
 				btnPressed.item( item );
 				
-				if (btnItem1.item != null && btnItem2.item != null) {
-					String result = Blacksmith.verify( btnItem1.item, btnItem2.item );
+				if (btnItem1.item() != null && btnItem2.item() != null) {
+					String result = Blacksmith.verify( btnItem1.item(), btnItem2.item() );
 					if (result != null) {
 						GameScene.show( new WndMessage( result ) );
 						btnReforge.enable( false );
@@ -136,59 +131,5 @@ public class WndBlacksmith extends Window {
 			}
 		}
 	};
-	
-	public static class ItemButton extends Component {
-		
-		protected NinePatch bg;
-		protected ItemSlot slot;
-		
-		public Item item = null;
-		
-		@Override
-		protected void createChildren() {
-			super.createChildren();
-			
-			bg = Chrome.get( Chrome.Type.RED_BUTTON);
-			add( bg );
-			
-			slot = new ItemSlot() {
-				@Override
-				protected void onPointerDown() {
-					bg.brightness( 1.2f );
-					Sample.INSTANCE.play( Assets.Sounds.CLICK );
-				}
-				@Override
-				protected void onPointerUp() {
-					bg.resetColor();
-				}
-				@Override
-				protected void onClick() {
-					ItemButton.this.onClick();
-				}
-			};
-			slot.enable(true);
-			add( slot );
-		}
-		
-		protected void onClick() {}
-		
-		@Override
-		protected void layout() {
-			super.layout();
-			
-			bg.x = x;
-			bg.y = y;
-			bg.size( width, height );
-			
-			slot.setRect( x + 2, y + 2, width - 4, height - 4 );
-		}
-		
-		public void item( Item item ) {
-			slot.item( this.item = item );
-		}
 
-		public void clear(){
-			slot.clear();
-		}
-	}
 }

@@ -142,9 +142,9 @@ public class HornOfPlenty extends Artifact {
 
 				Badges.validateFoodEaten();
 
-				if (charge >= 15)       image = GeneralAsset.ARTIFACT_HORN4;
-				else if (charge >= 10)  image = GeneralAsset.ARTIFACT_HORN3;
-				else if (charge >= 5)   image = GeneralAsset.ARTIFACT_HORN2;
+				if (charge >= 8)        image = GeneralAsset.ARTIFACT_HORN4;
+				else if (charge >= 5)   image = GeneralAsset.ARTIFACT_HORN3;
+				else if (charge >= 2)   image = GeneralAsset.ARTIFACT_HORN2;
 				else                    image = GeneralAsset.ARTIFACT_HORN1;
 
 				updateQuickslot();
@@ -175,9 +175,9 @@ public class HornOfPlenty extends Artifact {
 					partialCharge = 0;
 				}
 
-				if (charge >= 15)       image = GeneralAsset.ARTIFACT_HORN4;
-				else if (charge >= 10)  image = GeneralAsset.ARTIFACT_HORN3;
-				else if (charge >= 5)   image = GeneralAsset.ARTIFACT_HORN2;
+				if (charge >= 8)        image = GeneralAsset.ARTIFACT_HORN4;
+				else if (charge >= 5)   image = GeneralAsset.ARTIFACT_HORN3;
+				else if (charge >= 2)   image = GeneralAsset.ARTIFACT_HORN2;
 				else                    image = GeneralAsset.ARTIFACT_HORN1;
 
 				updateQuickslot();

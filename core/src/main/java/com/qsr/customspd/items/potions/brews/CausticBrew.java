@@ -44,8 +44,8 @@ public class CausticBrew extends Brew {
 	@Override
 	public void shatter(int cell) {
 		
+		splash( cell );
 		if (Dungeon.level.heroFOV[cell]) {
-			splash( cell );
 			Sample.INSTANCE.play( Assets.Sounds.SHATTER );
 		}
 		
@@ -60,12 +60,6 @@ public class CausticBrew extends Brew {
 				}
 			}
 		}
-	}
-	
-	@Override
-	public int value() {
-		//prices of ingredients
-		return quantity * (30 + 30);
 	}
 	
 	public static class Recipe extends com.qsr.customspd.items.Recipe.SimpleRecipe {

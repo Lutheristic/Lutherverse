@@ -1,6 +1,8 @@
 package com.qsr.customspd.items;
 
+import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.items.bombs.Bomb;
+import com.qsr.customspd.items.food.Food;
 import com.qsr.customspd.items.potions.PotionOfHealing;
 import com.qsr.customspd.items.potions.brews.BlizzardBrew;
 import com.qsr.customspd.items.potions.elixirs.ElixirOfMight;
@@ -186,6 +188,81 @@ class GeneratorParityTest {
 		}
 	}
 
+	// ------------------------------------------------------------ randomWeapon(useDefaults), c8ebdde5e
+
+	@Test
+	void randomWeaponUsingDefaultsIgnoresTheLiveDeck() {
+		// upstream c8ebdde5e: randomWeapon(boolean) forwarded a hard-coded false, so Mimic,
+		// TormentedSpirit and randomUsingDefaults(WEAPON) drew from (and drained) the live tier decks.
+		// Rig every live tier deck to hold only its first class: a defaults draw must still roll the
+		// other classes, and must leave the live decks and their draw counters untouched.
+		int savedDepth = Dungeon.depth;
+		Random.pushGenerator(0xD3FA17L);
+		try {
+			Generator.fullReset();
+			Dungeon.depth = 1;
+			for (Generator.Category tier : Generator.wepTiers) {
+				Arrays.fill(tier.probs, 0);
+				tier.probs[0] = 1000; //never exhausted (and so never reset) within the draws below
+			}
+			Map<Generator.Category, float[]> liveBefore = new LinkedHashMap<>();
+			Map<Generator.Category, Integer> droppedBefore = new LinkedHashMap<>();
+			for (Generator.Category tier : Generator.wepTiers) {
+				liveBefore.put(tier, tier.probs.clone());
+				droppedBefore.put(tier, tier.dropped);
+			}
+
+			boolean offDeck = false;
+			for (int n = 0; n < 200; n++) {
+				Class<?> picked = Generator.randomWeapon(true).getClass();
+				for (Generator.Category tier : Generator.wepTiers) {
+					if (indexOf(tier, picked) > 0) offDeck = true;
+				}
+			}
+			assertTrue(offDeck, "randomWeapon(true) only ever rolled the live deck's single class");
+
+			for (Generator.Category tier : Generator.wepTiers) {
+				assertArrayEquals(liveBefore.get(tier), tier.probs,
+						tier.name() + ": randomWeapon(true) must not consume the live deck");
+				assertEquals(droppedBefore.get(tier).intValue(), tier.dropped,
+						tier.name() + ": randomWeapon(true) must not advance the deck's draw counter");
+			}
+		} finally {
+			Random.popGenerator();
+			Dungeon.depth = savedDepth;
+		}
+	}
+
+	// ------------------------------------------------------------------------ undoDrop, da0968702
+
+	@Test
+	void undoDropShufflesTheCardBackIntoItsDeck() {
+		Generator.Category food = Generator.Category.FOOD;
+		Generator.Category potion = Generator.Category.POTION;
+		Random.pushGenerator(0x5EEDL);
+		try {
+			Generator.fullReset();
+			food.probs = new float[food.classes.length];
+			food.probs[indexOf(food, Food.class)] = 1;
+			Item drawn = Generator.random(food);
+			assertEquals(Food.class, drawn.getClass());
+			assertEquals(0f, food.probs[indexOf(food, Food.class)], "the draw took the only card");
+
+			Generator.undoDrop(drawn);
+			assertEquals(1f, food.probs[indexOf(food, Food.class)], "undoDrop must put the card back");
+
+			// Faithful to upstream (unchanged as of v3.3.8): the category check is
+			// cls.isAssignableFrom(cat.superClass), so undoDrop only matches a class that IS its
+			// category's superclass, like Food in FOOD. For any other item it changes nothing. Kept as
+			// ported and reported upstream-side; a fix must change this assertion on purpose.
+			float[] potions = potion.probs.clone();
+			Generator.undoDrop(new PotionOfHealing());
+			assertArrayEquals(potions, potion.probs);
+		} finally {
+			Random.popGenerator();
+		}
+	}
+
 	// ----------------------------------------------------------------------- save compatibility
 
 	@Test
@@ -247,14 +324,17 @@ class GeneratorParityTest {
 
 	@Test
 	void subOrderingsArrangeItemsWithinTheirCategory() {
-		// potions: Potion, ExoticPotion, Brew, Elixir, LiquidMetal
+		// potions: Waterskin (since 213f7a2f6), Potion, ExoticPotion, Brew, Elixir, LiquidMetal
+		int waterskin = Generator.Category.order(new Waterskin());
 		int potion = Generator.Category.order(new PotionOfHealing());
 		int exotic = Generator.Category.order(new PotionOfShielding());
 		int brew = Generator.Category.order(new BlizzardBrew());
 		int elixir = Generator.Category.order(new ElixirOfMight());
 		int metal = Generator.Category.order(new LiquidMetal());
-		assertTrue(potion < exotic && exotic < brew && brew < elixir && elixir < metal,
-				"potion ordering: " + Arrays.asList(potion, exotic, brew, elixir, metal));
+		assertEquals(potion / 100, waterskin / 100, "the waterskin must sort inside the potion category: "
+				+ waterskin + " vs " + potion);
+		assertTrue(waterskin < potion && potion < exotic && exotic < brew && brew < elixir && elixir < metal,
+				"potion ordering: " + Arrays.asList(waterskin, potion, exotic, brew, elixir, metal));
 
 		// scrolls: Scroll, ExoticScroll, Spell, ArcaneResin
 		int scroll = Generator.Category.order(new ScrollOfIdentify());

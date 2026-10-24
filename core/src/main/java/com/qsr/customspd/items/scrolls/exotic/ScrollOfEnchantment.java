@@ -60,6 +60,7 @@ public class ScrollOfEnchantment extends ExoticScroll {
 	public void doRead() {
 		if (!isKnown()) {
 			identify();
+			curItem = detach(curUser.belongings.backpack);
 			identifiedByUse = true;
 		} else {
 			identifiedByUse = false;
@@ -114,6 +115,10 @@ public class ScrollOfEnchantment extends ExoticScroll {
 		public void onSelect(final Item item) {
 			
 			if (item instanceof Weapon){
+				if (!identifiedByUse) {
+					curItem.detach(curUser.belongings.backpack);
+				}
+				identifiedByUse = false;
 				
 				final Weapon.Enchantment enchants[] = new Weapon.Enchantment[3];
 				
@@ -125,6 +130,10 @@ public class ScrollOfEnchantment extends ExoticScroll {
 				GameScene.show(new WndEnchantSelect((Weapon) item, enchants[0], enchants[1], enchants[2]));
 			
 			} else if (item instanceof Armor) {
+				if (!identifiedByUse) {
+					curItem.detach(curUser.belongings.backpack);
+				}
+				identifiedByUse = false;
 				
 				final Armor.Glyph glyphs[] = new Armor.Glyph[3];
 				
@@ -134,12 +143,8 @@ public class ScrollOfEnchantment extends ExoticScroll {
 				glyphs[2] = Armor.Glyph.random( existing, glyphs[0].getClass(), glyphs[1].getClass());
 				
 				GameScene.show(new WndGlyphSelect((Armor) item, glyphs[0], glyphs[1], glyphs[2]));
-			} else {
-				if (!identifiedByUse){
-					curItem.collect();
-				} else {
-					((ScrollOfEnchantment)curItem).confirmCancelation();
-				}
+			} else if (identifiedByUse){
+				((ScrollOfEnchantment)curItem).confirmCancelation();
 			}
 		}
 	};
@@ -158,9 +163,7 @@ public class ScrollOfEnchantment extends ExoticScroll {
 		                           Weapon.Enchantment ench2, Weapon.Enchantment ench3){
 			super(new ItemSprite(new ScrollOfEnchantment()),
 					Messages.titleCase(new ScrollOfEnchantment().name()),
-					Messages.get(ScrollOfEnchantment.class, "weapon") +
-							"\n\n" +
-							Messages.get(ScrollOfEnchantment.class, "cancel_warn"),
+					Messages.get(ScrollOfEnchantment.class, "weapon"),
 					ench1.name(),
 					ench2.name(),
 					ench3.name(),
@@ -182,10 +185,9 @@ public class ScrollOfEnchantment extends ExoticScroll {
 				Sample.INSTANCE.play( Assets.Sounds.READ );
 				Enchanting.show(curUser, wep);
 				Talent.onUpgradeScrollUsed( Dungeon.hero );
+			} else {
+				GameScene.show(new WndConfirmCancel());
 			}
-
-			wep = null;
-			enchantments = null;
 		}
 
 		@Override
@@ -222,9 +224,7 @@ public class ScrollOfEnchantment extends ExoticScroll {
 		                      Armor.Glyph glyph2, Armor.Glyph glyph3){
 			super(new ItemSprite(new ScrollOfEnchantment()),
 					Messages.titleCase(new ScrollOfEnchantment().name()),
-					Messages.get(ScrollOfEnchantment.class, "armor") +
-							"\n\n" +
-							Messages.get(ScrollOfEnchantment.class, "cancel_warn"),
+					Messages.get(ScrollOfEnchantment.class, "armor"),
 					glyph1.name(),
 					glyph2.name(),
 					glyph3.name(),
@@ -246,10 +246,9 @@ public class ScrollOfEnchantment extends ExoticScroll {
 				Sample.INSTANCE.play( Assets.Sounds.READ );
 				Enchanting.show(curUser, arm);
 				Talent.onUpgradeScrollUsed( Dungeon.hero );
+			} else {
+				GameScene.show(new WndConfirmCancel());
 			}
-
-			arm = null;
-			glyphs = null;
 		}
 
 		@Override
@@ -270,5 +269,38 @@ public class ScrollOfEnchantment extends ExoticScroll {
 			//do nothing, reader has to cancel
 		}
 
+	}
+
+	public static class WndConfirmCancel extends WndOptions{
+
+		public WndConfirmCancel(){
+			super(new ItemSprite(new ScrollOfEnchantment()),
+					Messages.titleCase(new ScrollOfEnchantment().name()),
+					Messages.get(ScrollOfEnchantment.class, "cancel_warn"),
+					Messages.get(ScrollOfEnchantment.class, "cancel_warn_yes"),
+					Messages.get(ScrollOfEnchantment.class, "cancel_warn_no"));
+		}
+
+		@Override
+		protected void onSelect(int index) {
+			super.onSelect(index);
+			if (index == 1){
+				if (WndEnchantSelect.wep != null) {
+					GameScene.show(new WndEnchantSelect());
+				} else {
+					GameScene.show(new WndGlyphSelect());
+				}
+			} else {
+				WndEnchantSelect.wep = null;
+				WndEnchantSelect.enchantments = null;
+				WndGlyphSelect.arm = null;
+				WndGlyphSelect.glyphs = null;
+			}
+		}
+
+		@Override
+		public void onBackPressed() {
+			//do nothing
+		}
 	}
 }

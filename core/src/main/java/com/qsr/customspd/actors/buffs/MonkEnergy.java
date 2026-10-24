@@ -57,6 +57,7 @@ import com.watabou.noosa.Visual;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
+import com.watabou.utils.GameMath;
 
 import kotlin.Pair;
 
@@ -88,7 +89,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 	@Override
 	public float iconFadePercent() {
-		return Math.max(0, cooldown/MAX_COOLDOWN);
+		return GameMath.gate(0, cooldown/MAX_COOLDOWN, 1);
 	}
 
 	@Override
@@ -179,7 +180,8 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 				}
 
 				if (hero.belongings.weapon() instanceof MeleeWeapon
-						&& hero.buff(RingOfForce.BrawlersStance.class) == null){
+						&& (hero.buff(RingOfForce.BrawlersStance.class) == null
+						|| !hero.buff(RingOfForce.BrawlersStance.class).active)){
 					if (((MeleeWeapon) hero.belongings.weapon()).tier <= 1 && points >= 3){
 						enGainMulti += 1.20f;
 					} else if (((MeleeWeapon) hero.belongings.weapon()).tier <= 2 && points >= 2){
@@ -208,7 +210,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 	public void abilityUsed( MonkAbility abil ){
 		energy -= abil.energyCost();
-		cooldown = abil.cooldown();
+		cooldown = abil.cooldown() + (int)target.cooldown();
 
 		if (target instanceof Hero && ((Hero) target).hasTalent(Talent.COMBINED_ENERGY)
 				&& abil.energyCost() >= 5-((Hero) target).pointsInTalent(Talent.COMBINED_ENERGY)) {
@@ -266,7 +268,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 	@Override
 	public int indicatorColor() {
 		if (abilitiesEmpowered(Dungeon.hero)){
-			return 0x99CC33;
+			return 0xAAEE22;
 		} else {
 			return 0xA08840;
 		}
@@ -292,7 +294,11 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 		}
 
 		public String desc(){
-			return Messages.get(this, "desc");
+			if (Buff.affect(Dungeon.hero, MonkEnergy.class).abilitiesEmpowered(Dungeon.hero)){
+				return Messages.get(this, "empower_desc");
+			} else {
+				return Messages.get(this, "desc");
+			}
 		}
 
 		public abstract int energyCost();
@@ -318,14 +324,19 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 			@Override
 			public int cooldown() {
-				//1 less turn as no time is spent flurrying
 				return Dungeon.hero.buff(JustHitTracker.class) != null ? 0 : 5;
 			}
 
 			@Override
 			public String desc() {
-				//hero unarmed damage
-				return Messages.get(this, "desc", 1, Dungeon.hero.STR()-8);
+				if (Buff.affect(Dungeon.hero, MonkEnergy.class).abilitiesEmpowered(Dungeon.hero)){
+					//hero unarmed damage
+					return Messages.get(this, "empower_desc", 1, Dungeon.hero.STR()-8);
+				} else {
+					//hero unarmed damage
+					return Messages.get(this, "desc", 1, Dungeon.hero.STR()-8);
+				}
+
 			}
 
 			@Override
@@ -345,15 +356,18 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 					return;
 				}
 
+				if (Buff.affect(hero, MonkEnergy.class).abilitiesEmpowered(hero)){
+					Buff.affect(hero, FlurryEmpowerTracker.class, 0f);
+				}
+
 				UnarmedAbilityTracker tracker = Buff.affect(hero, UnarmedAbilityTracker.class);
 				if (!hero.canAttack(enemy)){
 					GLog.w(Messages.get(MeleeWeapon.class, "ability_bad_position"));
 					tracker.detach();
+					if (hero.buff(FlurryEmpowerTracker.class) != null){
+						hero.buff(FlurryEmpowerTracker.class).detach();
+					}
 					return;
-				}
-
-				if (Buff.affect(hero, MonkEnergy.class).abilitiesEmpowered(hero)){
-					Buff.affect(hero, FlurryEmpowerTracker.class, 0f);
 				}
 
 				hero.sprite.attack(enemy.pos, new Callback() {
@@ -405,8 +419,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 			@Override
 			public int cooldown() {
-				//1 less if focus was instant
-				return Buff.affect(Dungeon.hero, MonkEnergy.class).abilitiesEmpowered(Dungeon.hero) ? 5 : 6;
+				return 5;
 			}
 
 			@Override
@@ -465,7 +478,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 			@Override
 			public int cooldown() {
-				return 5; //1 less turn as no time is spent dashing
+				return 5;
 			}
 
 			@Override
@@ -526,13 +539,18 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 			@Override
 			public int cooldown() {
-				return 6;
+				return 5;
 			}
 
 			@Override
 			public String desc() {
-				//3x hero unarmed damage
-				return Messages.get(this, "desc", 3, 3*(Dungeon.hero.STR()-8));
+				if (Buff.affect(Dungeon.hero, MonkEnergy.class).abilitiesEmpowered(Dungeon.hero)){
+					//4.5x hero unarmed damage (rounds the result)
+					return Messages.get(this, "empower_desc", 5, Math.round(4.5f*(Dungeon.hero.STR()-8)));
+				} else {
+					//3x hero unarmed damage
+					return Messages.get(this, "desc", 3, 3*(Dungeon.hero.STR()-8));
+				}
 			}
 
 			@Override
@@ -565,11 +583,12 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 						AttackIndicator.target(enemy);
 						boolean empowered = Buff.affect(hero, MonkEnergy.class).abilitiesEmpowered(hero);
 
+						int oldPos = enemy.pos;
 						if (hero.attack(enemy, empowered ? 4.5f : 3f, 0, Char.INFINITE_ACCURACY)){
 							Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);
 						}
 
-						if (enemy.isAlive()){
+						if (oldPos == enemy.pos){
 							//trace a ballistica to our target (which will also extend past them
 							Ballistica trajectory = new Ballistica(hero.pos, enemy.pos, Ballistica.STOP_TARGET);
 							//trim it to just be the part that goes past them
@@ -577,7 +596,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 							//knock them back along that ballistica
 							WandOfBlastWave.throwChar(enemy, trajectory, 6, true, false, hero);
 
-							if (trajectory.dist > 0) {
+							if (trajectory.dist > 0 && enemy.isActive()) {
 								Buff.affect(enemy, Paralysis.class, Math.min( 6, trajectory.dist));
 							}
 						}
@@ -598,7 +617,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 									//knock them back along that ballistica
 									WandOfBlastWave.throwChar(ch, trajectory, 6, true, false, hero);
 
-									if (trajectory.dist > 0) {
+									if (trajectory.dist > 0 && enemy.isActive()) {
 										Buff.affect(ch, Paralysis.class, Math.min( 6, trajectory.dist));
 									}
 								}
@@ -617,9 +636,8 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 			}
 
 			@Override
-			//longer to account for turns spent meditating
 			public int cooldown() {
-				return 10;
+				return 5;
 			}
 
 			@Override
@@ -650,6 +668,11 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 				}
 
 				Actor.addDelayed(new Actor() {
+
+					{
+						actPriority = VFX_PRIO;
+					}
+
 					@Override
 					protected boolean act() {
 						Buff.affect(hero, Recharging.class, 8f);
@@ -660,6 +683,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 				}, hero.cooldown()-1);
 
 				hero.next();
+				hero.busy();
 				Buff.affect(hero, MonkEnergy.class).abilityUsed(this);
 			}
 

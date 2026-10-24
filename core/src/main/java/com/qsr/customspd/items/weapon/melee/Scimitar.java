@@ -28,6 +28,7 @@ import com.qsr.customspd.actors.buffs.FlavourBuff;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.ui.BuffIndicator;
 
 import kotlin.Pair;
@@ -50,17 +51,27 @@ public class Scimitar extends MeleeWeapon {
 	}
 
 	@Override
-	public float abilityChargeUse(Hero hero, Char target) {
-		return 2*super.abilityChargeUse(hero, target);
+	protected int baseChargeUse(Hero hero, Char target){
+		return 2;
 	}
 
 	@Override
 	protected void duelistAbility(Hero hero, Integer target) {
 		beforeAbilityUsed(hero, null);
-		Buff.prolong(hero, SwordDance.class, 4f); //4 turns as using the ability is instant
+		//1 turn less as using the ability is instant
+		Buff.prolong(hero, SwordDance.class, 3+buffedLvl());
 		hero.sprite.operate(hero.pos);
 		hero.next();
 		afterAbilityUsed(hero);
+	}
+
+	@Override
+	public String abilityInfo() {
+		if (levelKnown){
+			return Messages.get(this, "ability_desc", 4+buffedLvl());
+		} else {
+			return Messages.get(this, "typical_ability_desc", 4);
+		}
 	}
 
 	public static class SwordDance extends FlavourBuff {
@@ -77,7 +88,7 @@ public class Scimitar extends MeleeWeapon {
 
 		@Override
 		public float iconFadePercent() {
-			return Math.max(0, (5 - visualcooldown()) / 5);
+			return Math.max(0, (4 - visualcooldown()) / 4);
 		}
 	}
 

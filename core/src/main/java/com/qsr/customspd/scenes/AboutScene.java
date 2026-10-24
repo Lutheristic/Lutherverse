@@ -82,18 +82,12 @@ public class AboutScene extends PixelScene {
 
 		//*** Shattered Pixel Dungeon Credits ***
 
-		String shpxLink = "https://ShatteredPixel.com";
-		//tracking codes, so that the website knows where this pageview came from
-		shpxLink += "?utm_source=shatteredpd";
-		shpxLink += "&utm_medium=about_page";
-		shpxLink += "&utm_campaign=ingame_link";
-
 		CreditsBlock shpx = new CreditsBlock(true, Window.SHPX_COLOR,
 				"Shattered Pixel Dungeon",
 				new Image(Asset.getAssetFilePath(GeneralAsset.ICON_SHPX)),
 				"Developed by: _Evan Debenham_\nBased on Pixel Dungeon's open source",
 				"ShatteredPixel.com",
-				shpxLink);
+				"https://ShatteredPixel.com");
 		if (landscape()){
 			shpx.setRect((w - fullWidth)/2f - 6, qsr.bottom() + 10, 120, 0);
 		} else {
@@ -102,11 +96,11 @@ public class AboutScene extends PixelScene {
 		content.add(shpx);
 
 		CreditsBlock alex = new CreditsBlock(false, Window.SHPX_COLOR,
-				"Hero Art & Design:",
+				"Splash Art & Design:",
 			new Image(Asset.getAssetFilePath(GeneralAsset.ICON_ALEKS)),
 				"Aleksandar Komitov",
-				"alekskomitov.com",
-				"https://www.alekskomitov.com");
+				"akomitov.artstation.com",
+				"https://akomitov.artstation.com/");
 		alex.setSize(colWidth/2f, 0);
 		if (landscape()){
 			alex.setPos(shpx.right(), shpx.top() + (shpx.height() - alex.height()*2)/2f);

@@ -55,6 +55,7 @@ import com.qsr.customspd.items.wands.WandOfWarding;
 import com.qsr.customspd.items.weapon.enchantments.Blazing;
 import com.qsr.customspd.items.weapon.enchantments.Grim;
 import com.qsr.customspd.items.weapon.enchantments.Shocking;
+import com.qsr.customspd.items.weapon.missiles.darts.HolyDart;
 import com.qsr.customspd.levels.traps.DisintegrationTrap;
 import com.qsr.customspd.levels.traps.GrimTrap;
 import com.qsr.customspd.sprites.ItemSprite;
@@ -82,6 +83,7 @@ public class AntiMagic extends Armor.Glyph {
 		RESISTS.add( ScrollOfRetribution.class );
 		RESISTS.add( ScrollOfPsionicBlast.class );
 		RESISTS.add( ScrollOfTeleportation.class );
+		RESISTS.add( HolyDart.class );
 
 		RESISTS.add( ElementalBlast.class );
 		RESISTS.add( CursedWand.class );
@@ -98,7 +100,9 @@ public class AntiMagic extends Armor.Glyph {
 
 		RESISTS.add( ElementalStrike.class );
 		RESISTS.add( Blazing.class );
+		RESISTS.add( WandOfFireblast.FireBlastOnHit.class );
 		RESISTS.add( Shocking.class );
+		RESISTS.add( WandOfLightning.LightningOnHit.class );
 		RESISTS.add( Grim.class );
 
 		RESISTS.add( WarpBeacon.class );

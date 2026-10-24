@@ -38,8 +38,8 @@ import com.qsr.customspd.actors.mobs.Mob;
 import com.qsr.customspd.actors.mobs.npcs.NPC;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.effects.CellEmitter;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.Speck;
-import com.qsr.customspd.items.Dewdrop;
 import com.qsr.customspd.items.armor.ClassArmor;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
@@ -119,7 +119,7 @@ public class Challenge extends ArmorAbility {
 		if (hero.hasTalent(Talent.CLOSE_THE_GAP)){
 
 			int blinkrange = 1 + hero.pointsInTalent(Talent.CLOSE_THE_GAP);
-			PathFinder.buildDistanceMap(hero.pos, BArray.not(Dungeon.level.solid,null), blinkrange);
+			PathFinder.buildDistanceMap(hero.pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null), blinkrange);
 
 			for (int i = 0; i < PathFinder.distance.length; i++){
 				if (PathFinder.distance[i] == Integer.MAX_VALUE
@@ -271,7 +271,7 @@ public class Challenge extends ArmorAbility {
 						if (hpToHeal > 0){
 							Dungeon.hero.HP += hpToHeal;
 							Dungeon.hero.sprite.emitter().start( Speck.factory( Speck.HEALING ), 0.33f, 6 );
-							Dungeon.hero.sprite.showStatus( CharSprite.POSITIVE, Messages.get(Dewdrop.class, "heal", hpToHeal) );
+							Dungeon.hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(hpToHeal), FloatingText.HEALING );
 						}
 					}
 				}

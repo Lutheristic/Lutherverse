@@ -32,7 +32,6 @@ import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
 
 import java.text.NumberFormat;
-import java.util.Locale;
 
 public class WndScoreBreakdown extends Window {
 
@@ -48,7 +47,7 @@ public class WndScoreBreakdown extends Window {
 
 		float pos = title.bottom()+2;
 
-		NumberFormat num = NumberFormat.getInstance(Locale.US);
+		NumberFormat num = NumberFormat.getInstance(Messages.locale());
 		pos = statSlot(this, Messages.get(this, "progress_title"),
 				num.format(Statistics.progressScore), pos, Statistics.progressScore >= 50_000);
 		pos = addInfo(this, Messages.get(this, "progress_desc"), pos);

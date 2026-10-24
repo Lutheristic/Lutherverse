@@ -27,8 +27,10 @@ import com.qsr.customspd.actors.buffs.Hunger;
 import com.qsr.customspd.actors.buffs.Invisibility;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.items.potions.PotionOfHealing;
+import com.qsr.customspd.sprites.CharSprite;
 
 public class PhantomMeat extends Food {
 
@@ -51,10 +53,9 @@ public class PhantomMeat extends Food {
 
 		Barkskin.conditionallyAppend( hero, hero.HT / 4, 1 );
 		Buff.affect( hero, Invisibility.class, Invisibility.DURATION );
-		if (hero.HP < hero.HT) {
-			hero.HP = Math.min( hero.HP + hero.HT / 4, hero.HT );
-		}
+		hero.HP = Math.min( hero.HP + hero.HT / 4, hero.HT );
 		hero.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
+		hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(hero.HT / 4), FloatingText.HEALING );
 		PotionOfHealing.cure(hero);
 
 	}

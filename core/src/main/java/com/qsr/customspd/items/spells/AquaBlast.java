@@ -50,17 +50,21 @@ public class AquaBlast extends TargetedSpell {
 	
 	@Override
 	public int value() {
-		//prices of ingredients, divided by output quantity, rounds down
-		return (int)((60 + 40) * (quantity/8f));
+		return (int)(60 * (quantity/8f));
+	}
+
+	@Override
+	public int energyVal() {
+		return (int)(12 * (quantity/8f));
 	}
 	
 	public static class Recipe extends com.qsr.customspd.items.Recipe.SimpleRecipe {
 		
 		{
-			inputs =  new Class[]{PotionOfStormClouds.class, ArcaneCatalyst.class};
-			inQuantity = new int[]{1, 1};
+			inputs =  new Class[]{PotionOfStormClouds.class};
+			inQuantity = new int[]{1};
 			
-			cost = 2;
+			cost = 11;
 			
 			output = AquaBlast.class;
 			outQuantity = 8;

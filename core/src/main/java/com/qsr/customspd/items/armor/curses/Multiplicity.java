@@ -27,6 +27,7 @@ import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.buffs.PinCushion;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.abilities.Ratmogrify;
+import com.qsr.customspd.actors.mobs.DwarfKing;
 import com.qsr.customspd.actors.mobs.Mimic;
 import com.qsr.customspd.actors.mobs.Mob;
 import com.qsr.customspd.actors.mobs.Statue;
@@ -93,9 +94,11 @@ public class Multiplicity extends Armor.Glyph {
 							m.restoreFromBundle(store);
 							m.pos = 0;
 							m.HP = m.HT;
-							if (m.buff(PinCushion.class) != null) {
-								m.remove(m.buff(PinCushion.class));
-							}
+
+							//don't duplicate stuck projectiles
+							m.remove(m.buff(PinCushion.class));
+							//don't duplicate pending damage to dwarf king
+							m.remove(DwarfKing.KingDamager.class);
 							
 							//If a thief has stolen an item, that item is not duplicated.
 							if (m instanceof Thief) {

@@ -511,10 +511,10 @@ public class GameScene extends PixelScene {
 					if (r instanceof SecretRoom) reqSecrets--;
 				}
 
-				//50%/75% chance, use level's seed so that we get the same result for the same level
+				//60%/90% chance, use level's seed so that we get the same result for the same level
 				//offset seed slightly to avoid output patterns
 				Random.pushGenerator(Dungeon.seedCurDepth()+1);
-					if (reqSecrets <= 0 && Random.Int(4) <= Dungeon.hero.pointsInTalent(Talent.ROGUES_FORESIGHT)){
+					if (reqSecrets <= 0 && Random.Int(10) < 3+3*Dungeon.hero.pointsInTalent(Talent.ROGUES_FORESIGHT)){
 						GLog.p(Messages.get(this, "secret_hint"));
 					}
 				Random.popGenerator();
@@ -653,6 +653,7 @@ public class GameScene extends PixelScene {
 	@Override
 	public synchronized void onPause() {
 		try {
+			if (!Dungeon.hero.ready) waitForActorThread(500, false);
 			Dungeon.saveAll();
 			Badges.saveGlobal();
 			Journal.saveGlobal();
@@ -675,6 +676,8 @@ public class GameScene extends PixelScene {
 
 	public static boolean tagDisappeared = false;
 	public static boolean updateTags = false;
+
+	private static float waterOfs = 0;
 	
 	@Override
 	public synchronized void update() {
@@ -694,7 +697,11 @@ public class GameScene extends PixelScene {
 
 		if (notifyDelay > 0) notifyDelay -= Game.elapsed;
 
-		if (!Emitter.freezeEmitters) water.offset( 0, -5 * Game.elapsed );
+		if (!Emitter.freezeEmitters) {
+			waterOfs -= 5 * Game.elapsed;
+			water.offsetTo( 0, waterOfs );
+			waterOfs = water.offsetY(); //re-assign to account for auto adjust
+		}
 
 		if (!Actor.processing() && Dungeon.hero.isAlive()) {
 			if (actorThread == null || !actorThread.isAlive()) {
@@ -739,7 +746,6 @@ public class GameScene extends PixelScene {
 				tagAction != action.visible ||
 				tagResume != resume.visible) {
 
-			//we only want to change the layout when new tags pop in, not when existing ones leave.
 			boolean tagAppearing = (attack.active && !tagAttack) ||
 									(loot.visible && !tagLoot) ||
 									(action.visible && !tagAction) ||
@@ -750,14 +756,11 @@ public class GameScene extends PixelScene {
 			tagAction = action.visible;
 			tagResume = resume.visible;
 
-			//except if action is the only tag left, then let it drop to the bottom
-			// this is because the action tag can sometimes be persistent
-			if (tagAction && !tagAttack && !tagLoot && !tagResume){
-				tagAppearing = true;
-			}
-
-			if (tagAppearing) layoutTags();
+			//if a new tag appears, re-layout tags immediately
+			//otherwise, wait until the hero acts, so as to not suddenly change their position
+			if (tagAppearing)   layoutTags();
 			else                tagDisappeared = true;
+
 		}
 
 		cellSelector.enable(Dungeon.hero.ready);
@@ -895,7 +898,7 @@ public class GameScene extends PixelScene {
 		}
 	}
 	
-	private void addMobSprite( Mob mob ) {
+	private synchronized void addMobSprite( Mob mob ) {
 		CharSprite sprite = mob.sprite();
 		sprite.visible = Dungeon.level.heroFOV[mob.pos];
 		mobs.add( sprite );
@@ -1051,11 +1054,11 @@ public class GameScene extends PixelScene {
 		}
 	}
 	
-	public static SpellSprite spellSprite() {
+	public static synchronized SpellSprite spellSprite() {
 		return (SpellSprite)scene.spells.recycle( SpellSprite.class );
 	}
 	
-	public static Emitter emitter() {
+	public static synchronized Emitter emitter() {
 		if (scene != null) {
 			Emitter emitter = (Emitter)scene.emitters.recycle( Emitter.class );
 			emitter.revive();
@@ -1065,7 +1068,7 @@ public class GameScene extends PixelScene {
 		}
 	}
 
-	public static Emitter floorEmitter() {
+	public static synchronized Emitter floorEmitter() {
 		if (scene != null) {
 			Emitter emitter = (Emitter)scene.floorEmitters.recycle( Emitter.class );
 			emitter.revive();
@@ -1435,6 +1438,10 @@ public class GameScene extends PixelScene {
 		QuickSlotButton.cancel();
 		InventoryPane.cancelTargeting();
 		if (scene != null && scene.toolbar != null) scene.toolbar.examining = false;
+		if (tagDisappeared) {
+			tagDisappeared = false;
+			updateTags = true;
+		}
 	}
 	
 	public static void checkKeyHold(){
@@ -1513,13 +1520,13 @@ public class GameScene extends PixelScene {
 	public static void examineObject(Object o){
 		if (o == Dungeon.hero){
 			GameScene.show( new WndHero() );
-		} else if ( o instanceof Mob ){
+		} else if ( o instanceof Mob && ((Mob) o).isActive() ){
 			GameScene.show(new WndInfoMob((Mob) o));
 			if (o instanceof Snake && !Document.ADVENTURERS_GUIDE.isPageRead(Document.GUIDE_SURPRISE_ATKS)){
 				GLog.p(Messages.get(Guidebook.class, "hint"));
 				GameScene.flashForDocument(Document.ADVENTURERS_GUIDE, Document.GUIDE_SURPRISE_ATKS);
 			}
-		} else if ( o instanceof Heap ){
+		} else if ( o instanceof Heap && !((Heap) o).isEmpty() ){
 			GameScene.show(new WndInfoItem((Heap)o));
 		} else if ( o instanceof Plant ){
 			GameScene.show( new WndInfoPlant((Plant) o) );

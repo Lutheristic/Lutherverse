@@ -334,6 +334,8 @@ public class Dungeon {
 			level = new CustomLevel(layout.getDungeon().get(levelName).getCustomLayout(), levelName);
 		}
 
+		Statistics.qualifiedForBossRemainsBadge = false;
+
 		level.create();
 		
 		Statistics.qualifiedForNoKilling = !bossLevel();

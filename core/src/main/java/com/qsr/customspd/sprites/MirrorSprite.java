@@ -23,6 +23,7 @@ package com.qsr.customspd.sprites;
 
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.Char;
+import com.qsr.customspd.actors.hero.HeroClass;
 import com.qsr.customspd.actors.mobs.npcs.MirrorImage;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.PointF;
@@ -35,7 +36,7 @@ public class MirrorSprite extends MobSprite {
 	public MirrorSprite() {
 		super();
 		
-		texture( Dungeon.hero.heroClass.spritesheet() );
+		texture( Dungeon.hero != null ? Dungeon.hero.heroClass.spritesheet() : HeroClass.WARRIOR.spritesheet() );
 		updateArmor( 0 );
 		idle();
 	}

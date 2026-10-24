@@ -28,12 +28,14 @@ import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.ShieldBuff;
 import com.qsr.customspd.actors.buffs.Terror;
 import com.qsr.customspd.assets.Asset;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.SpellSprite;
 import com.qsr.customspd.items.Gold;
 import com.qsr.customspd.levels.features.Chasm;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.sprites.BruteSprite;
+import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.ui.BuffIndicator;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -97,6 +99,7 @@ public class Brute extends Mob {
 	
 	protected void triggerEnrage(){
 		Buff.affect(this, BruteRage.class).setShield(HT/2 + 4);
+		sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(HT/2 + 4), FloatingText.SHIELDING );
 		if (Dungeon.level.heroFOV[pos]) {
 			SpellSprite.show( this, GeneralAsset.BERSERK);
 		}

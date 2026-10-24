@@ -39,6 +39,7 @@ import com.qsr.customspd.items.rings.RingOfEnergy;
 import com.qsr.customspd.levels.traps.Trap;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.plants.Plant;
+import com.qsr.customspd.plants.Rotberry;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.sprites.ItemSprite;
@@ -363,13 +364,13 @@ public class TimekeepersHourglass extends Artifact {
 
 		public void triggerPresses(){
 			for (int cell : presses){
-				Trap t = Dungeon.level.traps.get(cell);
-				if (t != null){
-					t.trigger();
-				}
 				Plant p = Dungeon.level.plants.get(cell);
 				if (p != null){
 					p.trigger();
+				}
+				Trap t = Dungeon.level.traps.get(cell);
+				if (t != null){
+					t.trigger();
 				}
 			}
 
@@ -378,12 +379,14 @@ public class TimekeepersHourglass extends Artifact {
 
 		public void disarmPresses(){
 			for (int cell : presses){
+				Plant p = Dungeon.level.plants.get(cell);
+				if (p != null && !(p instanceof Rotberry)) {
+					Dungeon.level.uproot(cell);
+				}
 				Trap t = Dungeon.level.traps.get(cell);
 				if (t != null && t.disarmedByActivation) {
 					t.disarm();
 				}
-
-				Dungeon.level.uproot(cell);
 			}
 
 			presses = new ArrayList<>();
@@ -430,12 +433,12 @@ public class TimekeepersHourglass extends Artifact {
 
 		@Override
 		public String iconTextDisplay() {
-			return Integer.toString((int)turnsToCost);
+			return Integer.toString((int)(turnsToCost + 0.001f));
 		}
 
 		@Override
 		public String desc() {
-			return Messages.get(this, "desc", Messages.decimalFormat("#.##", turnsToCost));
+			return Messages.get(this, "desc", Messages.decimalFormat("#.##", Math.max(0, turnsToCost)));
 		}
 
 		private static final String PRESSES = "presses";

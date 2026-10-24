@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -45,6 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CustomLevelEndToEndTest {
 
 	private static final String LAYOUT = "custom-level-e2e-layout.json";
+	private static final String SHUFFLE_LAYOUT = "custom-level-shuffle-layout.json";
 	private static final long SEED = 424242L;
 
 	@Test
@@ -117,6 +119,50 @@ class CustomLevelEndToEndTest {
 			assertTrue(c1Loaded.traps.get(cell(c1Loaded, 3, 3)) instanceof WornDartTrap);
 			assertTrue(c1Loaded.plants.get(cell(c1Loaded, 6, 4)) instanceof Sungrass);
 			assertEquals("c2", c1Loaded.getTransition(LevelTransition.Type.REGULAR_EXIT).destLevel);
+		}
+	}
+
+	/**
+	 * cpdu-s26z: a layout with shuffle_items permutes which item spec lands on which cell. That
+	 * shuffle must draw from the level's seeded generator, not Collections.shuffle's own unseeded
+	 * one, or the same seed gives a different dungeon every run. Six distinct fixed items give 720
+	 * arrangements, so an unseeded shuffle matches itself on all of three rebuilds with
+	 * probability ~1/500000. Canary (run once, reverted): CustomLevel back on Collections.shuffle
+	 * fails this test.
+	 */
+	@Test
+	void shuffleItemsPlacesTheSameItemsOnTheSameCellsForTheSameSeed() {
+		List<String> first = shuffledPlacement(SEED);
+		for (int rebuild = 0; rebuild < 3; rebuild++) {
+			assertEquals(first, shuffledPlacement(SEED), "same seed, same shuffled item placement (rebuild " + rebuild + ")");
+		}
+
+		// ...and the shuffle is real: across a few seeds the placement is not always the layout's own order.
+		List<String> layoutOrder = Arrays.asList("PotionOfHealing", "PotionOfHaste", "PotionOfFrost",
+				"PotionOfLevitation", "PotionOfInvisibility", "PotionOfMindVision");
+		boolean sawShuffle = !first.equals(layoutOrder);
+		for (long seed = 1; seed <= 4 && !sawShuffle; seed++) {
+			sawShuffle = !shuffledPlacement(seed).equals(layoutOrder);
+		}
+		assertTrue(sawShuffle, "shuffle_items actually reorders the items");
+	}
+
+	/** Item class names by ascending cell, for the shuffle layout built fresh under {@code seed}. */
+	private static List<String> shuffledPlacement(long seed) {
+		DungeonLayout layout = Json.Default.decodeFromString(DungeonLayout.Companion.serializer(), resource(SHUFFLE_LAYOUT));
+		try (HeadlessRun run = HeadlessRun.start(seed)) {
+			Dungeon.layout = layout;
+			Dungeon.levelName = layout.getStart();
+			Dungeon.depth = layout.getDungeon().get(layout.getStart()).getDepth();
+			Level s1 = run.enterFirstLevel();
+			List<String> out = new ArrayList<>();
+			for (int x = 2; x <= 7; x++) {
+				Heap heap = s1.heaps.get(cell(s1, x, 2));
+				assertNotNull(heap, "an item sits at (" + x + ",2)");
+				assertEquals(1, heap.items.size());
+				out.add(heap.items.get(0).getClass().getSimpleName());
+			}
+			return out;
 		}
 	}
 

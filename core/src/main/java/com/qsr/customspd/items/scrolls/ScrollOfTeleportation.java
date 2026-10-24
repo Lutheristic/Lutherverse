@@ -25,6 +25,8 @@ import com.qsr.customspd.Assets;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.Char;
+import com.qsr.customspd.actors.buffs.Buff;
+import com.qsr.customspd.actors.buffs.Roots;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.effects.CellEmitter;
@@ -78,6 +80,7 @@ public class ScrollOfTeleportation extends Scroll {
 		
 		appear( ch, pos );
 		Dungeon.level.occupyCell( ch );
+		Buff.detach(ch, Roots.class);
 		if (ch == Dungeon.hero) {
 			Dungeon.observe();
 			GameScene.updateFog();
@@ -119,6 +122,7 @@ public class ScrollOfTeleportation extends Scroll {
 			
 			appear( ch, pos );
 			Dungeon.level.occupyCell( ch );
+			Buff.detach(ch, Roots.class);
 			
 			if (ch == Dungeon.hero) {
 				GLog.i( Messages.get(ScrollOfTeleportation.class, "tele") );
@@ -189,7 +193,8 @@ public class ScrollOfTeleportation extends Scroll {
 			}
 			GLog.i( Messages.get(ScrollOfTeleportation.class, "tele") );
 			appear( hero, pos );
-			Dungeon.level.occupyCell(hero );
+			Dungeon.level.occupyCell( hero );
+			Buff.detach(hero, Roots.class);
 			if (secretDoor && level.map[doorPos] == Terrain.SECRET_DOOR){
 				Sample.INSTANCE.play( Assets.Sounds.SECRET );
 				int oldValue = Dungeon.level.map[doorPos];
@@ -220,7 +225,7 @@ public class ScrollOfTeleportation extends Scroll {
 		boolean[] passable = Dungeon.level.passable;
 
 		if (Char.hasProp(ch, Char.Property.LARGE)){
-			passable = BArray.or(passable, Dungeon.level.openSpace, null);
+			passable = BArray.and(passable, Dungeon.level.openSpace, null);
 		}
 
 		PathFinder.buildDistanceMap(ch.pos, passable);
@@ -255,6 +260,8 @@ public class ScrollOfTeleportation extends Scroll {
 		appear( ch, pos );
 		Dungeon.level.occupyCell( ch );
 
+		Buff.detach(ch, Roots.class);
+
 		if (ch == Dungeon.hero) {
 			GLog.i( Messages.get(ScrollOfTeleportation.class, "tele") );
 
@@ -280,7 +287,10 @@ public class ScrollOfTeleportation extends Scroll {
 		}
 
 		ch.move( pos, false );
-		if (ch.pos == pos) ch.sprite.place( pos );
+		if (ch.pos == pos) {
+			ch.sprite.interruptMotion();
+			ch.sprite.place(pos);
+		}
 
 		if (ch.invisible == 0) {
 			ch.sprite.alpha( 0 );
@@ -292,11 +302,13 @@ public class ScrollOfTeleportation extends Scroll {
 		}
 	}
 
-	//just plays the VFX for teleporting, without any position changes
+	//just plays the VFX for teleporting, without any position changes, does re-press cells though
 	public static void appearVFX( Char ch ){
 		if (Dungeon.level.heroFOV[ch.pos]){
 			Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 		}
+
+		Dungeon.level.occupyCell(ch);
 
 		if (ch.invisible == 0) {
 			ch.sprite.alpha( 0 );

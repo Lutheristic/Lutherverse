@@ -52,9 +52,9 @@ public class ElixirOfHoneyedHealing extends Elixir {
 	
 	@Override
 	public void shatter(int cell) {
+		splash( cell );
 		if (Dungeon.level.heroFOV[cell]) {
 			Sample.INSTANCE.play( Assets.Sounds.SHATTER );
-			splash( cell );
 		}
 		
 		Char ch = Actor.findChar(cell);
@@ -66,12 +66,6 @@ public class ElixirOfHoneyedHealing extends Elixir {
 				((Bee)ch).setPotInfo(-1, null);
 			}
 		}
-	}
-	
-	@Override
-	public int value() {
-		//prices of ingredients
-		return quantity * (30 + 5);
 	}
 	
 	public static class Recipe extends com.qsr.customspd.items.Recipe.SimpleRecipe {

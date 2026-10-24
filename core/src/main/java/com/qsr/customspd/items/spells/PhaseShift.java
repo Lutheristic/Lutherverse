@@ -66,17 +66,21 @@ public class PhaseShift extends TargetedSpell {
 	
 	@Override
 	public int value() {
-		//prices of ingredients, divided by output quantity, rounds down
-		return (int)((30 + 40) * (quantity/8f));
+		return (int)(60 * (quantity/8f));
+	}
+
+	@Override
+	public int energyVal() {
+		return (int)(12 * (quantity/8f));
 	}
 	
 	public static class Recipe extends com.qsr.customspd.items.Recipe.SimpleRecipe {
 		
 		{
-			inputs =  new Class[]{ScrollOfTeleportation.class, ArcaneCatalyst.class};
-			inQuantity = new int[]{1, 1};
+			inputs =  new Class[]{ScrollOfTeleportation.class};
+			inQuantity = new int[]{1};
 			
-			cost = 4;
+			cost = 13;
 			
 			output = PhaseShift.class;
 			outQuantity = 8;

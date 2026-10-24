@@ -22,6 +22,7 @@
 package com.qsr.customspd.items.stones;
 
 import com.qsr.customspd.Dungeon;
+import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.buffs.Invisibility;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.Item;
@@ -34,16 +35,15 @@ public abstract class Runestone extends Item {
 		defaultAction = AC_THROW;
 	}
 
-	//runestones press the cell they're thrown to by default, but a couple stones override this
-	protected boolean pressesCell = true;
-
 	@Override
 	protected void onThrow(int cell) {
-		if (Dungeon.level.pit[cell] || !defaultAction().equals(AC_THROW)){
+		///inventory stones are thrown like normal items, other stones don't trigger when thrown into pits
+		if (this instanceof InventoryStone ||
+				(Dungeon.level.pit[cell] && Actor.findChar(cell) == null)){
 			super.onThrow( cell );
 		} else {
-			if (pressesCell) Dungeon.level.pressCell( cell );
 			activate(cell);
+			if (Actor.findChar(cell) == null) Dungeon.level.pressCell( cell );
 			Invisibility.dispel();
 		}
 	}

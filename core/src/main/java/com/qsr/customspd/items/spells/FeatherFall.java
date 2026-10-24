@@ -86,17 +86,21 @@ public class FeatherFall extends Spell {
 	
 	@Override
 	public int value() {
-		//prices of ingredients, divided by output quantity, rounds down
-		return (int)((30 + 40) * (quantity/2f));
+		return (int)(60 * (quantity/2f));
+	}
+
+	@Override
+	public int energyVal() {
+		return (int)(12 * (quantity/2f));
 	}
 	
 	public static class Recipe extends com.qsr.customspd.items.Recipe.SimpleRecipe {
 		
 		{
-			inputs =  new Class[]{PotionOfLevitation.class, ArcaneCatalyst.class};
-			inQuantity = new int[]{1, 1};
+			inputs =  new Class[]{PotionOfLevitation.class};
+			inQuantity = new int[]{1};
 			
-			cost = 8;
+			cost = 17;
 			
 			output = FeatherFall.class;
 			outQuantity = 2;

@@ -56,12 +56,6 @@ public class ElixirOfAquaticRejuvenation extends Elixir {
 		Talent.onHealingPotionUsed( hero );
 	}
 	
-	@Override
-	public int value() {
-		//prices of ingredients
-		return quantity * (30 + 30);
-	}
-	
 	public static class AquaHealing extends Buff {
 		
 		{

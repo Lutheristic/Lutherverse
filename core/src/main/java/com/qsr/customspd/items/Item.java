@@ -290,6 +290,17 @@ public class Item implements Bundlable {
 			return split;
 		}
 	}
+
+	public Item duplicate(){
+		Item dupe = Reflection.newInstance(getClass());
+		if (dupe == null){
+			return null;
+		}
+		Bundle copy = new Bundle();
+		this.storeInBundle(copy);
+		dupe.restoreFromBundle(copy);
+		return dupe;
+	}
 	
 	public final Item detach( Bag container ) {
 		
@@ -358,7 +369,9 @@ public class Item implements Bundlable {
 	//returns the level of the item, after it may have been modified by temporary boosts/reductions
 	//note that not all item properties should care about buffs/debuffs! (e.g. str requirement)
 	public int buffedLvl(){
-		if (Dungeon.hero.buff( Degrade.class ) != null) {
+		//only the hero can be affected by Degradation
+		if (Dungeon.hero.buff( Degrade.class ) != null
+			&& (isEquipped( Dungeon.hero ) || Dungeon.hero.belongings.contains( this ))) {
 			return Degrade.reduceLevel(level());
 		} else {
 			return level();
@@ -642,8 +655,9 @@ public class Item implements Bundlable {
 						public void call() {
 							curUser = user;
 							Item i = Item.this.detach(user.belongings.backpack);
+							user.spend(delay);
 							if (i != null) i.onThrow(cell);
-							user.spendAndNext(delay);
+							user.next();
 						}
 					});
 		}

@@ -39,10 +39,10 @@ public class PotionOfShroudingFog extends ExoticPotion {
 	@Override
 	public void shatter( int cell ) {
 		
+		splash( cell );
 		if (Dungeon.level.heroFOV[cell]) {
 			identify();
 			
-			splash( cell );
 			Sample.INSTANCE.play( Assets.Sounds.SHATTER );
 			Sample.INSTANCE.play( Assets.Sounds.GAS );
 		}

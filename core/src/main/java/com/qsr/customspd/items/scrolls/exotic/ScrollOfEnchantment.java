@@ -163,9 +163,7 @@ public class ScrollOfEnchantment extends ExoticScroll {
 		                           Weapon.Enchantment ench2, Weapon.Enchantment ench3){
 			super(new ItemSprite(new ScrollOfEnchantment()),
 					Messages.titleCase(new ScrollOfEnchantment().name()),
-					Messages.get(ScrollOfEnchantment.class, "weapon") +
-							"\n\n" +
-							Messages.get(ScrollOfEnchantment.class, "cancel_warn"),
+					Messages.get(ScrollOfEnchantment.class, "weapon"),
 					ench1.name(),
 					ench2.name(),
 					ench3.name(),
@@ -187,10 +185,9 @@ public class ScrollOfEnchantment extends ExoticScroll {
 				Sample.INSTANCE.play( Assets.Sounds.READ );
 				Enchanting.show(curUser, wep);
 				Talent.onUpgradeScrollUsed( Dungeon.hero );
+			} else {
+				GameScene.show(new WndConfirmCancel());
 			}
-
-			wep = null;
-			enchantments = null;
 		}
 
 		@Override
@@ -227,9 +224,7 @@ public class ScrollOfEnchantment extends ExoticScroll {
 		                      Armor.Glyph glyph2, Armor.Glyph glyph3){
 			super(new ItemSprite(new ScrollOfEnchantment()),
 					Messages.titleCase(new ScrollOfEnchantment().name()),
-					Messages.get(ScrollOfEnchantment.class, "armor") +
-							"\n\n" +
-							Messages.get(ScrollOfEnchantment.class, "cancel_warn"),
+					Messages.get(ScrollOfEnchantment.class, "armor"),
 					glyph1.name(),
 					glyph2.name(),
 					glyph3.name(),
@@ -251,10 +246,9 @@ public class ScrollOfEnchantment extends ExoticScroll {
 				Sample.INSTANCE.play( Assets.Sounds.READ );
 				Enchanting.show(curUser, arm);
 				Talent.onUpgradeScrollUsed( Dungeon.hero );
+			} else {
+				GameScene.show(new WndConfirmCancel());
 			}
-
-			arm = null;
-			glyphs = null;
 		}
 
 		@Override
@@ -275,5 +269,38 @@ public class ScrollOfEnchantment extends ExoticScroll {
 			//do nothing, reader has to cancel
 		}
 
+	}
+
+	public static class WndConfirmCancel extends WndOptions{
+
+		public WndConfirmCancel(){
+			super(new ItemSprite(new ScrollOfEnchantment()),
+					Messages.titleCase(new ScrollOfEnchantment().name()),
+					Messages.get(ScrollOfEnchantment.class, "cancel_warn"),
+					Messages.get(ScrollOfEnchantment.class, "cancel_warn_yes"),
+					Messages.get(ScrollOfEnchantment.class, "cancel_warn_no"));
+		}
+
+		@Override
+		protected void onSelect(int index) {
+			super.onSelect(index);
+			if (index == 1){
+				if (WndEnchantSelect.wep != null) {
+					GameScene.show(new WndEnchantSelect());
+				} else {
+					GameScene.show(new WndGlyphSelect());
+				}
+			} else {
+				WndEnchantSelect.wep = null;
+				WndEnchantSelect.enchantments = null;
+				WndGlyphSelect.arm = null;
+				WndGlyphSelect.glyphs = null;
+			}
+		}
+
+		@Override
+		public void onBackPressed() {
+			//do nothing
+		}
 	}
 }

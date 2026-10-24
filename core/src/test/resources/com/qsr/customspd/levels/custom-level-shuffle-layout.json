@@ -1,0 +1,60 @@
+{
+  "start": "s1",
+  "dungeon": {
+    "s1": {
+      "depth": 1,
+      "type": "custom",
+      "entrances": ["surface"],
+      "exits": ["s2"],
+      "chasm": "s2",
+      "passage": "s1",
+      "custom_layout": {
+        "width": 9,
+        "height": 5,
+        "region": 1,
+        "music": { "tracks": [], "probs": [] },
+        "shuffle_items": true,
+        "map": [
+          4, 4, 4, 4, 4, 4, 4, 4, 4,
+          4, 7, 1, 1, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 1, 1, 1, 8, 4,
+          4, 4, 4, 4, 4, 4, 4, 4, 4
+        ],
+        "entrances": [ { "x": 1, "y": 1 } ],
+        "exits": [ { "x": 7, "y": 3 } ],
+        "items": [
+          { "x": 2, "y": 2, "type": "potions.PotionOfHealing" },
+          { "x": 3, "y": 2, "type": "potions.PotionOfHaste" },
+          { "x": 4, "y": 2, "type": "potions.PotionOfFrost" },
+          { "x": 5, "y": 2, "type": "potions.PotionOfLevitation" },
+          { "x": 6, "y": 2, "type": "potions.PotionOfInvisibility" },
+          { "x": 7, "y": 2, "type": "potions.PotionOfMindVision" }
+        ]
+      }
+    },
+    "s2": {
+      "depth": 2,
+      "type": "custom",
+      "entrances": ["s1"],
+      "exits": ["s3"],
+      "chasm": "s3",
+      "passage": "s1",
+      "custom_layout": {
+        "width": 7,
+        "height": 5,
+        "region": 2,
+        "music": { "tracks": [], "probs": [] },
+        "map": [
+          4, 4, 4, 4, 4, 4, 4,
+          4, 7, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 1, 8, 4,
+          4, 4, 4, 4, 4, 4, 4
+        ],
+        "entrances": [ { "x": 1, "y": 1 } ],
+        "exits": [ { "x": 5, "y": 3 } ]
+      }
+    }
+  }
+}

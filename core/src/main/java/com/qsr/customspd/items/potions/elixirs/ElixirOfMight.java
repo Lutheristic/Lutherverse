@@ -69,19 +69,13 @@ public class ElixirOfMight extends Elixir {
 		return Messages.get(this, "desc", HTBoost.boost(Dungeon.hero.HT));
 	}
 	
-	@Override
-	public int value() {
-		//prices of ingredients
-		return quantity * (50 + 40);
-	}
-	
 	public static class Recipe extends com.qsr.customspd.items.Recipe.SimpleRecipe {
 		
 		{
-			inputs =  new Class[]{PotionOfStrength.class, AlchemicalCatalyst.class};
-			inQuantity = new int[]{1, 1};
+			inputs =  new Class[]{PotionOfStrength.class};
+			inQuantity = new int[]{1};
 			
-			cost = 6;
+			cost = 14;
 			
 			output = ElixirOfMight.class;
 			outQuantity = 1;

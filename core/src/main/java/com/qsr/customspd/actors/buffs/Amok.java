@@ -21,6 +21,8 @@
 
 package com.qsr.customspd.actors.buffs;
 
+import com.qsr.customspd.Dungeon;
+import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.mobs.Mob;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.ui.BuffIndicator;
@@ -41,9 +43,20 @@ public class Amok extends FlavourBuff {
 
 	@Override
 	public void detach() {
-		super.detach();
-		if (target instanceof Mob && target.isAlive()) {
-			((Mob) target).aggro(null);
+		//if our target is an enemy, reset any enemy-to-enemy aggro involving it
+		if (target.isAlive()) {
+			if (target.alignment == Char.Alignment.ENEMY) {
+				for (Mob m : Dungeon.level.mobs) {
+					if (m.alignment == Char.Alignment.ENEMY && m.isTargeting(target)) {
+						m.aggro(null);
+					}
+					if (target instanceof Mob && ((Mob) target).isTargeting(m)){
+						((Mob) target).aggro(null);
+					}
+				}
+			}
 		}
+
+		super.detach();
 	}
 }

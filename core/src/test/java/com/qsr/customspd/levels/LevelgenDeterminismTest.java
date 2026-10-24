@@ -2,14 +2,22 @@ package com.qsr.customspd.levels;
 
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.mobs.Mob;
+import com.qsr.customspd.actors.mobs.npcs.ImpShopkeeper;
 import com.qsr.customspd.items.Heap;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.journal.Guidebook;
 import com.qsr.customspd.levels.features.LevelTransition;
+import com.qsr.customspd.levels.rooms.special.ShopRoom;
+import com.qsr.customspd.levels.rooms.standard.ImpShopRoom;
 import com.qsr.customspd.test.HeadlessRun;
+import com.qsr.customspd.test.SaveRoundtrip;
+import com.watabou.noosa.Game;
 import com.watabou.utils.PathFinder;
+import com.watabou.utils.PlatformSupport;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -113,13 +121,13 @@ class LevelgenDeterminismTest {
 	private static final String[] BOSS_FLOORS = {"5", "10", "15", "20", "25"};
 
 	/**
-	 * Parked, not passing: boss floors whose exit stays cut off even with the gate open. Floor 20:
-	 * CPDU's ImpShopRoom.paint still walls its whole rect (the pre-v2 standalone-room paint;
-	 * v2.5.4's paint only picks the stock), and CityBossLevel places that rect across the exit
-	 * hallway, so after the Dwarf King the stairs and the imp shop are boxed in. Filed as a
-	 * follow-up; this ratchet fails once it is fixed, so the entry gets removed then.
+	 * Parked, not passing: boss floors whose exit stays cut off even with the gate open. Empty now.
+	 * Floor 20 used to be here: CPDU's ImpShopRoom.paint still walled its whole rect (the
+	 * pre-baea3b7e8 standalone-room paint) across CityBossLevel's exit hallway, boxing in the stairs
+	 * after the Dwarf King (cpdu-jw1e). A parked floor must be named here; this ratchet then fails
+	 * once the floor is fixed, so the entry gets removed.
 	 */
-	private static final Set<String> KNOWN_DISCONNECTED_BOSS_FLOORS = Collections.singleton("20");
+	private static final Set<String> KNOWN_DISCONNECTED_BOSS_FLOORS = Collections.emptySet();
 
 	/**
 	 * Boss floors are sealed by design: the exit cannot be reached until the boss falls (a locked
@@ -154,7 +162,97 @@ class LevelgenDeterminismTest {
 		assertEquals(10 * BOSS_FLOORS.length, checked);
 	}
 
+	/**
+	 * baea3b7e8: the imp shop decides its stock during levelgen (so a seed's shop is fixed before
+	 * the city boss falls), keeps it through a save, and once the shop spawns its items sit on
+	 * for-sale heaps the hero can walk to with the boss gate open.
+	 */
+	@Test
+	void theImpShopDecidesItsItemsAtLevelgenAndIsReachableOnceSpawned() throws Exception {
+		try (HeadlessRun run = HeadlessRun.start(7919L)) {
+			CityBossLevel level = (CityBossLevel) run.generate("20");
+			Field shopField = CityBossLevel.class.getDeclaredField("impShop");
+			shopField.setAccessible(true);
+			ImpShopRoom shop = (ImpShopRoom) shopField.get(level);
+
+			// Stock is decided at levelgen, not lazily. Read the field itself: itemCount() would
+			// generate the stock on first call and hide a paint() that decides nothing.
+			List<String> decided = stockOf(shop);
+			assertNotNull(decided, "ImpShopRoom.paint must decide itemsToSpawn during levelgen");
+			assertFalse(decided.isEmpty(), "the imp shop has items from levelgen");
+			assertFalse(shop.shopSpawned());
+			for (Heap h : level.heaps.valueList()) {
+				assertTrue(h.type != Heap.Type.FOR_SALE, "nothing is for sale before the Imp quest completes");
+			}
+
+			// The stock survives a save/load of the room (the 'items' bundle key): the field is read
+			// before any itemCount() call, so a missing key shows up as null, not as regenerated stock.
+			ImpShopRoom reloaded = SaveRoundtrip.of(shop);
+			assertEquals(decided, stockOf(reloaded), "stock after a save roundtrip, item by item and in order");
+
+			Method spawn = CityBossLevel.class.getDeclaredMethod("spawnShop");
+			spawn.setAccessible(true);
+			// ImpShopRoom.placeShopkeeper asks Game.scene() (null here, so the shopkeeper goes to
+			// level.mobs); give it a bare Game and put the statics back afterwards (the constructor
+			// writes instance, platform and sceneClass).
+			Field sceneClassField = Game.class.getDeclaredField("sceneClass");
+			sceneClassField.setAccessible(true);
+			Game priorInstance = Game.instance;
+			PlatformSupport priorPlatform = Game.platform;
+			Object priorSceneClass = sceneClassField.get(null);
+			try {
+				new Game(null, null);
+				spawn.invoke(level);
+			} finally {
+				Game.instance = priorInstance;
+				Game.platform = priorPlatform;
+				sceneClassField.set(null, priorSceneClass);
+			}
+			assertTrue(shop.shopSpawned());
+			boolean shopkeeper = false;
+			for (Mob m : level.mobs) shopkeeper |= m instanceof ImpShopkeeper;
+			assertTrue(shopkeeper, "an ImpShopkeeper stands in the shop");
+
+			boolean[] gate = bossGate(level);
+			boolean[] walkable = new boolean[level.length()];
+			for (int i = 0; i < walkable.length; i++) {
+				walkable[i] = level.passable[i] || level.avoid[i] || gate[i];
+			}
+			PathFinder.setMapSize(level.width(), level.height());
+			PathFinder.buildDistanceMap(level.entrance(), walkable);
+			List<String> placed = new ArrayList<>();
+			for (Heap h : level.heaps.valueList()) {
+				if (h.type != Heap.Type.FOR_SALE) continue;
+				for (Item item : h.items) placed.add(describe(item));
+				assertTrue(PathFinder.distance[h.pos] != Integer.MAX_VALUE,
+						"for-sale heap at " + h.pos + " is unreachable with the gate open");
+			}
+			// spawnShop places exactly the stock levelgen decided (it must not regenerate it).
+			List<String> expectedSorted = new ArrayList<>(decided);
+			List<String> placedSorted = new ArrayList<>(placed);
+			Collections.sort(expectedSorted);
+			Collections.sort(placedSorted);
+			assertEquals(expectedSorted, placedSorted, "for-sale heaps hold exactly the levelgen stock");
+		}
+	}
+
 	// ------------------------------------------------------------------------------ helpers
+
+	/** The room's itemsToSpawn field as class+quantity strings, read WITHOUT triggering lazy generation; null if unset. */
+	private static List<String> stockOf(ImpShopRoom room) throws Exception {
+		Field f = ShopRoom.class.getDeclaredField("itemsToSpawn");
+		f.setAccessible(true);
+		@SuppressWarnings("unchecked")
+		List<Item> items = (List<Item>) f.get(room);
+		if (items == null) return null;
+		List<String> out = new ArrayList<>();
+		for (Item item : items) out.add(describe(item));
+		return out;
+	}
+
+	private static String describe(Item item) {
+		return item.getClass().getName() + " x" + item.quantity();
+	}
 
 	/** What a same-seed rebuild must reproduce of one floor. */
 	private static final class Floor {

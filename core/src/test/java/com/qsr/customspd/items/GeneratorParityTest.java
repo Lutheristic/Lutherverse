@@ -293,14 +293,17 @@ class GeneratorParityTest {
 
 	@Test
 	void subOrderingsArrangeItemsWithinTheirCategory() {
-		// potions: Potion, ExoticPotion, Brew, Elixir, LiquidMetal
+		// potions: Waterskin (since 213f7a2f6), Potion, ExoticPotion, Brew, Elixir, LiquidMetal
+		int waterskin = Generator.Category.order(new Waterskin());
 		int potion = Generator.Category.order(new PotionOfHealing());
 		int exotic = Generator.Category.order(new PotionOfShielding());
 		int brew = Generator.Category.order(new BlizzardBrew());
 		int elixir = Generator.Category.order(new ElixirOfMight());
 		int metal = Generator.Category.order(new LiquidMetal());
-		assertTrue(potion < exotic && exotic < brew && brew < elixir && elixir < metal,
-				"potion ordering: " + Arrays.asList(potion, exotic, brew, elixir, metal));
+		assertEquals(potion / 100, waterskin / 100, "the waterskin must sort inside the potion category: "
+				+ waterskin + " vs " + potion);
+		assertTrue(waterskin < potion && potion < exotic && exotic < brew && brew < elixir && elixir < metal,
+				"potion ordering: " + Arrays.asList(waterskin, potion, exotic, brew, elixir, metal));
 
 		// scrolls: Scroll, ExoticScroll, Spell, ArcaneResin
 		int scroll = Generator.Category.order(new ScrollOfIdentify());

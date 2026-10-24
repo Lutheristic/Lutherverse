@@ -23,6 +23,7 @@ package com.qsr.customspd.items.bags;
 
 import com.qsr.customspd.items.ArcaneResin;
 import com.qsr.customspd.items.Item;
+import com.qsr.customspd.items.Stylus;
 import com.qsr.customspd.items.scrolls.Scroll;
 import com.qsr.customspd.items.spells.BeaconOfReturning;
 import com.qsr.customspd.items.spells.Spell;
@@ -36,7 +37,8 @@ public class ScrollHolder extends Bag {
 
 	@Override
 	public boolean canHold( Item item ) {
-		if (item instanceof Scroll || item instanceof Spell || item instanceof ArcaneResin){
+		if (item instanceof Scroll || item instanceof Spell
+				|| item instanceof ArcaneResin || item instanceof Stylus){
 			return super.canHold(item);
 		} else {
 			return false;

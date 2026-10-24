@@ -42,9 +42,6 @@ public class StoneOfDisarming extends Runestone {
 	
 	{
 		image = GeneralAsset.STONE_DISARM;
-
-		//so traps do not activate before the effect
-		pressesCell = false;
 	}
 
 	@Override

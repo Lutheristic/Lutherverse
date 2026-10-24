@@ -39,9 +39,6 @@ public class StoneOfFlock extends Runestone {
 	
 	{
 		image = GeneralAsset.STONE_FLOCK;
-
-		//the sheep will press the cell instead
-		pressesCell = false;
 	}
 	
 	@Override

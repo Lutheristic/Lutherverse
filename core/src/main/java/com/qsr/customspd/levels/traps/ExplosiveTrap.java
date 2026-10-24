@@ -21,6 +21,8 @@
 
 package com.qsr.customspd.levels.traps;
 
+import com.qsr.customspd.Badges;
+import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.items.bombs.Bomb;
 
 public class ExplosiveTrap extends Trap {
@@ -33,6 +35,9 @@ public class ExplosiveTrap extends Trap {
 	@Override
 	public void activate() {
 		new Bomb().explode(pos);
+		if (reclaimed && !Dungeon.hero.isAlive()) {
+			Badges.validateDeathFromFriendlyMagic();
+		}
 	}
 
 }

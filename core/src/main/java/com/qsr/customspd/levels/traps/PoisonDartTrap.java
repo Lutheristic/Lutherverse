@@ -22,6 +22,7 @@
 package com.qsr.customspd.levels.traps;
 
 import com.qsr.customspd.Assets;
+import com.qsr.customspd.Badges;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.ShatteredPixelDungeon;
 import com.qsr.customspd.Statistics;
@@ -47,7 +48,7 @@ public class PoisonDartTrap extends Trap {
 	}
 	
 	protected int poisonAmount(){
-		return 8 + Math.round(2*Dungeon.depth / 3f);
+		return 8 + Math.round(2*scalingDepth() / 3f);
 	}
 	
 	protected boolean canTarget( Char ch ){
@@ -105,6 +106,7 @@ public class PoisonDartTrap extends Trap {
 											}
 											if (!finalTarget.isAlive()) {
 												Dungeon.fail(PoisonDartTrap.this);
+												if (reclaimed) Badges.validateDeathFromFriendlyMagic();
 											}
 										}
 										Buff.affect( finalTarget, Poison.class ).set( poisonAmount() );

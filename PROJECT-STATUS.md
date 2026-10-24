@@ -23,6 +23,7 @@ historical record. Updated in the same commit as any substantive work — treat 
 - **Badge ending flow** matches v2.5.4 (`cpdu-jtik`). It reintroduced a duplicate-win-in-Rankings bug on window resize, fixed by pulling forward upstream d029c0d7d.
 - **A new gate.** `PropertiesKeyShapeTest` rejects message values split across lines. It caught the truncated `barkskin.desc`.
 - Core tests: 492 → 539.
+- **Cross-track check after waves 6–7.** It found one merge-ordering gap: `barkskin.desc` was repaired after the translation sync's snapshot, so its 18 translations missed the new paragraph. It also found two older missing message keys that showed `java.lang.object.…` in the log (`charm.cant_attack`, the renamed combined-lethality `executed`), and an icon gap in Vampiric. All are fixed, and the once-only win at the surface transition is now pinned by `HappyEndTransitionTest`. Core tests: 545. New: Indonesian translations may never load on Java 17+, because the locale code `in` maps to `id` (`cpdu-7p2g`).
 
 **2026-10-24, AFK-inline wave 6.**
 - **A gate that could not fail, closed.** `core:test` now declares the asset tree and the root build script as inputs, so a translation-only or version-only change re-runs the tests instead of replaying a stale green result (`cpdu-3wjz`).

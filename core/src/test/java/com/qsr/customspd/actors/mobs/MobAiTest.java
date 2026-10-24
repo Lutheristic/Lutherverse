@@ -28,7 +28,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * hero at its entrance, real terrain, FOV and pathing, the real actor schedule driven by
  * {@link TurnPump}, sprites stubbed by {@link StubSprite}. The floor's own mobs are removed so
  * each pin watches one subject; everything else (hero buffs, blobs, the respawner) keeps acting.
- * RNG is a pushed fixed seed, so each pin replays identically.
+ * The floor is seed-stable (HeadlessRun suppresses the unseeded floor-1 Guidebook drop) and the
+ * pins' RNG is a pushed fixed seed, so each pin replays identically.
  */
 class MobAiTest {
 

@@ -80,6 +80,12 @@ public final class HeadlessRun implements AutoCloseable {
 			// RegularPainter's tutorial rule does not hide the entrance doors on floors 1-2.
 			SPDSettings.intro(false);
 			Document.ADVENTURERS_GUIDE.findPage(Document.GUIDE_SEARCHING);
+			// ...and the intro page read, so EntranceRoom drops no floor-1 Guidebook. That drop
+			// picks its cell from an UNSEEDED generator, and RegularPainter.paintGrass skips its
+			// RNG draw on a heap cell, so a Guidebook on grass shifts the seeded stream: floor 1
+			// (and the Generator decks carried forward) would vary build to build for one seed.
+			Document.ADVENTURERS_GUIDE.findPage(Document.GUIDE_INTRO);
+			Document.ADVENTURERS_GUIDE.readPage(Document.GUIDE_INTRO);
 
 			Game.versionCode = VERSION_CODE;
 			GamesInProgress.curSlot = SLOT;

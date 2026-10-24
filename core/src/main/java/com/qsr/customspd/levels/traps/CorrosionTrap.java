@@ -22,7 +22,6 @@
 package com.qsr.customspd.levels.traps;
 
 import com.qsr.customspd.Assets;
-import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.blobs.Blob;
 import com.qsr.customspd.actors.blobs.CorrosiveGas;
 import com.qsr.customspd.scenes.GameScene;
@@ -38,10 +37,10 @@ public class CorrosionTrap extends Trap {
 	@Override
 	public void activate() {
 
-		CorrosiveGas corrosiveGas = Blob.seed(pos, 80 + 5 * Dungeon.depth, CorrosiveGas.class);
+		CorrosiveGas corrosiveGas = Blob.seed(pos, 80 + 5 * scalingDepth(), CorrosiveGas.class);
 		Sample.INSTANCE.play(Assets.Sounds.GAS);
 
-		corrosiveGas.setStrength(1+Dungeon.depth/4);
+		corrosiveGas.setStrength(1+scalingDepth()/4);
 
 		GameScene.add(corrosiveGas);
 

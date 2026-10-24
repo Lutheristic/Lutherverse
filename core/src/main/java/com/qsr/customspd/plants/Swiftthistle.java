@@ -141,7 +141,10 @@ public class Swiftthistle extends Plant {
 
 		public void disarmPresses(){
 			for (int cell : presses){
-				Dungeon.level.uproot(cell);
+				Plant p = Dungeon.level.plants.get(cell);
+				if (p != null && !(p instanceof Rotberry)) {
+					Dungeon.level.uproot(cell);
+				}
 				Trap t = Dungeon.level.traps.get(cell);
 				if (t != null && t.disarmedByActivation) {
 					t.disarm();

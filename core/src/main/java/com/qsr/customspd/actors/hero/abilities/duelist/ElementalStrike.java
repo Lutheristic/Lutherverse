@@ -48,6 +48,7 @@ import com.qsr.customspd.actors.hero.abilities.ArmorAbility;
 import com.qsr.customspd.actors.mobs.Mob;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.effects.CellEmitter;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.MagicMissile;
 import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.effects.particles.ShadowParticle;
@@ -258,7 +259,7 @@ public class ElementalStrike extends ArmorAbility {
 				if (heal > 0){
 					hero.HP += heal;
 					hero.sprite.emitter().start( Speck.factory( Speck.HEALING ), 0.4f, 1 );
-					hero.sprite.showStatus( CharSprite.POSITIVE, Integer.toString( heal ) );
+					hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString( heal ), FloatingText.HEALING );
 				}
 			}
 

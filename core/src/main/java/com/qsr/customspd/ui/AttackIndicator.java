@@ -189,6 +189,8 @@ public class AttackIndicator extends Tag {
 
 	public static void target(Char target ) {
 		if (target == null) return;
+		//no HUD yet (headless tests drive hero abilities without a scene); nothing to retarget
+		if (instance == null) return;
 		synchronized (instance) {
 			instance.lastTarget = (Mob) target;
 			instance.updateImage();

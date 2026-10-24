@@ -2,6 +2,7 @@ package com.qsr.customspd.items.scrolls;
 
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.hero.Hero;
+import com.qsr.customspd.actors.mobs.TormentedSpirit;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.test.HeadlessGdx;
 import com.qsr.customspd.test.HeadlessLevel;
@@ -23,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  *  - 295ac57f8: ScrollOfRemoveCurse.doRead must not detach up front - the consumption belongs to
  *    InventoryScroll (unknown: on read; known: on select), so a stacked read uses ONE scroll.
+ *  - 335414182 (kept by v2.5.4): cleansing a TormentedSpirit with Remove Curse never reaches
+ *    InventoryScroll, so that branch consumes the scroll itself.
  *  - 538914864: cancelling the item prompt of a KNOWN, non-anonymous inventory scroll costs no
  *    time and consumes nothing (only anonymous reads, which already spent the scroll, spend a turn).
  */
@@ -106,6 +109,79 @@ class InventoryScrollConsumptionPortTest {
 		readUntilPrompt(hero, scroll);
 
 		assertEquals(3, scroll.quantity(), "a known scroll is only used up once an item is chosen");
+	}
+
+	/**
+	 * A TormentedSpirit whose cleanse only records the call: the real one drops a prize heap and
+	 * animates it (heap.sprite.drop()), which needs a scene. Everything up to the cleanse - which
+	 * is where the scroll is consumed - is the real ScrollOfRemoveCurse.doRead.
+	 */
+	public static final class RecordingSpirit extends TormentedSpirit {
+		int cleansed = 0;
+
+		@Override
+		public void cleanse() {
+			cleansed++;
+		}
+	}
+
+	/**
+	 * Real ScrollOfRemoveCurse except for readAnimation, whose last step casts the reader's sprite
+	 * to HeroSprite (a GL-textured sprite the headless harness cannot build). The override keeps
+	 * every non-sprite effect of Scroll.readAnimation (dispel, spend, busy).
+	 */
+	public static final class HeadlessRemoveCurse extends ScrollOfRemoveCurse {
+		@Override
+		protected void readAnimation() {
+			com.qsr.customspd.actors.buffs.Invisibility.dispel();
+			curUser.spend(TIME_TO_READ);
+			curUser.busy();
+		}
+	}
+
+	private static RecordingSpirit spiritNextTo(Hero hero) {
+		RecordingSpirit spirit = HeadlessLevel.at(new RecordingSpirit(), hero.pos + 1);
+		StubSprite.attach(spirit);
+		// Flare.show adds the flare to the reader sprite's parent group.
+		new com.watabou.noosa.Group().add(hero.sprite);
+		return spirit;
+	}
+
+	/**
+	 * Cross-lane merge fix: the spirit branch of doRead never calls super.doRead(), so its own
+	 * detach is the only thing that consumes the scroll (v2.5.4 ScrollOfRemoveCurse, re-added
+	 * upstream in 335414182). One lane removed it under the old "Scroll.execute detaches first"
+	 * model while the other lane removed that up-front detach (2879e9ae5), leaving no consumer.
+	 */
+	@Test
+	void cleansingATormentedSpiritConsumesExactlyOneKnownScroll() throws Exception {
+		Hero hero = hero();
+		HeadlessLevel.at(hero, hero.pos);
+		RecordingSpirit spirit = spiritNextTo(hero);
+		HeadlessRemoveCurse scroll = stackOf(hero, new HeadlessRemoveCurse(), 3, true);
+
+		setStatic("curUser", hero);
+		setStatic("curItem", scroll);
+		scroll.doRead();
+
+		assertEquals(1, spirit.cleansed, "fixture: the read took the spirit branch");
+		assertEquals(2, scroll.quantity(), "cleansing the spirit uses up one scroll of the stack");
+		assertTrue(hero.belongings.backpack.items.contains(scroll), "the rest of the stack stays in the pack");
+	}
+
+	@Test
+	void cleansingATormentedSpiritConsumesASingleUnknownScroll() throws Exception {
+		Hero hero = hero();
+		HeadlessLevel.at(hero, hero.pos);
+		RecordingSpirit spirit = spiritNextTo(hero);
+		HeadlessRemoveCurse scroll = stackOf(hero, new HeadlessRemoveCurse(), 1, false);
+
+		setStatic("curUser", hero);
+		setStatic("curItem", scroll);
+		scroll.doRead();
+
+		assertEquals(1, spirit.cleansed, "fixture: the read took the spirit branch");
+		assertTrue(!hero.belongings.backpack.items.contains(scroll), "the only scroll is used up");
 	}
 
 	@Test

@@ -36,6 +36,7 @@ import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.utils.BArray;
 import com.qsr.customspd.utils.GLog;
+import com.watabou.noosa.Camera;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -95,28 +96,38 @@ public class Dagger extends MeleeWeapon {
 
 	@Override
 	protected void duelistAbility(Hero hero, Integer target) {
-		sneakAbility(hero, target, 5, this);
+		sneakAbility(hero, target, 5, 2+buffedLvl(), this);
 	}
 
-	public static void sneakAbility(Hero hero, Integer target, int maxDist, MeleeWeapon wep){
+	@Override
+	public String abilityInfo() {
+		if (levelKnown){
+			return Messages.get(this, "ability_desc", 2+buffedLvl());
+		} else {
+			return Messages.get(this, "typical_ability_desc", 2);
+		}
+	}
+
+	public static void sneakAbility(Hero hero, Integer target, int maxDist, int invisTurns, MeleeWeapon wep){
 		if (target == null) {
 			return;
 		}
 
-		if (Actor.findChar(target) != null || !Dungeon.level.heroFOV[target]) {
+		if (Actor.findChar(target) != null || !Dungeon.level.heroFOV[target] || hero.rooted) {
 			GLog.w(Messages.get(wep, "ability_bad_position"));
+			//CPDU has no PixelScene.shake (upstream 02210b0a8's screen-shake setting); Camera.main.shake is its equivalent
+			if (Dungeon.hero.rooted) Camera.main.shake( 1, 1f );
 			return;
 		}
 
-		PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.not(Dungeon.level.solid, null), maxDist);
+		PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null), maxDist);
 		if (PathFinder.distance[target] == Integer.MAX_VALUE) {
 			GLog.w(Messages.get(wep, "ability_bad_position"));
 			return;
 		}
 
 		wep.beforeAbilityUsed(hero, null);
-		Buff.affect(hero, Invisibility.class, Actor.TICK);
-		hero.spendAndNext(Actor.TICK);
+		Buff.affect(hero, Invisibility.class, invisTurns-1); //1 fewer turns as ability is instant
 
 		Dungeon.hero.sprite.turnTo( Dungeon.hero.pos, target);
 		Dungeon.hero.pos = target;
@@ -129,6 +140,7 @@ public class Dagger extends MeleeWeapon {
 		CellEmitter.get( Dungeon.hero.pos ).burst( Speck.factory( Speck.WOOL ), 6 );
 		Sample.INSTANCE.play( Assets.Sounds.PUFF );
 
+		hero.next();
 		wep.afterAbilityUsed(hero);
 	}
 }

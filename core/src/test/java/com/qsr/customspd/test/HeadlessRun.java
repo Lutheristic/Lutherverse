@@ -3,6 +3,7 @@ package com.qsr.customspd.test;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.GamesInProgress;
 import com.qsr.customspd.SPDSettings;
+import com.qsr.customspd.ShatteredPixelDungeon;
 import com.qsr.customspd.actors.hero.HeroClass;
 import com.qsr.customspd.actors.mobs.Mob;
 import com.qsr.customspd.journal.Document;
@@ -45,8 +46,14 @@ public final class HeadlessRun implements AutoCloseable {
 	/** A slot the game's UI never offers (slots are 1..MAX_SLOTS), so no real save collides. */
 	public static final int SLOT = GamesInProgress.MAX_SLOTS + 1;
 
-	/** Launchers set Game.versionCode; headless it is 0, which Level.restoreFromBundle rejects as an "old save". */
-	public static final int VERSION_CODE = 900;
+	/**
+	 * Launchers set Game.versionCode; headless it is 0, which Level.restoreFromBundle rejects as an
+	 * "old save". Uses the real build's version code (build.gradle appVersionCode, which the
+	 * launchers pass through), so saves are stamped as a shipped build would stamp them and any
+	 * ported {@code version < vX} gate sees the current build. HeadlessRunHygieneTest pins the two
+	 * together.
+	 */
+	public static final int VERSION_CODE = ShatteredPixelDungeon.v2_1_0_1_0;
 
 	public final long seed;
 	private final StaticSnapshot saved;
@@ -73,6 +80,12 @@ public final class HeadlessRun implements AutoCloseable {
 			// RegularPainter's tutorial rule does not hide the entrance doors on floors 1-2.
 			SPDSettings.intro(false);
 			Document.ADVENTURERS_GUIDE.findPage(Document.GUIDE_SEARCHING);
+			// ...and the intro page read, so EntranceRoom drops no floor-1 Guidebook. That drop
+			// picks its cell from an UNSEEDED generator, and RegularPainter.paintGrass skips its
+			// RNG draw on a heap cell, so a Guidebook on grass shifts the seeded stream: floor 1
+			// (and the Generator decks carried forward) would vary build to build for one seed.
+			Document.ADVENTURERS_GUIDE.findPage(Document.GUIDE_INTRO);
+			Document.ADVENTURERS_GUIDE.readPage(Document.GUIDE_INTRO);
 
 			Game.versionCode = VERSION_CODE;
 			GamesInProgress.curSlot = SLOT;

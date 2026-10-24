@@ -87,7 +87,7 @@ class LevelgenDeterminismTest {
 		String drift = goldenDrift(31337L, "GOLDEN_31337", GOLDEN_31337)
 				+ goldenDrift(8675309L, "GOLDEN_8675309", GOLDEN_8675309);
 		if (!drift.isEmpty()) {
-			fail("floors no longer match the golden digests (read the comment above GOLDEN_31337 before updating):" + drift);
+			throw new AssertionError("floors no longer match the golden digests (read the comment above GOLDEN_31337 before updating):" + drift);
 		}
 	}
 
@@ -171,10 +171,14 @@ class LevelgenDeterminismTest {
 			}
 			for (Heap h : level.heaps.valueList()) {
 				for (Item item : h.items) {
-					// EntranceRoom drops floor 1's Guidebook from an UNSEEDED Random.pushGenerator(),
-					// upstream's choice "so meta progression doesn't affect levelgen": its cell varies
-					// run to run by design, so it is not part of the seeded contract.
-					if (item instanceof Guidebook) continue;
+					// EntranceRoom places floor 1's Guidebook from an UNSEEDED generator, and a
+					// Guidebook on grass perturbs the rest of the seeded floor (paintGrass skips heap
+					// cells), so no same-seed comparison holds once it drops. HeadlessRun reads the
+					// intro page to prevent that; fail loudly, not intermittently, if it ever drops.
+					if (item instanceof Guidebook) {
+						throw new AssertionError("floor " + Dungeon.levelName + " dropped a Guidebook at " + h.pos
+								+ ": HeadlessRun must mark GUIDE_INTRO read, or floor 1 is not seed-deterministic");
+					}
 					heaps.add(h.pos + ": " + item.getClass().getName() + " x" + item.quantity());
 				}
 			}

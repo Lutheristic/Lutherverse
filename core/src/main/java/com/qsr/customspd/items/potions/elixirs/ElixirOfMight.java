@@ -26,9 +26,11 @@ import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.Asset;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.items.potions.AlchemicalCatalyst;
 import com.qsr.customspd.items.potions.PotionOfStrength;
 import com.qsr.customspd.messages.Messages;
+import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.ui.BuffIndicator;
 import com.qsr.customspd.utils.GLog;
@@ -50,6 +52,7 @@ public class ElixirOfMight extends Elixir {
 		identify();
 		
 		hero.STR++;
+		hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, "1", FloatingText.STRENGTH);
 		
 		Buff.affect(hero, HTBoost.class).reset();
 		HTBoost boost = Buff.affect(hero, HTBoost.class);

@@ -24,6 +24,7 @@ package com.qsr.customspd.items.weapon.missiles.darts;
 import com.qsr.customspd.Assets;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.Char;
+import com.qsr.customspd.actors.blobs.Electricity;
 import com.qsr.customspd.effects.Lightning;
 import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.assets.GeneralAsset;
@@ -44,7 +45,7 @@ public class ShockingDart extends TippedDart {
 
 		//when processing charged shot, only shock enemies
 		if (!processingChargedShot || attacker.alignment != defender.alignment) {
-			defender.damage(Random.NormalIntRange(5 + Dungeon.scalingDepth() / 4, 10 + Dungeon.scalingDepth() / 4), this);
+			defender.damage(Random.NormalIntRange(5 + Dungeon.scalingDepth() / 4, 10 + Dungeon.scalingDepth() / 4), new Electricity());
 
 			CharSprite s = defender.sprite;
 			if (s != null && s.parent != null) {

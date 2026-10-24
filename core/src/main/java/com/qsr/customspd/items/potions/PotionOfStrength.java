@@ -24,7 +24,9 @@ package com.qsr.customspd.items.potions;
 import com.qsr.customspd.Badges;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.messages.Messages;
+import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.utils.GLog;
 
 public class PotionOfStrength extends Potion {
@@ -40,6 +42,7 @@ public class PotionOfStrength extends Potion {
 		identify();
 
 		hero.STR++;
+		hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, "1", FloatingText.STRENGTH);
 
 		GLog.p( Messages.get(this, "msg", hero.STR()) );
 		

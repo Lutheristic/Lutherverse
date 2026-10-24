@@ -47,7 +47,7 @@ public class Vampiric extends Weapon.Enchantment {
 
 				attacker.HP += healAmt;
 				attacker.sprite.emitter().start( Speck.factory( Speck.HEALING ), 0.4f, 1 );
-				attacker.sprite.showStatus( CharSprite.POSITIVE, Integer.toString( healAmt ) );
+				attacker.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString( healAmt ), FloatingText.HEALING );
 
 			}
 		}

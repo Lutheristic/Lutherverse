@@ -443,7 +443,7 @@ public class MeleeWeapon extends Weapon {
 				if (Regeneration.regenOn()){
 					float chargeToGain = 1/(40f-(chargeCap()-charges)); // 40 to 30 turns per charge
 
-					//50% slower charge gain with brawler's stance enabled
+					//50% slower charge gain with brawler's stance enabled, even if buff is inactive
 					if (Dungeon.hero.buff(RingOfForce.BrawlersStance.class) != null){
 						chargeToGain *= 0.50f;
 					}
@@ -473,7 +473,7 @@ public class MeleeWeapon extends Weapon {
 					// up to 53.333 to 40 turns per charge at max talent level
 					float chargeToGain = secondChargeMultiplier() / (40f-(secondChargeCap()-secondCharges));
 
-					//50% slower charge gain with brawler's stance enabled
+					//50% slower charge gain with brawler's stance enabled, even if buff is inactive
 					//(upstream applies this to its single shared pool; CPDU still has the pre-11a410f07
 					// separate champion pool, so it applies to both regen-driven gains here)
 					if (Dungeon.hero.buff(RingOfForce.BrawlersStance.class) != null){

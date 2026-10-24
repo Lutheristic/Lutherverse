@@ -147,12 +147,7 @@ public class NewsScene extends PixelScene {
 			@Override
 			protected void onClick() {
 				super.onClick();
-				String link = "https://ShatteredPixel.com";
-				//tracking codes, so that the website knows where this pageview came from
-				link += "?utm_source=shatteredpd";
-				link += "&utm_medium=news_page";
-				link += "&utm_campaign=ingame_link";
-				ShatteredPixelDungeon.platform.openURI(link);
+				ShatteredPixelDungeon.platform.openURI("https://ShatteredPixel.com");
 			}
 		};
 		btnSite.icon(new Image(Asset.getAssetFilePath(GeneralAsset.ICON_NEWS)));
@@ -319,12 +314,7 @@ public class NewsScene extends PixelScene {
 				@Override
 				protected void onClick() {
 					super.onClick();
-					String link = article.URL;
-					//tracking codes, so that the website knows where this pageview came from
-					link += "?utm_source=shatteredpd";
-					link += "&utm_medium=news_page";
-					link += "&utm_campaign=ingame_link";
-					ShatteredPixelDungeon.platform.openURI(link);
+					ShatteredPixelDungeon.platform.openURI(article.URL);
 				}
 			};
 			link.setRect(0, height + 2, width, BTN_HEIGHT);

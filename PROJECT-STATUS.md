@@ -6,7 +6,7 @@ and dated design docs, plans and CHANGELOG entries deliberately keep the origina
 historical record. Updated in the same commit as any substantive work — treat as ground truth for near-term state.*
 
 **Last update:** 2026-10-23
-**Current tip:** working branch `dev/2026-10-23` (off `main` at `3144f95da`), gate-verified locally; not yet merged to `main` or pushed.
+**Current tip:** `main` is at `9f4b9f381` (pushed, CI green). AFK-inline marathon work is on branch `afk-inline/2026-10-23`: gate-verified locally, **not merged to `main` and not pushed**, awaiting LO review.
 
 > The dated sections further down are a **historical log** and are deliberately not rewritten.
 > Where an older entry contradicts this header, the header wins.
@@ -14,6 +14,15 @@ historical record. Updated in the same commit as any substantive work — treat 
 ---
 
 ## Where we are
+
+**2026-10-23, AFK-inline wave 3 (branch `afk-inline/2026-10-23`).**
+- **Generator parity.** `randomWeapon(useDefaults)` now honours its argument; the Waterskin fits the potion bandolier (all of 213f7a2f6); and the v2.3.0 **two-deck potion/scroll drop system** plus `undoDrop` are ported. All three change seeded generation on purpose, as their commits state. The F4 golden digests were updated only after a scratch tree without these ports proved they were the sole cause.
+- **Remains and badges.** PhysicalEmpower no longer stacks with itself. Remains are left on amulet, challenged and labeled-seed runs and capped 5 floors above the deepest (upstream cd79b3bcd); daily runs are still excluded. Two hero-remains badges landed with their Statistics state.
+- **Damage-icon call sites.** All of them are ported: heal/shield/exp/gold/energy icons, and armor-ignoring damage sources with their own classes.
+- **F5 StubSprite + TurnPump.** The first mob-AI pins are in place, and F4 now covers boss floors, a richer same-seed comparison, golden digests and a CustomLevel end-to-end test.
+- **Integration found a real determinism defect.** The shop's bag choice broke ties through a `HashMap` keyed by object identity, so the same seed could sell a different bag. It is fixed with a `LinkedHashMap`, a documented divergence because upstream has the same bug.
+- New defects, all beaded: floor 20 walls off after the boss (`cpdu-jw1e`, a half-port), an unseeded shuffle in custom levels (`cpdu-s26z`), and a hash-ordered aggression target pick (`cpdu-p4bm`).
+- Core tests: 181 → 224.
 
 **2026-10-23: two Slice 1 epics landed, F4 HeadlessRun exists, content-audit is at one real finding.**
 - **RemainsItem + Bones v2.3.0** (`cpdu-bsb`). Remains now carry a hero-class item, and stacks are capped at 3. Every level caller was adapted, and legacy `bones.dat` files still load. The five boss/shop levels now push their own RNG stream around remains, so seeded layouts of those floors from before this change will not reproduce (upstream's own consequence).
@@ -481,6 +490,8 @@ dispatcher at a time.
 - **Slice 1 scope decision.** The 541 triaged commits mean Slice 1 is roughly an order of magnitude larger than planned. Options: review and integrate them inside Slice 1, split them into a Slice 1b, or push the non-engine areas to a later slice. Task 25's re-estimation should not be the first time this is confronted.
 - **Conditional music as pack config** (`cpdu-15l`). Should amulet-obtained / quest-active track selection become a pack-config surface rather than hardcoded level code? Landing upstream's form would hardcode what CPDU deliberately made configurable, and would not apply to configured dungeons at all. Touches the frozen DSL.
 - **Make CI content-audit blocking?** (`cpdu-wez`). The over-report that justified `|| true` is fixed, and the ceiling (24) equals the real count. Advisory mode is how the ceiling drifted to 189 while the real count was 194.
+- **Aggression target order** (`cpdu-p4bm`). `Actor.chars()` returns `HashSet` copies, so a mob choosing among 2+ aggression-marked targets picks in hash order. Fix as a determinism divergence, like the ShopRoom bag fix? The default per precedent is yes.
+- **Headless hero damage** (`cpdu-xbs4`). `GameScene.resetKeyHold` NPEs headless on any hit to the hero. Should it get a one-line production null guard, or a test seam? This blocks the WS-4 combat tests.
 - **Seeds vs player progress** (`cpdu-w3ol`). Floors 1–2 entrance doors depend on the intro/guide-page state, so a shared or daily seed differs between new and returning players. Accept that (faithful), or neutralise it for seeded runs (a divergence)?
 - **Keybearer remains item** (`cpdu-pvf4`). Upstream's default arm gives it the Warrior's SealShard. Keep that, or give it its own item?
 - **SpectralNecromancer divergence** (`cpdu-66a`). Upstream left it without the impassable-tile guard. Fix it as a documented CPDU divergence, or leave it faithful?

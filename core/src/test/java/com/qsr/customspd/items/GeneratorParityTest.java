@@ -1,5 +1,6 @@
 package com.qsr.customspd.items;
 
+import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.items.bombs.Bomb;
 import com.qsr.customspd.items.potions.PotionOfHealing;
 import com.qsr.customspd.items.potions.brews.BlizzardBrew;
@@ -183,6 +184,51 @@ class GeneratorParityTest {
 			}
 		} finally {
 			Random.popGenerator();
+		}
+	}
+
+	// ------------------------------------------------------------ randomWeapon(useDefaults), c8ebdde5e
+
+	@Test
+	void randomWeaponUsingDefaultsIgnoresTheLiveDeck() {
+		// upstream c8ebdde5e: randomWeapon(boolean) forwarded a hard-coded false, so Mimic,
+		// TormentedSpirit and randomUsingDefaults(WEAPON) drew from (and drained) the live tier decks.
+		// Rig every live tier deck to hold only its first class: a defaults draw must still roll the
+		// other classes, and must leave the live decks and their draw counters untouched.
+		int savedDepth = Dungeon.depth;
+		Random.pushGenerator(0xD3FA17L);
+		try {
+			Generator.fullReset();
+			Dungeon.depth = 1;
+			for (Generator.Category tier : Generator.wepTiers) {
+				Arrays.fill(tier.probs, 0);
+				tier.probs[0] = 1000; //never exhausted (and so never reset) within the draws below
+			}
+			Map<Generator.Category, float[]> liveBefore = new LinkedHashMap<>();
+			Map<Generator.Category, Integer> droppedBefore = new LinkedHashMap<>();
+			for (Generator.Category tier : Generator.wepTiers) {
+				liveBefore.put(tier, tier.probs.clone());
+				droppedBefore.put(tier, tier.dropped);
+			}
+
+			boolean offDeck = false;
+			for (int n = 0; n < 200; n++) {
+				Class<?> picked = Generator.randomWeapon(true).getClass();
+				for (Generator.Category tier : Generator.wepTiers) {
+					if (indexOf(tier, picked) > 0) offDeck = true;
+				}
+			}
+			assertTrue(offDeck, "randomWeapon(true) only ever rolled the live deck's single class");
+
+			for (Generator.Category tier : Generator.wepTiers) {
+				assertArrayEquals(liveBefore.get(tier), tier.probs,
+						tier.name() + ": randomWeapon(true) must not consume the live deck");
+				assertEquals(droppedBefore.get(tier).intValue(), tier.dropped,
+						tier.name() + ": randomWeapon(true) must not advance the deck's draw counter");
+			}
+		} finally {
+			Random.popGenerator();
+			Dungeon.depth = savedDepth;
 		}
 	}
 

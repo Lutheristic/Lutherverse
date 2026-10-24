@@ -189,7 +189,7 @@ public class WndHeroInfo extends WndTabbed {
 					break;
 				case HUNTRESS:
 					icons = new Image[]{ new ItemSprite(GeneralAsset.SPIRIT_BOW),
-							new Image(Assets.Environment.TILES_SEWERS, 112, 96, 16, 16),
+							new Image(Assets.Environment.TILES_SEWERS, 80, 96, 16, 16), //DungeonTileSheet.FLAT_HIGH_GRASS (slot 101)
 							new ItemSprite(GeneralAsset.GLOVES),
 							new ItemSprite(GeneralAsset.SCROLL_ISAZ)};
 					break;

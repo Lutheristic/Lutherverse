@@ -17,8 +17,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * or item description shown outside a run) was a NullPointerException. With no hero there is
  * nobody to be degraded, so the plain level is the answer.
  *
- * Sword/ring are deliberately not used: upstream's same commit also guards MeleeWeapon.buffedLvl and
- * Ring.buffedLvl, which are separate overrides CPDU has not ported (tracked as follow-ups).
+ * Sword/ring are deliberately not used here: MeleeWeapon.buffedLvl is a separate override that
+ * upstream's same commit also guards (covered by WeaponNoHeroPortTest). Ring.buffedLvl is a separate
+ * override that neither b6f7e7462 nor v2.5.4 guards, so it still needs a hero, as upstream.
  */
 class ItemBuffedLvlNoHeroPortTest {
 

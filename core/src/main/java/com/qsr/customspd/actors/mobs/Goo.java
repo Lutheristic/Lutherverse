@@ -31,6 +31,7 @@ import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.Invisibility;
 import com.qsr.customspd.actors.buffs.LockedFloor;
 import com.qsr.customspd.actors.buffs.Ooze;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.items.artifacts.DriedRose;
 import com.qsr.customspd.items.keys.SkeletonKey;
@@ -118,6 +119,7 @@ public class Goo extends Mob {
 
 			if (Dungeon.level.heroFOV[pos] ){
 				sprite.emitter().burst( Speck.factory( Speck.HEALING ), healInc );
+				sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(healInc), FloatingText.HEALING );
 			}
 			if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES) && healInc < 3) {
 				healInc++;

@@ -28,6 +28,7 @@ import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.buffs.Adrenaline;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.effects.Beam;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.Pushing;
 import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.items.Item;
@@ -35,6 +36,7 @@ import com.qsr.customspd.items.potions.PotionOfHealing;
 import com.qsr.customspd.items.scrolls.ScrollOfTeleportation;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
+import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.sprites.NecromancerSprite;
 import com.qsr.customspd.sprites.SkeletonSprite;
 import com.qsr.customspd.utils.BArray;
@@ -173,7 +175,10 @@ public int drRoll() {
 			}
 			
 			mySkeleton.HP = Math.min(mySkeleton.HP + mySkeleton.HT/5, mySkeleton.HT);
-			if (mySkeleton.sprite.visible) mySkeleton.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
+			if (mySkeleton.sprite.visible) {
+				mySkeleton.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
+				mySkeleton.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString( mySkeleton.HT/5 ), FloatingText.HEALING );
+			}
 			
 		//otherwise give it adrenaline
 		} else if (mySkeleton.buff(Adrenaline.class) == null) {

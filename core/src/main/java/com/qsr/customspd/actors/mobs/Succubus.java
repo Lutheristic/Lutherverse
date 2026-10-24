@@ -29,6 +29,7 @@ import com.qsr.customspd.actors.buffs.Barrier;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.Charm;
 import com.qsr.customspd.actors.buffs.Light;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.items.Generator;
 import com.qsr.customspd.items.Item;
@@ -37,6 +38,7 @@ import com.qsr.customspd.items.scrolls.ScrollOfIdentify;
 import com.qsr.customspd.items.scrolls.ScrollOfTeleportation;
 import com.qsr.customspd.items.scrolls.ScrollOfUpgrade;
 import com.qsr.customspd.mechanics.Ballistica;
+import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.sprites.SuccubusSprite;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
@@ -79,9 +81,15 @@ public class Succubus extends Mob {
 			int shield = (HP - HT) + (5 + damage);
 			if (shield > 0){
 				HP = HT;
+				if (shield < 5){
+					sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(5-shield), FloatingText.HEALING);
+				}
+
 				Buff.affect(this, Barrier.class).setShield(shield);
+				sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shield), FloatingText.SHIELDING);
 			} else {
 				HP += 5 + damage;
+				sprite.showStatusWithIcon(CharSprite.POSITIVE, "5", FloatingText.HEALING);
 			}
 			if (Dungeon.level.heroFOV[pos]) {
 				sprite.emitter().burst( Speck.factory( Speck.HEALING ), 2 );

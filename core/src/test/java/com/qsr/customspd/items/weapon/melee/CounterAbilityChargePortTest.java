@@ -23,8 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  *  - 20cd08c32 (v2.4.0, "adjusted counter ability talent now that all abilities cost 1")
  *    replaced the discount entirely: abilityChargeUse() is just baseChargeUse(), and using an
  *    ability within 3 turns of the afterimage being attacked refunds charge instead.
+ *  - e3313717d (v2.4.0) then re-tuned the refund (0.375 charge per point, at every level).
  * Weapons keep stating only their base cost, which is what the first two tests pin; the rest pin
- * the refund.
+ * the refund as it stands now.
  */
 class CounterAbilityChargePortTest {
 
@@ -82,9 +83,11 @@ class CounterAbilityChargePortTest {
 	}
 
 	@Test
-	void usingAnAbilityInsideTheWindowRefundsOnlyAtFourPoints() {
-		assertEquals(1f, chargeAfterAbility(3, true), 0f, "upstream 20cd08c32: nothing below +4");
-		assertEquals(1f + 4f / 3f, chargeAfterAbility(4, true), 0.0001f, "+4: 1.33 charges");
+	void usingAnAbilityInsideTheWindowRefundsThreeEighthsOfACharge() {
+		assertEquals(1f + 0.375f, chargeAfterAbility(1, true), 0.0001f, "upstream e3313717d: +1");
+		assertEquals(1f + 0.75f, chargeAfterAbility(2, true), 0.0001f, "+2");
+		assertEquals(1f + 1.125f, chargeAfterAbility(3, true), 0.0001f, "+3 (20cd08c32 gave nothing below +4)");
+		assertEquals(1f + 1.5f, chargeAfterAbility(4, true), 0.0001f, "+4");
 	}
 
 	@Test

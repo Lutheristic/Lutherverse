@@ -41,12 +41,6 @@ public class ElixirOfToxicEssence extends Elixir {
 		hero.sprite.emitter().burst(PoisonParticle.SPLASH, 10);
 	}
 	
-	@Override
-	public int value() {
-		//prices of ingredients
-		return quantity * (30 + 40);
-	}
-	
 	public static class Recipe extends com.qsr.customspd.items.Recipe.SimpleRecipe {
 		
 		{

@@ -44,12 +44,6 @@ public class ElixirOfDragonsBlood extends Elixir {
 		hero.sprite.emitter().burst(FlameParticle.FACTORY, 10);
 	}
 	
-	@Override
-	public int value() {
-		//prices of ingredients
-		return quantity * (50 + 40);
-	}
-	
 	public static class Recipe extends com.qsr.customspd.items.Recipe.SimpleRecipe {
 		
 		{

@@ -34,6 +34,7 @@ import com.qsr.customspd.actors.buffs.Terror;
 import com.qsr.customspd.actors.buffs.Vertigo;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.mobs.npcs.NPC;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.MagicMissile;
 import com.qsr.customspd.items.weapon.melee.MagesStaff;
 import com.qsr.customspd.mechanics.Ballistica;
@@ -286,7 +287,7 @@ public class WandOfWarding extends Wand {
 			}
 
 			HP = Math.min(HT, HP+heal);
-			if (sprite != null) sprite.showStatus(CharSprite.POSITIVE, Integer.toString(heal));
+			if (sprite != null) sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(heal), FloatingText.HEALING);
 
 		}
 

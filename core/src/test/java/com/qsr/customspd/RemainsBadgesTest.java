@@ -179,7 +179,7 @@ class RemainsBadgesTest {
 		assertEquals("You Made It Too", Badges.Badge.HAPPY_END_REMAINS.title());
 		assertEquals("Bring a fallen hero's signature item to the surface", Badges.Badge.HAPPY_END_REMAINS.desc());
 		for (Badges.Badge b : withRemains) {
-			assertFalse(b.meta, b + " is a regular badge");
+			assertEquals(Badges.BadgeType.LOCAL, b.type, b + " is a regular badge");
 			assertImage(b.asset.getPath(), 16, 16);
 		}
 		assertImage(GeneralAsset.SURFACE_GRAVE.getPath(), 16, 22);

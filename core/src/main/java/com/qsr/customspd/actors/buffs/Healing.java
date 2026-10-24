@@ -56,9 +56,10 @@ public class Healing extends Buff {
 			if (target.HP == target.HT && target instanceof Hero) {
 				((Hero) target).resting = false;
 			}
+
+			target.sprite.showStatusWithIcon(CharSprite.POSITIVE, String.valueOf(healingThisTick()), FloatingText.HEALING);
 		}
 
-		target.sprite.showStatusWithIcon(CharSprite.POSITIVE, String.valueOf(healingThisTick()), FloatingText.HEALING);
 		healingLeft -= healingThisTick();
 		
 		if (healingLeft <= 0){
@@ -80,9 +81,10 @@ public class Healing extends Buff {
 	}
 	
 	public void setHeal(int amount, float percentPerTick, int flatPerTick){
-		healingLeft = amount;
-		percentHealPerTick = percentPerTick;
-		flatHealPerTick = flatPerTick;
+		//multiple sources of healing do not overlap, but do combine the best of their properties
+		healingLeft = Math.max(healingLeft, amount);
+		percentHealPerTick = Math.max(percentHealPerTick, percentPerTick);
+		flatHealPerTick = Math.max(flatHealPerTick, flatPerTick);
 	}
 	
 	public void increaseHeal( int amount ){

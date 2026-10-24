@@ -123,7 +123,7 @@ public class AttackIndicator extends Tag {
 			}
 		}
 		
-		if (!candidates.contains( lastTarget )) {
+		if (lastTarget == null || !candidates.contains( lastTarget )) {
 			if (candidates.isEmpty()) {
 				lastTarget = null;
 			} else {
@@ -133,8 +133,8 @@ public class AttackIndicator extends Tag {
 				flash();
 			}
 		} else {
+			active = true;
 			if (!bg.visible) {
-				active = true;
 				flash();
 			}
 		}
@@ -175,6 +175,7 @@ public class AttackIndicator extends Tag {
 	
 	@Override
 	protected void onClick() {
+		super.onClick();
 		if (enabled && Dungeon.hero.ready) {
 			if (Dungeon.hero.handle( lastTarget.pos )) {
 				Dungeon.hero.next();
@@ -189,6 +190,8 @@ public class AttackIndicator extends Tag {
 
 	public static void target(Char target ) {
 		if (target == null) return;
+		//no HUD yet (headless tests drive hero abilities without a scene); nothing to retarget
+		if (instance == null) return;
 		synchronized (instance) {
 			instance.lastTarget = (Mob) target;
 			instance.updateImage();

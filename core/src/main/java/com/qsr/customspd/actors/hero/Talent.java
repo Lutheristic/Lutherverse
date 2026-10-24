@@ -79,6 +79,7 @@ import com.watabou.utils.Random;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 import kotlin.Pair;
@@ -465,7 +466,7 @@ public enum Talent {
 			Dungeon.observe();
 		}
 
-		if (talent == SECONDARY_CHARGE || talent == TWIN_UPGRADES){
+		if (talent == SECONDARY_CHARGE || talent == TWIN_UPGRADES || talent == STRONGMAN){
 			Item.updateQuickslot();
 		}
 
@@ -487,14 +488,10 @@ public enum Talent {
 
 	public static void onFoodEaten( Hero hero, float foodVal, Item foodSource ){
 		if (hero.hasTalent(HEARTY_MEAL)){
-			//3/5 HP healed, when hero is below 25% health
-			if (hero.HP <= hero.HT/4) {
+			//3/5 HP healed, when hero is below 30% health
+			if (hero.HP/(float)hero.HT <= 0.3f) {
 				hero.HP = Math.min(hero.HP + 1 + 2 * hero.pointsInTalent(HEARTY_MEAL), hero.HT);
 				hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), 1+hero.pointsInTalent(HEARTY_MEAL));
-			//2/3 HP healed, when hero is below 50% health
-			} else if (hero.HP <= hero.HT/2){
-				hero.HP = Math.min(hero.HP + 1 + hero.pointsInTalent(HEARTY_MEAL), hero.HT);
-				hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), hero.pointsInTalent(HEARTY_MEAL));
 			}
 		}
 		if (hero.hasTalent(IRON_STOMACH)){
@@ -708,7 +705,7 @@ public enum Talent {
 			Buff.affect(enemy, SuckerPunchTracker.class);
 		}
 
-		if (hero.hasTalent(Talent.FOLLOWUP_STRIKE) && enemy.alignment == Char.Alignment.ENEMY) {
+		if (hero.hasTalent(Talent.FOLLOWUP_STRIKE) && enemy.isAlive() && enemy.alignment == Char.Alignment.ENEMY) {
 			if (hero.belongings.attackingWeapon() instanceof MissileWeapon) {
 				Buff.prolong(hero, FollowupStrikeTracker.class, 5f).object = enemy.id();
 			} else if (hero.buff(FollowupStrikeTracker.class) != null
@@ -972,6 +969,12 @@ public enum Talent {
 		bundle.put("replacements", replacementsBundle);
 	}
 
+	private static final HashSet<String> removedTalents = new HashSet<>();
+	static{
+		//v1.4.0
+		removedTalents.add("BERSERKING_STAMINA");
+	}
+
 	private static final HashMap<String, String> renamedTalents = new HashMap<>();
 	static{
 		//v2.0.0
@@ -989,7 +992,13 @@ public enum Talent {
 				String value = replacements.getString(key);
 				if (renamedTalents.containsKey(key)) key = renamedTalents.get(key);
 				if (renamedTalents.containsKey(value)) value = renamedTalents.get(value);
-				hero.metamorphedTalents.put(Talent.valueOf(key), Talent.valueOf(value));
+				if (!removedTalents.contains(key) && !removedTalents.contains(value)){
+					try {
+						hero.metamorphedTalents.put(Talent.valueOf(key), Talent.valueOf(value));
+					} catch (Exception e) {
+						ShatteredPixelDungeon.reportException(e);
+					}
+				}
 			}
 		}
 
@@ -1005,13 +1014,15 @@ public enum Talent {
 				for (String tName : tierBundle.getKeys()){
 					int points = tierBundle.getInt(tName);
 					if (renamedTalents.containsKey(tName)) tName = renamedTalents.get(tName);
-					try {
-						Talent talent = Talent.valueOf(tName);
-						if (tier.containsKey(talent)) {
-							tier.put(talent, Math.min(points, talent.maxPoints()));
+					if (!removedTalents.contains(tName)) {
+						try {
+							Talent talent = Talent.valueOf(tName);
+							if (tier.containsKey(talent)) {
+								tier.put(talent, Math.min(points, talent.maxPoints()));
+							}
+						} catch (Exception e) {
+							ShatteredPixelDungeon.reportException(e);
 						}
-					} catch (Exception e){
-						ShatteredPixelDungeon.reportException(e);
 					}
 				}
 			}

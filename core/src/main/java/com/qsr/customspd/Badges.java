@@ -57,6 +57,13 @@ import java.util.List;
 
 public class Badges {
 
+	public enum BadgeType {
+		HIDDEN, //internal badges used for data tracking
+		LOCAL,  //unlocked on a per-run basis and added to overall player profile
+		GLOBAL, //unlocked for the save profile only, usually over multiple runs
+		JOURNAL //profile-based and also tied to the journal, which means they even unlock in seeded runs
+	}
+
 	public enum Badge {
 		MASTERY_WARRIOR,
 		MASTERY_MAGE,
@@ -86,7 +93,7 @@ public class Badges {
 		DEATH_FROM_GAS              ( GeneralAsset.DEATH_FROM_GAS ),
 		DEATH_FROM_HUNGER           ( GeneralAsset.DEATH_FROM_HUNGER ),
 		DEATH_FROM_FALLING          ( GeneralAsset.DEATH_FROM_FALLING ),
-		GAMES_PLAYED_1              ( GeneralAsset.GAMES_PLAYED_1, true ),
+		GAMES_PLAYED_1              ( GeneralAsset.GAMES_PLAYED_1, BadgeType.GLOBAL ),
 		HIGH_SCORE_1                ( GeneralAsset.HIGH_SCORE_1 ),
 
 		//silver
@@ -118,8 +125,8 @@ public class Badges {
 		BOSS_SLAIN_1_ROGUE,
 		BOSS_SLAIN_1_HUNTRESS,
 		BOSS_SLAIN_1_DUELIST,
-		BOSS_SLAIN_1_ALL_CLASSES    ( GeneralAsset.BOSS_SLAIN_1_ALL_CLASSES, true ),
-		GAMES_PLAYED_2              ( GeneralAsset.GAMES_PLAYED_2, true ),
+		BOSS_SLAIN_1_ALL_CLASSES    ( GeneralAsset.BOSS_SLAIN_1_ALL_CLASSES, BadgeType.GLOBAL ),
+		GAMES_PLAYED_2              ( GeneralAsset.GAMES_PLAYED_2, BadgeType.GLOBAL ),
 		HIGH_SCORE_2                ( GeneralAsset.HIGH_SCORE_2 ),
 
 		//gold
@@ -148,7 +155,7 @@ public class Badges {
 		VICTORY                     ( GeneralAsset.VICTORY ),
 		BOSS_CHALLENGE_1            ( GeneralAsset.BOSS_CHALLENGE_1 ),
 		BOSS_CHALLENGE_2            ( GeneralAsset.BOSS_CHALLENGE_2 ),
-		GAMES_PLAYED_3              ( GeneralAsset.GAMES_PLAYED_3, true ),
+		GAMES_PLAYED_3              ( GeneralAsset.GAMES_PLAYED_3, BadgeType.GLOBAL ),
 		HIGH_SCORE_3                ( GeneralAsset.HIGH_SCORE_3 ),
 
 		//platinum
@@ -159,14 +166,14 @@ public class Badges {
 		ALL_WEAPONS_IDENTIFIED      ( GeneralAsset.ALL_WEAPONS_IDENTIFIED ),
 		ALL_ARMOR_IDENTIFIED        ( GeneralAsset.ALL_ARMOR_IDENTIFIED ),
 		ALL_WANDS_IDENTIFIED        ( GeneralAsset.ALL_WANDS_IDENTIFIED ),
-		ALL_ITEMS_IDENTIFIED        ( GeneralAsset.ALL_ITEMS_IDENTIFIED, true ),
+		ALL_ITEMS_IDENTIFIED        ( GeneralAsset.ALL_ITEMS_IDENTIFIED, BadgeType.GLOBAL ),
 		VICTORY_WARRIOR,
 		VICTORY_MAGE,
 		VICTORY_ROGUE,
 		VICTORY_HUNTRESS,
 		VICTORY_DUELIST,
-		VICTORY_ALL_CLASSES         ( GeneralAsset.VICTORY_ALL_CLASSES, true ),
-		DEATH_FROM_ALL              ( GeneralAsset.DEATH_FROM_ALL, true ),
+		VICTORY_ALL_CLASSES         ( GeneralAsset.VICTORY_ALL_CLASSES, BadgeType.GLOBAL ),
+		DEATH_FROM_ALL              ( GeneralAsset.DEATH_FROM_ALL, BadgeType.GLOBAL ),
 		BOSS_SLAIN_3_GLADIATOR,
 		BOSS_SLAIN_3_BERSERKER,
 		BOSS_SLAIN_3_WARLOCK,
@@ -177,31 +184,34 @@ public class Badges {
 		BOSS_SLAIN_3_WARDEN,
 		BOSS_SLAIN_3_CHAMPION,
 		BOSS_SLAIN_3_MONK,
-		BOSS_SLAIN_3_ALL_SUBCLASSES ( GeneralAsset.BOSS_SLAIN_3_ALL_SUBCLASSES, true ),
+		BOSS_SLAIN_3_ALL_SUBCLASSES ( GeneralAsset.BOSS_SLAIN_3_ALL_SUBCLASSES, BadgeType.GLOBAL ),
 		BOSS_CHALLENGE_3            ( GeneralAsset.BOSS_CHALLENGE_3 ),
 		BOSS_CHALLENGE_4            ( GeneralAsset.BOSS_CHALLENGE_4 ),
-		GAMES_PLAYED_4              ( GeneralAsset.GAMES_PLAYED_4, true ),
+		GAMES_PLAYED_4              ( GeneralAsset.GAMES_PLAYED_4, BadgeType.GLOBAL ),
 		HIGH_SCORE_4                ( GeneralAsset.HIGH_SCORE_4 ),
 		CHAMPION_1                  ( GeneralAsset.CHAMPION_1 ),
 
 		//diamond
 		BOSS_CHALLENGE_5            ( GeneralAsset.BOSS_CHALLENGE_5 ),
-		GAMES_PLAYED_5              ( GeneralAsset.GAMES_PLAYED_5, true ),
+		GAMES_PLAYED_5              ( GeneralAsset.GAMES_PLAYED_5, BadgeType.GLOBAL ),
 		HIGH_SCORE_5                ( GeneralAsset.HIGH_SCORE_5 ),
 		CHAMPION_2                  ( GeneralAsset.CHAMPION_2 ),
 		CHAMPION_3                  ( GeneralAsset.CHAMPION_3 );
 
-		public boolean meta;
-
 		public Asset asset;
+		public BadgeType type;
 
-		Badge( Asset asset ) {
-			this( asset, false );
+		Badge(){
+			this(null, BadgeType.HIDDEN);
 		}
 
-		Badge( Asset asset, boolean meta ) {
+		Badge( Asset asset ) {
+			this( asset, BadgeType.LOCAL );
+		}
+
+		Badge( Asset asset, BadgeType type ) {
 			this.asset = asset;
-			this.meta = meta;
+			this.type = type;
 		}
 
 		public String title(){
@@ -210,10 +220,6 @@ public class Badges {
 
 		public String desc(){
 			return Messages.get(this, name()+".desc");
-		}
-
-		Badge() {
-			this(null);
 		}
 	}
 
@@ -1036,13 +1042,13 @@ public class Badges {
 	
 	private static void displayBadge( Badge badge ) {
 		
-		if (badge == null || !Dungeon.customSeedText.isEmpty()) {
+		if (badge == null || (badge.type != BadgeType.JOURNAL && !Dungeon.customSeedText.isEmpty())) {
 			return;
 		}
 		
 		if (isUnlocked( badge )) {
 			
-			if (!badge.meta) {
+			if (badge.type == BadgeType.LOCAL) {
 				GLog.h( Messages.get(Badges.class, "endorsed", badge.title()) );
 				GLog.newLine();
 			}
@@ -1073,7 +1079,7 @@ public class Badges {
 	}
 	
 	public static void unlock( Badge badge ){
-		if (!isUnlocked(badge) && Dungeon.customSeedText.isEmpty()){
+		if (!isUnlocked(badge) && (badge.type == BadgeType.JOURNAL || Dungeon.customSeedText.isEmpty())){
 			global.add( badge );
 			saveNeeded = true;
 		}
@@ -1086,7 +1092,7 @@ public class Badges {
 		Iterator<Badge> iterator = badges.iterator();
 		while (iterator.hasNext()) {
 			Badge badge = iterator.next();
-			if ((!global && badge.meta) || badge.asset == null) {
+			if ((!global && badge.type != BadgeType.LOCAL) || badge.type == BadgeType.HIDDEN) {
 				iterator.remove();
 			}
 		}

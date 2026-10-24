@@ -579,6 +579,25 @@ public class Generator {
 	public static void reset(Category cat){
 		if (cat.defaultProbs != null) cat.probs = cat.defaultProbs.clone();
 	}
+
+	//reverts changes to drop chances generates by this item
+	//equivalent of shuffling the card back into the deck, does not preserve order!
+	public static void undoDrop(Item item){
+		undoDrop(item.getClass());
+	}
+
+	public static void undoDrop(Class cls){
+		for (Category cat : Category.values()){
+			if (cls.isAssignableFrom(cat.superClass)){
+				if (cat.defaultProbs == null) continue;
+				for (int i = 0; i < cat.classes.length; i++){
+					if (cls == cat.classes[i]){
+						cat.probs[i]++;
+					}
+				}
+			}
+		}
+	}
 	
 	public static Item random() {
 		Category cat = Random.chances( categoryProbs );

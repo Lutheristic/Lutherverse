@@ -52,7 +52,7 @@ public class RingOfHaste extends Ring {
 	}
 	
 	public static float speedMultiplier( Char target ){
-		return (float)Math.pow(1.75, getBuffedBonus(target, Haste.class));
+		return (float)Math.pow(1.175, getBuffedBonus(target, Haste.class));
 	}
 	
 	public class Haste extends RingBuff {

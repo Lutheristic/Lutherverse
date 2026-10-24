@@ -40,6 +40,7 @@ import com.qsr.customspd.actors.hero.HeroSubClass;
 import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.actors.hero.abilities.mage.WildMagic;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.MagicMissile;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.artifacts.TalismanOfForesight;
@@ -52,6 +53,7 @@ import com.qsr.customspd.mechanics.Ballistica;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.CellSelector;
 import com.qsr.customspd.scenes.GameScene;
+import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.sprites.ItemSprite;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.ui.QuickSlotButton;
@@ -402,7 +404,9 @@ public abstract class Wand extends Item {
 		//inside staff
 		if (charger != null && charger.target == Dungeon.hero && !Dungeon.hero.belongings.contains(this)){
 			if (Dungeon.hero.hasTalent(Talent.EXCESS_CHARGE) && curCharges >= maxCharges){
-				Buff.affect(Dungeon.hero, Barrier.class).setShield(Math.round(buffedLvl()*0.67f*Dungeon.hero.pointsInTalent(Talent.EXCESS_CHARGE)));
+				int shieldToGive = Math.round(buffedLvl()*0.67f*Dungeon.hero.pointsInTalent(Talent.EXCESS_CHARGE));
+				Buff.affect(Dungeon.hero, Barrier.class).setShield(shieldToGive);
+				Dungeon.hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shieldToGive), FloatingText.SHIELDING);
 			}
 		}
 		

@@ -351,7 +351,7 @@ public class Armor extends EquipableItem {
 			boolean enemyNear = false;
 			PathFinder.buildDistanceMap(owner.pos, Dungeon.level.passable, 2);
 			for (Char ch : Actor.chars()){
-				if ( PathFinder.distance[ch.pos] != Integer.MAX_VALUE && owner.alignment != ch.alignment){
+				if ( PathFinder.distance[ch.pos] != Integer.MAX_VALUE && owner.alignment != ch.alignment && ch.alignment != Char.Alignment.NEUTRAL){
 					enemyNear = true;
 					break;
 				}

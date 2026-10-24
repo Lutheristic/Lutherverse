@@ -21,6 +21,7 @@
 
 package com.qsr.customspd.scenes;
 
+import com.qsr.customspd.Badges;
 import com.qsr.customspd.Chrome;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.GamesInProgress;
@@ -76,6 +77,7 @@ public class AmuletScene extends PixelScene {
 			protected void onClick() {
 				Dungeon.win( Amulet.class );
 				Dungeon.deleteGame( GamesInProgress.curSlot, true );
+				Badges.saveGlobal();
 				btnExit.enable(false);
 				btnStay.enable(false);
 

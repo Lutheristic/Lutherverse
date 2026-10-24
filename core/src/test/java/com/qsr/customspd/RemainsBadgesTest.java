@@ -4,9 +4,12 @@ import com.qsr.customspd.actors.hero.HeroClass;
 import com.qsr.customspd.actors.mobs.Goo;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.remains.SealShard;
+import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.test.HeadlessRun;
+import com.qsr.customspd.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.FileUtils;
+import com.watabou.utils.Signal;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,9 +17,11 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -136,21 +141,34 @@ class RemainsBadgesTest {
 		try (HeadlessRun run = HeadlessRun.start(20261023L)) {
 			Dungeon.customSeedText = "";
 
-			Badges.silentValidateHappyEnd();
-			Badges.validateHappyEnd();
-			assertTrue(Badges.isUnlocked(Badges.Badge.HAPPY_END), "test setup: the happy end badge itself");
-			assertFalse(Badges.isUnlocked(Badges.Badge.HAPPY_END_REMAINS), "no remains item held");
+			// v2.4.0: the surface scene alone awards both badges. There is no silent pre-step that
+			// records the remains badge for it to find, so it reads the hero's pack.
+			List<String> log = new ArrayList<>();
+			Signal.Listener<String> listener = log::add;
+			GLog.update.add(listener);
+			try {
+				Badges.validateHappyEnd();
+				assertTrue(Badges.isUnlocked(Badges.Badge.HAPPY_END), "the happy end badge itself");
+				assertFalse(Badges.isUnlocked(Badges.Badge.HAPPY_END_REMAINS), "no remains item held");
+				assertTrue(log.contains(unlockedLine(Badges.Badge.HAPPY_END)),
+						"the happy end badge must be announced; log was " + log);
+				assertFalse(log.contains(unlockedLine(Badges.Badge.HAPPY_END_REMAINS)));
 
-			Dungeon.hero.belongings.backpack.items.add(new SealShard());
-			Badges.silentValidateHappyEnd();
-			Bundle local = new Bundle();
-			Badges.saveLocal(local);
-			assertTrue(Arrays.asList(local.getStringArray("badges")).contains("HAPPY_END_REMAINS"),
-					"winning while holding a remains item must record the badge for the run");
-			Badges.validateHappyEnd();
-			assertTrue(Badges.isUnlocked(Badges.Badge.HAPPY_END_REMAINS),
-					"reaching the surface holding a remains item must unlock the badge");
+				Dungeon.hero.belongings.backpack.items.add(new SealShard());
+				Badges.validateHappyEnd();
+				assertTrue(Badges.isUnlocked(Badges.Badge.HAPPY_END_REMAINS),
+						"reaching the surface holding a remains item must unlock the badge");
+				assertTrue(log.contains(unlockedLine(Badges.Badge.HAPPY_END_REMAINS)),
+						"the remains badge must be announced; log was " + log);
+			} finally {
+				GLog.update.remove(listener);
+			}
 		}
+	}
+
+	/** The log line Badges.displayBadge writes when a badge is newly unlocked. */
+	private static String unlockedLine(Badges.Badge badge) {
+		return GLog.HIGHLIGHT + Messages.get(Badges.class, "new", badge.title() + " (" + badge.desc() + ")");
 	}
 
 	@Test

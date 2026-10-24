@@ -22,7 +22,6 @@
 package com.qsr.customspd.levels.traps;
 
 import com.qsr.customspd.Assets;
-import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.blobs.Blob;
 import com.qsr.customspd.actors.blobs.ConfusionGas;
 import com.qsr.customspd.scenes.GameScene;
@@ -38,7 +37,7 @@ public class ConfusionTrap extends Trap {
 	@Override
 	public void activate() {
 
-		GameScene.add(Blob.seed(pos, 300 + 20 * Dungeon.depth, ConfusionGas.class));
+		GameScene.add(Blob.seed(pos, 300 + 20 * scalingDepth(), ConfusionGas.class));
 		Sample.INSTANCE.play(Assets.Sounds.GAS);
 
 	}

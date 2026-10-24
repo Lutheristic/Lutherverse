@@ -24,6 +24,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -175,7 +176,7 @@ class LevelgenDeterminismTest {
 			shopField.setAccessible(true);
 			ImpShopRoom shop = (ImpShopRoom) shopField.get(level);
 
-			// Stock is decided at levelgen, not lazily. Read the field itself: itemCount() would
+			// Stock is decided at levelgen, not lazily. Read the field itself: spacesNeeded() would
 			// generate the stock on first call and hide a paint() that decides nothing.
 			List<String> decided = stockOf(shop);
 			assertNotNull(decided, "ImpShopRoom.paint must decide itemsToSpawn during levelgen");
@@ -186,7 +187,7 @@ class LevelgenDeterminismTest {
 			}
 
 			// The stock survives a save/load of the room (the 'items' bundle key): the field is read
-			// before any itemCount() call, so a missing key shows up as null, not as regenerated stock.
+			// before any spacesNeeded() call, so a missing key shows up as null, not as regenerated stock.
 			ImpShopRoom reloaded = SaveRoundtrip.of(shop);
 			assertEquals(decided, stockOf(reloaded), "stock after a save roundtrip, item by item and in order");
 
@@ -227,6 +228,44 @@ class LevelgenDeterminismTest {
 				assertTrue(PathFinder.distance[h.pos] != Integer.MAX_VALUE,
 						"for-sale heap at " + h.pos + " is unreachable with the gate open");
 			}
+			// 6a05169b5: items go clockwise from the cell inside the entrance, ring by ring inward,
+			// each ring leaving that entrance-side cell clear; nothing lands in a wall, on the
+			// shopkeeper, or on top of another item.
+			int[] perRing = new int[10];
+			Set<Integer> shelfCells = new HashSet<>();
+			int keeperCell = -1;
+			for (Mob m : level.mobs) if (m instanceof ImpShopkeeper) keeperCell = m.pos;
+			for (Heap h : level.heaps.valueList()) {
+				if (h.type != Heap.Type.FOR_SALE) continue;
+				int x = h.pos % level.width();
+				int y = h.pos / level.width();
+				assertTrue(x > shop.left && x < shop.right && y > shop.top && y < shop.bottom,
+						"for-sale heap at " + h.pos + " is outside the shop's interior");
+				assertTrue(shelfCells.add(h.pos), "two for-sale heaps share cell " + h.pos);
+				assertEquals(1, h.items.size(), "a for-sale heap holds exactly one item");
+				assertTrue(h.pos != keeperCell, "an item sits on the shopkeeper's cell");
+				perRing[Math.min(Math.min(x - shop.left, shop.right - x), Math.min(y - shop.top, shop.bottom - y))]++;
+			}
+			// The city boss floor builds the shop standalone, so it has no connections and entrance()
+			// is the fallback door: (centre column + 1, bottom - 1), whose inset cell (centre column,
+			// bottom - 1) the walk keeps clear. The old fallback (left, top + 2) put the walk's start,
+			// and with it the shelves, somewhere else.
+			assertTrue(shop.connected.isEmpty(), "test setup: the city boss shop has no connections");
+			assertEquals((shop.left + shop.right) / 2 + 1, shop.entrance().x);
+			assertEquals(shop.bottom - 1, shop.entrance().y);
+			int entryInset = shop.entrance().y * level.width() + shop.entrance().x - 1;
+			assertFalse(shelfCells.contains(entryInset), "the cell inside the entrance must stay clear");
+			assertTrue(shelfCells.contains(entryInset - 1), "the walk starts one cell clockwise of the entrance inset");
+			int remaining = placed.size();
+			for (int ring = 1; ring <= (Math.min(shop.width(), shop.height()) - 3) / 2 && remaining > 0; ring++) {
+				int sw = shop.width() - 2 * ring;
+				int sh = shop.height() - 2 * ring;
+				int cells = (sw <= 2 || sh <= 2 ? sw * sh : sw * sh - (sw - 2) * (sh - 2)) - 1;
+				int expected = Math.min(remaining, cells);
+				assertEquals(expected, perRing[ring], "ring " + ring + " must fill before the next ring is used");
+				remaining -= expected;
+			}
+
 			// spawnShop places exactly the stock levelgen decided (it must not regenerate it).
 			List<String> expectedSorted = new ArrayList<>(decided);
 			List<String> placedSorted = new ArrayList<>(placed);

@@ -285,3 +285,13 @@ WndBlacksmith.ItemButton#onClick()
 WndBlacksmith.ItemButton#layout()
 WndBlacksmith.ItemButton#item(Item)
 WndBlacksmith.ItemButton#clear()
+
+# --- Brawler's Stance redesign (5 entries) ---
+# Reviewed 2026-10-24. upstream c448f9731 (v2.4.0, cpdu-9hyd): the stance no longer
+# spends charge per hit, so the hits-left counter and everything that displayed it went
+# upstream; the buff uses Buff's default desc()/no icon text, as at v2.5.4.
+RingOfForce.BrawlersStance#hitsLeft()
+RingOfForce.BrawlersStance#tintIcon(Image)
+RingOfForce.BrawlersStance#iconFadePercent()
+RingOfForce.BrawlersStance#iconTextDisplay()
+RingOfForce.BrawlersStance#desc()

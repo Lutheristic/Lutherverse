@@ -172,3 +172,116 @@ StoneOfIntuition.WndGuess#WndGuess(Item)
 # upstream 1c8b13fa6 (cpdu-ixv): consumeDew's three-way heal/shield/both showStatus branch and
 # Speck burst became two independent showStatusWithIcon calls (HEALING, SHIELDING).
 Dewdrop#consumeDew(int, Hero, boolean)
+
+# --- wave-4 Slice 1 tuning batches (66 entries) ---
+# Reviewed 2026-10-24 (AFK-inline). Each removal is the named upstream hunk, ported by the named
+# bead; the batch agent proposed it, that batch's adversarial reviewer checked it, and each was
+# re-mapped here against the merged tree (all 66 findings of the merged run, no others).
+# upstream 3aab64684 (cpdu-79f): Badge.meta replaced by Badge.type (BadgeType); the boolean-meta
+# constructor gives way to the BadgeType one.
+Badges.Badge#Badge(Asset, boolean)
+# upstream 73129585e (cpdu-tn6): Drowsy becomes a FlavourBuff; iconTextDisplay()/desc() are
+# inherited and attachTo drops its self-spend (Buff.affect(..., DURATION) supplies the delay).
+Drowsy#iconTextDisplay()
+Drowsy#desc()
+Drowsy#attachTo(Char)
+# upstream c1ed0f8ab (cpdu-vga): EnhancedRings' desc() override (it passed an int to %d) removed;
+# FlavourBuff.desc() supplies the turns argument.
+EnhancedRings#desc()
+# upstream be15d9737 (cpdu-vga): SnipersMark's desc() override removed so FlavourBuff.desc()
+# supplies dispTurns(); the string gains 'Turns remaining'.
+SnipersMark#desc()
+# upstream 375368403 (cpdu-xr7): Hearty Meal's two-tier heal (50% / 25% HP) collapses to one tier.
+Talent#onFoodEaten(Hero, float, Item)
+# upstream c9a3819d5 (cpdu-0qx): EquipableItem.time2equip renamed timeToEquip (same body).
+EquipableItem#time2equip(Hero)
+# upstream 8de664e3d (cpdu-njg): Armor's equip-time override removed; armor takes the
+# EquipableItem default of 1 turn like every other equipable.
+Armor#time2equip(Hero)
+# upstream 5ea26eedf (cpdu-xp1): Armor.execute's detach branch drops the inlined Runic
+# Transference glyph rule for BrokenSeal.canTransferGlyph(), the same rule moved into the seal.
+Armor#execute(Hero, String)
+# upstream 8f1fc51a5 (cpdu-njg): ClassArmor's always-true isIdentified override removed; Item's
+# levelKnown && cursedKnown applies.
+ClassArmor#isIdentified()
+# upstream c8b4b87e0 (cpdu-0qx): Viscosity.DeferedDamage.attachTo (postpone on attach) removed;
+# the postpone moves into prolong() so a save/load no longer re-postpones.
+Viscosity.DeferedDamage#attachTo(Char)
+# upstream 1ec5434c1 (cpdu-aro): the Armor and Weapon buffedLvl overrides ("only the hero is
+# affected by Degradation") removed; the check lives once in Item.buffedLvl.
+Armor#buffedLvl()
+Weapon#buffedLvl()
+# upstream 7a05cdb41 (cpdu-xp1): MagesStaff's buffedLvl() override (max of staff and wand level)
+# replaced by a buffedVisiblyUpgraded() override, so wand boosts no longer affect melee.
+MagesStaff#buffedLvl()
+# upstream e2372805b (cpdu-51w): per-class 'price of ingredients' value() overrides removed; the
+# Brew/Elixir base classes now carry the standardised value 60 / energy 12.
+BlizzardBrew#value()
+CausticBrew#value()
+InfernalBrew#value()
+ShockingBrew#value()
+ElixirOfAquaticRejuvenation#value()
+ElixirOfArcaneArmor#value()
+ElixirOfDragonsBlood#value()
+ElixirOfHoneyedHealing#value()
+ElixirOfIcyTouch#value()
+ElixirOfMight#value()
+ElixirOfToxicEssence#value()
+# upstream 919f1428e (cpdu-tn6): redundant splashColor overrides removed; Potion.splashColor()
+# reads the same sprite colour.
+ElixirOfDragonsBlood#splashColor()
+ElixirOfIcyTouch#splashColor()
+ElixirOfToxicEssence#splashColor()
+# upstream 9f5c11817 (cpdu-tn6): typo rename changeTippeDart -> changeTippedDart.
+ScrollOfTransmutation#changeTippeDart(TippedDart)
+# upstream 2879e9ae5 (cpdu-c55): multi-step items are consumed when used; the CPDU override that
+# handed the intuition stone back on cancel is gone because the stone is no longer detached up front.
+StoneOfIntuition.WndGuess#onBackPressed()
+# upstream 288f0ea18 (cpdu-c55): Duelist sneak reworked to a blink (sneakAbility(Hero, int,
+# MeleeWeapon) replaced by sneakAbility(Hero, Integer, int, MeleeWeapon)); Sickle harvest retuned.
+Dagger#sneakAbility(Hero, int, MeleeWeapon)
+Sickle#harvestAbility(Hero, Integer, float, MeleeWeapon)
+Sickle#call()
+# upstream 9067a486c (cpdu-njg): each weapon's abilityChargeUse override becomes a
+# baseChargeUse(Hero, Char) override returning int; MeleeWeapon.abilityChargeUse is final.
+AssassinsBlade#abilityChargeUse(Hero, Char)
+BattleAxe#abilityChargeUse(Hero, Char)
+Dagger#abilityChargeUse(Hero, Char)
+Dirk#abilityChargeUse(Hero, Char)
+Flail#abilityChargeUse(Hero, Char)
+Greatsword#abilityChargeUse(Hero, Char)
+HandAxe#abilityChargeUse(Hero, Char)
+Longsword#abilityChargeUse(Hero, Char)
+Mace#abilityChargeUse(Hero, Char)
+Quarterstaff#abilityChargeUse(Hero, Char)
+Scimitar#abilityChargeUse(Hero, Char)
+Shortsword#abilityChargeUse(Hero, Char)
+Sickle#abilityChargeUse(Hero, Char)
+Sword#abilityChargeUse(Hero, Char)
+WarHammer#abilityChargeUse(Hero, Char)
+WarScythe#abilityChargeUse(Hero, Char)
+WornShortsword#abilityChargeUse(Hero, Char)
+# upstream 20cd08c32 (cpdu-w3d): Counter Ability no longer discounts the charge cost, so
+# abilityChargeUse() is just baseChargeUse(); the refund moved to afterAbilityUsed.
+MeleeWeapon#abilityChargeUse(Hero, Char)
+# upstream f9e6fbc94 (cpdu-w3d): the body moved into the new durabilityPerUse(boolean rounded)
+# overload; durabilityPerUse() forwards with rounded=true.
+MissileWeapon#durabilityPerUse()
+# upstream baea3b7e8 (cpdu-jw1e): ImpShopRoom.paint only decides the stock now; CityBossLevel
+# paints the terrain and calls spawnShop after the boss and Imp quest.
+ImpShopRoom#paint(Level)
+# upstream 387748319 (cpdu-url): utm_* tracking suffixes removed from in-game ShatteredPixel.com
+# links (link building folded into literal URLs).
+AboutScene#create()
+NewsScene#create()
+NewsScene#onClick()
+NewsScene.WndArticle#WndArticle(NewsArticle)
+NewsScene.WndArticle#onClick()
+# upstream 4a8d4f228 (cpdu-c55): WndBlacksmith.ItemButton moved to ui.ItemButton (same body).
+WndBlacksmith.ItemButton#createChildren()
+WndBlacksmith.ItemButton#onPointerDown()
+WndBlacksmith.ItemButton#onPointerUp()
+WndBlacksmith.ItemButton#onClick()
+WndBlacksmith.ItemButton#layout()
+WndBlacksmith.ItemButton#item(Item)
+WndBlacksmith.ItemButton#clear()

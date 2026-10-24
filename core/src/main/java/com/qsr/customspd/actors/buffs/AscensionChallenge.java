@@ -141,6 +141,7 @@ public class AscensionChallenge extends Buff {
 
 		if (enemy instanceof Ratmogrify.TransmogRat){
 			enemy = ((Ratmogrify.TransmogRat) enemy).getOriginal();
+			if (enemy == null) return;
 		}
 
 		//only enemies that are boosted count

@@ -19,9 +19,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * hidden mimic, a sleeping-alignment NPC) is not an enemy, but any alignment different from the
  * wearer's counted, so a bystander next to the hero switched the glyph off.
  *
- * Upstream's hunk edits the distance check that 5b959f315 introduced (cpdu-xp1 still has to port
- * that); CPDU's loop is the older PathFinder-based one, so the same alignment clause is added
- * to it.
+ * Upstream's hunk edits the distance check that 5b959f315 introduced; CPDU's loop was the
+ * older PathFinder-based one when this was first ported, so the alignment clause was added to
+ * it, and 5b959f315 (see SwiftnessAdjacentPortTest) has since replaced that loop.
  */
 class SwiftnessNeutralPortTest {
 

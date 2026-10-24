@@ -7,6 +7,7 @@ import com.qsr.customspd.items.Heap;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.journal.Guidebook;
 import com.qsr.customspd.levels.features.LevelTransition;
+import com.qsr.customspd.levels.rooms.special.ShopRoom;
 import com.qsr.customspd.levels.rooms.standard.ImpShopRoom;
 import com.qsr.customspd.test.HeadlessRun;
 import com.qsr.customspd.test.SaveRoundtrip;
@@ -174,29 +175,38 @@ class LevelgenDeterminismTest {
 			shopField.setAccessible(true);
 			ImpShopRoom shop = (ImpShopRoom) shopField.get(level);
 
-			// Stock is decided but not yet placed: no for-sale heaps, shop not spawned.
-			assertTrue(shop.itemCount() > 0, "the imp shop has items from levelgen");
+			// Stock is decided at levelgen, not lazily. Read the field itself: itemCount() would
+			// generate the stock on first call and hide a paint() that decides nothing.
+			List<String> decided = stockOf(shop);
+			assertNotNull(decided, "ImpShopRoom.paint must decide itemsToSpawn during levelgen");
+			assertFalse(decided.isEmpty(), "the imp shop has items from levelgen");
 			assertFalse(shop.shopSpawned());
 			for (Heap h : level.heaps.valueList()) {
 				assertTrue(h.type != Heap.Type.FOR_SALE, "nothing is for sale before the Imp quest completes");
 			}
 
-			// The stock survives a save/load of the room (the 'items' bundle key).
+			// The stock survives a save/load of the room (the 'items' bundle key): the field is read
+			// before any itemCount() call, so a missing key shows up as null, not as regenerated stock.
 			ImpShopRoom reloaded = SaveRoundtrip.of(shop);
-			assertEquals(shop.itemCount(), reloaded.itemCount(), "stock count after a save roundtrip");
+			assertEquals(decided, stockOf(reloaded), "stock after a save roundtrip, item by item and in order");
 
 			Method spawn = CityBossLevel.class.getDeclaredMethod("spawnShop");
 			spawn.setAccessible(true);
 			// ImpShopRoom.placeShopkeeper asks Game.scene() (null here, so the shopkeeper goes to
-			// level.mobs); give it a bare Game and put the statics back afterwards.
+			// level.mobs); give it a bare Game and put the statics back afterwards (the constructor
+			// writes instance, platform and sceneClass).
+			Field sceneClassField = Game.class.getDeclaredField("sceneClass");
+			sceneClassField.setAccessible(true);
 			Game priorInstance = Game.instance;
 			PlatformSupport priorPlatform = Game.platform;
+			Object priorSceneClass = sceneClassField.get(null);
 			try {
 				new Game(null, null);
 				spawn.invoke(level);
 			} finally {
 				Game.instance = priorInstance;
 				Game.platform = priorPlatform;
+				sceneClassField.set(null, priorSceneClass);
 			}
 			assertTrue(shop.shopSpawned());
 			boolean shopkeeper = false;
@@ -210,18 +220,39 @@ class LevelgenDeterminismTest {
 			}
 			PathFinder.setMapSize(level.width(), level.height());
 			PathFinder.buildDistanceMap(level.entrance(), walkable);
-			int forSale = 0;
+			List<String> placed = new ArrayList<>();
 			for (Heap h : level.heaps.valueList()) {
 				if (h.type != Heap.Type.FOR_SALE) continue;
-				forSale++;
+				for (Item item : h.items) placed.add(describe(item));
 				assertTrue(PathFinder.distance[h.pos] != Integer.MAX_VALUE,
 						"for-sale heap at " + h.pos + " is unreachable with the gate open");
 			}
-			assertTrue(forSale >= shop.itemCount() - 1, "the shop's items were placed (" + forSale + " of " + shop.itemCount() + ")");
+			// spawnShop places exactly the stock levelgen decided (it must not regenerate it).
+			List<String> expectedSorted = new ArrayList<>(decided);
+			List<String> placedSorted = new ArrayList<>(placed);
+			Collections.sort(expectedSorted);
+			Collections.sort(placedSorted);
+			assertEquals(expectedSorted, placedSorted, "for-sale heaps hold exactly the levelgen stock");
 		}
 	}
 
 	// ------------------------------------------------------------------------------ helpers
+
+	/** The room's itemsToSpawn field as class+quantity strings, read WITHOUT triggering lazy generation; null if unset. */
+	private static List<String> stockOf(ImpShopRoom room) throws Exception {
+		Field f = ShopRoom.class.getDeclaredField("itemsToSpawn");
+		f.setAccessible(true);
+		@SuppressWarnings("unchecked")
+		List<Item> items = (List<Item>) f.get(room);
+		if (items == null) return null;
+		List<String> out = new ArrayList<>();
+		for (Item item : items) out.add(describe(item));
+		return out;
+	}
+
+	private static String describe(Item item) {
+		return item.getClass().getName() + " x" + item.quantity();
+	}
 
 	/** What a same-seed rebuild must reproduce of one floor. */
 	private static final class Floor {

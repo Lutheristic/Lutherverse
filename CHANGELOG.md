@@ -12,6 +12,19 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 
 Work-in-progress on `main` since the fork base (`cpd-sync-base-2025-08-15`, CPD commit `c97fb83`).
 
+### Docs: theme bible and README overhaul (2026-10-24)
+
+- `docs/THEME.md` is new: the project's theme in one place. Pitch, five house rules,
+  tone and naming conventions, palette, audio direction, and a status list that keeps
+  shipped features apart from plans. It also lists the in-game strings that don't match
+  the code yet (beads `cpdu-jot4`, `cpdu-lm64`, `cpdu-341c`). Bead `cpdu-ey2x`.
+- `README.md` now leads with the cosmic-horror identity. Sections are numbered like floors,
+  creature and item quotes are the shipped text, and anything unshipped is labelled as the
+  plan. Bead `cpdu-m52v`.
+- `docs/assets/lutherverse-title.svg` is a new concept title card: a square stair winding
+  in toward a gold keyhole, with the inherited floors 001 to 025 lit. All lettering is
+  drawn from rects, with no fonts or scripts, so GitHub renders it the same everywhere.
+
 ### Added — T1 gate repair (2026-08-10)
 
 - `services/tools/deletion-audit` — audits removals api-diff structurally cannot see:

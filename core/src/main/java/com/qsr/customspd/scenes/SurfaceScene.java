@@ -29,6 +29,7 @@ import com.qsr.customspd.actors.hero.abilities.Ratmogrify;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.artifacts.DriedRose;
+import com.qsr.customspd.items.remains.RemainsItem;
 import com.qsr.customspd.items.wands.WandOfLivingEarth;
 import com.qsr.customspd.items.wands.WandOfWarding;
 import com.qsr.customspd.items.weapon.melee.MagesStaff;
@@ -213,6 +214,14 @@ public class SurfaceScene extends PixelScene {
 			allySprite.y = SKY_HEIGHT - allySprite.height();
 			align(allySprite);
 			window.add(allySprite);
+		}
+
+		if (Dungeon.hero.belongings.getItem(RemainsItem.class) != null){
+			Image grave = new Image(Asset.getAssetFilePath(GeneralAsset.SURFACE_GRAVE));
+
+			grave.x = a.x + a.width() + 10;
+			grave.y = a.y + a.height() - grave.height();
+			window.add(grave);
 		}
 		
 		window.add( a );

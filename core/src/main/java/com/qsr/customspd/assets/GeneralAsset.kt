@@ -107,6 +107,7 @@ enum class GeneralAsset(override val path: String) : Asset {
     BOSS_SLAIN_3("interfaces/badges/boss_slain_3.png"),
     BOSS_SLAIN_3_ALL_SUBCLASSES("interfaces/badges/boss_slain_3_all_subclasses.png"),
     BOSS_SLAIN_4("interfaces/badges/boss_slain_4.png"),
+    BOSS_SLAIN_REMAINS("interfaces/badges/boss_slain_remains.png"),
     CHAMPION_1("interfaces/badges/champion_1.png"),
     CHAMPION_2("interfaces/badges/champion_2.png"),
     CHAMPION_3("interfaces/badges/champion_3.png"),
@@ -137,6 +138,7 @@ enum class GeneralAsset(override val path: String) : Asset {
     GOLD_COLLECTED_5("interfaces/badges/gold_collected_5.png"),
     GRIM_WEAPON("interfaces/badges/grim_weapon.png"),
     HAPPY_END("interfaces/badges/happy_end.png"),
+    HAPPY_END_REMAINS("interfaces/badges/happy_end_remains.png"),
     HIGH_SCORE_1("interfaces/badges/high_score_1.png"),
     HIGH_SCORE_2("interfaces/badges/high_score_2.png"),
     HIGH_SCORE_3("interfaces/badges/high_score_3.png"),
@@ -655,6 +657,7 @@ enum class GeneralAsset(override val path: String) : Asset {
     TALENT_4("interfaces/talent_4.png"),
 
     SURFACE_FRAME("interfaces/surface_frame.png"),
+    SURFACE_GRAVE("interfaces/surface_grave.png"),
     CLOUD_1("interfaces/cloud_1.png"),
     CLOUD_2("interfaces/cloud_2.png"),
     CLOUD_3("interfaces/cloud_3.png"),

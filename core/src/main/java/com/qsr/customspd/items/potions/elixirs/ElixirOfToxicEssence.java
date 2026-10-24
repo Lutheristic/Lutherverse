@@ -42,11 +42,6 @@ public class ElixirOfToxicEssence extends Elixir {
 	}
 	
 	@Override
-	protected int splashColor() {
-		return 0xFF00B34A;
-	}
-	
-	@Override
 	public int value() {
 		//prices of ingredients
 		return quantity * (30 + 40);

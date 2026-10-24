@@ -45,11 +45,6 @@ public class ElixirOfDragonsBlood extends Elixir {
 	}
 	
 	@Override
-	protected int splashColor() {
-		return 0xFFFF002A;
-	}
-	
-	@Override
 	public int value() {
 		//prices of ingredients
 		return quantity * (50 + 40);

@@ -42,11 +42,6 @@ public class ElixirOfIcyTouch extends Elixir {
 	}
 	
 	@Override
-	protected int splashColor() {
-		return 0xFF18C3E6;
-	}
-	
-	@Override
 	public int value() {
 		//prices of ingredients
 		return quantity * (50 + 40);

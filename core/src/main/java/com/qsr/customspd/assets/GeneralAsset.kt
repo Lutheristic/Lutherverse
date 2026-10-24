@@ -281,6 +281,7 @@ enum class GeneralAsset(override val path: String) : Asset {
     BUFF_MONK_ENERGY("interfaces/buffs/monk_energy.png"),
     BUFF_DUEL_COMBO("interfaces/buffs/duel_combo.png"),
     BUFF_DAZE("interfaces/buffs/daze.png"),
+    BUFF_WAND("interfaces/buffs/wand.png"),
 
     LARGE_BUFF_MIND_VISION("interfaces/large_buffs/mind_vision.png"),
     LARGE_BUFF_LEVITATION("interfaces/large_buffs/levitation.png"),
@@ -353,6 +354,7 @@ enum class GeneralAsset(override val path: String) : Asset {
     LARGE_BUFF_MONK_ENERGY("interfaces/large_buffs/monk_energy.png"),
     LARGE_BUFF_DUEL_COMBO("interfaces/large_buffs/duel_combo.png"),
     LARGE_BUFF_DAZE("interfaces/large_buffs/dazed.png"),
+    LARGE_BUFF_WAND("interfaces/large_buffs/wand.png"),
 
     HERO_ICON_BERSERKER("interfaces/hero_icons/berserker.png"),
     HERO_ICON_GLADIATOR("interfaces/hero_icons/gladiator.png"),

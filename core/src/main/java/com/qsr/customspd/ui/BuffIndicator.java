@@ -38,6 +38,7 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.tweeners.AlphaTweener;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.GameMath;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -123,6 +124,7 @@ public class BuffIndicator extends Component {
 	public static final Pair<Asset, Asset> MONK_ENERGY = new Pair<>(GeneralAsset.BUFF_MONK_ENERGY, GeneralAsset.LARGE_BUFF_MONK_ENERGY);
 	public static final Pair<Asset, Asset> DUEL_COMBO = new Pair<>(GeneralAsset.BUFF_DUEL_COMBO, GeneralAsset.LARGE_BUFF_DUEL_COMBO);
 	public static final Pair<Asset, Asset> DAZE = new Pair<>(GeneralAsset.BUFF_DAZE, GeneralAsset.LARGE_BUFF_DAZE);
+	public static final Pair<Asset, Asset> WAND = new Pair<>(GeneralAsset.BUFF_WAND, GeneralAsset.LARGE_BUFF_WAND);
 
 	public static final int SIZE_SMALL  = 7;
 	public static final int SIZE_LARGE  = 16;
@@ -289,7 +291,7 @@ public class BuffIndicator extends Component {
 			if (!large || buff.iconTextDisplay().isEmpty()) {
 				text.visible = false;
 				grey.visible = true;
-				float fadeHeight = buff.iconFadePercent() * icon.height();
+				float fadeHeight = GameMath.gate(0, buff.iconFadePercent(), 1) * icon.height();
 				float zoom = (camera() != null) ? camera().zoom : 1;
 				if (fadeHeight < icon.height() / 2f) {
 					grey.scale.set(icon.width(), (float) Math.ceil(zoom * fadeHeight) / zoom);

@@ -93,7 +93,7 @@ public class HeroSelectScene extends PixelScene {
 		Badges.loadGlobal();
 		Journal.loadGlobal();
 
-		background = new Image(HeroClass.WARRIOR.splashArt()){
+		background = new Image(TextureCache.createSolid(0xFF2d2f31), 0, 0, 800, 450){
 			@Override
 			public void update() {
 				if (GamesInProgress.selectedClass != null) {
@@ -107,7 +107,6 @@ public class HeroSelectScene extends PixelScene {
 			}
 		};
 		background.scale.set(Camera.main.height/background.height);
-		background.tint(0x2d2f31, 1f);
 
 		background.x = (Camera.main.width - background.width())/2f;
 		background.y = (Camera.main.height - background.height())/2f;
@@ -373,10 +372,35 @@ public class HeroSelectScene extends PixelScene {
 		}
 	}
 
+	//CPDU divergence from upstream 5830f5db3: upstream's splash art is a fixed 800x450 set, so
+	//it sizes the background once from the 800x450 placeholder. CPDU splashes come from packs and
+	//can be any size (Texture.texture() resets the image to the real size), so the scale is
+	//recomputed from whatever texture actually loaded; updateFade() then positions the
+	//background and fades for the current orientation and fade state, as it does every reset.
+	private void fitBackground(){
+		background.scale.set(Camera.main.height/background.height);
+		background.x = (Camera.main.width - background.width())/2f;
+		background.y = (Camera.main.height - background.height())/2f;
+		PixelScene.align(background);
+
+		fadeLeft.scale.y = background.height();
+		fadeRight.y = background.y + background.height();
+
+		updateFade();
+	}
+
 	private void setSelectedHero(HeroClass cl){
 		GamesInProgress.selectedClass = cl;
 
-		background.texture( cl.splashArt() );
+		try {
+			//loading these big jpgs fails sometimes, so we have a catch for it
+			background.texture(cl.splashArt());
+		} catch (Exception e){
+			Game.reportException(e);
+			background.texture(TextureCache.createSolid(0xFF2d2f31));
+			background.frame(0, 0, 800, 450);
+		}
+		fitBackground();
 		background.visible = true;
 		background.hardlight(1.5f,1.5f,1.5f);
 
@@ -466,7 +490,7 @@ public class HeroSelectScene extends PixelScene {
 		}
 		startBtn.enable(alpha != 0);
 		startBtn.alpha(alpha);
-		btnExit.enable(alpha != 0);
+		btnExit.enable(btnExit.visible && alpha != 0);
 		btnExit.icon().alpha(alpha);
 		optionsPane.active = optionsPane.visible && alpha != 0;
 		optionsPane.alpha(alpha);

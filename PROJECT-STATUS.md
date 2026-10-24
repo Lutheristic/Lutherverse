@@ -15,6 +15,15 @@ historical record. Updated in the same commit as any substantive work — treat 
 
 ## Where we are
 
+**2026-10-24, AFK-inline wave 7.**
+- **i18n.** Level-name messages take `%s`, so the Beacon of Returning text no longer breaks, even in English (`cpdu-866z`). Translations are synced to v2.5.4 wherever CPDU's English matches: 1,154 keys imported, 516 stale lines updated, 6,762 translator revisions (in their own revertable commit), and 414 orphans dropped (`cpdu-fz84`).
+- **Guards and tests.** All of `b6f7e7462`'s hero-null guards are in (`cpdu-u7bm`), and `RemainsItemTest` now really detects a missing key (`cpdu-xc02`).
+- **Floating text.** About 26 heal/shield floating-text sites ported (`cpdu-9k44`).
+- **Traps and shops.** Traps scale by `Trap.scalingDepth()` (upstream 5a1d6e5d9, entirely missing before), reclaimed traps award their badge, shop placement and minimum size match v2.5.4, and the Warlock re-rolls instead of refilling the deck (`cpdu-s1kq`, `cpdu-38j6`, `cpdu-xmif`).
+- **Badge ending flow** matches v2.5.4 (`cpdu-jtik`). It reintroduced a duplicate-win-in-Rankings bug on window resize, fixed by pulling forward upstream d029c0d7d.
+- **A new gate.** `PropertiesKeyShapeTest` rejects message values split across lines. It caught the truncated `barkskin.desc`.
+- Core tests: 492 → 539.
+
 **2026-10-24, AFK-inline wave 6.**
 - **A gate that could not fail, closed.** `core:test` now declares the asset tree and the root build script as inputs, so a translation-only or version-only change re-runs the tests instead of replaying a stale green result (`cpdu-3wjz`).
 - **Translation placeholders are guarded.** A new test checks every translated format string against its English one. It found 346 offending keys in 18 languages, now fixed from v2.5.4 or dropped to English (`cpdu-3vbh`).

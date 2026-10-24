@@ -11,8 +11,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * A weaker healing effect used to overwrite a stronger one already running (upstream cebe05d08).
- * A second source whose total is not larger than what is left is now ignored.
+ * Stacked healing sources do not add up, but they no longer discard each other either: the total
+ * left is the larger of the two, and the percent and flat per-tick rates are each the larger of
+ * the two (upstream cebe05d08 stopped a weaker heal overriding a stronger one; d007df8e7 made the
+ * combination a per-property maximum).
  */
 class HealingStackingPortTest {
 
@@ -34,26 +36,39 @@ class HealingStackingPortTest {
 	}
 
 	@Test
-	void aWeakerHealDoesNotOverrideAStrongerRunningOne() {
+	void aSmallerHealStillContributesItsFasterFlatRate() {
 		Healing healing = Buff.affect(hero, Healing.class);
 		healing.setHeal(20, 0, 2);
 		healing.setHeal(5, 0, 5);
 
 		healing.act();
 
-		assertEquals(3, hero.HP, "still the original 2 per tick, not the weaker heal's 5");
-		assertEquals("18", healing.iconTextDisplay(), "the original 20 left, minus one 2-point tick");
+		assertEquals(6, hero.HP, "the 20 total is kept and the faster 5 per tick is taken");
+		assertEquals("15", healing.iconTextDisplay());
 	}
 
 	@Test
-	void aLargerHealReplacesTheRunningOne() {
+	void aLargerHealKeepsTheFasterRateOfTheRunningOne() {
 		Healing healing = Buff.affect(hero, Healing.class);
 		healing.setHeal(5, 0, 5);
 		healing.setHeal(20, 0, 2);
 
 		healing.act();
 
-		assertEquals(3, hero.HP, "the larger heal's 2 per tick won");
-		assertEquals("18", healing.iconTextDisplay());
+		assertEquals(6, hero.HP, "the 20 total from the new heal, the 5 per tick from the old");
+		assertEquals("15", healing.iconTextDisplay());
+	}
+
+	@Test
+	void percentAndFlatRatesAreMaximisedIndependently() {
+		Healing healing = Buff.affect(hero, Healing.class);
+		healing.setHeal(20, 0.5f, 0);
+		healing.setHeal(10, 0f, 3);
+
+		healing.act();
+
+		//round(20 * 0.5) + 3 = 13
+		assertEquals(14, hero.HP);
+		assertEquals("7", healing.iconTextDisplay());
 	}
 }

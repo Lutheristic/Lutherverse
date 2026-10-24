@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,11 +26,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * - BrokenSeal.canTransferGlyph(): the Runic Transference rule (1 point moves common and
  *   uncommon glyphs, 2 points move any) lived inline in Armor's detach code; it is now a seal
  *   method so class-armor transfer can ask the same question.
- * - ClassArmor.upgrade(): moves the seal across as a field instead of re-affixing it. The two
- *   upgrade tests PIN the observable result (level carried over exactly, seal and glyph
+ * - ClassArmor.upgrade(): moves the seal across as a field instead of re-affixing it. The first
+ *   two upgrade tests PIN the observable result (level carried over exactly, seal and glyph
  *   preserved); they pass against the old affixSeal form too, because the old code set the level
- *   after affixing. The class-armor transfer branch lives in an anonymous WndBag selector and is
- *   not headlessly drivable, nor is Armor.execute's detach path (Item.execute needs GameScene).
+ *   after affixing. The third reproduces the real bug: the old code affixed the seal before
+ *   inscribing, so a glyphless seal picked up the armor's glyph (canary: fails against the
+ *   pre-port ClassArmor, passes with it). The class-armor transfer branch lives in an anonymous
+ *   WndBag selector and is not headlessly drivable, nor is Armor.execute's detach path
+ *   (Item.execute needs GameScene).
  */
 class SealTransferPortTest {
 
@@ -109,5 +113,22 @@ class SealTransferPortTest {
 
 		assertTrue(classArmor.glyph instanceof Obfuscation);
 		assertNull(classArmor.seal);
+	}
+
+	@Test
+	void classArmorUpgradeDoesNotLetASealWithoutAGlyphPickUpTheArmorsGlyph() {
+		Hero hero = warriorWithTransference(0);
+		ClothArmor armor = new ClothArmor();
+		armor.inscribe(new Obfuscation());
+		armor.seal = new BrokenSeal(); // no glyph of its own
+
+		ClassArmor classArmor = ClassArmor.upgrade(hero, armor);
+
+		assertTrue(classArmor.glyph instanceof Obfuscation, "the armor keeps its glyph");
+		assertNotNull(classArmor.seal);
+		// Armor.inscribe() copies the glyph onto an attached seal. The old upgrade() affixed the
+		// seal first and inscribed afterwards, so a glyphless seal picked up the armor's glyph
+		// (the "changing specific glyph state" bug of daa7c3149/5ea26eedf).
+		assertNull(classArmor.seal.getGlyph(), "a glyphless seal must stay glyphless");
 	}
 }

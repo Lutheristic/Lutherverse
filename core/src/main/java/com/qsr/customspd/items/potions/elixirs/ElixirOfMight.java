@@ -78,10 +78,10 @@ public class ElixirOfMight extends Elixir {
 	public static class Recipe extends com.qsr.customspd.items.Recipe.SimpleRecipe {
 		
 		{
-			inputs =  new Class[]{PotionOfStrength.class, AlchemicalCatalyst.class};
-			inQuantity = new int[]{1, 1};
+			inputs =  new Class[]{PotionOfStrength.class};
+			inQuantity = new int[]{1};
 			
-			cost = 6;
+			cost = 14;
 			
 			output = ElixirOfMight.class;
 			outQuantity = 1;

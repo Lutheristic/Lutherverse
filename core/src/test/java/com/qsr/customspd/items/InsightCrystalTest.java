@@ -65,6 +65,11 @@ class InsightCrystalTest {
 				assertEquals(cat.classes.length, cat.defaultProbs.length,
 						cat.name() + ": classes[] and defaultProbs[] must stay in lockstep");
 			}
+			// the second deck (upstream v2.3.0 two-deck system) is dealt the same way
+			if (cat.defaultProbs2 != null) {
+				assertEquals(cat.classes.length, cat.defaultProbs2.length,
+						cat.name() + ": classes[] and defaultProbs2[] must stay in lockstep");
+			}
 			// the live deck, too: reset()/restoreFromBundle() must never leave it a different size
 			assertNotNull(cat.probs, cat.name() + " has no probs");
 			assertEquals(cat.classes.length, cat.probs.length,
@@ -105,15 +110,11 @@ class InsightCrystalTest {
 							name + ": static-initializer defaultProbs[] must match classes[]");
 				}
 
-				// the two-deck variant (not ported yet, upstream v2.3.0): guard it the day it lands
-				try {
-					float[] defaults2 = (float[]) category.getField("defaultProbs2").get(cat);
-					if (defaults2 != null) {
-						assertEquals(classes.length, defaults2.length,
-								name + ": defaultProbs2[] must match classes[]");
-					}
-				} catch (NoSuchFieldException notPortedYet) {
-					// fine
+				// the two-deck variant (upstream v2.3.0, ported for cpdu-5h0)
+				float[] defaults2 = (float[]) category.getField("defaultProbs2").get(cat);
+				if (defaults2 != null) {
+					assertEquals(classes.length, defaults2.length,
+							name + ": defaultProbs2[] must match classes[]");
 				}
 			}
 		}

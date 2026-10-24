@@ -161,6 +161,7 @@ public class Rapier extends MeleeWeapon {
 							charger.secondPartialCharge++;
 						}
 					}
+					updateQuickslot();
 					GLog.w(Messages.get(Rapier.class, "ability_no_target"));
 					hero.spendAndNext(1/hero.speed());
 				}

@@ -246,12 +246,13 @@ class TranslationPlaceholderTest {
 	void staleKeysRenderThroughEveryLanguage() {
 		HeadlessGdx.boot();
 		try {
-			Messages.setup(Languages.ENGLISH);
-			String descendEn = Messages.get((Class<?>) null, "scenes.gamescene.descend", "3");
 			for (Languages lang : Languages.values()) {
 				Messages.setup(lang);
-				// translation removed: Messages must fall back to the English parent bundle
-				assertEquals(descendEn, Messages.get((Class<?>) null, "scenes.gamescene.descend", "3"), lang + " descend");
+				// CPDU passes the level name as a String: whatever the language (today the
+				// English fallback, later perhaps a '%s' translation), the name must show and
+				// no unformatted '%d' may leak through
+				String descend = Messages.get((Class<?>) null, "scenes.gamescene.descend", "Qz7");
+				assertTrue(descend.contains("Qz7") && !descend.contains("%"), lang + " descend: " + descend);
 				// code passes no argument (5e5989124): no literal placeholder may show
 				String identify = Messages.get("items.rings.ring.identify");
 				assertTrue(!identify.contains("%"), lang + ": " + identify);

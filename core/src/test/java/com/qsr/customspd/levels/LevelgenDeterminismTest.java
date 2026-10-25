@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * F4 levelgen pins on the shipped dungeon layout, via {@link HeadlessRun}:
- *  - determinism: the same seed must rebuild the same floors — map cell for cell, and the same
+ *  - determinism: the same seed must rebuild the same floors: map cell for cell, and the same
  *    mobs, item heaps and transitions. Seeded runs are the contract behind seed sharing and
  *    daily runs, and Dungeon.init's RNG ordering has silently broken it before (see the comment
  *    block in Dungeon.init).
@@ -84,9 +84,9 @@ class LevelgenDeterminismTest {
 	 * They change whenever levelgen output changes ON PURPOSE: a ported room, a new mob or item in
 	 * the default layout, a reordered RNG call. Then: confirm the change is intended, run this test,
 	 * and paste the "actual" array its failure message prints over the matching constant. A failure
-	 * with NO intended levelgen change — especially one that comes and goes between runs while
-	 * theSameSeedRebuildsTheSameFloors stays green — is cross-JVM nondeterminism: look for a
-	 * HashMap/HashSet keyed by Class, enum or object feeding Random (CLAUDE.md, Determinism).
+	 * with NO intended levelgen change, especially one that comes and goes between runs while
+	 * theSameSeedRebuildsTheSameFloors stays green, is cross-JVM nondeterminism: look for a
+	 * HashMap/HashSet keyed by Class, enum or object feeding Random.
 	 */
 	private static final String[] GOLDEN_31337 = {"423edf1bc1c76a19", "8cf0575648892a63", "d211599934105b86", "90a273e29aa617f2", "b75b194f306e1b09", "eeff7a8cd71cf5d8"};
 	private static final String[] GOLDEN_8675309 = {"a8ba55024f65bac0", "4ed8f86ac21cddb2", "9e9bf3b3835dbf04", "72e7881cf56cf1a4", "9d7b34ac85ad378d", "55c7c907b3e300bb"};
@@ -133,7 +133,7 @@ class LevelgenDeterminismTest {
 	/**
 	 * Boss floors are sealed by design: the exit cannot be reached until the boss falls (a locked
 	 * exit cell on 5 and 25, the pylon gate on 15, the locked arena door on 20, and on 10 no exit
-	 * at all — PrisonBossLevel's start map walls it in and setMapEnd builds the real one after
+	 * at all: PrisonBossLevel's start map walls it in and setMapEnd builds the real one after
 	 * Tengu). So "the entrance reaches the exit" does not hold at generation for 10/15/20 even with
 	 * the exit cell as the goal. What must hold is both halves: sealed now (no boss skip), and
 	 * connected once the boss's gate opens (no soft-lock after the fight).

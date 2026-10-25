@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * TumblerWisp — the blink-on-wound Sewers mote. Verifies the stat line, the damage band,
+ * TumblerWisp: the blink-on-wound Sewers mote. Verifies the stat line, the damage band,
  * and the blink mechanic on a REAL level (HeadlessLevel fixture): a wounding hit must move
  * the wisp to a free adjacent passable cell, a boxed-in or unwounded wisp must stay put.
  */
@@ -48,17 +48,17 @@ class TumblerWispTest {
 	@Test
 	void statLineIsTheDesignedDepthTwoBand() {
 		TumblerWisp w = new TumblerWisp();
-		assertEquals(8, w.HT, "paper HP — the blink is the defense, not the health bar");
+		assertEquals(8, w.HT, "paper HP, the blink is the defense, not the health bar");
 		assertEquals(2, w.EXP);
 		assertEquals(7, w.maxLvl, "a depth-2 Sewers mote must not out-scale later Sewers mobs");
-		assertTrue(w.flying, "a wisp flies — water and grass never pin it down");
+		assertTrue(w.flying, "a wisp flies, water and grass never pin it down");
 		assertTrue(w.lootChance > 0, "it carries a fleck of the locksmith's tribute (gold)");
 	}
 
 	@Test
 	void damageRollStaysInTheDesignedBandAndSpansIt() {
 		// Bounds + coverage: 200 seeded rolls must stay in [1,4] AND actually reach both
-		// endpoints — a mis-implementation that quietly narrows the band passes a
+		// endpoints: a mis-implementation that quietly narrows the band passes a
 		// bounds-only check but fails the coverage half.
 		TumblerWisp w = new TumblerWisp();
 		boolean sawMin = false, sawMax = false;

@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * every future recipe is covered automatically.
  *
  * Identification strategy: {@code SimpleRecipe.testIngredients} rejects any unidentified
- * ingredient, so the sweep marks potions/scrolls identified via {@code anonymize()} — the
+ * ingredient, so the sweep marks potions/scrolls identified via {@code anonymize()}, the
  * documented "always IDed, does not affect ID status" switch. It deliberately does NOT call
  * {@code identify()}: Potion.setKnown()/Scroll.setKnown() dereference {@code Dungeon.hero}
  * with no null check (fine in-game where a hero always exists, NPE headless), and
@@ -80,7 +80,7 @@ class AlchemyRecipeSweepTest {
 		int simpleRecipes = 0;
 
 		// Nothing here should consume RNG, but item constructors are not under this suite's
-		// control forever — pin a generator so the sweep can never go flaky.
+		// control forever, so pin a generator so the sweep can never go flaky.
 		Random.pushGenerator(20260814L);
 		try {
 			for (Recipe recipe : allRegisteredRecipes()) {
@@ -119,7 +119,7 @@ class AlchemyRecipeSweepTest {
 
 		assertTrue(failures.isEmpty(), "mis-wired recipes:\n" + String.join("\n", failures));
 
-		// Floors, not exact counts, so adding recipes stays free — their job is catching the
+		// Floors, not exact counts, so adding recipes stays free; their job is catching the
 		// enumeration silently going empty (this repo's recurring gate failure) or a registry
 		// restructure that strands the sweep. 37/25 are the counts at the time of writing (26 before Alchemize.Recipe became a hand-written Recipe in upstream 1c5404335).
 		assertTrue(totalRecipes >= 37, "recipe registry shrank? saw only " + totalRecipes);
@@ -139,8 +139,8 @@ class AlchemyRecipeSweepTest {
 
 		// Potion identification is CLASS-level (a static ItemStatusHandler), and other suites
 		// in this JVM identify PotionOfStrength as a side effect (HeroClass hero init identifies
-		// config-listed starting items). Force it unknown deterministically — getKnown() returns
-		// the live set — and restore in finally so nothing leaks either direction.
+		// config-listed starting items). Force it unknown deterministically (getKnown() returns
+		// the live set) and restore in finally so nothing leaks either direction.
 		boolean wasKnown = Potion.getKnown().remove(PotionOfStrength.class);
 		try {
 			assertFalse(strength.isIdentified(),
@@ -170,7 +170,7 @@ class AlchemyRecipeSweepTest {
 		assertTrue(twoMeat.testIngredients(exact), "exactly the required quantity must cook");
 
 		// needed[i] is decremented per matching ingredient, so a requirement may be satisfied
-		// across separate stacks — that is how the alchemy scene's three item slots behave.
+		// across separate stacks, which is how the alchemy scene's three item slots behave.
 		ArrayList<Item> split = new ArrayList<>();
 		split.add(new MysteryMeat().quantity(1));
 		split.add(new MysteryMeat().quantity(1));

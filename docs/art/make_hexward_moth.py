@@ -1,6 +1,6 @@
 from PIL import Image
 
-# 16x16 HexwardMoth — a plump moth seen from above, dusty violet wings speckled
+# 16x16 HexwardMoth: a plump moth seen from above, dusty violet wings speckled
 # with pale hex-runes, small dark body, two dot eyes, thin antennae.
 #   X outline  a antenna  e eye-dot
 #   V wing-violet  v wing-dust (lighter)  s hex-rune speckle (pale)

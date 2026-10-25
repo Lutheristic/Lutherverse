@@ -59,7 +59,7 @@ class SphereGridProgressTest {
 	void keystoneUnlockDemandsAllPrerequisitesNotJustTheFirst() {
 		// Regression: prerequisiteUnlocked once honoured only the FIRST prerequisite, which
 		// let ELEMENTAL_CONFLUX burn persistent Insight while the run-scoped layer would
-		// still refuse to activate it — a permanent currency loss.
+		// still refuse to activate it, a permanent currency loss.
 		SphereGridProgress.earnInsight(20);
 		SphereGridProgress.unlock(SphereNode.ATTUNEMENT);
 		SphereGridProgress.unlock(SphereNode.EMBER_I);

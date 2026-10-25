@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * level, and their descriptions state the real numbers. The assertions are on both halves because
  * the description text is built from format strings (%d, %%, %1$d) that only fail when rendered.
  *
- * The sneak (dagger family) hunks landed after the wave-4 merge and are pinned in
+ * The sneak (dagger family) hunks landed separately and are pinned in
  * DaggerSneakPortTest. The crossbow's tipped-dart uses still wait on 11a410f07.
  */
 class DuelistAbilityScalingPortTest {

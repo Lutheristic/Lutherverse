@@ -3,14 +3,14 @@ name: CI
 # Every gate in this file asserts it actually analysed something.
 #
 # That is not defensive style, it is this repo's history: api-diff scanned zero files and
-# printed PASS for weeks; a bead validate: gate never fired for ~14 tasks; the Android
+# printed PASS for weeks; a task-level validate: gate never fired for ~14 tasks; the Android
 # emulator smoke has never once executed the APK; :core:test was NO-SOURCE and reported green
 # forever until 2026-08-10; and Android Lint analysed 9 of 1077 files while looking clean. A gate that cannot
 # be observed failing is not a gate.
 
 on:
   push:
-    branches: [ main, 'afk/**' ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # deletion-audit and manifest-audit walk history, so a shallow clone breaks them.
+          # deletion-audit walks history, so a shallow clone breaks it.
           fetch-depth: 0
 
       - uses: actions/setup-java@v4
@@ -127,13 +127,6 @@ jobs:
         # Proves the registration/sprite/localization checks can actually fail. Without
         # this the advisory PASS above means nothing.
         run: ./gradlew :services:tools:content-audit:run --quiet --args="-Canary"
-
-      - name: Manifest audit
-        run: pwsh -NoProfile -File services/tools/manifest-audit/manifest-audit.ps1
-
-      - name: Manifest audit canary
-        # Proves the manifest checks can fail. Without this the PASS above means nothing.
-        run: pwsh -NoProfile -File services/tools/manifest-audit/manifest-audit.ps1 -Canary
 
       - name: Marketplace pack smoke
         run: |

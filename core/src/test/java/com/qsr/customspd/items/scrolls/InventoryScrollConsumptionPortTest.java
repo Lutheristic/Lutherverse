@@ -148,10 +148,10 @@ class InventoryScrollConsumptionPortTest {
 	}
 
 	/**
-	 * Cross-lane merge fix: the spirit branch of doRead never calls super.doRead(), so its own
-	 * detach is the only thing that consumes the scroll (v2.5.4 ScrollOfRemoveCurse, re-added
-	 * upstream in 335414182). One lane removed it under the old "Scroll.execute detaches first"
-	 * model while the other lane removed that up-front detach (2879e9ae5), leaving no consumer.
+	 * Merge fix: the spirit branch of doRead never calls super.doRead(), so its own detach is the
+	 * only thing that consumes the scroll (v2.5.4 ScrollOfRemoveCurse, re-added upstream in
+	 * 335414182). One port removed it under the old "Scroll.execute detaches first" model while
+	 * another removed that up-front detach (2879e9ae5), leaving no consumer.
 	 */
 	@Test
 	void cleansingATormentedSpiritConsumesExactlyOneKnownScroll() throws Exception {

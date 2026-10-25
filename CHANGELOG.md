@@ -1,225 +1,149 @@
 # Changelog
 
-All notable changes to Lutherverse (repo: `CustomPixelDungeonUltimate`) are documented here.
+Notable changes to Lutherverse, newest first.
 
-Format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html) where release tags are involved (see also the `cpd-sync-base-*` and future `spd-sync-*` tag families for merge-checkpoint anchors).
-
-**Every substantive commit updates this file and [`PROJECT-STATUS.md`](PROJECT-STATUS.md) in the same commit.** Collaborators and alpha-testers read these first; commit messages are secondary.
+The format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Release tags will use [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Merge checkpoints are tagged `cpd-sync-base-*` (and later `spd-sync-*`).
 
 ---
 
 ## [Unreleased]
 
-Work-in-progress on `main` since the fork base (`cpd-sync-base-2025-08-15`, CPD commit `c97fb83`).
+Everything on `main` since the fork base (`cpd-sync-base-2025-08-15`, CPD commit `c97fb83`).
 
-### Slice 1 catch-up: AFK-inline marathon, waves 3 to 7 (2026-10-23/24)
+### 2026-10-24: theme doc and README
 
-Merged from `afk-inline/2026-10-23`. PROJECT-STATUS has the per-wave detail.
+- New `docs/THEME.md`: the pitch, five house rules, tone and naming, palette, audio direction, and a status list that keeps shipped features apart from plans. It also lists the in-game strings that don't match the code yet.
+- `README.md` now leads with the cosmic-horror angle. Sections are numbered like floors, quoted creature and item text is what actually ships, and anything not built yet is marked as planned.
+- New concept title card in `docs/assets/lutherverse-title.svg`: a square stair winding in to a gold keyhole, with the inherited floors 001 to 025 lit. The lettering is drawn from rects (no fonts, no scripts), so GitHub renders it the same everywhere.
 
-- **Ported from upstream (v2.5.4 target).** The 23 tuning batches parked since July:
-  about 245 upstream commits classified, roughly 170 ported, and every remainder mapped
-  to a bead (`cpdu-ewor`, `cpdu-v1as`, `cpdu-y0f`, `cpdu-5xj9`, `cpdu-7xwc`, `cpdu-2iw3`,
-  `cpdu-57c` and others). Also the v2.3.0 two-deck potion/scroll drops, the
-  damage-icon call sites, trap depth scaling, shop and Warlock parity, the badge ending
-  flow (with upstream d029c0d7d pulled forward so a window resize can't record a second
-  win), and the hero-null guards.
-- **Translations** synced to v2.5.4 wherever CPDU's English matches upstream's.
-- **Fixed.** The shop could choose a different bag for the same seed (identity-hashed tie
-  break, now a `LinkedHashMap`; upstream has the same bug). Floor 20 walled itself off
-  after the boss. Custom levels shuffled with an unseeded RNG. Brawler's Stance never
-  drained charge. Level-name messages formatted a string with `%d`. Eight semantic
-  conflicts between the parallel port branches, among them a remove curse scroll that
-  was never used up when it cleansed a tormented spirit.
-- **Gates.** `core:test` declares the asset tree and root build script as inputs, so
-  asset-only and version-only changes re-run it. New tests guard translated format
-  placeholders and reject message values split across lines. F5 `StubSprite`/`TurnPump`
-  pins mob AI, and F4 covers boss floors with golden levelgen digests. Core tests
-  181 to 545.
+### 2026-10-23: upstream catch-up to v2.5.4
 
-### Docs: theme bible and README overhaul (2026-10-24)
+**Ported**
+- The 23 tuning batches left over from July. About 245 upstream commits reviewed, roughly 170 ported, and every remaining one tracked as an open issue.
+- v2.3.0's two-deck potion and scroll drops, the damage-icon call sites, trap depth scaling, shop and Warlock parity, and the hero-null guards.
+- The badge ending flow, with upstream d029c0d7d pulled in early so resizing the window can't record a second win.
+- Translations synced to v2.5.4 wherever CPDU's English matches upstream's.
 
-- `docs/THEME.md` is new: the project's theme in one place. Pitch, five house rules,
-  tone and naming conventions, palette, audio direction, and a status list that keeps
-  shipped features apart from plans. It also lists the in-game strings that don't match
-  the code yet (beads `cpdu-jot4`, `cpdu-lm64`, `cpdu-341c`). Bead `cpdu-ey2x`.
-- `README.md` now leads with the cosmic-horror identity. Sections are numbered like floors,
-  creature and item quotes are the shipped text, and anything unshipped is labelled as the
-  plan. Bead `cpdu-m52v`.
-- `docs/assets/lutherverse-title.svg` is a new concept title card: a square stair winding
-  in toward a gold keyhole, with the inherited floors 001 to 025 lit. All lettering is
-  drawn from rects, with no fonts or scripts, so GitHub renders it the same everywhere.
+**Fixed**
+- The shop could pick a different bag for the same seed because of an identity-hashed tie break. It's a `LinkedHashMap` now. Upstream has the same bug.
+- Floor 20 walled itself off after the boss.
+- Custom levels shuffled with an unseeded RNG.
+- Brawler's Stance never drained charge.
+- Level-name messages formatted a string with `%d`.
+- Eight conflicts between port branches that merged cleanly but behaved wrong. One example: a scroll of remove curse wasn't used up when it cleansed a tormented spirit.
 
-### Added — T1 gate repair (2026-08-10)
+**Tests**
+- `core:test` now treats the asset tree and the root build script as inputs, so asset-only or version-only changes re-run it.
+- New tests check placeholders in translated strings and reject message values split across lines.
+- Mob behaviour is pinned with a stub sprite and turn pump, and boss floors are covered by golden level-generation digests.
+- Core tests went from 181 to 545.
 
-- `services/tools/deletion-audit` — audits removals api-diff structurally cannot see:
-  private members, and statements removed from inside a body whose signature never
-  changed. Ships a reviewed-removal allowlist so legitimate integration removals stop
-  re-reporting. First run over the Slice 1 range found 35 deletions and 8 body shrinks
-  across 1,021 files; 27 triaged as legitimate, 16 left as tracked review items.
-- `services/tools/desktop-smoke` — boot smoke that actually executes the game and
-  confirms a rendered frame, replacing the Android emulator smoke that never once
-  reached `adb install`. First green run: 120 frames.
-- `BundleAliasRoundtripTest` — pins the `Bundle.addAlias` resolution that Slice 1's
-  `EntranceRoom`/`ExitRoom` package moves depend on. It works; a negative control
-  proves an unregistered vanished class does not resolve by another path.
+### 2026-08-12: content tools
 
-### Fixed — T1 gate repair (2026-08-10)
+- `services/tools/content-audit`: checks that every core Mob and Item is fully wired up (sprite, localization, registration).
+- `services/tools/content-scaffold`: generates the boilerplate for a new Mob or Item.
 
-- deletion-audit resolved its allowlist against the process working directory, which
-  `gradle run` sets to the subproject. The path did not exist, the allowlist loaded
-  empty, and all 43 findings re-reported as unreviewed. Relative paths now resolve
-  against the repository root, and a specified-but-missing allowlist exits 2 rather
-  than silently permitting nothing — the same defect class that made api-diff scan
-  zero files and print PASS.
+### 2026-08-11
 
-### Changed — T1 gate repair (2026-08-10)
+- `services/tools/asset-audit`: finds shipped assets that nothing references.
+- deletion-audit now detects renames, and rejects pairings where the file name itself changed.
 
-- Android runtime smoke is downgraded from an automated gate to a documented manual
-  pre-release check. It has never executed the APK in this environment.
+### 2026-08-10: audit tools, boot smoke, repo rename
 
-### Sub-B Slice 1: Phase 3 execution and Phase 4 gates
+**Added**
+- `services/tools/deletion-audit`: catches removals api-diff can't see, like private members or statements cut from a method whose signature didn't change. It has an allowlist for removals I've already reviewed. Its first run over the v2.1.0 to v2.5.4 port found 35 deletions and 8 shrunken bodies across 1,021 files: 27 were fine, 16 stayed open for review.
+- `services/tools/desktop-smoke`: boots the real game and confirms a frame renders. It replaces the Android emulator smoke, which never got as far as `adb install`. First green run rendered 120 frames.
+- `services/tools/port-verify`: checks that an upstream commit's content actually landed.
+- `BundleAliasRoundtripTest`: pins the `Bundle.addAlias` lookup that the `EntranceRoom`/`ExitRoom` package move relies on. A negative control proves an unregistered missing class doesn't resolve some other way.
 
-**Integrated (Tasks 11–16 complete, 17–20 partial).** Actor, Char, Hero, Dungeon,
-Level and generator, and mob/combat-engine tuning are done. The entrance/exit room
-cluster landed in full: the `EntranceRoom`/`ExitRoom` package move with
-`Bundle.addAlias` save compatibility, six new region standard rooms, twenty
-entrance/exit variants, the `canMerge(Level, Room, Point, int)` signature migration
-across fourteen definitions, and seven refinement commits. Terrain gained
-`CUSTOM_DECO` (reusing the old `SIGN` id 23, so saves stay compatible),
-`CUSTOM_DECO_EMPTY` and `ENTRANCE_SP`, with the tiles layer updated to match.
-Eleven of Tasks 17–20's thirty-four batches also landed before the pipeline halted.
+**Changed**
+- Renamed the GitHub repo from `CustomPixelDungeonUltimate` to `Lutherverse`. Old URLs redirect, and the links in README, CONTRIBUTING and the issue templates point at the new name.
+- The Android runtime smoke is now a manual pre-release check instead of an automated gate. It had never actually run the APK here.
 
-**Fixed — CorpseDust could be dropped.** The `actions(Hero)` override that makes the
-quest item undroppable was removed during Slice 1 integration while an unrelated
-spawn-power change was applied. Without it the player can drop a unique quest item
-and potentially soft-lock the Wandmaker quest. Caught by the Task 22 API audit.
+**Fixed**
+- deletion-audit looked for its allowlist relative to the process working directory, which `gradle run` sets to the subproject. The file wasn't found, the allowlist loaded empty, and all 43 findings came back as unreviewed. Relative paths now resolve from the repo root, and a missing allowlist exits 2 instead of quietly allowing nothing.
 
-**Fixed — the API-diff auditor never audited anything.** It ran `git ls-tree` with no
-working directory, so under Gradle it scanned the subproject rather than the repo and
-reported PASS having examined zero files. Fixing that exposed a second defect: its
-path-not-found matcher knew only one of git's two "absent path" messages, so it
-crashed on the first file added by the range under audit. Both fixed; the auditor now
-scans 1021 files and produces real results.
+### July 2026: first upstream sync (SPD v2.1.0 to v2.5.4)
 
-**Classification manifest corrections.** 730 in-range commits were sitting in the
-`cold-code` batch with unreviewed `provisional:` reasons from Task 6; machine triage
-resolved them to 541 unintegrated Slice 1 candidates, 56 Slice 2, 83 genuinely cold
-and 50 needing a human call. A further 60 quest-content commits were reclassified out
-of Slice 1 across Tasks 15, 16, 19 and 20 — the triage's marker scan reads added lines
-only, so commits referencing quest state without naming a marker class slipped through.
+The range is 1,209 upstream commits. I sorted them commit by commit (and hunk by hunk where engine work and later features overlap) instead of merging the tag or cherry-picking everything.
 
-**Known-incomplete gates.** `core:test` is `NO-SOURCE`, so compilation is the only
-mechanical gate for core-only changes. The Android runtime smoke cannot run here —
-the emulator never reaches `sys.boot_completed`, failing before the APK is installed.
-No save-roundtrip harness exists, and Slice 1 did touch serialized state. See
-PROJECT-STATUS for the full gate table.
+**Ported**
+- Actor, Char, Hero, Dungeon, Level and level generation, and mob and combat tuning.
+- The full entrance/exit room set: `EntranceRoom`/`ExitRoom` moved package (with `Bundle.addAlias` so old saves still load), six new region standard rooms, twenty entrance/exit variants, and the `canMerge(Level, Room, Point, int)` signature across fourteen definitions.
+- New terrain: `CUSTOM_DECO` (reusing the old `SIGN` id 23, so saves stay compatible), `CUSTOM_DECO_EMPTY` and `ENTRANCE_SP`, with the tiles layer to match.
+- 11 of the 34 tuning batches. The other 23 landed in October.
+- Re-sorted 730 commits that had been parked as dead code: 541 belonged in this sync, 56 belong to the next one, 83 really are dead, and 50 needed a manual call. Another 60 quest-content commits were moved out, because the first pass only scanned added lines and missed commits that touch quest state without naming a marker class.
 
-### Sub-B Slice 1: planning and reconciliation
+**Fixed**
+- CorpseDust could be dropped. The `actions(Hero)` override that makes the quest item undroppable got lost during the port, which could soft-lock the Wandmaker quest. It's back.
+- api-diff never audited anything. It ran `git ls-tree` with no working directory, so under Gradle it scanned the subproject, looked at zero files and printed PASS. Fixing that exposed a second bug: it only recognised one of git's two "path not found" messages and crashed on the first newly added file. Both fixed; it now scans 1,021 files.
 
-- Added the just-in-time Slice 1 implementation plan. It pins the exact SPD v2.1.0→v2.5.4 range (1,209 commits), makes the overlapping Slice 1 engine/tuning versus Slice 2 feature boundary an explicit hunk-level classification manifest, and prohibits a direct tag merge or wholesale cherry-pick.
-- Reconciled Slice 0 promises against the shipped tree. The bidirectional package-namespace transformer is absent and is now the first Slice 1 prerequisite. Existing acceptance evidence is recorded honestly: pack smoke structurally validates 29 manifests, Android smoke proves PID survival rather than title-screen arrival, and the save bridge has synthetic routing tests rather than a real 10-turn fixture roundtrip.
-- Refreshed PROJECT-STATUS and README roadmap/iOS text to reflect Slice 0 completion and active Slice 1 work.
+**Known gaps at the time**
+- `core:test` had no sources, so compiling was the only automatic check for core-only changes.
+- The Android emulator never reached `sys.boot_completed`, so the runtime smoke couldn't run.
+- There was no save round-trip test, even though this sync touched serialized state.
+- The package-namespace transformer I'd planned turned out not to exist yet, so it became the first prerequisite for this sync.
+- Pack smoke only checks the 29 manifests structurally, the Android smoke only proves the process stays alive (not that the title screen appears), and the save bridge only has synthetic tests.
 
-### Added — Sub-A (Fork infrastructure)
+### July 2026: groundwork for the upstream sync
 
-- Public GitHub fork of QuasiStellar/custom-pixel-dungeon at [luther-rotmg/CustomPixelDungeonUltimate](https://github.com/luther-rotmg/CustomPixelDungeonUltimate) created 2026-07-21
-- Three git remotes wired: `origin` (this fork), `upstream-cpd` (QSR at `margarita` @ c97fb83), `upstream-spd` (Evan at `master`, v3.3.8 @ 7b8b845a)
-- Annotated tag `cpd-sync-base-2025-08-15` pinning the fork base at c97fb83 for future merge-in-slices reference
-- `README.md` rewritten as the public Lutherverse hype doc: placeholder title card, badge row, vision sections (cosmic-horror + FFX + KH2 + DkS + Bloodborne inspiration, keyblades + Keybearer class, coop modes, save zones, towns, sphere grid, 200-floor descent), roadmap table, alpha-tester CTA, cameo list (O'aka, Patches, Sora, Doll, plus light-touch nods), attribution chain
-- `THIRD_PARTY_NOTICES.md` covering the GPLv3 attribution chain (Watabou → Evan → QSR → CPDU), libGDX Apache 2.0, RoboVM/MobiVM GPLv2-with-Classpath-Exception, SPD-classes
-- `docs/superpowers/specs/2026-07-21-custompixeldungeonultimate-design.md` — original Sub-A design spec (six locked scope decisions + six-sub-project decomposition)
-- `docs/superpowers/plans/2026-07-21-cpdu-sub-a-fork-infrastructure.md` — Sub-A implementation plan (6 tasks)
-- `docs/assets/lutherverse-title.svg` — placeholder title card (cosmic-horror-adjacent purple/gold, uzumaki spirals — replaceable with real hero art)
-- This `CHANGELOG.md` and [`PROJECT-STATUS.md`](PROJECT-STATUS.md) as living project-state documents
-- `CONTRIBUTING.md` — how issues/stars/watches are welcomed; PR gate explanation; per-issue-type expectations
-- `.github/ISSUE_TEMPLATE/` — three templates (🐛 bug report, 💡 feature request, 🎭 cameo suggestion) + `config.yml` disabling blank issues and providing quick links to PROJECT-STATUS / CHANGELOG / design specs
+**Added**
+- `services/tools/api-diff`: compares the public and protected Java surface between two git refs and exits 1 on removals or signature changes. Run it with `./gradlew apiDiff --args="--base <ref> --head <ref>"`.
+- `services/tools/pack-smoke`: validates every marketplace pack's manifest and asset references without booting the game. 29 of 29 pass at the fork base. `marketplace/Summary/` is storefront metadata with no `mod_info.json`, so it's skipped.
+- `services/tools/smoke-boot`: headless Android scripts (pwsh and bash) that boot the emulator, install the debug APK and check the process is still alive 10 seconds later. Manual only, not in CI.
+- `BundleBridge` save-compatibility scaffolding in `SPD-classes`: version detection, a translator chain (`PreV232Translator`, `PreV242Translator`, `PreV254Translator`, all stubs for now) and `BundleBridgeException` for formats it doesn't recognise.
+- `BundleBridgeTest`: 5 JUnit 5 tests on a synthetic fixture. Real save fixtures come later.
 
-### Changed
+**Changed**
+- Removed the dangling `include ':ios'` from `settings.gradle`.
+- Planned the full sync to SPD v3.3.8 in stages. The main calls: SPD's tilemap edits win and CPD's changes are reapplied on top, the Cleric is a full hero, the Vault is first-class content, iOS waits, the mod DSL is frozen until near the end, and every marketplace pack has to pass before a merge is tagged.
 
-- Default branch renamed `margarita` (inherited from CPD's cocktail-codename scheme) → `main` on both local and origin, per LO decision during Sub-A execution. Remote-tracking branches for upstream-cpd stay on `margarita` (that's QSR's naming, we don't own it); upstream-spd stays on `master` (Evan's naming). Sub-B will `git merge upstream-cpd/margarita` and `upstream-spd/master` into our `main`.
+### 2026-07-21: fork created
 
-### Fixed — Sub-A build-baseline hotfix
+**Added**
+- Public fork of QuasiStellar/custom-pixel-dungeon at [luther-rotmg/CustomPixelDungeonUltimate](https://github.com/luther-rotmg/CustomPixelDungeonUltimate) (since renamed to Lutherverse).
+- Three remotes: `origin` (this fork), `upstream-cpd` (QuasiStellar's `margarita` @ c97fb83) and `upstream-spd` (Evan's `master`, v3.3.8 @ 7b8b845a).
+- Annotated tag `cpd-sync-base-2025-08-15` marking the fork base at c97fb83.
+- `README.md` rewritten for Lutherverse: placeholder title card, badges, the vision (cosmic horror with FFX, KH2, DkS and Bloodborne influences, keyblades and a Keybearer class, co-op, save zones, towns, a sphere grid, a 200-floor descent), a roadmap, a call for alpha testers, a cameo list (O'aka, Patches, Sora, Doll and a few lighter nods) and the attribution chain. I later rewrote the prose to be plainer and less salesy.
+- `THIRD_PARTY_NOTICES.md` covering the GPLv3 chain (Watabou, Evan, QuasiStellar, CPDU), libGDX (Apache 2.0), RoboVM/MobiVM (GPLv2 with Classpath Exception) and SPD-classes.
+- `docs/assets/lutherverse-title.svg`: a placeholder purple and gold title card with spirals, with a `GPL-3.0-or-later` SPDX header.
+- This changelog, `CONTRIBUTING.md`, and issue templates for bug reports, feature requests and cameo suggestions (blank issues turned off).
 
-Sub-A Task 5 (`./gradlew android:assembleDebug && ./gradlew desktop:release` must both pass) discovered that CPD's fork-base commit `c97fb83` did not build out-of-the-box because of four independent layers of upstream rot. Each layer was fixed one at a time. Final state: **both builds pass** — `desktop-2.1.0-1.0.jar` (45.9 MB), `android-debug.apk` (22.8 MB). Under LO's `Task 5 unblock` and `Android unblock` decisions:
+**Changed**
+- Renamed the default branch from `margarita` (CPD's cocktail codename) to `main`, locally and on origin. The upstream tracking branches keep their own names: `margarita` for CPD, `master` for SPD.
 
-- **`build.gradle`** — pinned `gdxControllersVersion` from `'2.2.4-SNAPSHOT'` → `'2.2.3'`. The SNAPSHOT dep had expired from Google Maven, Maven Central, and Sonatype OSS Snapshots. 2.2.3 is the latest real gdx-controllers release (April 2023; 2.2.4 was never cut, existed only as SNAPSHOT).
-- **`android/build.gradle`** — added `multiDexEnabled true` to `defaultConfig` + `implementation "androidx.multidex:multidex:2.0.1"` to `dependencies`. Fixes DEX 64K method-reference limit exposed after the pin unblocked dependency resolution. Standard fix required for any moderately-sized libGDX + Kotlin + Android project with `minSdk < 21`.
-- **`android/src/main/AndroidManifest.xml`** — set `android:name="androidx.multidex.MultiDexApplication"` on the `<application>` element (CPD had no custom Application class, so extending MultiDexApplication via the manifest is the minimal path — no new Java code required).
-- **`gradle.properties`** — added `android.useAndroidX=true`. Required by AGP once any `androidx.*` dependency is on the classpath. `enableJetifier` NOT needed (repo has zero `com.android.support` refs).
-- **`desktop:dist` task name corrections** — the Sub-A plan brief, imported design spec, imported Sub-A plan, and README all documented `./gradlew desktop:dist` as the Desktop build command. CPD's `desktop/build.gradle` has no `dist` task — the correct task is `desktop:release` (custom `Jar`-type task at `desktop/build.gradle:31`). Corrected in README, `docs/superpowers/specs/`, and `docs/superpowers/plans/`.
+**Fixed: the fork base didn't build**
 
-**Sub-B implication:** SPD v3.2 bumps `minSdk` to 21, at which point native Android multidex takes over and the `androidx.multidex` dep becomes unnecessary (revisit during that slice). SPD v3.2 / v3.3 also bump `libGDX` to `1.13.6-SNAPSHOT` and `1.14.0` respectively, which will resolve gdx-controllers to a more recent version — the 2.2.3 pin is interim.
+CPD's `c97fb83` wouldn't build as-is. Four separate problems, fixed one at a time:
 
-### Deferred (not this sub-project)
+- `build.gradle`: pinned `gdxControllersVersion` from `2.2.4-SNAPSHOT` to `2.2.3`. The snapshot had expired from Google Maven, Maven Central and Sonatype snapshots, and 2.2.4 was never actually released.
+- `android/build.gradle`: turned on `multiDexEnabled true` and added `androidx.multidex:multidex:2.0.1`, since the app went over the 64K DEX method limit once dependencies resolved.
+- `AndroidManifest.xml`: set `android:name="androidx.multidex.MultiDexApplication"` on `<application>`. CPD had no custom Application class, so no Java was needed.
+- `gradle.properties`: added `android.useAndroidX=true`. Jetifier isn't needed (no `com.android.support` references).
+- The docs said to build desktop with `desktop:dist`, which doesn't exist. The task is `desktop:release`. README corrected.
 
-- Any change to game code under `core/`, `android/`, `desktop/`, `ios/`, `services/`, `SPD-classes/`, or `marketplace/` — Sub-A is docs-only. Game code changes begin in Sub-B (upstream sync to SPD v3.3.8).
-- CI setup (GitHub Actions, etc.) — deferred to Sub-G.
-- iOS build — retained in `settings.gradle` for future reactivation, currently unmaintained on paper (see README platform support table).
+Both builds now pass: `desktop-2.1.0-1.0.jar` (45.9 MB) and `android-debug.apk` (22.8 MB), on JDK 17, Android SDK 33, build-tools 33.0.2 and Gradle 8.5.
 
-### Sub-B Slice 0: Foundation
+The multidex dependency can go once SPD v3.2 raises `minSdk` to 21. The gdx-controllers pin is temporary too: SPD v3.2 and v3.3 move libGDX to 1.13.6-SNAPSHOT and 1.14.0, which will pull a newer version.
 
-- `services/tools/api-diff/`: API-diff auditor CLI. Compares two git refs' Java surface (public / protected symbols across a file glob). Exit 1 on removals / signature-changes. Invocable via `./gradlew apiDiff --args="--base <ref> --head <ref>"`.
-- `services/tools/pack-smoke/`: pack boot-smoke harness (structural). Validates every marketplace pack's manifest + asset references without booting the game runtime. Baseline: 29/29 GREEN at fork base (log at `docs/superpowers/research/pack-smoke-baseline-2026-07-22.log`). Note: `marketplace/Summary/` is storefront listing metadata with no `mod_info.json`, correctly excluded by pack-smoke validation.
-- `services/tools/smoke-boot/`: headless Android smoke-boot scripts (pwsh + bash). Boots the AVD, installs the debug APK, confirms process is alive 10 seconds post-launch. Not wired to CI (Sub-G); callable manually and by future CI setup.
-- `SPD-classes/src/main/java/com/watabou/utils/BundleBridge.java`: save-compat bridge scaffolding. Version detection + translator chain (`PreV232Translator`, `PreV242Translator`, `PreV254Translator` — all stubs in Slice 0, populated in Slices 3a / 5b / 6c). `BundleBridgeException` for unrecognized formats.
-- `SPD-classes/src/test/java/com/watabou/utils/BundleBridgeTest.java`: JUnit 5 harness. 5 tests, 5 passing. Synthetic fixture for Slice 0; real .dat fixtures deferred to Slices 3a / 5b / 6c.
-- `docs/superpowers/plans/SLICE-TEMPLATE.md`: acceptance-block template referenced by every future Sub-B slice plan.
-- `settings.gradle`: deleted dangling `include ':ios'` entry.
+**Fixed: README and notices cleanup**
+- A README roadmap row leaked an internal name for Bonfire Mode. Removed.
+- The attribution paragraph promised more library notices than the file had. Reworded to match. A full audit of the Apache/BSD/MIT dependencies (FreeType, LWJGL, Kotlin, Ktor, SLF4J, org.json, gdx-controllers, androidx.multidex) is due before the first alpha build.
+- The iOS row implied dormant iOS code. There isn't any: QuasiStellar deleted `ios/` in May 2023 and the `settings.gradle` entry pointed at nothing.
+- The modding section linked `docs/modding-api-v1.md`, which doesn't exist yet. Unlinked, with a note.
+- RoboVM's copyright line credited RoboVM AB through 2026. Split it: RoboVM AB up to the 2015 Xamarin acquisition, the MobiVM community fork after.
 
-Sub-B Slice 0 acceptance gates: all seven green as of merge.
-
-### Known caveats
-
-- The annotated tag `cpd-sync-base-2025-08-15` was pushed to origin during Sub-A Task 2 (implementer overreach — the plan brief said "no push" at Task 2, push was for Task 6). Effect: Task 6's tag-push step becomes a no-op. Documented and accepted; no corrective delete on origin (would double the GitHub webhook events for no user-visible difference).
-- Sub-A's build-baseline hotfix (see "Fixed" above) modified `build.gradle`, `android/build.gradle`, `android/src/main/AndroidManifest.xml`, and `gradle.properties` — deviating from Sub-A's original "docs only, no gradle changes" scope. Deviation authorized by LO during execution under the `Task 5 unblock` (pin gdx-controllers) and `Android unblock` (enable multidex) decisions. Alternative was shipping Sub-A with an unbuildable baseline for Sub-B to inherit blindly. Total gradle+manifest diff: 9 lines across 4 files, all standard patterns from Android/libGDX best practice.
-
-### Polish
-
-- README ran through the humanizer skill to strip AI-writing tells: em-dashes across every section, promotional language ("wildly ambitious", "cult classic", "built with love"), the "Living design docs / Living roadmap / Living project" aphorism trio, the `**Bold header:** description` bullet pattern that dominated the vision sections, and the "Follow-along energy makes cult classics" closer. Structure preserved (badges, roadmap table, `<details>` sections, attribution chain, alpha-tester CTA); prose rewritten to sound like an indie dev with a real project. Zero em/en dashes remain per the humanizer's §14 hard constraint.
-
-### Sub-B design + Slice 0 plan authored
-
-- `docs/superpowers/specs/2026-07-22-cpdu-sub-b-upstream-sync-design.md`: full design spec for Sub-B, the CPD → SPD v3.3.8 upstream sync. Locks the eight architectural decisions from the 2026-07-22 brainstorming pass: SPD tilemap edits win + CPD mods reapply, Cleric first-class hero, Slice 0 bridge scaffolding + per-slice translators, full 30-pack green-gate before merge tag, DSL freeze Slices 1-6c + DSL v2 in Slice 7, iOS deferred entirely, Vault first-class content, 14 slices with sub-splits at 3a/3b/3c + 5a/5b/5c + 6a/6b/6c. Total estimate 252-328 tasks. Full slice table, save-bridge design, marketplace-pack gate infrastructure, DSL evolution policy, per-slice acceptance-criteria template, updated risk register (10 workflow risks minus two retired by prep-findings plus two new from LO's full-gate + DSL-freeze decisions), rollout cadence, and interfaces produced for Sub-C.
-- `docs/superpowers/plans/2026-07-22-cpdu-sub-b-slice-0-foundation.md`: Slice 0 implementation plan. 15 tasks covering package-rename deferred to Slice 1, API-diff auditor CLI + JavaSurfaceExtractor + DiffReport + GitBlobReader (Tasks 3-4), pack boot-smoke harness structural probe + baseline log (Tasks 5-6), BundleBridge scaffolding + translator interface + three stub translators + JUnit 5 harness + pinned CPD v2.1.0-1.0 save fixture + BundleBridgeException (Tasks 7-9, 12), headless Android smoke-boot pwsh + bash scripts (Task 10), per-slice acceptance-template (Task 11), full-slice verification (Task 13), CHANGELOG + PROJECT-STATUS closure (Task 14), atomic push (Task 15). Preflight (Task 1) confirms env + green build baseline; Task 2 deletes the `:ios` settings.gradle entry.
-- `docs/superpowers/plans/SLICE-TEMPLATE.md`: to be created during Slice 0 Task 11. Referenced by every future Sub-B slice plan for its mandatory acceptance block.
-- Slices 1-7 implementation plans will be authored just-in-time (one per slice) via fresh `superpowers:writing-plans` invocations, informed by Slice 0's empirical outcome. This is deliberate: the pre-brainstorm research workflow's verify pass showed merge-plan estimates historically low-ball by 40-60%; writing all 14 plans upfront produces speculative detail that heavy-rewrites after Slice 1's real velocity data lands.
-
-### Fixed — post-review cleanup
-
-Final whole-branch review workflow (63 agents, 5 lenses, 3 adversarial verifiers per finding, 2.6M subagent tokens) returned a `block-until-fixed` verdict with one HIGH blocker + 4 MEDIUM doc-hygiene findings. This commit resolves the blocker plus the mediums plus a handful of low/nit polish items in a single pass.
-
-Blocker:
-- `README.md` roadmap table row F leaked `(Public name; internal working title: Dark Souls Mode.)` into the public shipping surface, defeating the exact trademark-safety split spec risk R4 was designed to prevent. Stripped the parenthetical; the row now reads with only the public "Bonfire Mode" name. Internal "Dark Souls Mode" reference retained in the design spec at `docs/superpowers/specs/…-design.md` per that spec's own line-303 policy ("used throughout this spec for clarity").
-
-Mediums:
-- `PROJECT-STATUS.md` had a stale `Current tip: main @ 6041725c8` (four commits behind), a broken alpha-tester anchor (`#alpha-testers-watchers-star-clickers--welcome` from before the humanizer rename), a dead scratchpad link at `AppData/Local/Temp/...` for the Sub-B research summary (unreachable on GitHub), a tense mismatch on build verification (line 12 said "in progress" while line 22 said "verified"), and a "this commit" self-reference in the recent-activity list that was stale by two commits. Rewrote all of them; the roadmap row for Sub-A now reads `✅ shipped`.
-- `README.md` attribution paragraph promised "the full attribution chain and library notices" but the notices file only covered the GPL fork chain plus three libraries. Reworded to "the GPL fork chain plus the currently-audited library notices"; expanded the Apache/BSD/MIT dep audit (FreeType, LWJGL, Kotlin, Ktor, SLF4J, org.json, gdx-controllers, androidx.multidex) is scheduled for Sub-B before the first alpha binary ships.
-
-Lows and nits bundled in:
-- `README.md` iOS row said `The :ios Gradle module is retained in settings.gradle for future reactivation` which implied dormant iOS code exists. Verified: QSR deleted the `ios/` directory from CPD in May 2023. The `:ios` entry in `settings.gradle` is a leftover pointing at nothing. Reworded to match reality.
-- `README.md` modding section rendered `docs/modding-api-v1.md` as a live link but the file does not exist yet. Changed to unlinked path with an explicit "nothing there yet" note.
-- `THIRD_PARTY_NOTICES.md` RoboVM copyright line attributed `2013-2026 RoboVM AB` but RoboVM AB dissolved after Xamarin's 2015 acquisition; the 2016+ work is the MobiVM community fork. Split the attribution.
-- `docs/assets/lutherverse-title.svg` lacked an SPDX-License-Identifier header. Added `GPL-3.0-or-later` + copyright.
-- Sub-B preliminary research imported into `docs/superpowers/research/sub-b-preliminary-research.md` (was previously only in transient scratchpad and linked from PROJECT-STATUS via a dead `AppData/Temp/` path).
-
-Backlog items (real but sub-alpha-triggered, Sub-A ships without them):
-- Full library-notice expansion in `THIRD_PARTY_NOTICES.md` (see mediums above; scheduled for Sub-B pre-alpha).
-- Cameo IP disclaimer expansion to explicitly reserve trademarks to their owners.
-- Vision-section prose reads present-indicative for aspirational features; sub-alpha risk of a reader mistaking aspiration for shipped state. Defer to Sub-C polish pass.
-- "Lutherverse" brand-collision check (USPTO / domain / handle) not run.
-- Keyblade / Aeons FFX-terminology rename-vs-keep decision when those become in-game nouns.
-
-### Build verification (both green as of this commit)
-
-- `./gradlew android:assembleDebug` → `BUILD SUCCESSFUL in 38s` → `android/build/outputs/apk/debug/android-debug.apk` (22.8 MB)
-- `./gradlew desktop:release` → `BUILD SUCCESSFUL in 29s` → `desktop/build/libs/desktop-2.1.0-1.0.jar` (45.9 MB)
-- Environment: JDK 17 (Microsoft OpenJDK 17.0.19.10), Android SDK 33, build-tools 33.0.2, gradle wrapper 8.5
+**Still open**
+- No CI yet.
+- iOS builds are off the table for now.
+- The full library-notice audit (above).
+- A cameo disclaimer that reserves trademarks to their owners.
+- Parts of the README vision describe planned features in the present tense.
+- No trademark, domain or handle check on the name "Lutherverse" yet.
+- Whether to keep or rename Keyblade and Aeons once they become in-game nouns.
 
 ---
 
-## Historical (pre-fork)
+## Before the fork
 
-Everything before `c97fb832` is CPD (QuasiStellar) history and, further back, SPD (Evan) history — both maintained upstream. Their changelogs live in their respective repos:
-
-- [Custom Pixel Dungeon changelog](https://github.com/QuasiStellar/custom-pixel-dungeon/blob/margarita/CHANGES.md) *(if present)*
-- [Shattered Pixel Dungeon changelog](https://github.com/00-Evan/shattered-pixel-dungeon/tree/master/core/src/main/assets/messages/journal) *(in-game changelog assets)*
+Everything before `c97fb832` is [Custom Pixel Dungeon](https://github.com/QuasiStellar/custom-pixel-dungeon) history (QuasiStellar) and, before that, [Shattered Pixel Dungeon](https://github.com/00-Evan/shattered-pixel-dungeon) history (Evan Debenham).

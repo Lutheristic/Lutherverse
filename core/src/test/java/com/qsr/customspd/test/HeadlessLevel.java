@@ -9,7 +9,7 @@ import com.qsr.customspd.levels.Terrain;
 import java.util.Arrays;
 
 /**
- * F3 test fixture: a minimal REAL {@link Level} for headless integration tests — an open
+ * F3 test fixture: a minimal REAL {@link Level} for headless integration tests: an open
  * walled room with real flag maps, so anything that consults {@code Dungeon.level}
  * (adjacency, passability, cell math, Actor.findChar-based targeting) runs against the
  * genuine level code instead of being untestable. No scene, no rendering, no generation

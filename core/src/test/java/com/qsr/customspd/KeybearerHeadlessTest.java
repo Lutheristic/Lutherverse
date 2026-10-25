@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * F1 integration test: exercises the real hero-config asset path (ModManager + Gdx.files) on the
- * headless harness to verify the Keybearer starting kit is wired end to end — the keybearer.json
+ * headless harness to verify the Keybearer starting kit is wired end to end: the keybearer.json
  * asset exists, parses into a HeroConfig, and equips the Keyblade. This is runtime wiring a plain
  * unit test cannot reach (it needs Gdx.files), and it directly catches a real prototype risk: a
  * wrong asset path or weapon type in the kit.
@@ -58,7 +58,7 @@ class KeybearerHeadlessTest {
 	@Test
 	void keybladeClassInstantiatesViaTheKitReflectionPath() {
 		// HeroClass.setUp builds the kit with Reflection.newInstance(Reflection.forName("com.qsr.customspd.items." + type)).
-		// This proves that path resolves to a real, constructible MeleeWeapon — a wrong/renamed
+		// This proves that path resolves to a real, constructible MeleeWeapon; a wrong/renamed
 		// class or a throwing constructor would surface here, not just at runtime on class-select.
 		Object weapon = Reflection.newInstance(
 				Reflection.forName("com.qsr.customspd.items." + "weapon.melee.Keyblade"));
@@ -431,7 +431,7 @@ class KeybearerHeadlessTest {
 		stormy.activate(SphereNode.STORM_II); // storm 3, others 0
 		assertEquals(KeybladeNova.Element.STORM, KeybladeNova.dominantElement(stormy));
 
-		// A tie resolves toward the earlier element (ember) — deterministic, documented.
+		// A tie resolves toward the earlier element (ember), deterministic, documented.
 		SphereGrid tied = new SphereGrid();
 		tied.grantPoints(3);
 		tied.activate(SphereNode.ATTUNEMENT);
@@ -454,7 +454,7 @@ class KeybearerHeadlessTest {
 	void keybladeNovaConfluxIsWorthPlusThreeByDesign() {
 		// The keystone adds +1 inside EACH element accessor, and the Nova sums all three,
 		// so activating the conflux is worth exactly +3 Nova damage. Pinned as DELIBERATE
-		// (see gridBonus javadoc) — if this fails, someone changed the interaction.
+		// (see gridBonus javadoc); if this fails, someone changed the interaction.
 		SphereGrid grid = new SphereGrid();
 		grid.grantPoints(20);
 		for (SphereNode n : new SphereNode[]{SphereNode.ATTUNEMENT,

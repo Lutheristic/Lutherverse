@@ -30,7 +30,7 @@ public final class SaveRoundtrip {
 	}
 
 	/**
-	 * Round-trip a whole bundle — for objects that serialize by writing into a bundle directly
+	 * Round-trip a whole bundle, for objects that serialize by writing into a bundle directly
 	 * (e.g. {@code hero.storeInBundle(b)} then a fresh {@code hero.restoreFromBundle(read)}).
 	 */
 	public static Bundle writeRead(Bundle in) throws IOException {

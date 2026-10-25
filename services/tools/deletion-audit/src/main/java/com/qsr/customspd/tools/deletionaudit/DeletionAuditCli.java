@@ -65,7 +65,7 @@ public final class DeletionAuditCli {
      *
      * <p>{@code gradle run} sets the JVM's working directory to the subproject, so
      * a repo-root-relative path passed on the command line would not exist and the
-     * allowlist would load empty — silently reporting every reviewed removal again.
+     * allowlist would load empty, silently reporting every reviewed removal again.
      * This is the same defect class that made api-diff scan zero files.
      */
     private static Path resolveAgainstRepoRoot(Path path) throws IOException {
@@ -238,7 +238,7 @@ public final class DeletionAuditCli {
         /**
          * Ratchet, matching the lint baselines: a known backlog is parked by a ceiling so
          * anything NEW fails. Unlike the allowlist this keeps every finding in the printed
-         * output, because "tracked in a bead" and "reviewed and accepted" are different
+         * output, because "tracked as an open issue" and "reviewed and accepted" are different
          * states and only the latter belongs in reviewed-removals.txt.
          */
         public boolean exceeds(int maxFindings) {

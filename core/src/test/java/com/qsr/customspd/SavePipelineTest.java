@@ -24,9 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * F4 save-pipeline pins: the REAL file path a run goes through between sessions —
+ * F4 save-pipeline pins: the REAL file path a run goes through between sessions:
  * Dungeon.saveAll/saveGame/saveLevel -> game.dat / level_*.dat in the save slot ->
- * Dungeon.loadGame/loadLevel — driven on a real seeded run by {@link HeadlessRun}. Nothing here
+ * Dungeon.loadGame/loadLevel, driven on a real seeded run by {@link HeadlessRun}. Nothing here
  * hand-builds a bundle: if any piece of run or level state stops being written or read back, a
  * "continue" silently hands the player a different game.
  *

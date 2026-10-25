@@ -17,7 +17,7 @@ Three tools already exist and none of them can answer this:
 |---|---|---|
 | api-diff | did the API surface change | private members, method bodies |
 | deletion-audit | did anything vanish between two CPDU refs | whether upstream content ever arrived |
-| `git range-diff` | did a rebased range drift | cannot pair the commits — namespaces differ |
+| `git range-diff` | did a rebased range drift | cannot pair the commits: namespaces differ |
 
 The gap has already cost: `874e49851` "restore CorpseDust.actions() override dropped during
 Slice 1" was an upstream hunk that vanished during porting, and nothing caught it until a
@@ -32,7 +32,7 @@ human noticed.
    ported line compares equal despite the rename and any reindentation.
 4. Report which added lines are absent from the CPDU file at `-Head`.
 
-Noise lines — blank, brace-only, lone comment markers, javadoc continuations — are excluded
+Noise lines (blank, brace-only, lone comment markers, javadoc continuations) are excluded
 so the output is worth reading.
 
 ## This is a review aid, not a verdict
@@ -52,9 +52,9 @@ Two things it deliberately does not do:
 
 | Case | Expected | Actual |
 |---|---|---|
-| Positive control — a CPDU commit's own added lines vs HEAD | ~100% | **100%** (20/20) |
+| Positive control: a CPDU commit's own added lines vs HEAD | ~100% | **100%** (20/20) |
 | Upstream commit touching `CrystalSpire.java`, which CPDU has never integrated | 0%, flagged as a missing file | **0%, correctly listed under MISSING FILES** |
-| `-Canary` — matcher asked about a line that cannot exist | rejects it | **CANARY OK** |
+| `-Canary`: matcher asked about a line that cannot exist | rejects it | **CANARY OK** |
 
 A checker that always reports full coverage is worthless, which is what `-Canary` exists to
 disprove. Run it whenever you are about to trust a green result.
@@ -64,7 +64,7 @@ disprove. Run it whenever you are about to trust a green result.
 Low coverage is not automatically bad. Check, in order:
 
 1. **Is the commit even in scope?** A `decision=slice1` row in the manifest means "belongs in
-   Slice 1", **not** "already integrated" — 22 batches are still unported, and those correctly
+   Slice 1", **not** "already integrated": 22 batches are still unported, and those correctly
    score 0%.
 2. **Was part of it deliberately deferred?** e.g. `f5531fd65` is classified `mixed`, with its
    translation bundles routed to Slice 2, so ~2% is the right answer.

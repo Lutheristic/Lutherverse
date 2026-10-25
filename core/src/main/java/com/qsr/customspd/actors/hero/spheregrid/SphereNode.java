@@ -21,8 +21,8 @@ package com.qsr.customspd.actors.hero.spheregrid;
 /**
  * Prototype fixed node set for the Keybearer sphere grid (build-craft spine).
  *
- * Six effect clusters — EMBER/FROST/STORM (the three element branches), MIGHT (raw
- * melee damage), VIGOR (survivability), ABILITY (signature-ability scaling) — plus
+ * Six effect clusters: EMBER/FROST/STORM (the three element branches), MIGHT (raw
+ * melee damage), VIGOR (survivability), ABILITY (signature-ability scaling), plus
  * KEYSTONE nodes whose effects live in SphereGrid's accessors. Nodes connect in a
  * branching web via {@link #requires} (comma-separated prerequisite names, or null
  * for a root). Magnitudes are deliberately coarse; this exists to prove the loop,
@@ -36,40 +36,40 @@ public enum SphereNode {
 	// Root
 	ATTUNEMENT(Effect.MIGHT, 1, 1, null),
 
-	// Fire branch — amplifies the keyblade's burn
+	// Fire branch: amplifies the keyblade's burn
 	EMBER_I(Effect.EMBER, 1, 1, "ATTUNEMENT"),
 	EMBER_II(Effect.EMBER, 1, 1, "EMBER_I"),
 	CONFLAGRATION(Effect.EMBER, 2, 1, "EMBER_II"),
 
-	// Might branch — raw melee damage
+	// Might branch: raw melee damage
 	MIGHT_I(Effect.MIGHT, 1, 1, "ATTUNEMENT"),
 	MIGHT_II(Effect.MIGHT, 2, 1, "MIGHT_I"),
 
-	// Vigor branch — survivability
+	// Vigor branch: survivability
 	VIGOR_I(Effect.VIGOR, 3, 1, "ATTUNEMENT"),
 	VIGOR_II(Effect.VIGOR, 3, 1, "VIGOR_I"),
 
-	// Frost branch — the second element (chill/slow); amplifies the frost keyblade
+	// Frost branch: the second element (chill/slow); amplifies the frost keyblade
 	FROST_I(Effect.FROST, 1, 1, "ATTUNEMENT"),
 	FROST_II(Effect.FROST, 2, 1, "FROST_I"),
 	PERMAFROST(Effect.FROST, 2, 2, "FROST_II"),
 
-	// Storm branch — the third element (arcing shock); amplifies the storm keyblade
+	// Storm branch: the third element (arcing shock); amplifies the storm keyblade
 	STORM_I(Effect.STORM, 1, 1, "ATTUNEMENT"),
 	STORM_II(Effect.STORM, 2, 1, "STORM_I"),
 	TEMPEST(Effect.STORM, 2, 2, "STORM_II"),
 
-	// Might/Vigor deep tiers — pricier capstones for the raw-stat branches
+	// Might/Vigor deep tiers: pricier capstones for the raw-stat branches
 	MIGHT_III(Effect.MIGHT, 2, 2, "MIGHT_II"),
 	VIGOR_III(Effect.VIGOR, 4, 2, "VIGOR_II"),
 
-	// Ability branch — empowers each keyblade's signature ability (burst = elementLevel * abilityLevel),
+	// Ability branch: empowers each keyblade's signature ability (burst = elementLevel * abilityLevel),
 	// so it pays off only alongside an element: the design's hybrid element+ability quadrant.
 	ABILITY_I(Effect.ABILITY, 1, 1, "ATTUNEMENT"),
 	ABILITY_II(Effect.ABILITY, 2, 1, "ABILITY_I"),
 	ABILITY_III(Effect.ABILITY, 2, 2, "ABILITY_II"),
 
-	// Keystone — requires deep investment in ALL THREE elements; grants +1 to every
+	// Keystone: requires deep investment in ALL THREE elements; grants +1 to every
 	// element level (implemented in SphereGrid's accessors, so magnitude stays 0 and
 	// no per-effect sum counts it).
 	ELEMENTAL_CONFLUX(Effect.KEYSTONE, 0, 2, "EMBER_II,FROST_II,STORM_II");
@@ -88,7 +88,7 @@ public enum SphereNode {
 		this.requires = requires;
 	}
 
-	/** The node's first (or only) prerequisite — kept for single-prereq callers/UI. */
+	/** The node's first (or only) prerequisite, kept for single-prereq callers/UI. */
 	public SphereNode requiredNode() {
 		SphereNode[] all = requiredNodes();
 		return all.length == 0 ? null : all[0];

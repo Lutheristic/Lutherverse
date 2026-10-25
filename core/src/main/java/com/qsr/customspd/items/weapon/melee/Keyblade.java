@@ -74,14 +74,14 @@ public class Keyblade extends MeleeWeapon {
 				// Ember nodes: bonus fire damage on top of the burn.
 				defender.damage(grid.emberLevel(), this);
 			}
-			// Flame Burst (signature ability): burst = emberLevel * abilityLevel — pays off only
+			// Flame Burst (signature ability): burst = emberLevel * abilityLevel; pays off only
 			// on a hybrid fire+ability build, nothing without investing in both.
 			if (grid != null && defender.isAlive()) {
 				int burst = grid.emberLevel() * grid.abilityLevel();
 				if (burst > 0) defender.damage(burst, this);
 			}
 			// Dual Attunement (Keybearer): carrying another elemental keyblade clashes the
-			// elements for a "Thermal Shock" burst — the combine-two-elements payoff without a
+			// elements for a "Thermal Shock" burst, the combine-two-elements payoff without a
 			// second equipped weapon. It is bonus DAMAGE, not a stacked status: the game
 			// extinguishes burning when a target is chilled, so applying the opposite status
 			// would only douse this keyblade's own element. Symmetric across all three blades.

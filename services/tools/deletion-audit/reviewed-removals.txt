@@ -4,13 +4,13 @@
 # the removal is legitimate and when it was reviewed. Anything NOT in this file
 # is still an open review item -- do not add an entry without verifying it.
 #
-# Reviewed 2026-08-10 during T1 gate repair (docs/superpowers/plans/2026-08-10-t1-gate-repair.md).
+# Reviewed 2026-08-10 during the T1 gate repair.
 
 
 # --- canMerge signature migration (12 entries) ---
 # The 3-arg canMerge(Level, Point, int) was replaced by the 4-arg
-# canMerge(Level, Room, Point, int) across 14 definitions. Recorded in
-# PROJECT-STATUS under the entrance/exit room cluster. The tool sees the old
+# canMerge(Level, Room, Point, int) across 14 definitions, as part of the
+# entrance/exit room cluster port. The tool sees the old
 # arity vanish; the replacement is present at HEAD under the new signature.
 Room#canMerge(Level, Point, int)
 BridgeRoom#canMerge(Level, Point, int)
@@ -59,7 +59,7 @@ ShadowCaster#scanOctant(int, boolean[], boolean[], int, int, int, double, double
 
 # --- Room sizing migration (1 entry) ---
 # Part of the documented sizeFactor / mobSpawnWeight / connectionWeight migration
-# (268b804ac), recorded in PROJECT-STATUS under Task 15 closeout.
+# (268b804ac), from the Task 15 closeout.
 StandardRoom.SizeCategory#connectionWeight()
 
 
@@ -162,9 +162,9 @@ FloatingText#show(float, float, String, int)
 FloatingText#show(float, float, int, String, int)
 CharSprite#showStatus(int, String, Object[])
 
-# --- wave 3 upstream simplifications (2 entries) ---
-# Reviewed 2026-10-23. Both shrinks are exactly the named upstream hunks; each was checked
-# against the upstream commit by the track's adversarial reviewer.
+# --- Generator and dew upstream simplifications (2 entries) ---
+# Reviewed 2026-10-23. Both shrinks are exactly the named upstream hunks, each checked
+# against the upstream commit.
 # upstream 213f7a2f6 (cpdu-1be): stones of intuition always get two uses, so WndGuess's guess
 # handler drops the separate preserved/incorrect branches and runs the use-tracker once after
 # either outcome.
@@ -173,10 +173,10 @@ StoneOfIntuition.WndGuess#WndGuess(Item)
 # Speck burst became two independent showStatusWithIcon calls (HEALING, SHIELDING).
 Dewdrop#consumeDew(int, Hero, boolean)
 
-# --- wave-4 Slice 1 tuning batches (66 entries) ---
-# Reviewed 2026-10-24 (AFK-inline). Each removal is the named upstream hunk, ported by the named
-# bead; the batch agent proposed it, that batch's adversarial reviewer checked it, and each was
-# re-mapped here against the merged tree (all 66 findings of the merged run, no others).
+# --- Slice 1 tuning batches (66 entries) ---
+# Reviewed 2026-10-24. Each removal is the named upstream hunk, ported under the named issue,
+# checked against the upstream commit, and re-mapped here against the merged tree (all 66
+# findings of the merged run, no others).
 # upstream 3aab64684 (cpdu-79f): Badge.meta replaced by Badge.type (BadgeType); the boolean-meta
 # constructor gives way to the BadgeType one.
 Badges.Badge#Badge(Asset, boolean)
@@ -287,7 +287,7 @@ WndBlacksmith.ItemButton#item(Item)
 WndBlacksmith.ItemButton#clear()
 
 # --- Brawler's Stance redesign (5 entries) ---
-# Reviewed 2026-10-24 (wave 6). upstream c448f9731 (v2.4.0, cpdu-9hyd): the stance no longer
+# Reviewed 2026-10-24. upstream c448f9731 (v2.4.0, cpdu-9hyd): the stance no longer
 # spends charge per hit, so the hits-left counter and everything that displayed it went
 # upstream; the buff uses Buff's default desc()/no icon text, as at v2.5.4.
 RingOfForce.BrawlersStance#hitsLeft()
@@ -296,7 +296,7 @@ RingOfForce.BrawlersStance#iconFadePercent()
 RingOfForce.BrawlersStance#iconTextDisplay()
 RingOfForce.BrawlersStance#desc()
 
-# --- wave 7 (5 entries), reviewed 2026-10-24 ---
+# --- badge ending, Warlock and shop ports (5 entries), reviewed 2026-10-24 ---
 # upstream e8c824e6e (v2.4.0, cpdu-jtik): the whole ending (validateHappyEnd, Dungeon.win,
 # deleteGame, Badges.saveGlobal) moved into SurfaceScene.create, so silentValidateHappyEnd is gone
 # and Hero.actTransition (CPDU's equivalent of upstream's SewerLevel.activateTransition) lost its

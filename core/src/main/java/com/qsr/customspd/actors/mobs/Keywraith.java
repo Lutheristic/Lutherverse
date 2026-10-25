@@ -12,13 +12,13 @@ import com.qsr.customspd.sprites.KeywraithSprite;
 import com.watabou.utils.Random;
 
 /**
- * Keywraith — a spectral key-warden (original Lutherverse mob, the first content produced
+ * Keywraith: a spectral key-warden (original Lutherverse mob, the first content produced
  * through the content-scaffold pipeline). The ghost of a jailer still making its rounds:
  * its touch turns a phantom key in the victim's joints and LOCKS them ({@link Cripple}),
  * and it hoards the tribute of everyone it has ever locked in (gold loot).
  *
  * Depth-3 stat line (between Crab and Skeleton): fragile but accurate, and the lock proc
- * makes fleeing it expensive — the design lever is the Cripple, not the numbers.
+ * makes fleeing it expensive, so the design lever is the Cripple, not the numbers.
  */
 public class Keywraith extends Mob {
 
@@ -29,7 +29,7 @@ public class Keywraith extends Mob {
 		defenseSkill = 6;
 
 		EXP = 4;
-		maxLvl = 9; // Crab's band — it is a Sewers mob, and the description promises no more
+		maxLvl = 9; // Crab's band; it is a Sewers mob, and the description promises no more
 
 		loot = Gold.class;
 		lootChance = 0.25f;

@@ -1,6 +1,6 @@
 from PIL import Image
 
-# 16x16 Keywraith — a hooded spectral key-warden, trailing off into wisps.
+# 16x16 Keywraith: a hooded spectral key-warden, trailing off into wisps.
 #   X outline  H hood  h hood-highlight  F face-void  e eye-glint
 #   B body     b body-glow  W wisp  K key-gold  k key-glint  . transparent
 MAP = [

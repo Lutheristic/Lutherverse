@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Upstream c1ed0f8ab (buffs-ui lane, ffd4eabb6) deleted EnhancedRings.desc(), so the buff now
+ * Upstream c1ed0f8ab (ported with the buff UI batch) deleted EnhancedRings.desc(), so the buff now
  * renders through FlavourBuff.desc() with dispTurns(), a String. The English text moved to %s with
  * it, but CPDU's translations are still v2.1.0's and formatted the turns with %d, which a String
  * cannot fill: Messages.format reported an exception and showed the raw "%d" text in every

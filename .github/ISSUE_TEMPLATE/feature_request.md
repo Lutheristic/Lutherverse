@@ -19,11 +19,11 @@ labels: ["enhancement", "triage"]
 
 ## How it interacts with the roadmap
 
-<!-- Skim [PROJECT-STATUS.md](../../PROJECT-STATUS.md) for what's planned. Does your idea fit inside an existing sub-project (God/Hard/Bonfire mode, keyblades, sphere grid, coop, cameos, etc.), or is it a new axis? -->
+<!-- Skim the README's plan and roadmap (../../README.md) for what's planned. Does your idea fit inside an existing sub-project (God/Hard/Bonfire mode, keyblades, sphere grid, coop, cameos, etc.), or is it a new axis? -->
 
 **Fits existing:** <!-- e.g. "extends the sphere-grid system with a node type for..." -->
 **New axis:** <!-- e.g. "a whole crafting subsystem we don't have yet" -->
-**Collides with:** <!-- If your idea contradicts something in the roadmap, name what — that's just as useful as agreement. -->
+**Collides with:** <!-- If your idea contradicts something in the roadmap, name what. That's just as useful as agreement. -->
 
 ## Priority (in your view)
 

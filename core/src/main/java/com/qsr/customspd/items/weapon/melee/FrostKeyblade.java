@@ -33,7 +33,7 @@ import com.qsr.customspd.actors.hero.spheregrid.SphereGrid;
 import com.qsr.customspd.assets.GeneralAsset;
 
 /**
- * Prototype FROST keyblade for the Keybearer — the second element, proving the build axis
+ * Prototype FROST keyblade for the Keybearer, the second element, proving the build axis
  * actually diverges. Where the fire {@link Keyblade} deals damage-over-time, this one plays
  * for control: every damaging strike chills (slows) the target. The sphere grid amplifies it:
  *  - MIGHT nodes add flat melee damage (shared build axis with the fire keyblade)
@@ -73,14 +73,14 @@ public class FrostKeyblade extends MeleeWeapon {
 				turns += grid.frostLevel(); // Frost nodes: a longer chill
 			}
 			Buff.affect(defender, Chill.class, turns);
-			// Rime Shatter (signature ability): burst = frostLevel * abilityLevel — the hybrid
+			// Rime Shatter (signature ability): burst = frostLevel * abilityLevel, the hybrid
 			// frost+ability payoff.
 			if (grid != null && defender.isAlive()) {
 				int burst = grid.frostLevel() * grid.abilityLevel();
 				if (burst > 0) defender.damage(burst, this);
 			}
 			// Dual Attunement (Keybearer): carrying another elemental keyblade clashes the
-			// elements for a Thermal Shock burst — bonus damage, not a stacked burn (applying
+			// elements for a Thermal Shock burst: bonus damage, not a stacked burn (applying
 			// the opposite status would just cancel this keyblade's own chill; see Keyblade).
 			// Symmetric across all three blades.
 			if (defender.isAlive() && attacker instanceof Hero

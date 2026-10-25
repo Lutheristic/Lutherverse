@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Keywraith — the first mob produced through the content-scaffold pipeline. Verifies the
+ * Keywraith: the first mob produced through the content-scaffold pipeline. Verifies the
  * filled-in mechanic (the Cripple "lock" proc), the stat line, and the wiring the scaffold
  * claims to have done (sprite asset resolvable, bestiary registration in dungeon.json).
  */
@@ -32,7 +32,7 @@ class KeywraithTest {
 		Keywraith w = new Keywraith();
 		assertEquals(16, w.HT, "designed HP band (between Crab and Skeleton)");
 		assertEquals(4, w.EXP);
-		assertEquals(9, w.maxLvl, "Crab's band — a Sewers mob must not out-scale Prison mobs");
+		assertEquals(9, w.maxLvl, "Crab's band, a Sewers mob must not out-scale Prison mobs");
 		assertTrue(w.lootChance > 0, "the key-warden hoards tribute (gold loot)");
 		assertTrue(w.properties().contains(com.qsr.customspd.actors.Char.Property.UNDEAD),
 				"it is described as a ghost, so holy damage must treat it as one");
@@ -41,7 +41,7 @@ class KeywraithTest {
 	@Test
 	void damageRollStaysInTheDesignedBandAndSpansIt() {
 		// Bounds + coverage: 200 seeded rolls must stay in [2,6] AND actually reach both
-		// endpoints — a mis-implementation that quietly narrows the band (e.g. wrong
+		// endpoints: a mis-implementation that quietly narrows the band (e.g. wrong
 		// min/max argument) passes a bounds-only check but fails the coverage half.
 		Keywraith w = new Keywraith();
 		boolean sawMin = false, sawMax = false;

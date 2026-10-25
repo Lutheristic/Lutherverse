@@ -15,17 +15,17 @@ import com.qsr.customspd.items.stones.Runestone;
 import com.watabou.utils.PathFinder;
 
 /**
- * Warden's Sigil — a STONE-pool runestone: an aimed lock-stone. The gaol-warden's
+ * Warden's Sigil: a STONE-pool runestone: an aimed lock-stone. The gaol-warden's
  * binding ward flares where the stone lands: whatever stands on the struck cell is
  * locked hard ({@link Cripple}, {@link #DIRECT_DURATION}), and enemies beside it are
  * briefly held by the spill ({@link #SPLASH_DURATION}).
  *
  * Targeting rules, deliberately asymmetric:
  * <ul>
- *   <li>The DIRECT target may be ANY living char — the player aimed the throw, so a
+ *   <li>The DIRECT target may be ANY living char, since the player aimed the throw, so a
  *       neutral (or even allied) char on the struck cell is fair game, exactly like
  *       aimed wands and thrown potions.</li>
- *   <li>The splash is strictly {@code Alignment.ENEMY} — a passive area effect must
+ *   <li>The splash is strictly {@code Alignment.ENEMY}: a passive area effect must
  *       never hold neutral NPCs (shopkeeper, quest givers), matching
  *       {@code StormKeyblade.arcTarget}'s convention.</li>
  * </ul>

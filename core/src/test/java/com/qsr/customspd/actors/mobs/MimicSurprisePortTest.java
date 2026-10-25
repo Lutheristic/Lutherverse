@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * block in {@link Mimic#onAttackComplete()} must also set {@code enemySeen}, so the hero's
  * counterattack against the now-woken mimic does not count as a sneak attack.
  *
- * The callback is invoked directly — it is the exact method the game fires when the
+ * The callback is invoked directly; it is the exact method the game fires when the
  * surprise-attack animation lands. In the fixture the mob's {@code enemy} field is left
  * null, so {@code Mob.onAttackComplete()}'s {@code attack(enemy)} no-ops and only the
  * wake-up block (the code the upstream fix changed) runs.
@@ -50,7 +50,7 @@ class MimicSurprisePortTest {
 		Mimic mimic = HeadlessLevel.at(new Mimic(), center + 1);
 		mimic.setLevel(0);
 		// A hidden mimic's act() loop clears enemySeen while it lies in wait (no enemy in
-		// FOV while PASSIVE); reproduce that state directly — the bug needs it as input.
+		// FOV while PASSIVE); reproduce that state directly; the bug needs it as input.
 		mimic.enemySeen = false;
 		assertSame(Char.Alignment.NEUTRAL, mimic.alignment, "fixture sanity: mimics hide as NEUTRAL");
 

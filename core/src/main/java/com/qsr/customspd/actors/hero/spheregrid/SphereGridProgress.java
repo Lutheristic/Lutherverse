@@ -28,7 +28,7 @@ import java.util.Set;
 /**
  * Persistent (cross-run) half of the hybrid Keybearer sphere grid: an "Insight" currency plus the
  * set of grid nodes it has permanently UNLOCKED. Persisted to its own bundle file via
- * {@link FileUtils} (the same mechanism {@code Badges} uses), so it survives runs and deaths —
+ * {@link FileUtils} (the same mechanism {@code Badges} uses), so it survives runs and deaths,
  * independent of the run-scoped {@link SphereGrid}, which handles per-run activation of nodes you
  * have already unlocked.
  *
@@ -100,7 +100,7 @@ public final class SphereGridProgress {
 	}
 
 	public static boolean prerequisiteUnlocked(SphereNode node) {
-		// ALL prerequisites, mirroring SphereGrid.prerequisiteMet — a single-prereq check
+		// ALL prerequisites, mirroring SphereGrid.prerequisiteMet: a single-prereq check
 		// here would let multi-prereq keystones burn persistent Insight on a node the
 		// run-scoped layer then refuses to activate.
 		for (SphereNode req : node.requiredNodes()) {

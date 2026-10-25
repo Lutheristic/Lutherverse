@@ -1369,7 +1369,7 @@ public class Hero extends Char {
 
 		if (wep != null) damage = wep.proc( this, enemy, damage );
 
-		// Keybearer true dual-wield: the off-hand keyblade also strikes — its own proc (element +
+		// Keybearer true dual-wield: the off-hand keyblade also strikes: its own proc (element +
 		// signature) fires and it adds reduced damage. Gated to KEYBEARER so no other class's
 		// attack path is touched (the Champion's second-weapon machinery stays swap-only).
 		if (heroClass == HeroClass.KEYBEARER

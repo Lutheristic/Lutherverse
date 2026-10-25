@@ -7,7 +7,7 @@
     while the code batch that names them is deferred, so the files ride along in every APK
     and JAR unplayable and unlookable.
 
-    This is not hypothetical. PROJECT-STATUS records it for the conditional-music cluster,
+    This is not hypothetical. It happened with the conditional-music cluster,
     and a 2026-08-11 sweep found 29 orphaned assets totalling ~9.99 MB, of which 14 .ogg files are ~9.8 MB -- 54% of the
     game's music, in a 31 MB APK -- all blocked behind the cpdu-15l design decision.
 

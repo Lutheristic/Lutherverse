@@ -18,8 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Guards the terrain ID table, which is serialized state: {@code Level.map} stores raw
  * terrain IDs in the save bundle, so an ID that changes meaning silently reinterprets
- * every existing save. Slice 1 already did this once on purpose — {@code CUSTOM_DECO}
- * took over id 23 from {@code SIGN} — and nothing checked it.
+ * every existing save. Slice 1 already did this once on purpose ({@code CUSTOM_DECO}
+ * took over id 23 from {@code SIGN}) and nothing checked it.
  *
  * <p>Reflection over the constants rather than a hand-maintained list, so a terrain added
  * tomorrow is covered without anyone remembering to update this file.
@@ -30,7 +30,7 @@ class TerrainIdTest {
 
 	/**
 	 * IDs that intentionally carry more than one name, with the reason. Anything NOT listed
-	 * here that shares an ID is a mistake — most likely a new terrain pasted from a sibling
+	 * here that shares an ID is a mistake, most likely a new terrain pasted from a sibling
 	 * constant. Ratchet, like the lint baselines: park what is deliberate, fail what is new.
 	 */
 	private static final Map<Integer, String> DELIBERATE_ALIASES = new LinkedHashMap<>();

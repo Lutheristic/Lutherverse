@@ -109,7 +109,7 @@ class PackLoaderProbeTest {
     @Test
     void manifestWithUnresolvableAssetPathReturnsFailedLoadException() throws IOException {
         // A NUL character is illegal in a path on EVERY platform, so resolving it throws
-        // InvalidPathException — a genuine unexpected-exception condition, distinct from
+        // InvalidPathException, a genuine unexpected-exception condition, distinct from
         // "the file simply doesn't exist".
         //
         // This used to use '?', which is illegal only on Windows. On Linux '?' is a

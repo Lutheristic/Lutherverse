@@ -1,6 +1,6 @@
 from PIL import Image
 
-# 16x16 TumblerWisp — a tiny teal-white mote of locksmith's magic, airy and mostly
+# 16x16 TumblerWisp: a tiny teal-white mote of locksmith's magic, airy and mostly
 # transparent: a bright core, a faint glow diamond, four trailing sparks, and a
 # two-pixel gold key-silhouette glint hanging beneath the core.
 #   W core-white  C core-teal  g glow (faint)  s trailing spark

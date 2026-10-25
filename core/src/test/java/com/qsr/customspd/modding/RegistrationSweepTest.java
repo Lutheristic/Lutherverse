@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * mobs and level layouts as bare strings that the game resolves at runtime via reflection
  * (Bestiary.standardMobRotation, Dungeon's level factory), and heroes/*.json names starting-kit
  * items the same way (HeroClass.setUp). The static content-audit tool's M3/I3 heuristics cannot
- * see these registrations (they scan source tokens, not JSON) — this suite closes that gap
+ * see these registrations (they scan source tokens, not JSON), so this suite closes that gap
  * honestly by proving every shipped token actually resolves through the SAME runtime paths the
  * game uses. A token typo'd in JSON, or a renamed/deleted class still referenced by JSON, fails
  * here with the token and location named.
@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *  - Bestiary tokens (Bestiary.kt standardMobRotation): customMobExists(token) -> CustomMob;
  *    "Elemental" -> Elemental.random(); "Shaman" -> Shaman.random();
  *    else Reflection.forName("com.qsr.customspd.actors.mobs." + token).
- *  - rare_mob tokens (Bestiary.kt addRareMobs): reflection ONLY — no custom-mob or
+ *  - rare_mob tokens (Bestiary.kt addRareMobs): reflection ONLY, no custom-mob or
  *    Elemental/Shaman special-casing. A rare_mob of "Elemental" would crash at runtime,
  *    so the sweep must not paper over it.
  *  - REGULAR level layouts (Dungeon.newLevel):
@@ -107,13 +107,13 @@ class RegistrationSweepTest {
 
 		// Anti-vacuity guard: the CPDU mobs registered ONLY through dungeon.json (invisible to
 		// the content-audit source heuristic) must actually have been visited by this sweep.
-		// If they vanish from the shipped layout, the sweep silently stops covering them —
+		// If they vanish from the shipped layout, the sweep silently stops covering them.
 		// this fails instead.
 		for (String dataDriven : Arrays.asList(
 				"Keywraith", "TumblerWisp", "HexwardMoth", "WardstoneSentinel", "GaolShade")) {
 			assertTrue(seen.contains(dataDriven),
 					"the shipped dungeon.json no longer registers '" + dataDriven
-							+ "' in any bestiary — the sweep would go vacuous for it");
+							+ "' in any bestiary, the sweep would go vacuous for it");
 		}
 	}
 
@@ -128,8 +128,8 @@ class RegistrationSweepTest {
 				String token = e.getValue().getRareMob();
 				if (token == null) continue;
 				rareMobs++;
-				// Bestiary.addRareMobs resolves rare_mob by reflection only — no custom-mob
-				// lookup, no Elemental/Shaman special cases — so the sweep must be as strict.
+				// Bestiary.addRareMobs resolves rare_mob by reflection only, no custom-mob
+				// lookup, no Elemental/Shaman special cases, so the sweep must be as strict.
 				Class<?> cls = Reflection.forName("com.qsr.customspd.actors.mobs." + token);
 				assertNotNull(cls, "rare_mob token '" + token + "' on level '" + e.getKey()
 						+ "' (depth " + e.getValue().getDepth() + ") does not resolve to a class");
@@ -224,7 +224,7 @@ class RegistrationSweepTest {
 				}
 				tokens.addAll(config.getIdentified());
 				assertFalse(tokens.isEmpty(),
-						"heroes/" + hero + ".json defines no item tokens at all — sweep is vacuous for it");
+						"heroes/" + hero + ".json defines no item tokens at all, sweep is vacuous for it");
 
 				for (String token : tokens) {
 					if (token.equals("weapon.missiles.darts.TippedDart")) {

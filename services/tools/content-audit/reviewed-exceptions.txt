@@ -20,7 +20,7 @@
 # and NOT real gaps. They are deliberately parked under the ceiling rather than
 # allowlisted, because allowlisting a false-positive would falsely assert it is
 # correct-forever. Tuning the registration heuristic + triaging the real remainder is
-# tracked as a follow-up bead. Only genuine, individually-verified permanent
+# tracked as a follow-up issue. Only genuine, individually-verified permanent
 # exceptions belong below this line.
 #
 # --- Keybearer class weapons, 2026-08-13 (storm added 2026-08-14) ---

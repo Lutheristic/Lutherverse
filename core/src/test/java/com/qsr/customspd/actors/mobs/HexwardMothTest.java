@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * HexwardMoth — a depth-4 flying moth whose landed hits shed disorienting ward-dust.
+ * HexwardMoth: a depth-4 flying moth whose landed hits shed disorienting ward-dust.
  * Verifies the filled-in mechanic (the Vertigo dust proc), the stat line, and that the
  * scaffold's sprite wiring resolves to real art on disk.
  */
@@ -33,13 +33,13 @@ class HexwardMothTest {
 		assertEquals(14, m.HT, "designed depth-4 HP band");
 		assertEquals(3, m.EXP);
 		assertEquals(10, m.maxLvl, "a Prison-band mob must stop paying EXP past level 10");
-		assertTrue(m.flying, "it is a moth — it flies over chasms and traps");
+		assertTrue(m.flying, "it is a moth, it flies over chasms and traps");
 	}
 
 	@Test
 	void damageRollStaysInTheDesignedBandAndSpansIt() {
 		// Bounds + coverage: 200 seeded rolls must stay in [2,5] AND actually reach both
-		// endpoints — a mis-implementation that quietly narrows the band (e.g. wrong
+		// endpoints: a mis-implementation that quietly narrows the band (e.g. wrong
 		// min/max argument) passes a bounds-only check but fails the coverage half.
 		HexwardMoth m = new HexwardMoth();
 		boolean sawMin = false, sawMax = false;

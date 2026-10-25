@@ -11,7 +11,7 @@ art, not the wiring. The inverse of `content-audit`.
 ## What it wires
 
 - The class stub (`actors/mobs/<Name>.java` or `items/<Name>.java`) and, for mobs, a sprite
-  class (`sprites/<Name>Sprite.java`) — with the mechanic left as `// TODO`.
+  class (`sprites/<Name>Sprite.java`), with the mechanic left as `// TODO`.
 - A `GeneralAsset` entry + a placeholder magenta PNG (mobs: `sprites/chars/`, items: `sprites/items/`).
 - Localization keys in `actors.properties` / `items.properties`.
 - Registration: mobs into `dungeon.json`'s `bestiary` at `--depth`; items into `Generator.Category.<cat>`.
@@ -35,7 +35,7 @@ Replace the magenta placeholder with real art, fill in the `// TODO` mechanic, a
 stats. The tool prints a `content-audit` check for the new entity; sprite/localization
 touchpoints pass immediately, and registration (M3/I3) is correct-by-construction (it edits
 the real `dungeon.json`/`Generator`) but `content-audit` will only confirm it once its
-registration-heuristic follow-up bead lands.
+registration-heuristic fix lands.
 
 ## Scope
 v1 scaffolds core Mobs and Items. Art, the mechanic, and bosses/biomes/talents are out of scope.

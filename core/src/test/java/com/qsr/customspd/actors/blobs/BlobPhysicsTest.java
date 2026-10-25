@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * None of the exercised paths consume RNG (Blob.act/Fire.evolve/Freezing.clear roll nothing,
  * and burn() finds no chars/heaps/plants on the empty fixture), so every assertion here is an
- * exact deterministic value — no seeded bands needed.
+ * exact deterministic value, no seeded bands needed.
  */
 class BlobPhysicsTest {
 
@@ -50,7 +50,7 @@ class BlobPhysicsTest {
 		assertTrue(level.flamable[grass], "fixture sanity: HIGH_GRASS must be flammable");
 
 		// Fire.evolve calls Dungeon.observe() after destroying terrain, which dereferences
-		// Dungeon.hero — park a live hero on the level (not Actor-registered, so burn()
+		// Dungeon.hero: park a live hero on the level (not Actor-registered, so burn()
 		// cannot find and ignite it).
 		Hero hero = new Hero();
 		hero.pos = w + 1;
@@ -88,7 +88,7 @@ class BlobPhysicsTest {
 		int cell = 3 * level.width() + 3;
 
 		// Deliberately unequal volumes: Fire.evolve's cancellation (freeze.clear + zero the
-		// fire cell) is all-or-nothing per cell, NOT proportional — 2 fire wipes 10 freeze.
+		// fire cell) is all-or-nothing per cell, NOT proportional: 2 fire wipes 10 freeze.
 		Fire fire = Blob.seed(cell, 2, Fire.class, level);
 		Freezing freeze = Blob.seed(cell, 10, Freezing.class, level);
 		assertEquals(2, fire.volume);

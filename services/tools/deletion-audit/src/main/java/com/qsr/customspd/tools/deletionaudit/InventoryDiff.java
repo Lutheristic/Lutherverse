@@ -8,7 +8,7 @@ import java.util.Map;
  * Compares two {@link CallableInventory} snapshots and reports removals.
  *
  * <p>Deliberately one-directional: additions and growth are api-diff's
- * concern. This tool exists to answer one question — did anything quietly
+ * concern. This tool exists to answer one question: did anything quietly
  * disappear?
  */
 public final class InventoryDiff {

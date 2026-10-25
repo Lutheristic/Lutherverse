@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Insight Crystal — the first ITEM shipped through the content-scaffold pipeline, and the
+ * Insight Crystal, the first ITEM shipped through the content-scaffold pipeline, and the
  * meta-progression faucet: shattering it must grant persistent Insight. Also guards the
  * Generator pool consistency the scaffold dogfooding broke (classes[] vs defaultProbs[]
  * desync means an item silently never drops).

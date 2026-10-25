@@ -1,6 +1,6 @@
 from PIL import Image
 
-# 16x16 Warden's Sigil — a flat grey-slate stone graven with a gold binding sigil:
+# 16x16 Warden's Sigil: a flat grey-slate stone graven with a gold binding sigil:
 # a circle with a keyhole notch (round hole, stem, and the ring broken where the
 # stem exits), with faint ward-light leaking out.
 #   X outline  S slate  t slate-highlight  s slate-shadow

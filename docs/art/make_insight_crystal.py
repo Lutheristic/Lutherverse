@@ -1,6 +1,6 @@
 from PIL import Image
 
-# 16x16 Insight Crystal — a twin-spired teal crystal with an inner glow.
+# 16x16 Insight Crystal: a twin-spired teal crystal with an inner glow.
 #   X outline  C crystal  c crystal-light  g glow-core  s shard  . transparent
 MAP = [
     "................",

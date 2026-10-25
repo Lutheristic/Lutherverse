@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
- * F1: hero levelling economy. Pins the exp curve, the HT growth per level, and — critically —
+ * F1: hero levelling economy. Pins the exp curve, the HT growth per level, and (critically)
  * the sphere-grid faucet inside {@link Hero#earnExp}'s level-up loop: exactly ONE run-scoped
  * grid point and ONE persistent Insight per level gained, even when a single earnExp call
  * crosses several level boundaries. A double-grant there would be invisible in play (numbers
@@ -66,7 +66,7 @@ class HeroProgressionTest {
 				assertEquals(2, hero.sphereGrid.unspentPoints(),
 						"exactly one run-scoped grid point per level gained");
 				assertEquals(2, SphereGridProgress.insight(),
-						"exactly one persistent Insight per level gained — the single-grant pin");
+						"exactly one persistent Insight per level gained, the single-grant pin");
 			} finally {
 				Random.popGenerator();
 			}

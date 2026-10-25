@@ -32,15 +32,15 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Roadmap #10c: a CUSTOM (mod-authored, map-from-JSON) level end to end — layout JSON through
+ * Roadmap #10c: a CUSTOM (mod-authored, map-from-JSON) level end to end: layout JSON through
  * the real kotlinx decoding into DungeonLayout, Dungeon.newLevel's CustomLevel branch, entering
  * it, descending custom -> custom, and the level save/load round trip. The shipped dungeon.json
  * has no non-REGULAR level, so the layout is a test resource: two small custom floors, the first
  * carrying one of each spawn kind (a mob with HP and AI state, an item, a hidden trap, a plant).
  *
  * Seam: Dungeon.init loads the layout from the asset retriever; the test layout is swapped in
- * right after init, before the first level is generated — the first point InterlevelScene
- * consults it. Dungeon.loadGame re-reads the layout from the retriever (it would drop the test
+ * right after init, before the first level is generated (the first point InterlevelScene
+ * consults it). Dungeon.loadGame re-reads the layout from the retriever (it would drop the test
  * layout), so the round trip here is the per-level one: saveAll/saveLevel -> loadLevel.
  */
 class CustomLevelEndToEndTest {

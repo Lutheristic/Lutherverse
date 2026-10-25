@@ -114,7 +114,7 @@ How it hangs off the core: cameos are visitors who came in through a different d
 
 **Public docs (README, CHANGELOG, templates)**
 - First-person indie dev. CONTRIBUTING says enthusiasm is on-brand, and it is.
-- Rewrite boilerplate into a human voice. No em dashes in prose. No promotional filler.
+- Write like a person talking, not a press release. No promotional filler.
 - The project's honest-engineering habit is part of the theme. Things that look fine while hollow underneath are the dread this project actually lived through: gates printing PASS while checking nothing. Tell that story plainly.
 - Unshipped features are always "the plan", never present tense.
 
@@ -264,32 +264,6 @@ Guardrails:
 - whether Insight ever gets a cost;
 - what the sphere grid's final visual looks like;
 - how gameplay scales past floor 25;
-- keyblade/Aeon trademark: rename or keep, now that "keyblade" is an in-game noun (CHANGELOG backlog);
+- keyblade/Aeon trademark: rename or keep, now that "keyblade" is an in-game noun;
 - how far to take the README's "deep-ones, mythos creatures" direction, given the no-Lovecraft-names rule;
 - whether the binding promises (the bottom is never shown, no codex ever explains it, the story never reaches the answer) are ones to make publicly in the first person.
-
-<!--
-Sources (all at main 9f4b9f381):
-- Pitch, mood, stretches, 200 floors / eight times, towns, recurring city, save zones, coop modes, lobby cheat rules, labeled seeds (COSMICNIGHTMARE-1), leaderboards, story, modding API, cameo list, "deep-ones, mythos creatures", not-affiliated disclaimer, attribution chain, pre-alpha/no release, "The project's gates were passing without checking anything": README.md before this change.
-- Prison intro, Warden's Journal and letter to Thomas (Tengu, key into an alcove): core/src/main/assets/messages/journal/journal.properties:57, 78-90.
-- Yog-Dzewa "an Old God", "this cosmic horror", "trying to keep it contained", "I. SEE. YOU.", desc_spawners: actors.properties:1351-1357.
-- "Get haunted forever?", fictional-only cameos, no real living people: .github/ISSUE_TEMPLATE/cameo_suggestion.md; CONTRIBUTING.md.
-- "cute pixel-art vibes", Dark Souls tone reference: .github/ISSUE_TEMPLATE/feature_request.md, cameo_suggestion.md. Enthusiasm on-brand, "cult-classic", art contact-first: CONTRIBUTING.md.
-- Humanizer pass / no em dashes: CHANGELOG.md (Polish entry).
-- Keybearer, prototype labels, keyblade descriptions, keyblade nova, creature and item text: actors.properties:421-422, 565-568, 1389-1398; items.properties:1731-1736, 2043-2047.
-- Starting kit and off-hand frost keyblade: core/src/main/assets/heroes/keybearer.json; HeroClass.java.
-- Keyblade nova as one of three armor abilities: HeroClass.java (armorAbilities, KEYBEARER); KeybladeNova extends ArmorAbility.
-- Dual-wield at half damage, Keybearer only, inside attackProc: Hero.java:1348-1375.
-- Storm arc gated on stormLevel() > 0; fire and frost unconditional: StormKeyblade.java, Keyblade.java, FrostKeyblade.java (proc).
-- Warden's sigil applies Cripple (direct and splash): WardensSigil.java.
-- Sphere grid nodes, Elemental Conflux prerequisites, raw enum names in the window: SphereNode.java, WndSphereGrid.java.
-- Insight unlock cost 1, persistence, earned per level-up and per crystal: SphereGridProgress.java; Hero.java; InsightCrystal.java.
-- Creature floors: core/src/main/assets/dungeon/dungeon.json (26 level entries, the last being the Amulet floor).
-- Palette: docs/assets/lutherverse-title.svg; docs/art/make_*.py. Keybearer hero sheet and splash as Warrior recolours: commit 646603018.
-- Pack framework, 29 packs (29 mod_info.json files; marketplace/Summary is the index), authors, Exotic Dungeon text: marketplace/*/mod_info.json; marketplace/Exotic Dungeon/messages.properties.
-- Sprites, tiles and music from pack config: CLAUDE.md (Porting from upstream).
-- Biome pack depends on 200-floor generator; region scaling past 25 open: docs/superpowers/specs/2026-08-13-build-craft-spine-design.md.
-- Determinism status: project_progress.md (P0 seeded runs).
-- Keyblade / Aeons trademark decision: CHANGELOG.md backlog.
-- Addon public names: README.md Roadmap.
--->

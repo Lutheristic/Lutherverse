@@ -394,7 +394,9 @@ public class QuickSlotButton extends Button {
 		if (target != null && target.alignment != Char.Alignment.ALLY) {
 			lastTarget = target;
 			
-			TargetHealthIndicator.instance.target( target );
+			if (TargetHealthIndicator.instance != null) {
+				TargetHealthIndicator.instance.target( target );
+			}
 			InventoryPane.lastTarget = target;
 		}
 	}

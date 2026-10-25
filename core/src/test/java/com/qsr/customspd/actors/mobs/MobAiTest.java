@@ -14,6 +14,7 @@ import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.test.HeadlessRun;
 import com.qsr.customspd.test.StubSprite;
 import com.qsr.customspd.test.TurnPump;
+import com.qsr.customspd.ui.QuickSlotButton;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -94,8 +97,8 @@ class MobAiTest {
 			Hero hero = floorWithoutMobs(run);
 			Random.pushGenerator(SEED);
 			try {
-				// The current target is an ally, not the hero: if the retarget fails, the rat's
-				// attack must not land on the hero (Hero.interrupt NPEs headless; see TurnPump).
+				// The current target is an ally, not the hero, so a failed retarget leaves the rat
+				// on the ally.
 				Rat rat = place(new Rat(), freeNeighbour(hero.pos, -1));
 				Rat ally = place(new Rat(), freeNeighbour(rat.pos, hero.pos));
 				ally.alignment = Char.Alignment.ALLY;
@@ -158,8 +161,6 @@ class MobAiTest {
 			Hero hero = floorWithoutMobs(run);
 			Random.pushGenerator(SEED);
 			try {
-				// Mob on mob: a hit on the hero would reach Hero.interrupt -> GameScene.resetKeyHold,
-				// which has no scene guard and NPEs headless (a separate gap; see TurnPump).
 				Rat rat = place(new Rat(), freeNeighbour(hero.pos, -1));
 				Rat defender = place(new Rat(), freeNeighbour(rat.pos, hero.pos));
 				defender.state = defender.PASSIVE;
@@ -185,6 +186,72 @@ class MobAiTest {
 		}
 	}
 
+	@Test
+	void aRatsHitOnTheHeroDamagesAndInterruptsTheHero() {
+		try (HeadlessRun run = HeadlessRun.start(SEED)) {
+			Hero hero = floorWithoutMobs(run);
+			Random.pushGenerator(SEED);
+			try {
+				Rat rat = place(new Rat(), freeNeighbour(hero.pos, -1));
+				rat.aggro(hero);
+				int hp = hero.HP;
+
+				// The hero full-rests every turn, so a hit that interrupts shows up as resting = false.
+				new TurnPump(h -> {
+					Dungeon.observe();
+					h.rest(true);
+				}).runUntil(() -> hero.HP < hp, 60);
+
+				assertTrue(rat.isTargeting(hero), "precondition: the rat went for the hero");
+				assertTrue(hero.isAlive());
+				assertFalse(hero.resting, "taking a hit interrupts the hero's rest");
+			} finally {
+				Random.popGenerator();
+			}
+		}
+	}
+
+	@Test
+	void anEnemyComingIntoViewBecomesTheQuickslotTarget() {
+		try (HeadlessRun run = HeadlessRun.start(SEED)) {
+			Hero hero = floorWithoutMobs(run);
+			Rat rat = place(new Rat(), freeNeighbour(hero.pos, -1));
+			hero.resting = true;
+
+			// What Hero.act does before taking its action.
+			hero.fieldOfView = Dungeon.level.heroFOV;
+			Dungeon.observe();
+			hero.checkVisibleMobs();
+
+			assertSame(rat, QuickSlotButton.lastTarget, "the newly seen rat becomes the auto-aim target");
+			assertFalse(hero.resting, "a new enemy in view interrupts the hero");
+		}
+	}
+
+	@Test
+	void aRatSteppingOntoHighGrassTramplesIt() {
+		try (HeadlessRun run = HeadlessRun.start(SEED)) {
+			Hero hero = floorWithoutMobs(run);
+			Random.pushGenerator(SEED);
+			try {
+				Level level = Dungeon.level;
+				int cell = freeNeighbour(hero.pos, -1);
+				level.map[cell] = Terrain.HIGH_GRASS;
+				level.buildFlagMaps();
+				Rat rat = place(new Rat(), cell);
+
+				level.occupyCell(rat);
+
+				assertEquals(Terrain.GRASS, level.map[cell], "the rat tramples the grass flat");
+				assertFalse(level.losBlocking[cell], "trampled grass no longer blocks sight");
+				// A seed or dew drop would reach Level.drop's Game.scene(); this seed rolls neither.
+				assertNull(level.heaps.get(cell), "precondition: the trample dropped nothing");
+			} finally {
+				Random.popGenerator();
+			}
+		}
+	}
+
 	// ------------------------------------------------------------------------------ helpers
 
 	/** Floor 1 of the run with its generated mobs removed; the hero (stubbed) at the entrance. */
@@ -194,10 +261,10 @@ class MobAiTest {
 			Dungeon.level.mobs.remove(m);
 			Actor.remove(m);
 		}
-		// Stepping on high grass tramples it through HighGrass.trample, which reaches for the live
-		// scene (Game.scene()) that a headless run does not have. Where the floor's grass falls
-		// depends on the generated layout, so any levelgen change could put it under a fleeing rat;
-		// flatten it so no seed's layout decides whether a pin can run.
+		// A trample can drop a seed or dew, and Level.drop reaches for the live scene (Game.scene())
+		// that a headless run does not have. Where the floor's grass falls depends on the generated
+		// layout, so any levelgen change could put it under a fleeing rat; flatten it so no seed's
+		// layout decides whether a pin can run.
 		Level level = Dungeon.level;
 		for (int i = 0; i < level.length(); i++) {
 			if (level.map[i] == Terrain.HIGH_GRASS || level.map[i] == Terrain.FURROWED_GRASS) {

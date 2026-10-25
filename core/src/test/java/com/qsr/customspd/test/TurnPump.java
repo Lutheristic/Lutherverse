@@ -26,11 +26,6 @@ import java.util.function.BooleanSupplier;
  *
  * Needs a level and hero in place (HeadlessRun.enterFirstLevel, or HeadlessLevel + Actor.add);
  * all the state it touches is Actor's, which HeadlessRun's snapshot restores.
- *
- * Known headless gap: an attack on the hero reaches Hero.interrupt() (from Char.hit while
- * damageInterrupt is set, and from Hero.damage on any noticeable hit), which calls
- * GameScene.resetKeyHold(), which dereferences GameScene.cellSelector with no null guard. Until
- * that is guarded, pins should keep mob attacks off the hero (see MobAiTest).
  */
 public final class TurnPump {
 

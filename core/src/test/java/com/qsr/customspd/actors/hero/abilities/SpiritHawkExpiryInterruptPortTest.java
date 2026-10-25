@@ -22,10 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
  */
 class SpiritHawkExpiryInterruptPortTest {
 
-	/**
-	 * Hero.interrupt() ends in GameScene.resetKeyHold(), which has no scene to talk to headless
-	 * (TurnPump documents the gap), so the hero only counts the calls.
-	 */
+	/** Counts the hero's interrupt() calls. */
 	private static final class CountingHero extends Hero {
 		int interrupts = 0;
 

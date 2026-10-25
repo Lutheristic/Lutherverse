@@ -41,6 +41,7 @@ import com.qsr.customspd.items.food.Berry;
 import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.scenes.GameScene;
+import com.watabou.noosa.Game;
 import com.watabou.utils.Random;
 
 public class HighGrass {
@@ -145,7 +146,7 @@ public class HighGrass {
 		
 		freezeTrample = false;
 		
-		if (ShatteredPixelDungeon.scene() instanceof GameScene) {
+		if (Game.instance != null && ShatteredPixelDungeon.scene() instanceof GameScene) {
 			GameScene.updateMap(pos);
 			
 			CellEmitter.get(pos).burst(LeafParticle.LEVEL_SPECIFIC, 4);

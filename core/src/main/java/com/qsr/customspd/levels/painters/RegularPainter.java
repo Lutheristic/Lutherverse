@@ -249,7 +249,8 @@ public abstract class RegularPainter extends Painter {
 
 					//entrance doors on floor 1 are hidden during tutorial
 					//entrance doors on floor 2 are hidden if the player hasn't picked up 2nd guidebook page
-					if (r.isEntrance() || n.isEntrance()){
+					//custom seed and daily runs (both set customSeedText) skip this, so a seed builds the same doors for everyone
+					if ((r.isEntrance() || n.isEntrance()) && Dungeon.customSeedText.isEmpty()){
 						if ((Dungeon.depth == 1 && SPDSettings.intro())
 							|| (Dungeon.depth == 2 && !Document.ADVENTURERS_GUIDE.isPageFound(Document.GUIDE_SEARCHING))) {
 							d.type = Room.Door.Type.HIDDEN;

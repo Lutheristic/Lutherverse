@@ -77,7 +77,7 @@ public final class HeadlessRun implements AutoCloseable {
 			SPDSettings.customSeed(Long.toString(seed));
 			SPDSettings.challenges(0);
 			// A returning player's run: tutorial done and the searching guide page found, so
-			// RegularPainter's tutorial rule does not hide the entrance doors on floors 1-2.
+			// EntranceRoom drops no guide page on floor 2 (placed like the Guidebook below).
 			SPDSettings.intro(false);
 			Document.ADVENTURERS_GUIDE.findPage(Document.GUIDE_SEARCHING);
 			// ...and the intro page read, so EntranceRoom drops no floor-1 Guidebook. That drop

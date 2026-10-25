@@ -26,11 +26,6 @@ import java.util.function.BooleanSupplier;
  *
  * Needs a level and hero in place (HeadlessRun.enterFirstLevel, or HeadlessLevel + Actor.add);
  * all the state it touches is Actor's, which HeadlessRun's snapshot restores.
- *
- * Known headless gap: an attack on the hero reaches Hero.interrupt() (from Char.hit while
- * damageInterrupt is set, and from Hero.damage on any noticeable hit), which calls
- * GameScene.resetKeyHold(), which dereferences GameScene.cellSelector with no null guard. Until
- * that is guarded, pins should keep mob attacks off the hero (see MobAiTest).
  */
 public final class TurnPump {
 
@@ -44,7 +39,6 @@ public final class TurnPump {
 		hero.rest(false);
 	};
 
-	private static final Field ALL = field("all");
 	private static final Field CURRENT = field("current");
 	private static final Field NOW = field("now");
 	private static final Field TIME = field("time");
@@ -142,11 +136,9 @@ public final class TurnPump {
 		} while (acted != actor);
 	}
 
-	@SuppressWarnings("unchecked")
-	private static Set<Actor> actors() throws IllegalAccessException {
-		// Actor.all() returns a HashSet copy, which loses the insertion order ties depend on;
-		// iterate a copy of the real LinkedHashSet instead.
-		return new java.util.LinkedHashSet<>((Set<Actor>) ALL.get(null));
+	private static Set<Actor> actors() {
+		// Actor.all() copies into a LinkedHashSet, so ties still see insertion order.
+		return Actor.all();
 	}
 
 	private static Field field(String name) {

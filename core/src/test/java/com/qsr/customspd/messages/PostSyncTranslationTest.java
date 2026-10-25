@@ -57,8 +57,8 @@ class PostSyncTranslationTest {
 	/**
 	 * The shipped translated actors bundles, keyed by language, read from the files themselves.
 	 * What Messages resolves for a language also depends on the JVM's Locale mapping (Java 17+ maps
-	 * "in" to "id", so Indonesian renders the English fallback here), so a rendered-text check alone
-	 * would pass Indonesian vacuously.
+	 * "in" to "id"), so a rendered-text check alone could pass a language vacuously if its bundle
+	 * stopped loading.
 	 */
 	private static Map<Languages, ObjectMap<String, String>> translatedActorBundles() throws IOException {
 		Map<Languages, ObjectMap<String, String>> out = new LinkedHashMap<>();

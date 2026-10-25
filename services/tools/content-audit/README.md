@@ -5,7 +5,7 @@ IS the "how to add content" checklist: satisfy every row and the gate passes.
 
 ```
 ./gradlew.bat :services:tools:content-audit:run \
-  --args="--allowlist services/tools/content-audit/reviewed-exceptions.txt --max-findings 1"
+  --args="--allowlist services/tools/content-audit/reviewed-exceptions.txt --max-findings 0"
 ```
 
 Exit 0 within the ceiling, 1 over it or canary failed, 2 if the scan itself broke.
@@ -39,8 +39,9 @@ Either kind:
 ## Two knobs
 - `reviewed-exceptions.txt`: permanent, correct exceptions (`Type Name#Check`), like
   bosses that legitimately never spawn via Bestiary.
-- `--max-findings`: the ratchet ceiling parking the known backlog; lower it as content
-  gets wired. Findings are always printed: TRACKED, NOT ACCEPTED.
+- `--max-findings`: the ratchet ceiling for a known backlog. It is 0 now that the backlog is
+  cleared; if a finding ever has to be parked, raise it in CI with a reason and lower it again
+  once the content is wired. Findings are always printed.
 
 ## Provably able to fail
 `--args="-Canary"` runs the checks against a deliberately-broken entity and fails if they

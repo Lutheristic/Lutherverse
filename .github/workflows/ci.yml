@@ -107,25 +107,24 @@ jobs:
             || { echo "::error::deletion-audit found unreviewed removals"; exit 1; }
 
       - name: content-audit (content completeness)
-        # ADVISORY, not blocking. M3 now reads the dungeon.json spawn lists and the
-        # permanent M3/I3 exceptions are allowlisted (cpdu-zpc); M2 derives mob keys from the
-        # package and M1 resolves nested sprite classes (cpdu-e7i), and the last base-class /
-        # variant-key cases are allowlisted one by one. The one parked finding is Pickaxe#I3, a
-        # real port gap (6a313b135's WEP_T2 entry waits for the catalog/badge port), so the
-        # ceiling is 1: any new finding exceeds it.
-        # The non-vacuity check stays hard: entities scanned must be non-vacuous, the
-        # same failure class as api-diff scanning zero files for weeks while printing PASS.
+        # Blocking. Every permanent exception is allowlisted with its reason in
+        # reviewed-exceptions.txt and the ceiling is 0, so any new unwired Mob or Item fails
+        # the job. The scan must also be non-vacuous, the same failure class as api-diff
+        # scanning zero files for weeks while printing PASS.
         run: |
+          set -o pipefail
           ./gradlew :services:tools:content-audit:run --quiet \
-            --args="--allowlist services/tools/content-audit/reviewed-exceptions.txt --max-findings 1" \
-            | tee /tmp/ca.log || true
-          grep -qE "entities scanned" /tmp/ca.log || (echo "content-audit scanned nothing" && exit 1)
+            --args="--allowlist services/tools/content-audit/reviewed-exceptions.txt --max-findings 0" \
+            | tee /tmp/ca.log
+          grep -qE "entities scanned" /tmp/ca.log || { echo "::error::content-audit scanned nothing"; exit 1; }
           scanned=$(grep -oE "[0-9]+ entities scanned" /tmp/ca.log | grep -oE "[0-9]+")
-          test "$scanned" -gt 50 || (echo "content-audit non-vacuity failed: $scanned entities" && exit 1)
+          test "$scanned" -gt 50 || { echo "::error::content-audit non-vacuity failed: $scanned entities"; exit 1; }
+          grep -q 'RESULT: PASS' /tmp/ca.log \
+            || { echo "::error::content-audit found unwired content"; exit 1; }
 
       - name: content-audit canary
         # Proves the registration/sprite/localization checks can actually fail. Without
-        # this the advisory PASS above means nothing.
+        # this the PASS above means nothing.
         run: ./gradlew :services:tools:content-audit:run --quiet --args="-Canary"
 
       - name: Marketplace pack smoke

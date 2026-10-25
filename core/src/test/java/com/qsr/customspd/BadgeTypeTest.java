@@ -13,9 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Badge.type (upstream 3aab64684) replaces Badge.meta and the "no icon means hidden" convention with
- * an explicit HIDDEN / LOCAL / GLOBAL / JOURNAL. CPDU has no JOURNAL badges yet (the catalog badges
- * are not ported), so the seeded-run exemption JOURNAL gets is covered by the unlock rule only:
- * every badge that exists must still be refused in a custom-seeded run.
+ * an explicit HIDDEN / LOCAL / GLOBAL / JOURNAL. The JOURNAL badges are the catalog badges from the
+ * badge redesign (b003d1129); they are the only ones a custom-seeded run may unlock.
  */
 class BadgeTypeTest {
 
@@ -23,18 +22,35 @@ class BadgeTypeTest {
 			Badges.Badge.GAMES_PLAYED_1, Badges.Badge.GAMES_PLAYED_2, Badges.Badge.GAMES_PLAYED_3,
 			Badges.Badge.GAMES_PLAYED_4, Badges.Badge.GAMES_PLAYED_5, Badges.Badge.BOSS_SLAIN_1_ALL_CLASSES,
 			Badges.Badge.VICTORY_ALL_CLASSES, Badges.Badge.DEATH_FROM_ALL,
-			Badges.Badge.BOSS_SLAIN_3_ALL_SUBCLASSES, Badges.Badge.ALL_ITEMS_IDENTIFIED);
+			Badges.Badge.BOSS_SLAIN_3_ALL_SUBCLASSES);
+
+	private static final List<Badges.Badge> JOURNAL = Arrays.asList(
+			Badges.Badge.CATALOG_ONE_EQUIPMENT, Badges.Badge.RESEARCHER_1, Badges.Badge.RESEARCHER_2,
+			Badges.Badge.RESEARCHER_3, Badges.Badge.RESEARCHER_4, Badges.Badge.RESEARCHER_5,
+			Badges.Badge.RODNEY);
+
+	// the identification badges the redesign replaced; still loaded from old badge files
+	private static final List<Badges.Badge> OLD_IDENTIFICATION = Arrays.asList(
+			Badges.Badge.ALL_WEAPONS_IDENTIFIED, Badges.Badge.ALL_ARMOR_IDENTIFIED,
+			Badges.Badge.ALL_WANDS_IDENTIFIED, Badges.Badge.ALL_RINGS_IDENTIFIED,
+			Badges.Badge.ALL_ARTIFACTS_IDENTIFIED, Badges.Badge.ALL_POTIONS_IDENTIFIED,
+			Badges.Badge.ALL_SCROLLS_IDENTIFIED, Badges.Badge.ALL_ITEMS_IDENTIFIED);
 
 	@Test
 	void everyBadgeHasTheTypeItsOldFlagsImplied() {
 		for (Badges.Badge b : Badges.Badge.values()) {
 			if (b.asset == null) {
 				assertEquals(Badges.BadgeType.HIDDEN, b.type, b + " has no icon, so it is internal");
+			} else if (JOURNAL.contains(b)) {
+				assertEquals(Badges.BadgeType.JOURNAL, b.type, b + " is a catalog badge");
 			} else if (FORMER_META.contains(b)) {
 				assertEquals(Badges.BadgeType.GLOBAL, b.type, b + " was a meta badge");
 			} else {
 				assertEquals(Badges.BadgeType.LOCAL, b.type, b + " was a regular badge");
 			}
+		}
+		for (Badges.Badge b : OLD_IDENTIFICATION) {
+			assertEquals(Badges.BadgeType.HIDDEN, b.type, b + " was replaced by the catalog badges");
 		}
 	}
 
@@ -81,18 +97,12 @@ class BadgeTypeTest {
 
 	@Test
 	void journalBadgesUnlockEvenInSeededRuns() {
-		// CPDU has no JOURNAL badge yet, so retype one for the duration of the test.
-		Badges.Badge probe = Badges.Badge.NO_MONSTERS_SLAIN;
-		Badges.BadgeType original = probe.type;
 		try (HeadlessRun run = HeadlessRun.start(20261024L)) {
 			assertFalse(Dungeon.customSeedText.isEmpty(), "test setup: HeadlessRun plays a custom-seeded run");
-			probe.type = Badges.BadgeType.JOURNAL;
-			Badges.unlock(probe);
-			assertTrue(Badges.isUnlocked(probe), "a journal badge is profile-based and unlocks even in a seeded run");
-			Badges.disown(probe);
-		} finally {
-			probe.type = original;
+			for (Badges.Badge b : JOURNAL) {
+				Badges.unlock(b);
+				assertTrue(Badges.isUnlocked(b), b + " is profile-based and unlocks even in a seeded run");
+			}
 		}
-		assertEquals(Badges.BadgeType.LOCAL, probe.type);
 	}
 }

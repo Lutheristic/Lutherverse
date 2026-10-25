@@ -30,6 +30,7 @@ import com.qsr.customspd.mechanics.ShadowCaster;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Point;
+import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,7 +74,7 @@ public class StoneOfDisarming extends Runestone {
 			}
 		}
 
-		Collections.shuffle(disarmCandidates);
+		Random.shuffle(disarmCandidates);
 		Collections.sort(disarmCandidates, new Comparator<Trap>() {
 			@Override
 			public int compare(Trap o1, Trap o2) {

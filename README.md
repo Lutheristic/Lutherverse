@@ -181,13 +181,13 @@ Everything glowed green over an empty cell. So now every gate has to prove it ca
 - **`deletion-audit`** catches removals an API diff structurally can't see: private members, and statements quietly dropped from a method whose signature never changed. Its first run flagged 43 items across 1,021 files. One was a real regression: region-tinted grass and ember tiles had silently stopped rendering.
 - **`desktop-smoke`** boots the real jar to 120 rendered frames. It was the first automated proof that the game starts at all.
 - **`port-verify`** answers "did we port all of it?", which nothing else could.
-- **`content-audit`** checks that every creature and item is fully wired up. On 2026-10-23 it got caught in a lie of its own: a class named only in a code comment counted as registered. That's fixed.
+- **`content-audit`** checks that every creature and item is fully wired up. On 2026-10-23 it got caught in a lie of its own: a class named only in a code comment counted as registered. That's fixed, and it now fails CI on anything new that isn't wired up.
 - **`core:test`** used to skip itself when only game text or assets changed, and replayed the last green result instead. It now treats the asset tree and the build version as inputs.
 - **Green merges aren't trusted either.** In October four parallel upstream-port branches merged cleanly and passed 450 tests. A separate read-only hunt still found 8 conflicts between them, including a scroll of remove curse that was never used up when it cleansed a tormented spirit. Each fix landed with a test that fails without it.
 - **Android Lint** now runs as a ratcheted gate over `core` and `android`.
 - **`options.release = 8`** holds the game modules to the Java 8 *API*, not just the language level, so nothing ships that an old Android phone can't run.
 - **CI** runs on every push to `main` and on pull requests, and every step asserts it actually analysed something.
-- **Tests in `core`** went from zero to 545.
+- **Tests in `core`** went from zero to 605.
 
 <details>
   <summary><strong>The rest of the toolbelt, and earlier milestones</strong></summary>
@@ -207,10 +207,10 @@ Everything glowed green over an empty cell. So now every gate has to prove it ca
 Short bulletin. The [CHANGELOG](CHANGELOG.md) has the longer list.
 
 - **Landed:** the Keybearer prototype, with keyblades, dual-wield, the sphere grid, Insight and the five residents above.
-- **Landed from upstream:** most of Slice 1, the catch-up to Shattered v2.5.4. All 23 batches that sat parked since July are worked through: about 245 upstream commits checked, roughly 170 ported, and each of the rest tracked on its own. Also in: the remains and bones catch-up from v2.3.0, the floating-text damage icons, and translations synced to v2.5.4.
+- **Landed from upstream:** most of Slice 1, the catch-up to Shattered v2.5.4. All 23 batches that sat parked since July are worked through: about 245 upstream commits checked, roughly 170 ported, and each of the rest tracked on its own. Also in: the remains and bones catch-up from v2.3.0, the floating-text damage icons, the journal catalog and its badges, and translations synced to v2.5.4.
 - **Landed:** a headless test harness that runs the real dungeon setup, save and load with no display, and pins same-seed level generation.
 - **In progress: seeded runs.** The bugs that broke seeded generation are fixed: guaranteed floors were being picked with an unseeded RNG before the dungeon seed existed, actor order varied between runs, and the shop could pick a different bag for the same seed. Layouts reproduce now, but full-run determinism is still being pinned down, so the same seed doesn't promise the same run yet.
-- **Still to port for Slice 1:** a handful of upstream reworks that each wait on another piece landing first, such as the Duelist's charge system, the tier-2 talents, the item catalog, the alchemy screen and the Monk.
+- **Still to port for Slice 1:** a handful of upstream reworks that each wait on another piece landing first, such as the Duelist's charge system, the tier-2 talents, the alchemy screen and the Monk.
 
 <details>
   <summary><strong>Roadmap to v0.1, and what comes after</strong></summary>

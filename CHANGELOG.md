@@ -10,6 +10,27 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 Everything on `main` since the fork base (`cpd-sync-base-2025-08-15`, CPD commit `c97fb83`).
 
+### 2026-10-25: Slice 1 loose ends
+
+**Ported**
+- The journal catalog now uses upstream's categories, and the identification badges are redesigned around it. The pickaxe is back in the weapon tables without being needed for any badge. The fourth researcher badge stays out of reach until there's a bestiary to count.
+- Statues uncurse their weapon instead of re-rolling it, and guardians, transmuted wands and the cursed wand no longer pull cards from the item decks.
+- Combined lethality loses its old trigger buff. Burn and ooze end in water once they've done their damage. Dart traps log a death message, and targeted traps stop at view distance and pass over the hero on a tie.
+- Two later upstream fixes brought forward early: a missed lunge no longer leaves the ability weapon set, and the enchant and glyph windows clear each other's saved item.
+
+**Fixed**
+- Same seed, same run: mobs choose between aggression targets in actor order, seeded and daily runs no longer change their first doors depending on whether you've finished the tutorial, and the stone of disarming breaks distance ties with the game's own random.
+- The spectral necromancer can't summon onto a tile that just became impassable.
+- Indonesian translations load again on newer Java versions, which map the old "in" code to "id".
+- Keybearer, keyblade and warden's sigil text now describes what they actually do, and the sphere grid shows node names instead of code names.
+- Fury's description showed a literal "50%%".
+- Translations of text that only exists in Lutherverse were stuck on old wording. Those lines now fall back to English until someone translates them.
+
+**Tests and CI**
+- content-audit now fails CI on any creature or item that isn't fully wired up.
+- A hit on the hero can run in headless tests.
+- Core tests went from 545 to 605.
+
 ### 2026-10-24: theme doc and README
 
 - New `docs/THEME.md`: the pitch, five house rules, tone and naming, palette, audio direction, and a status list that keeps shipped features apart from plans. It also lists the in-game strings that don't match the code yet.

@@ -27,9 +27,12 @@ import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.ShatteredPixelDungeon;
 import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.Char;
+import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.items.weapon.missiles.darts.Dart;
 import com.qsr.customspd.mechanics.Ballistica;
+import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.sprites.MissileSprite;
+import com.qsr.customspd.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
@@ -60,17 +63,24 @@ public class WornDartTrap extends Trap {
 				Char target = Actor.findChar(pos);
 
 				//find the closest char that can be aimed at
+				//can't target beyond view distance, with a min of 6 (torch range)
+				int range = Math.max(6, Dungeon.level.viewDistance);
 				if (target == null){
 					float closestDist = Float.MAX_VALUE;
 					for (Char ch : Actor.chars()){
 						if (!ch.isAlive()) continue;
 						float curDist = Dungeon.level.trueDistance(pos, ch.pos);
-						if (ch.invisible > 0) curDist += 1000;
+						//invis targets are considered to be at max range
+						if (ch.invisible > 0) curDist = Math.max(curDist, range);
 						Ballistica bolt = new Ballistica(pos, ch.pos, Ballistica.PROJECTILE);
-						if (bolt.collisionPos == ch.pos && curDist < closestDist){
+						if (bolt.collisionPos == ch.pos
+								&& ( curDist < closestDist || (curDist == closestDist && target instanceof Hero))){
 							target = ch;
 							closestDist = curDist;
 						}
+					}
+					if (closestDist > range){
+						target = null;
 					}
 				}
 
@@ -85,6 +95,7 @@ public class WornDartTrap extends Trap {
 										finalTarget.damage(dmg, WornDartTrap.this);
 										if (finalTarget == Dungeon.hero && !finalTarget.isAlive()){
 											Dungeon.fail( WornDartTrap.this  );
+											GLog.n(Messages.get(WornDartTrap.class, "ondeath"));
 											if (reclaimed) Badges.validateDeathFromFriendlyMagic();
 										}
 										Sample.INSTANCE.play(Assets.Sounds.HIT, 1, 1, Random.Float(0.8f, 1.25f));

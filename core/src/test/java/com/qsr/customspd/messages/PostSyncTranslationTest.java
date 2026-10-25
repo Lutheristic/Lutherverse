@@ -6,6 +6,8 @@ import com.qsr.customspd.Assets;
 import com.qsr.customspd.actors.buffs.Barkskin;
 import com.qsr.customspd.actors.buffs.Charm;
 import com.qsr.customspd.actors.hero.Talent;
+import com.qsr.customspd.levels.traps.PoisonDartTrap;
+import com.qsr.customspd.levels.traps.WornDartTrap;
 import com.qsr.customspd.test.HeadlessGdx;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -61,10 +63,14 @@ class PostSyncTranslationTest {
 	 * would pass Indonesian vacuously.
 	 */
 	private static Map<Languages, ObjectMap<String, String>> translatedActorBundles() throws IOException {
+		return translatedBundles(Assets.Messages.ACTORS);
+	}
+
+	private static Map<Languages, ObjectMap<String, String>> translatedBundles(String base) throws IOException {
 		Map<Languages, ObjectMap<String, String>> out = new LinkedHashMap<>();
 		for (Languages lang : Languages.values()) {
 			if (lang == Languages.ENGLISH) continue;
-			Path bundle = Paths.get(Assets.Messages.ACTORS + "_" + lang.code() + ".properties");
+			Path bundle = Paths.get(base + "_" + lang.code() + ".properties");
 			if (!Files.isRegularFile(bundle)) continue;
 			ObjectMap<String, String> props = new ObjectMap<>();
 			try (Reader r = Files.newBufferedReader(bundle, StandardCharsets.UTF_8)) {
@@ -72,7 +78,7 @@ class PostSyncTranslationTest {
 			}
 			out.put(lang, props);
 		}
-		assertEquals(18, out.size(), "translated actors bundles found");
+		assertEquals(18, out.size(), "translated " + base + " bundles found");
 		return out;
 	}
 
@@ -110,6 +116,10 @@ class PostSyncTranslationTest {
 	 * cpdu-fz84 4/4 rule), and that nothing renders as a key path in any language.
 	 */
 	private static void assertKeyShipsEverywhere(Class<?> cls, String key, String englishText) throws IOException {
+		assertKeyShipsEverywhere(Assets.Messages.ACTORS, cls, key, englishText);
+	}
+
+	private static void assertKeyShipsEverywhere(String base, Class<?> cls, String key, String englishText) throws IOException {
 		Messages.setup(Languages.ENGLISH);
 		String english = Messages.get(cls, key);
 		assertEquals(englishText, english, "English " + cls.getSimpleName() + "." + key);
@@ -121,7 +131,7 @@ class PostSyncTranslationTest {
 			assertFalse(text.startsWith("java.lang.object.") || text.equals(fullKey),
 					lang + " renders a missing key: " + text);
 		}
-		for (Map.Entry<Languages, ObjectMap<String, String>> e : translatedActorBundles().entrySet()) {
+		for (Map.Entry<Languages, ObjectMap<String, String>> e : translatedBundles(base).entrySet()) {
 			String value = e.getValue().get(fullKey);
 			assertNotNull(value, e.getKey() + " lacks " + fullKey);
 			assertNotEquals(english, value, e.getKey() + " has only the English text of " + fullKey);
@@ -149,5 +159,17 @@ class PostSyncTranslationTest {
 	@Test
 	void combinedLethalityExecutedShipsInEveryLanguage() throws IOException {
 		assertKeyShipsEverywhere(Talent.CombinedLethalityAbilityTracker.class, "executed", "executed");
+	}
+
+	/**
+	 * Upstream 6d2aa45a2 (v2.5.0) logs an on-death line when a dart trap kills the hero, as the
+	 * other killing traps already did.
+	 */
+	@Test
+	void dartTrapDeathMessagesShipInEveryLanguage() throws IOException {
+		assertKeyShipsEverywhere(Assets.Messages.LEVELS, PoisonDartTrap.class, "ondeath",
+				"You were killed by the poison dart trap...");
+		assertKeyShipsEverywhere(Assets.Messages.LEVELS, WornDartTrap.class, "ondeath",
+				"You were killed by the worn dart trap...");
 	}
 }

@@ -65,6 +65,8 @@ dependencies {
     //F1 headless bootstrap: run real game code (asset loading, later hero/combat) with no display.
     testImplementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
     testRuntimeOnly "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+    //lets a test stub PlatformSupport so windows can be built headless
+    testImplementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
 
     api project(':SPD-classes')
     implementation project(':services')

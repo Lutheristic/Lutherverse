@@ -48,7 +48,7 @@ public class ShatteredPixelDungeon extends Game {
 		registerBundleAliases();
 	}
 
-	/** Save-compat aliases for classes Slice 1 moved between packages. */
+	/** Save-compat aliases for classes Slice 1 moved or removed. */
 	public static void registerBundleAliases() {
 		com.watabou.utils.Bundle.addAlias(
 				com.qsr.customspd.levels.rooms.standard.entrance.EntranceRoom.class,
@@ -56,6 +56,10 @@ public class ShatteredPixelDungeon extends Game {
 		com.watabou.utils.Bundle.addAlias(
 				com.qsr.customspd.levels.rooms.standard.exit.ExitRoom.class,
 				"com.qsr.customspd.levels.rooms.standard.ExitRoom" );
+		//nothing reads this removed buff any more, so an old save gets a plain buff that just expires
+		com.watabou.utils.Bundle.addAlias(
+				com.qsr.customspd.actors.buffs.FlavourBuff.class,
+				"com.qsr.customspd.actors.hero.Talent$CombinedLethalityTriggerTracker" );
 	}
 	
 	@Override

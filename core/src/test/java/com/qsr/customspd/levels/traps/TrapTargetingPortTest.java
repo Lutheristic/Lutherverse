@@ -139,19 +139,26 @@ class TrapTargetingPortTest {
 
 	@Test
 	void onATieTheHeroIsNotTheOneHit() {
-		// Actor.chars() iterates in hash order, so repeat with fresh chars to cover both orders.
-		for (int trial = 0; trial < 20; trial++) {
+		// Actor.chars() keeps actor order, so both orders are spelled out
+		for (boolean heroFirst : new boolean[]{true, false}) {
 			for (Supplier<Trap> kind : TRAPS) {
 				level();
 				Trap trap = kind.get();
-				CountingHero hero = hero(6 * W + 6); // 4 tiles away
-				Rat rat = rat(2 * W + 2, trap); // also 4 tiles away
+				CountingHero hero;
+				Rat rat;
+				if (heroFirst) {
+					hero = hero(6 * W + 6); // 4 tiles away
+					rat = rat(2 * W + 2, trap); // also 4 tiles away
+				} else {
+					rat = rat(2 * W + 2, trap);
+					hero = hero(6 * W + 6);
+				}
 
 				spring(trap);
 
-				String name = trap.getClass().getSimpleName();
-				assertEquals(0, hero.hits, name + " must not pick the hero on a tie");
-				assertTrue(rat.HP < 100, name + " hits the other char instead");
+				String name = trap.getClass().getSimpleName() + (heroFirst ? ", hero added first" : ", rat added first");
+				assertEquals(0, hero.hits, name + ": must not pick the hero on a tie");
+				assertTrue(rat.HP < 100, name + ": hits the other char instead");
 				tearDown();
 			}
 		}

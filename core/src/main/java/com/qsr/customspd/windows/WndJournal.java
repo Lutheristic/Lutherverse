@@ -28,8 +28,10 @@ import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.armor.ClassArmor;
 import com.qsr.customspd.items.potions.Potion;
+import com.qsr.customspd.items.potions.exotic.ExoticPotion;
 import com.qsr.customspd.items.rings.Ring;
 import com.qsr.customspd.items.scrolls.Scroll;
+import com.qsr.customspd.items.scrolls.exotic.ExoticScroll;
 import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.journal.Document;
 import com.qsr.customspd.journal.Notes;
@@ -452,27 +454,17 @@ public class WndJournal extends WndTabbed {
 	private static class CatalogTab extends Component{
 
 		private RedButton[] itemButtons;
-		private static final int NUM_BUTTONS = 7;
+		private static final int NUM_BUTTONS = 2;
 
 		private static int currentItemIdx   = 0;
 
 		//sprite locations
-		private static final int WEAPON_IDX = 0;
-		private static final int ARMOR_IDX  = 1;
-		private static final int WAND_IDX   = 2;
-		private static final int RING_IDX   = 3;
-		private static final int ARTIF_IDX  = 4;
-		private static final int POTION_IDX = 5;
-		private static final int SCROLL_IDX = 6;
+		private static final int EQUIP_IDX  = 0;
+		private static final int CONSUM_IDX = 1;
 
 		private static final Asset spriteIndexes[] = {
             GeneralAsset.WEAPON_HOLDER,
-            GeneralAsset.ARMOR_HOLDER,
-            GeneralAsset.WAND_HOLDER,
-            GeneralAsset.RING_HOLDER,
-            GeneralAsset.ARTIFACT_HOLDER,
             GeneralAsset.POTION_HOLDER,
-            GeneralAsset.SCROLL_HOLDER,
         };
 
 		private ScrollingListPane list;
@@ -528,32 +520,56 @@ public class WndJournal extends WndTabbed {
 
 			list.scrollTo( 0, 0 );
 
-			ArrayList<Class<? extends Item>> itemClasses;
-			final HashMap<Class<?  extends Item>, Boolean> known = new HashMap<>();
-			if (currentItemIdx == WEAPON_IDX) {
-				itemClasses = new ArrayList<>(Catalog.WEAPONS.items());
-				for (Class<? extends Item> cls : itemClasses) known.put(cls, true);
-			} else if (currentItemIdx == ARMOR_IDX){
-				itemClasses = new ArrayList<>(Catalog.ARMOR.items());
-				for (Class<? extends Item> cls : itemClasses) known.put(cls, true);
-			} else if (currentItemIdx == WAND_IDX){
-				itemClasses = new ArrayList<>(Catalog.WANDS.items());
-				for (Class<? extends Item> cls : itemClasses) known.put(cls, true);
-			} else if (currentItemIdx == RING_IDX){
-				itemClasses = new ArrayList<>(Catalog.RINGS.items());
-				for (Class<? extends Item> cls : itemClasses) known.put(cls, Ring.getKnown().contains(cls));
-			} else if (currentItemIdx == ARTIF_IDX){
-				itemClasses = new ArrayList<>(Catalog.ARTIFACTS.items());
-				for (Class<? extends Item> cls : itemClasses) known.put(cls, true);
-			} else if (currentItemIdx == POTION_IDX){
-				itemClasses = new ArrayList<>(Catalog.POTIONS.items());
-				for (Class<? extends Item> cls : itemClasses) known.put(cls, Potion.getKnown().contains(cls));
-			} else if (currentItemIdx == SCROLL_IDX) {
-				itemClasses = new ArrayList<>(Catalog.SCROLLS.items());
-				for (Class<? extends Item> cls : itemClasses) known.put(cls, Scroll.getKnown().contains(cls));
+			ArrayList<Catalog> catalogs;
+			String title;
+			if (currentItemIdx == EQUIP_IDX) {
+				catalogs = Catalog.equipmentCatalogs;
+				title = Messages.get(this, "title_equipment");
 			} else {
-				itemClasses = new ArrayList<>();
+				catalogs = Catalog.consumableCatalogs;
+				title = Messages.get(this, "title_consumables");
 			}
+
+			int totalItems = 0;
+			int totalSeen = 0;
+			for (Catalog catalog : catalogs){
+				totalItems += catalog.totalItems();
+				totalSeen += catalog.totalSeen();
+			}
+			list.addTitle(title + " (" + totalSeen + "/" + totalItems + ")");
+
+			for (Catalog catalog : catalogs){
+				list.addTitle(Messages.titleCase(catalog.title()) + " (" + catalog.totalSeen() + "/" + catalog.totalItems() + ")");
+				addListItems(catalog);
+			}
+
+			list.setRect(x, itemButtons[NUM_BUTTONS-1].bottom() + 1, width,
+					height - itemButtons[NUM_BUTTONS-1].bottom() - 1);
+		}
+
+		//rings, potions and scrolls (and their exotic versions) are only known once identified in this run
+		private static boolean isKnown(Catalog catalog, Class<? extends Item> cls){
+			switch (catalog){
+				case RINGS:
+					return Ring.getKnown().contains(cls);
+				case POTIONS:
+					return Potion.getKnown().contains(cls);
+				case SCROLLS:
+					return Scroll.getKnown().contains(cls);
+				case EXOTIC_POTIONS:
+					return Potion.getKnown().contains(ExoticPotion.exoToReg.get(cls));
+				case EXOTIC_SCROLLS:
+					return Scroll.getKnown().contains(ExoticScroll.exoToReg.get(cls));
+				default:
+					return true;
+			}
+		}
+
+		private void addListItems(Catalog catalog) {
+
+			ArrayList<Class<? extends Item>> itemClasses = new ArrayList<>(catalog.items());
+			final HashMap<Class<?  extends Item>, Boolean> known = new HashMap<>();
+			for (Class<? extends Item> cls : itemClasses) known.put(cls, isKnown(catalog, cls));
 
 			Collections.sort(itemClasses, new Comparator<Class<? extends Item>>() {
 				@Override
@@ -583,8 +599,10 @@ public class WndJournal extends WndTabbed {
 						((Scroll) item).anonymize();
 					}
 				}
+				ItemSprite sprite = new ItemSprite(item);
+				if (!itemSeen) sprite.lightness(0);
 				ScrollingListPane.ListItem listItem = new ScrollingListPane.ListItem(
-						(itemIDed && itemSeen) ? new ItemSprite(item) : new ItemSprite( spriteIndexes[currentItemIdx]),
+						sprite,
 						null,
 						itemSeen ? Messages.titleCase(item.trueName()) : "???"
 				){
@@ -614,9 +632,6 @@ public class WndJournal extends WndTabbed {
 				list.addItem(listItem);
 
 			}
-
-			list.setRect(x, itemButtons[NUM_BUTTONS-1].bottom() + 1, width,
-					height - itemButtons[NUM_BUTTONS-1].bottom() - 1);
 		}
 
 	}

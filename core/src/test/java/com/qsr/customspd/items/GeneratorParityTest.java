@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Slice 1 (v2.5.4) Generator parity (cpdu-3vq): the lookup-only entry upstream added in 6a313b135
  * (Dart in MIS_T1 at probability 0) and the category sub-orderings from fbcfc5900 (minus Trinket,
  * which CPDU has no subsystem for). 6a313b135's matching Pickaxe entry in WEP_T2 is deliberately held
- * back: CPDU's old Catalog.WEAPONS is built from WEP_T*.classes, so it would change what the
+ * back: Catalog.MELEE_WEAPONS is built from WEP_T*.classes, so it would change what the
  * weapon-identification badges require (see Generator's WEP_T2 comment).
  *
  * What this pins and why:
@@ -112,12 +112,12 @@ class GeneratorParityTest {
 
 	@Test
 	void weaponBadgesDoNotRequireThePickaxeYet() {
-		// Catalog.WEAPONS feeds ALL_WEAPONS_IDENTIFIED (and so ALL_ITEMS_IDENTIFIED). Listing the
+		// Catalog.MELEE_WEAPONS feeds ALL_WEAPONS_IDENTIFIED (and so ALL_ITEMS_IDENTIFIED). Listing the
 		// Pickaxe in WEP_T2 without upstream's b003d1129 badge redesign would make those badges need
 		// a quest item that packs without a Blacksmith cannot provide.
 		assertTrue(indexOf(Generator.Category.WEP_T2, Pickaxe.class) < 0,
 				"Pickaxe belongs in WEP_T2 only together with the journal catalog + badge redesign port");
-		assertFalse(Catalog.WEAPONS.items().contains(Pickaxe.class),
+		assertFalse(Catalog.MELEE_WEAPONS.items().contains(Pickaxe.class),
 				"the weapons catalog must not require the Pickaxe before the badge redesign is ported");
 	}
 

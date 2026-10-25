@@ -406,9 +406,9 @@ public class Generator {
 			WEP_T1.probs = WEP_T1.defaultProbs.clone();
 			
 			//upstream 6a313b135 also lists Pickaxe here at weight 0, for its new journal catalog. Not ported
-			// yet: CPDU's old Catalog.WEAPONS is built from WEP_T*.classes, so the entry alone would make
+			// yet: Catalog.MELEE_WEAPONS is built from WEP_T*.classes, so the entry alone would make
 			// ALL_WEAPONS_IDENTIFIED require a Pickaxe, a state upstream never shipped (b003d1129 redesigned
-			// those badges for the new catalog). Port it together with the catalog rewrite.
+			// those badges for the new catalog). Port it together with the badge redesign.
 			WEP_T2.classes = new Class<?>[]{
 					Shortsword.class,
 					HandAxe.class,

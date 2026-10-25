@@ -32,7 +32,7 @@ import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ui.Component;
 
 /**
- * Prototype sphere-grid screen for the Keybearer (build-craft spine) — the hybrid grid's UI.
+ * Prototype sphere-grid screen for the Keybearer (build-craft spine), the hybrid grid's UI.
  *
  * Two layers meet here. Every node is one of:
  *  - LOCKED   -> spend persistent {@code Insight} to unlock it forever ({@link SphereGridProgress})
@@ -67,8 +67,8 @@ public class WndSphereGrid extends Window {
 		add(status);
 
 		// The node list lives in a ScrollPane clamped to the ui camera, so a growing grid
-		// (keystones, tier-IIIs, future branches) can never push nodes — or the close
-		// button — off-screen. Buttons inside a scroll area keep their own onClick but
+		// (keystones, tier-IIIs, future branches) can never push nodes (or the close
+		// button) off-screen. Buttons inside a scroll area keep their own onClick but
 		// must NOT block the pointer signal, or drag-to-scroll dies and (because the
 		// button's PointerArea is registered after the pane's and wins the stack-mode
 		// dispatch) the pane never sees the touch at all: the TalentButton/QuickRecipe
@@ -148,12 +148,12 @@ public class WndSphereGrid extends Window {
 			return "_" + node.name() + "_  (" + eff + ")  ✓";
 		}
 		if (!unlocked) {
-			return node.name() + "  (" + eff + ")  — unlock: " + SphereGridProgress.unlockCost(node) + " Insight";
+			return node.name() + "  (" + eff + ")  - unlock: " + SphereGridProgress.unlockCost(node) + " Insight";
 		}
 		if (!grid.prerequisiteMet(node)) {
-			return node.name() + "  (" + eff + ")  — needs " + node.requires + " active";
+			return node.name() + "  (" + eff + ")  - needs " + node.requires + " active";
 		}
-		return node.name() + "  (" + eff + ")  — activate: " + node.cost + "pt";
+		return node.name() + "  (" + eff + ")  - activate: " + node.cost + "pt";
 	}
 
 	private static String effectName(SphereNode.Effect e) {

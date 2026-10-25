@@ -24,12 +24,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * HP clamp, relocation). The fix makes the comparison inclusive ({@code HP <= HT/2}).
  *
  * Headless caveat: the teleport branch ends in ScrollOfTeleportation.appear(), whose
- * first statement dereferences the fist's sprite — absent in this harness — so ENTERING
+ * first statement dereferences the fist's sprite (absent in this harness), so ENTERING
  * the branch throws an NPE here. The tests therefore assert on the branch's pre-teleport
  * side effects (Blindness prolonged on the hero for the Bright fist; the hero's Light
  * buff detached for the Dark fist; the HP clamp to HT/2), swallowing exactly that NPE.
  * On unfixed code the exactly-half hit never enters the branch, none of those side
- * effects happen, and the boundary tests fail — verified red before the fix landed.
+ * effects happen, and the boundary tests fail; verified red before the fix landed.
  */
 class YogFistTeleportPortTest {
 
@@ -81,7 +81,7 @@ class YogFistTeleportPortTest {
 		Hero hero = installLevelAndHero();
 		YogFist fist = HeadlessLevel.at(new YogFist.BrightFist(), FIST_CELL);
 
-		// HT is 300; a 150 hit lands it at exactly HT/2 — the boundary the fix covers
+		// HT is 300; a 150 hit lands it at exactly HT/2, the boundary the fix covers
 		damageSwallowingHeadlessTeleportNPE(fist, fist.HT / 2);
 
 		assertTrue(fist.isAlive(), "a half-HP hit must not kill the fist");

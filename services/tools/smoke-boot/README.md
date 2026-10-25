@@ -1,7 +1,7 @@
 # smoke-boot
 
 Headless Android smoke-boot: boots a debug APK in an Android emulator and
-confirms the app process is alive. This is **not** a full playthrough check —
+confirms the app process is alive. This is **not** a full playthrough check:
 it does not click through menus, load a save, or verify any gameplay. It only
 confirms the process survives 10 seconds after `am start`, which is enough to
 catch the class of failure this tool exists for: native crash on launch,
@@ -44,7 +44,7 @@ Both scripts default to:
 - SDK packages installed: `platform-tools`, `emulator`, and at least one
   system image with a matching AVD (see "Creating the AVD" below).
 - `build-tools` containing `aapt2` (used for auto-detecting the package id
-  and launchable activity out of the APK — see "Why auto-detection" below).
+  and launchable activity out of the APK, see "Why auto-detection" below).
 - Hardware acceleration for the emulator (WHPX on Windows, HAXM on older
   Windows/macOS Intel, KVM on Linux). Without it the emulator either refuses
   to boot or is too slow to hit the default 120s timeout.
@@ -57,10 +57,10 @@ avdmanager create avd --name cpdu-smoke --package "system-images;android-33;goog
 ```
 
 `sdkmanager`/`avdmanager` under `cmdline-tools/latest/bin` require a JDK 17+
-runtime — on this machine the default `java` on PATH was JDK 8, which fails
+runtime. On this machine the default `java` on PATH was JDK 8, which fails
 with `UnsupportedClassVersionError`. Fix by setting `JAVA_HOME` to a JDK 17+
 install (e.g. `C:\Program Files\Microsoft\jdk-17.x-hotspot`) before invoking
-`sdkmanager`/`avdmanager`. The smoke-boot scripts themselves don't need Java —
+`sdkmanager`/`avdmanager`. The smoke-boot scripts themselves don't need Java,
 only initial AVD/system-image setup does.
 
 ## Why auto-detection (package/activity)
@@ -83,21 +83,21 @@ Both scripts were run end-to-end against a real debug APK
 (`android/build/outputs/apk/debug/android-debug.apk`) on the `cpdu-smoke` AVD
 (Pixel device, API 33, google_apis x86_64, WHPX acceleration):
 
-- `smoke-boot.ps1`: **PASS** — boot, install, launch, and pidof check all
+- `smoke-boot.ps1`: **PASS**: boot, install, launch, and pidof check all
   succeeded (pid 3367 observed alive 10s post-launch). Emulator killed
   cleanly on exit.
-- `smoke-boot.sh`: **PASS** — same sequence, cold boot completed in ~35s
+- `smoke-boot.sh`: **PASS**: same sequence, cold boot completed in ~35s
   (`Boot completed in 35130 ms`), pid 2328 observed alive. Emulator killed
   cleanly on exit.
 
 Environment notes from getting to a working state on this machine:
 - The SDK initially had no `emulator` package and no system images installed
-  (only `build-tools`, `cmdline-tools`, `platform-tools`, `platforms`) — both
+  (only `build-tools`, `cmdline-tools`, `platform-tools`, `platforms`), so both
   had to be installed via `sdkmanager` before any AVD could be created.
 - `sdkmanager`/`avdmanager` failed with `UnsupportedClassVersionError` until
   `JAVA_HOME` was pointed at the machine's already-installed JDK 17 (it was
   present but not what `java` on PATH resolved to).
-- No HAXM/Hyper-V blockers were hit — WHPX acceleration was already usable
+- No HAXM/Hyper-V blockers were hit; WHPX acceleration was already usable
   (`emulator -accel-check` reported `WHPX(10.0.26200) is installed and
   usable`).
 

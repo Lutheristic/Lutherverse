@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Play-tests the run-scoped Keybearer sphere grid at the logic level (no libGDX, no GUI):
  * point allocation, prerequisite gating, no double-spend, aggregate build levels, and the
- * save/restore roundtrip. The Bundle roundtrip is the highest-risk part — it is the actual
+ * save/restore roundtrip. The Bundle roundtrip is the highest-risk part, it is the actual
  * save path a real run would take, exercised here through Bundle.write/read.
  *
  * Magnitudes/costs asserted below track SphereNode: ATTUNEMENT(MIGHT,1), MIGHT_I(MIGHT,1),
@@ -155,12 +155,12 @@ class SphereGridTest {
 		assertTrue(g.activate(SphereNode.EMBER_II));
 		assertTrue(g.activate(SphereNode.FROST_I));
 		assertTrue(g.activate(SphereNode.FROST_II));
-		// Two of three element branches deep — the keystone must stay locked.
+		// Two of three element branches deep: the keystone must stay locked.
 		assertFalse(g.prerequisiteMet(SphereNode.ELEMENTAL_CONFLUX));
 		assertFalse(g.activate(SphereNode.ELEMENTAL_CONFLUX));
 		assertTrue(g.activate(SphereNode.STORM_I));
 		assertTrue(g.activate(SphereNode.STORM_II));
-		// All three — now it opens.
+		// All three: now it opens.
 		assertTrue(g.prerequisiteMet(SphereNode.ELEMENTAL_CONFLUX));
 		assertTrue(g.activate(SphereNode.ELEMENTAL_CONFLUX));
 	}

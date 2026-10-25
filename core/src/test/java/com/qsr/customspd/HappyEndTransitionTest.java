@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Upstream d029c0d7d (pulled forward in e8d9c32d6): reaching the surface with the Amulet records the
+ * Upstream d029c0d7d (pulled forward in ebdd0db43): reaching the surface with the Amulet records the
  * win once, at the transition. Hero.actTransition (upstream's SewerLevel.activateTransition) switches
  * to SurfaceScene with a SceneChangeCallback whose afterCreate runs validateHappyEnd, Dungeon.win,
  * deleteGame and saveGlobal, in that order. Game.switchScene() runs that callback once and clears it,

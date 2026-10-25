@@ -13,9 +13,9 @@ import java.util.function.BooleanSupplier;
 
 /**
  * F5 test foundation: drives the REAL actor schedule turn by turn, on the test thread. Each
- * {@link #step()} makes the same choice Actor.process makes — the earliest actor in Actor's
+ * {@link #step()} makes the same choice Actor.process makes: the earliest actor in Actor's
  * own (insertion-ordered) scheduling set, a higher actPriority winning a tie, the first one
- * met winning a full tie — sets Actor.now / current the way it does, and calls that actor's
+ * met winning a full tie, sets Actor.now / current the way it does, and calls that actor's
  * act(). What it leaves out is only the threading: no wait for sprite motion, no
  * wait/notify hand-off to the render thread, no Game.switchingScene() check.
  *

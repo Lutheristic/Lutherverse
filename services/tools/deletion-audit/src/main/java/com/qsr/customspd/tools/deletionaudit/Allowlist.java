@@ -15,7 +15,7 @@ import java.util.Set;
  * above it recording who accepted it and why.
  *
  * <p>Without this, the tool reports the same reviewed removals on every run and
- * gets ignored — which is how the previous gates died.
+ * gets ignored, which is how the previous gates died.
  */
 public final class Allowlist {
 

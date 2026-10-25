@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 /**
  * F3 integration tests: the storm keyblade's arc on a REAL level (HeadlessLevel fixture).
  * The headless combat tests prove the arc is level-null safe; these prove the arc's actual
- * targeting semantics — fixed NEIGHBOURS8 scan order (determinism), strict ENEMY alignment
+ * targeting semantics: fixed NEIGHBOURS8 scan order (determinism), strict ENEMY alignment
  * (bystander safety), edge behaviour (no row wrap), and the end-to-end proc damage.
  */
 class StormArcLevelTest {

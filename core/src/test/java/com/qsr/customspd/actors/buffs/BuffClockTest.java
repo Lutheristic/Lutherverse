@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *    exactly TICK, expiry after DURATION (8) ticks (F1 + F3: acts run on a real
  *    HeadlessLevel because Burning.act() dereferences Dungeon.level.flamable/water).
  *  - Water extinguishing: Burning.act() detaches when the target stands in water and is
- *    not flying — and, deliberately, only AFTER that tick's damage has landed.
+ *    not flying and, deliberately, only AFTER that tick's damage has landed.
  *  - The Burning/Chill mutual exclusion, in both attach directions.
  *  - F2: a mid-duration Burning survives a real Bundle write/read with its remaining
  *    'left' intact (both the raw save-format keys and the resumed behaviour).

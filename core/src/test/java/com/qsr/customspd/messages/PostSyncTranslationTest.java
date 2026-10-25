@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Keys the cpdu-fz84 v2.5.4 translation sync could not see when it ran, because CPDU's English for
- * them was wrong or missing at the snapshot it was computed against (fd96ad582). Each was fixed in
+ * them was wrong or missing at the snapshot it was computed against (9dc90bfbd). Each was fixed in
  * English afterwards, so the sync's own rule now selects it; these pin the result in every language.
  *
  * TranslationPlaceholderTest cannot catch these: a stale translation with the same placeholders as
@@ -77,9 +77,9 @@ class PostSyncTranslationTest {
 	}
 
 	/**
-	 * v2.5.4 (4ad161622 in CPDU) added a closing paragraph to the barkskin description: only the
+	 * v2.5.4 (5674c52ed in CPDU) added a closing paragraph to the barkskin description: only the
 	 * strongest of several barkskin sources applies. The English was split across two physical lines
-	 * until a0a54ce9f, so the sync read it as different from v2.5.4 and left every translation on the
+	 * until 804f76ac3, so the sync read it as different from v2.5.4 and left every translation on the
 	 * v2.1.0 text, one paragraph short. Every language must tell the player the stacking rule.
 	 */
 	@Test
@@ -142,7 +142,7 @@ class PostSyncTranslationTest {
 
 	/**
 	 * Char.attack (upstream 1466dea4b, v2.5.0) floats Messages.get(CombinedLethalityAbilityTracker
-	 * .class, "executed") over an enemy Combined Lethality executes. CPDU took the code (6426be57e)
+	 * .class, "executed") over an enemy Combined Lethality executes. CPDU took the code (6d4323214)
 	 * but kept only v2.1.0's key, talent$combinedlethalitytriggertracker.executed, so the text read
 	 * "java.lang.object.executed".
 	 */

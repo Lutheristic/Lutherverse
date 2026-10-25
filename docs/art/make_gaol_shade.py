@@ -1,6 +1,6 @@
 from PIL import Image
 
-# 16x16 GaolShade — the Keywraith's crueler kin: same hooded-spectre silhouette,
+# 16x16 GaolShade, the Keywraith's crueler kin: same hooded-spectre silhouette,
 # but a sickly green-grey palette and a small gold coin-pouch glint at the waist
 # where the Keywraith carries its key.
 #   X outline  H hood  h hood-highlight  F face-void  e eye-glint

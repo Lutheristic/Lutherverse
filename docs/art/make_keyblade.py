@@ -23,7 +23,7 @@ MAP = [
 ]
 
 PALETTES = {
-    "keyblade": {  # fire — gold blade, ember accents
+    "keyblade": {  # fire: gold blade, ember accents
         "X": (34, 20, 10, 255),
         "#": (196, 132, 46, 255), "=": (244, 208, 106, 255),
         "G": (200, 120, 30, 255), "g": (150, 84, 20, 255),
@@ -31,7 +31,7 @@ PALETTES = {
         "H": (110, 60, 28, 255),
         "C": (255, 106, 43, 255), "c": (255, 210, 74, 255),
     },
-    "frost_keyblade": {  # frost — icy blade, cyan accents
+    "frost_keyblade": {  # frost: icy blade, cyan accents
         "X": (18, 30, 40, 255),
         "#": (120, 190, 220, 255), "=": (214, 242, 251, 255),
         "G": (90, 160, 200, 255), "g": (52, 104, 140, 255),
@@ -39,7 +39,7 @@ PALETTES = {
         "H": (39, 74, 90, 255),
         "C": (150, 224, 255, 255), "c": (255, 255, 255, 255),
     },
-    "storm_keyblade": {  # storm — violet blade, electric gold accents
+    "storm_keyblade": {  # storm: violet blade, electric gold accents
         "X": (26, 18, 42, 255),
         "#": (140, 110, 220, 255), "=": (208, 190, 255, 255),
         "G": (110, 80, 190, 255), "g": (70, 48, 130, 255),

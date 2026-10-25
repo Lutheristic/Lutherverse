@@ -65,7 +65,7 @@ public final class DeletionAuditCli {
      *
      * <p>{@code gradle run} sets the JVM's working directory to the subproject, so
      * a repo-root-relative path passed on the command line would not exist and the
-     * allowlist would load empty — silently reporting every reviewed removal again.
+     * allowlist would load empty, silently reporting every reviewed removal again.
      * This is the same defect class that made api-diff scan zero files.
      */
     private static Path resolveAgainstRepoRoot(Path path) throws IOException {

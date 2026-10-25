@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Wardstone Sentinel — the animated lock-golem. Verifies the designed depth-6 Prison stat
+ * Wardstone Sentinel: the animated lock-golem. Verifies the designed depth-6 Prison stat
  * line (slow, heavily armored), the damage band, and that the armor band ({@code drRoll})
  * is real: it must floor at the ward's minimum, not at zero.
  */
@@ -36,11 +36,11 @@ class WardstoneSentinelTest {
 			WardstoneSentinel w = new WardstoneSentinel();
 			assertEquals(30, w.HT, "designed Prison-band HP");
 			assertEquals(6, w.EXP);
-			assertEquals(13, w.maxLvl, "Prison band — must stop paying out where Caves mobs take over");
+			assertEquals(13, w.maxLvl, "Prison band, must stop paying out where Caves mobs take over");
 			assertEquals(0.75f, w.speed(), 0.001f,
-					"unbuffed speed() is baseSpeed — the golem grinds at three-quarter speed");
+					"unbuffed speed() is baseSpeed, the golem grinds at three-quarter speed");
 			assertTrue(w.properties().contains(Char.Property.INORGANIC),
-					"animated stone — bleed/poison-class effects must treat it as inorganic");
+					"animated stone, bleed/poison-class effects must treat it as inorganic");
 		} finally {
 			Dungeon.hero = prevHero;
 		}
@@ -49,7 +49,7 @@ class WardstoneSentinelTest {
 	@Test
 	void damageRollStaysInTheDesignedBandAndSpansIt() {
 		// Bounds + coverage: 200 seeded rolls must stay in [4,8] AND actually reach both
-		// endpoints — a mis-implementation that quietly narrows the band (e.g. wrong
+		// endpoints: a mis-implementation that quietly narrows the band (e.g. wrong
 		// min/max argument) passes a bounds-only check but fails the coverage half.
 		WardstoneSentinel w = new WardstoneSentinel();
 		boolean sawMin = false, sawMax = false;
@@ -71,8 +71,8 @@ class WardstoneSentinelTest {
 	@Test
 	void armorBandIsRealAndFloorsAboveZero() {
 		// The mechanic IS the armor: with no buffs, super.drRoll() contributes 0, so the
-		// ward band [2,6] is the whole roll. Every roll must clear the ward's floor (2) —
-		// a zero would mean the armor silently vanished — and stay under a sanity ceiling
+		// ward band [2,6] is the whole roll. Every roll must clear the ward's floor (2):
+		// a zero would mean the armor silently vanished, and stay under a sanity ceiling
 		// of 10 (band max 6 + generous headroom for any future super contribution).
 		WardstoneSentinel w = new WardstoneSentinel();
 		boolean sawPositive = false;
@@ -87,7 +87,7 @@ class WardstoneSentinelTest {
 		} finally {
 			Random.popGenerator();
 		}
-		assertTrue(sawPositive, "the armor must be real — some roll must exceed 0");
+		assertTrue(sawPositive, "the armor must be real, some roll must exceed 0");
 	}
 
 	@Test

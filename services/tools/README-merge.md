@@ -1,6 +1,6 @@
 # Merge and diff tooling
 
-Two external binaries that make the upstream sync cheaper. Neither is a build dependency —
+Two external binaries that make the upstream sync cheaper. Neither is a build dependency:
 they are developer tools, and the repo builds fine without them.
 
 ## Why
@@ -19,7 +19,7 @@ winget install --id Wilfred.difftastic
 
 Verified 2026-08-10: Mergiraf 0.16.3, Difftastic 0.69.0.
 
-## Configure (per clone — `.gitattributes` alone is not enough)
+## Configure (per clone, `.gitattributes` alone is not enough)
 
 ```
 git config merge.mergiraf.name "mergiraf syntax-aware merge"
@@ -29,10 +29,10 @@ git config diff.difftastic.command difft
 
 `.gitattributes` already maps `*.java`, `*.kt`, `*.kts`, `*.json`, `*.xml` and `*.properties`
 to `merge=mergiraf`. **Without the local `git config` above, git silently falls back to the
-default merge** — a fresh clone gets ordinary behaviour rather than an error, which is the
+default merge**. A fresh clone gets ordinary behaviour rather than an error, which is the
 safe failure but also an easy one to not notice.
 
-Mergiraf works with `merge`, `rebase`, `cherry-pick` and `revert` — all four porting verbs.
+Mergiraf works with `merge`, `rebase`, `cherry-pick` and `revert`, all four porting verbs.
 
 ## Validation performed before adopting
 
@@ -43,7 +43,7 @@ Three-way merge, both sides adding a different method to the same class:
 | `git merge-file` | exit 1, one conflict, `<<<<<<<` markers |
 | `mergiraf merge` | exit 0, clean, both methods present and correctly placed |
 
-Do the same A/B on a real already-ported batch before trusting it on new work — re-run a
+Do the same A/B on a real already-ported batch before trusting it on new work: re-run a
 finished integration and compare conflict counts. A structural merge that resolves
 *incorrectly* is worse than a conflict you can see.
 
@@ -60,7 +60,7 @@ git -c diff.external=difft show <sha>
 git -c diff.external=difft diff <range>
 ```
 
-Left unset as the default `diff.external` deliberately — it changes every `git diff` in the
+Left unset as the default `diff.external` deliberately, since it changes every `git diff` in the
 repo, and scripts that parse diff output would break. Opt in per command.
 
 ## Also enabled

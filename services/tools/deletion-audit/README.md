@@ -23,8 +23,8 @@ missing allowlist file.
 
 ## Reading the output
 
-- `DELETED` — a callable present at base and absent at head.
-- `SHRUNK` — a callable that kept its signature but whose body lost `--min-shrink`
+- `DELETED`: a callable present at base and absent at head.
+- `SHRUNK`: a callable that kept its signature but whose body lost `--min-shrink`
   or more statements.
 
 Both are a **review queue, not a verdict**. Integration work legitimately removes
@@ -42,20 +42,20 @@ Expect these legitimate patterns to show up as findings:
 
 The moved-file case was a **tool limitation**: without rename detection, a moved file
 reported all of its callables as deleted. Fixed via `git diff -M`-based rename mapping
-(`GitCommands.detectRenames`) — a renamed file with unchanged content now compares
+(`GitCommands.detectRenames`): a renamed file with unchanged content now compares
 against its post-rename path instead of an empty inventory, so it produces zero findings.
 The 11 `EntranceRoom`/`ExitRoom` entries below predate the fix and stay allowlisted for
 this historical range; they are not re-derived retroactively.
 
 ## First run, 2026-08-10
 
-Base `7d9c139c8` (Slice 1 start) → HEAD, 1,021 files scanned: **35 deleted, 8 shrunk**.
+Base `4b5b958e4` (Slice 1 start) → HEAD, 1,021 files scanned: **35 deleted, 8 shrunk**.
 Triage classified 27 as legitimate (allowlisted with reasons) and left **16 open review
 items**, of which the two most significant are:
 
-- **`Noisemaker.Trigger`** — the whole `Bundlable` inner class removed. If there is no
+- **`Noisemaker.Trigger`**: the whole `Bundlable` inner class removed. If there is no
   save migration, old saves carrying one fail to restore.
-- **`DM201#act()`** — vent logic moved to a `Hunting` state class, but the old
+- **`DM201#act()`**: vent logic moved to a `Hunting` state class, but the old
   `canVent(enemy.pos)` and non-adjacency guards did not move with it, leaving
   `DM201.canVent` overridden and never called. Invisible to api-diff, since `canVent`
   itself still exists.

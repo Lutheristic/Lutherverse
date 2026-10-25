@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Brawler's Stance as upstream shipped it by v2.5.4:
- *  - c448f9731 (v2.4.0) replaced the per-hit 1/6-charge drain (which CPDU lost in f85e4f3c2 without
+ *  - c448f9731 (v2.4.0) replaced the per-hit 1/6-charge drain (which CPDU lost in 816c2b77c without
  *    porting the replacement, leaving the stance free) with a flat damage bonus and 50% slower
  *    regen-driven weapon charge gain while the buff exists; activation needs no charge.
  *  - 25ef7a59e (v2.4.0) made toggling off only clear {@code active}: the buff lingers, still

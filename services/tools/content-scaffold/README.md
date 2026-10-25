@@ -11,7 +11,7 @@ art, not the wiring. The inverse of `content-audit`.
 ## What it wires
 
 - The class stub (`actors/mobs/<Name>.java` or `items/<Name>.java`) and, for mobs, a sprite
-  class (`sprites/<Name>Sprite.java`) — with the mechanic left as `// TODO`.
+  class (`sprites/<Name>Sprite.java`), with the mechanic left as `// TODO`.
 - A `GeneralAsset` entry + a placeholder magenta PNG (mobs: `sprites/chars/`, items: `sprites/items/`).
 - Localization keys in `actors.properties` / `items.properties`.
 - Registration: mobs into `dungeon.json`'s `bestiary` at `--depth`; items into `Generator.Category.<cat>`.

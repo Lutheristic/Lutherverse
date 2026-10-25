@@ -1,6 +1,6 @@
 from PIL import Image
 
-# 16x16 Wardstone Sentinel — a squat granite lock-golem: grey-blue stone slab body,
+# 16x16 Wardstone Sentinel: a squat granite lock-golem: grey-blue stone slab body,
 # carved gold keyhole glyph in the chest, cracked top-right corner, stubby legs.
 #   X outline  S stone  s stone-shadow  t stone-highlight  C crack
 #   K keyhole-gold  k gold-glint  o keyhole-void  . transparent

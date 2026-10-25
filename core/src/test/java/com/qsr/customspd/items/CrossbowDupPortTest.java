@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * Dart.info() used to hide an unidentified equipped crossbow's level by reading
  * {@code bow.level()}, calling {@code bow.level(0)}, and restoring with the read value. But
  * {@link com.qsr.customspd.items.weapon.Weapon#level()} adds the curse-infusion bonus on read
- * while {@code level(int)} writes the raw level — so every info() call on a dart permanently
+ * while {@code level(int)} writes the raw level, so every info() call on a dart permanently
  * baked the bonus into the crossbow's true level (a free upgrade per inspection). The fix swaps
  * in a temporary Crossbow for the IDing render instead of mutating the real one.
  */

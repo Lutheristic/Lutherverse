@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Warden's Sigil — the STONE-pool lock-stone. Verifies the pool contract (Runestone,
+ * Warden's Sigil, the STONE-pool lock-stone. Verifies the pool contract (Runestone,
  * stackable, identified, priceable) and the aimed-vs-splash asymmetry on a REAL level
  * (HeadlessLevel fixture): the direct target may be ANY char because the player aimed
  * the throw, while the passive splash is strictly ENEMY-only so neutral NPCs standing
@@ -94,7 +94,7 @@ class WardensSigilTest {
 		activate(new WardensSigil(), cell);
 
 		assertNotNull(neutral.buff(Cripple.class),
-				"the player aimed at it — a neutral char ON the cell is fair game");
+				"the player aimed at it, a neutral char ON the cell is fair game");
 	}
 
 	@Test

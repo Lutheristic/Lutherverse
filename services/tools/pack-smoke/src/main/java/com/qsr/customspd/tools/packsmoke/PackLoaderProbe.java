@@ -14,7 +14,7 @@ import java.util.List;
  *
  * <p>This is deliberately NOT a runtime probe: it never invokes the CPD game
  * runtime (that requires the full game classpath, out of scope for Sub-B
- * Slice 0 — see Slice 7 for the runtime-boot upgrade). It only verifies that
+ * Slice 0; see Slice 7 for the runtime-boot upgrade). It only verifies that
  * a pack's {@code mod_info.json} manifest parses, declares the required
  * fields, and that every asset path the manifest declares actually exists
  * on disk under the pack directory.
@@ -69,7 +69,7 @@ public final class PackLoaderProbe {
     /**
      * Structurally validates the pack rooted at {@code packPath}: does its
      * manifest parse and declare the required fields, and do all assets it
-     * declares exist on disk. Never throws — any unexpected failure is
+     * declares exist on disk. Never throws; any unexpected failure is
      * reported as {@link Status#FAILED_LOAD_EXCEPTION} in the returned
      * {@link Result} rather than propagated to the caller.
      */

@@ -6,7 +6,7 @@
     Nothing in this repo could answer "did we port all of it". api-diff compares the API
     surface, deletion-audit finds removals with no upstream reference, and git range-diff
     cannot pair the commits because the namespaces differ. The gap is real and it has already
-    cost: 874e49851 "restore CorpseDust.actions() override dropped during Slice 1" was an
+    cost: 113e5482b "restore the CorpseDust.actions() override lost in Slice 1" was an
     upstream hunk that vanished during porting with nothing to catch it.
 
     Method: take the lines an upstream commit ADDED, map each upstream path to its CPDU

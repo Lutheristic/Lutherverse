@@ -12,7 +12,7 @@ Licensed under the GNU General Public License, version 3 (GPLv3).
 
 Source: https://github.com/00-Evan/shattered-pixel-dungeon
 
-CustomPixelDungeonUltimate takes its base game logic — dungeons, mobs, items, heroes, level generation, save format, art, music, sound — from Shattered Pixel Dungeon. Any modification we make to files originating in Shattered Pixel Dungeon is itself GPLv3.
+CustomPixelDungeonUltimate takes its base game logic (dungeons, mobs, items, heroes, level generation, save format, art, music, sound) from Shattered Pixel Dungeon. Any modification we make to files originating in Shattered Pixel Dungeon is itself GPLv3.
 
 ---
 
@@ -24,7 +24,7 @@ Licensed under the GNU General Public License, version 3 (GPLv3).
 
 Source: https://github.com/QuasiStellar/custom-pixel-dungeon
 
-CustomPixelDungeonUltimate is a fork of Custom Pixel Dungeon and takes its modding framework — `mod_info.json` manifest schema, marketplace mod-loader, per-mod resource overrides, hero JSON merge semantics — from it. Any modification we make to that framework, and any extension we add on top of it, is itself GPLv3.
+CustomPixelDungeonUltimate is a fork of Custom Pixel Dungeon and takes its modding framework (`mod_info.json` manifest schema, marketplace mod-loader, per-mod resource overrides, hero JSON merge semantics) from it. Any modification we make to that framework, and any extension we add on top of it, is itself GPLv3.
 
 ---
 
@@ -60,7 +60,7 @@ Licensed under the GNU General Public License, version 2 with the Classpath Exce
 
 Source: https://github.com/MobiVM/robovm
 
-The `:ios` Gradle module targets RoboVM/MobiVM. CustomPixelDungeonUltimate ships no iOS build — this notice is retained for accuracy of the codebase inheritance.
+The `:ios` Gradle module targets RoboVM/MobiVM. CustomPixelDungeonUltimate ships no iOS build; this notice is retained for accuracy of the codebase inheritance.
 
 ---
 

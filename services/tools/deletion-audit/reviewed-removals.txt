@@ -1,4 +1,4 @@
-# Reviewed removals for the Slice 1 integration range (7d9c139c8..HEAD).
+# Reviewed removals for the Slice 1 integration range (4b5b958e4..HEAD).
 #
 # One TypeName#signature key per line. The comment above each block records why
 # the removal is legitimate and when it was reviewed. Anything NOT in this file
@@ -175,8 +175,8 @@ Dewdrop#consumeDew(int, Hero, boolean)
 
 # --- Slice 1 tuning batches (66 entries) ---
 # Reviewed 2026-10-24. Each removal is the named upstream hunk, ported under the named issue,
-# checked against the upstream commit, and each was
-# re-mapped here against the merged tree (all 66 findings of the merged run, no others).
+# checked against the upstream commit, and re-mapped here against the merged tree (all 66
+# findings of the merged run, no others).
 # upstream 3aab64684 (cpdu-79f): Badge.meta replaced by Badge.type (BadgeType); the boolean-meta
 # constructor gives way to the BadgeType one.
 Badges.Badge#Badge(Asset, boolean)

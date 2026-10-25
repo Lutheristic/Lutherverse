@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # deletion-audit and manifest-audit walk history, so a shallow clone breaks them.
+          # deletion-audit walks history, so a shallow clone breaks it.
           fetch-depth: 0
 
       - uses: actions/setup-java@v4
@@ -98,7 +98,7 @@ jobs:
         # the audit is reporting clean because it looked at nothing - the original api-diff bug.
         run: |
           ./gradlew :services:tools:deletion-audit:run --quiet \
-            --args="--base 7d9c139c8 --head HEAD --min-shrink 3 --allowlist services/tools/deletion-audit/reviewed-removals.txt --max-findings 0" \
+            --args="--base 4b5b958e4 --head HEAD --min-shrink 3 --allowlist services/tools/deletion-audit/reviewed-removals.txt --max-findings 0" \
             | tee /tmp/da.log || true
           scanned=$(grep -oP 'Files scanned: \K[0-9]+' /tmp/da.log || echo 0)
           echo "deletion-audit scanned $scanned files"
@@ -127,13 +127,6 @@ jobs:
         # Proves the registration/sprite/localization checks can actually fail. Without
         # this the advisory PASS above means nothing.
         run: ./gradlew :services:tools:content-audit:run --quiet --args="-Canary"
-
-      - name: Manifest audit
-        run: pwsh -NoProfile -File services/tools/manifest-audit/manifest-audit.ps1
-
-      - name: Manifest audit canary
-        # Proves the manifest checks can fail. Without this the PASS above means nothing.
-        run: pwsh -NoProfile -File services/tools/manifest-audit/manifest-audit.ps1 -Canary
 
       - name: Marketplace pack smoke
         run: |

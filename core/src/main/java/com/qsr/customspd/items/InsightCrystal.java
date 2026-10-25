@@ -12,13 +12,13 @@ import com.qsr.customspd.items.stones.Runestone;
 import com.qsr.customspd.utils.GLog;
 
 /**
- * Insight Crystal — a runestone-pool item that feeds the Keybearer's PERSISTENT
+ * Insight Crystal: a runestone-pool item that feeds the Keybearer's PERSISTENT
  * meta-progression from the dungeon floor: shattering it (throw, like any runestone)
  * grants {@link SphereGridProgress} Insight that survives the run. Until now Insight
  * only trickled from XP; this makes exploration itself pay into the build-craft spine,
  * and it is the first ITEM shipped end-to-end through the content-scaffold pipeline.
  *
- * The grant goes through the persistent layer regardless of hero class — a non-Keybearer
+ * The grant goes through the persistent layer regardless of hero class: a non-Keybearer
  * finding one banks Insight for their future Keybearer runs (deliberate: meta-currency).
  */
 public class InsightCrystal extends Runestone {

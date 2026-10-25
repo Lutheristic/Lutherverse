@@ -11,13 +11,13 @@ import com.qsr.customspd.sprites.HexwardMothSprite;
 import com.watabou.utils.Random;
 
 /**
- * HexwardMoth — a plump moth shedding disorienting ward-dust (original Lutherverse mob,
+ * HexwardMoth: a plump moth shedding disorienting ward-dust (original Lutherverse mob,
  * produced through the content-scaffold pipeline). Its wings are speckled with pale
  * hex-runes; every landed hit shakes loose a puff of that dust and sends the victim
  * reeling ({@link Vertigo}).
  *
  * Depth-4 stat line: fragile and low-damage, but it flies and its touch scrambles your
- * footing — the design lever is the Vertigo proc, not the numbers.
+ * footing. The design lever is the Vertigo proc, not the numbers.
  */
 public class HexwardMoth extends Mob {
 

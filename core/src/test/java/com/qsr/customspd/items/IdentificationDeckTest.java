@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *    every previously mapped item must keep its exact label. A broken fallback would either
  *    crash old saves on update or shuffle appearances mid-run.
  *  - The Generator's deck probs / per-category seed / dropped counter must survive a save such
- *    that the post-load draw sequence is IDENTICAL to a run that never saved — the deck system's
+ *    that the post-load draw sequence is IDENTICAL to a run that never saved, the deck system's
  *    whole reason for existing (consistent drops regardless of when they occur).
  *
  * Statics discipline: Generator.Category state (probs/seed/dropped, plus the private
@@ -86,7 +86,7 @@ class IdentificationDeckTest {
 
 	@AfterEach
 	void restoreGeneratorState() {
-		// restoreFromBundle internally runs fullReset(), which consumes RNG — keep it seeded.
+		// restoreFromBundle internally runs fullReset(), which consumes RNG, so keep it seeded.
 		Random.pushGenerator(0xC0FFEEL);
 		try {
 			Generator.restoreFromBundle(savedGeneratorBundle);
@@ -265,7 +265,7 @@ class IdentificationDeckTest {
 						"previously mapped " + cls.getSimpleName() + " must keep its exact label");
 			}
 		}
-		// 11 restored items reclaim their labels from the pool, so exactly one label is left —
+		// 11 restored items reclaim their labels from the pool, so exactly one label is left:
 		// the one the missing item used to have. A fallback that failed to prune the pool would
 		// deal an already-used label here (breaking the bijection) instead.
 		assertEquals(healingLabel, restored.label(PotionOfHealing.class),
@@ -371,7 +371,7 @@ class IdentificationDeckTest {
 
 			List<Class<?>> replayed = drawPotions(6);
 			assertEquals(control, replayed,
-					"post-load draws must match a run that never saved — the deck guarantee");
+					"post-load draws must match a run that never saved, the deck guarantee");
 		} finally {
 			Random.popGenerator();
 		}
@@ -395,7 +395,7 @@ class IdentificationDeckTest {
 				counts.put(drawn, prev == null ? 1 : prev + 1);
 			}
 
-			// One full cycle must deal every potion exactly its weight — the deck is a deal,
+			// One full cycle must deal every potion exactly its weight: the deck is a deal,
 			// not an independent roll. Any seed satisfies this; a regression to pure weighted
 			// rolls would fail it almost surely.
 			for (int i = 0; i < cat.classes.length; i++) {

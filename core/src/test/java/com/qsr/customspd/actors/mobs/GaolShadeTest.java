@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * GaolShade — the Keywraith's crueler kin. Verifies the filled-in mechanic (the gold-tribute
+ * GaolShade: the Keywraith's crueler kin. Verifies the filled-in mechanic (the gold-tribute
  * proc: a fixed cut per damaging hit, capped by what the hero carries, never below zero),
  * the depth-7 stat line, and the wiring the scaffold claims to have done (sprite asset
  * resolvable on disk).
@@ -31,18 +31,18 @@ class GaolShadeTest {
 		GaolShade s = new GaolShade();
 		assertEquals(22, s.HT, "designed HP band (Prison tier, above the Keywraith)");
 		assertEquals(7, s.EXP);
-		assertEquals(14, s.maxLvl, "Prison band — a depth-7 mob, one tier above the Keywraith");
+		assertEquals(14, s.maxLvl, "Prison band, a depth-7 mob, one tier above the Keywraith");
 		assertTrue(s.lootChance > 0, "the tax-collector hoards tribute (gold loot)");
 		assertTrue(s.properties().contains(com.qsr.customspd.actors.Char.Property.UNDEAD),
 				"it is described as undead, so holy damage must treat it as one");
 		assertTrue(s.properties().contains(com.qsr.customspd.actors.Char.Property.INORGANIC),
-				"a spectre has no flesh — bleed/poison-style effects must not apply");
+				"a spectre has no flesh, bleed/poison-style effects must not apply");
 	}
 
 	@Test
 	void damageRollStaysInTheDesignedBandAndSpansIt() {
 		// Bounds + coverage: 200 seeded rolls must stay in [3,7] AND actually reach both
-		// endpoints — a mis-implementation that quietly narrows the band (e.g. wrong
+		// endpoints: a mis-implementation that quietly narrows the band (e.g. wrong
 		// min/max argument) passes a bounds-only check but fails the coverage half.
 		GaolShade s = new GaolShade();
 		boolean sawMin = false, sawMax = false;
@@ -88,7 +88,7 @@ class GaolShadeTest {
 			Dungeon.gold = 3;
 
 			new GaolShade().attackProc(hero, 3);
-			assertEquals(0, Dungeon.gold, "the cut is capped by what the hero carries — never negative");
+			assertEquals(0, Dungeon.gold, "the cut is capped by what the hero carries, never negative");
 		} finally {
 			Dungeon.hero = prevHero;
 			Dungeon.gold = prevGold;

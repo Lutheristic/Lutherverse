@@ -20,7 +20,7 @@ import java.io.File;
  * real game code (asset loading now; hero/combat next) without a display.
  *
  * Scope + limits:
- *  - {@code Gdx.gl} is null and there is no GL context — anything touching textures/rendering
+ *  - {@code Gdx.gl} is null and there is no GL context, so anything touching textures/rendering
  *    will NPE. This harness covers file / data / logic, NOT rendering.
  *  - Base assets resolve via {@code Gdx.files.internal(...)}, which HeadlessFiles reads relative
  *    to the process working directory; the core:test task sets that to {@code src/main/assets}.

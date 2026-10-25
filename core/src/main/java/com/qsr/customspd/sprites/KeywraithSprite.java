@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  * Keywraith sprite. Frame sizes come from pack config (SpriteSizeConfig), matching every
- * other mob sprite — a mod pack can reskin it with a different frame size. The stock art
+ * other mob sprite, so a mod pack can reskin it with a different frame size. The stock art
  * is a single original 16x16 frame; multi-frame animation is a later increment, so every
  * animation plays frame 0.
  */

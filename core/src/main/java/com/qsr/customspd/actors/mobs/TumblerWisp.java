@@ -15,12 +15,12 @@ import com.watabou.utils.Random;
 import java.util.ArrayList;
 
 /**
- * TumblerWisp — a flittering mote of locksmith's magic (original Lutherverse mob), escaped
+ * TumblerWisp: a flittering mote of locksmith's magic (original Lutherverse mob), escaped
  * from some long-broken mechanism. The moment it is struck it BLINKS: it tumbles to a random
  * free adjacent cell, like a lock pin springing out from under the pick.
  *
  * Depth-2 stat line: paper HP but a high dodge for the Sewers, and the blink means even a
- * landed hit rarely earns a second one in the same spot — the design lever is the
+ * landed hit rarely earns a second one in the same spot. The design lever is the
  * reposition, not the numbers. It flies, so water and grass never pin it down.
  */
 public class TumblerWisp extends Mob {

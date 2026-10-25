@@ -267,7 +267,7 @@ class TranslationPlaceholderTest {
 
 	@Test
 	void theCheckerSeesTheMismatchesItIsMeantToCatch() {
-		// conversion type changed: the e1075f85d EnhancedRings crash
+		// conversion type changed: the e13af36b2 EnhancedRings crash
 		assertNotNull(incompatibility("for %s turns", "für %d Züge"));
 		// a placeholder the code no longer fills: items.rings.ring.identify
 		assertNotNull(incompatibility("You are now familiar enough.", "Es ist ein %s."));

@@ -34,16 +34,16 @@ import com.qsr.customspd.assets.GeneralAsset;
 import com.watabou.utils.PathFinder;
 
 /**
- * Prototype STORM keyblade for the Keybearer — the third element, and the first whose
+ * Prototype STORM keyblade for the Keybearer: the third element, and the first whose
  * identity is spatial: shock ARCS. Where fire stacks damage-over-time and frost plays
  * for control, storm plays for crowds:
  *  - MIGHT nodes add flat melee damage (shared build axis)
  *  - STORM nodes add bonus shock damage on hit, and let the strike arc to an enemy
  *    adjacent to the target ({@link #arcTarget}) for half the storm damage
- *  - Static Discharge (signature ability): burst = stormLevel * abilityLevel — the
+ *  - Static Discharge (signature ability): burst = stormLevel * abilityLevel, the
  *    hybrid storm+ability payoff, mirroring Flame Burst / Rime Shatter
  *  - Conduction (Keybearer): carrying another elemental keyblade while single-wielding
- *    grounds the circuit for bonus damage — the storm analog of Thermal Shock
+ *    grounds the circuit for bonus damage, the storm analog of Thermal Shock
  *
  * The arc picks its target by scanning the defender's neighbours in the fixed
  * PathFinder.NEIGHBOURS8 order (never an unordered collection) so seeded runs reproduce.
@@ -78,14 +78,14 @@ public class StormKeyblade extends MeleeWeapon {
 				// Storm nodes: bonus shock damage on the hit.
 				defender.damage(storm, this);
 			}
-			// Static Discharge (signature ability): burst = stormLevel * abilityLevel — the
+			// Static Discharge (signature ability): burst = stormLevel * abilityLevel, the
 			// hybrid storm+ability payoff, nothing without investing in both.
 			if (grid != null && defender.isAlive()) {
 				int burst = storm * grid.abilityLevel();
 				if (burst > 0) defender.damage(burst, this);
 			}
 			// The arc: storm damage jumps to one enemy adjacent to the target for half the
-			// shock (rounded up). This is the element's identity — fire burns one, frost
+			// shock (rounded up). This is the element's identity: fire burns one, frost
 			// slows one, storm punishes clustering.
 			if (storm > 0) {
 				Char arc = arcTarget(attacker, defender);
@@ -94,7 +94,7 @@ public class StormKeyblade extends MeleeWeapon {
 				}
 			}
 			// Conduction (Keybearer): another elemental keyblade in the pack grounds the
-			// circuit while single-wielding — bonus damage, mirroring Thermal Shock's shape
+			// circuit while single-wielding: bonus damage, mirroring Thermal Shock's shape
 			// (dual-wield's off-hand strike replaces this bonus, exactly like the others).
 			if (defender.isAlive() && attacker instanceof Hero
 					&& ((Hero) attacker).belongings.secondWep == null
@@ -109,7 +109,7 @@ public class StormKeyblade extends MeleeWeapon {
 	/**
 	 * The arc's victim: the first ENEMY standing adjacent to the defender, scanning
 	 * PathFinder.NEIGHBOURS8 in its fixed order (deterministic under seeded runs).
-	 * Strictly Alignment.ENEMY — a passive on-hit proc must never auto-damage neutral
+	 * Strictly Alignment.ENEMY: a passive on-hit proc must never auto-damage neutral
 	 * NPCs (shopkeeper, quest givers) the way an aimed AoE is allowed to. The
 	 * adjacent() check rejects row-wrap at level edges (pos±1 across a row boundary).
 	 * Null when there is no level (headless), no neighbour, or no valid enemy.

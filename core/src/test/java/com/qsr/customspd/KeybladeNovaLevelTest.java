@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * The Keybearer's CLASS ABILITY under integration test — Keyblade Nova activated for real
+ * The Keybearer's CLASS ABILITY under integration test: Keyblade Nova activated for real
  * (through the public ArmorAbility.use entry) on the F3 HeadlessLevel: real ConeAOE over
  * real flag maps, real damage, real dominant-element status, real charge spend. Until the
  * fixture existed only the Nova's pure helpers were testable.
@@ -96,6 +96,6 @@ class KeybladeNovaLevelTest {
 
 		assertTrue(near.HP < 100, "storm Nova still deals its damage");
 		assertNotNull(near.buff(Paralysis.class), "storm-dominant Nova shocks survivors still");
-		assertNull(near.buff(Burning.class), "one dominant element only — no burn from a storm build");
+		assertNull(near.buff(Burning.class), "one dominant element only, no burn from a storm build");
 	}
 }

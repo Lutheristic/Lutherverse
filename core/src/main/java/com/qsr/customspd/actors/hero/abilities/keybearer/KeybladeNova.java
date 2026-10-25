@@ -47,10 +47,10 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Random;
 
 /**
- * Keyblade Nova — the Keybearer's class ability (build-craft spine). A self-centered elemental
+ * Keyblade Nova: the Keybearer's class ability (build-craft spine). A self-centered elemental
  * burst: every nearby enemy takes damage scaled by your sphere-grid investment, then is
  * ignited, chilled, or shocked depending on which element you've specced (one dominant
- * element, so opposing statuses never cancel on a single target). The grid scaling ties the ability to the build — a
+ * element, so opposing statuses never cancel on a single target). The grid scaling ties the ability to the build: a
  * heavier grid means a stronger Nova.
  *
  * The damage scaling ({@link #gridBonus}) is a pure function so it can be unit-tested headless;
@@ -68,10 +68,10 @@ public class KeybladeNova extends ArmorAbility {
 	}
 
 	/**
-	 * Grid-scaled bonus damage — rewards total sphere-grid investment. Pure/testable.
+	 * Grid-scaled bonus damage; rewards total sphere-grid investment. Pure/testable.
 	 *
 	 * DELIBERATE: the Elemental Conflux keystone contributes +1 through EACH element
-	 * accessor, so it is worth +3 here — the Nova is the one effect that draws on all
+	 * accessor, so it is worth +3 here, so the Nova is the one effect that draws on all
 	 * three elements at once, which is exactly what the tri-element keystone celebrates.
 	 * (Single-element weapon procs only ever read their own element, so they see +1.)
 	 */
@@ -84,7 +84,7 @@ public class KeybladeNova extends ArmorAbility {
 	/** The Nova's element. Ties resolve toward the earlier element (deterministic). */
 	public enum Element { EMBER, FROST, STORM }
 
-	/** Dominant element of a build — the heaviest element branch wins. Pure/testable. */
+	/** Dominant element of a build: the heaviest element branch wins. Pure/testable. */
 	public static Element dominantElement(SphereGrid grid) {
 		if (grid == null) return Element.EMBER;
 		int ember = grid.emberLevel(), frost = grid.frostLevel(), storm = grid.stormLevel();

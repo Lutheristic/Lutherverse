@@ -194,7 +194,6 @@ Everything glowed green over an empty cell. So now every gate has to prove it ca
 
 <br>
 
-- **`manifest-audit`** runs seven checks over the manifests that define Slice 1's scope.
 - **Syntax-aware merge tooling** (Mergiraf, difftastic, `git rerere`) for the upstream backlog.
 - **Sub-B Slice 0, 2026-07-22.** `api-diff`, `pack-smoke` and `smoke-boot` tooling, the save-compat scaffolding, and the template later slices are cut from.
 - **Sub-A, 2026-07-21.** The fork itself, with upstream remotes, attribution and licensing docs, and both build paths verified green after a four-layer build-baseline hotfix.
@@ -205,7 +204,7 @@ Everything glowed green over an empty cell. So now every gate has to prove it ca
 
 ## 006 · Where the work is
 
-Short bulletin. The full log is in [project_progress.md](project_progress.md), and the reasoning behind it is in [PROJECT-STATUS.md](PROJECT-STATUS.md).
+Short bulletin. The [CHANGELOG](CHANGELOG.md) has the longer list.
 
 - **Landed:** the Keybearer prototype, with keyblades, dual-wield, the sphere grid, Insight and the five residents above.
 - **Landed from upstream:** most of Slice 1, the catch-up to Shattered v2.5.4. All 23 batches that sat parked since July are worked through: about 245 upstream commits checked, roughly 170 ported, and each of the rest tracked on its own. Also in: the remains and bones catch-up from v2.3.0, the floating-text damage icons, and translations synced to v2.5.4.
@@ -305,12 +304,9 @@ The long-term plan is a "-verse": tonally distinct places reachable from the sam
 ## 011 · Paperwork
 
 - [docs/THEME.md](docs/THEME.md): the theme bible. Pitch, house rules, tone, naming, palette, and which parts are shipped versus planned.
-- [project_progress.md](project_progress.md): running log of what's done, in flight and next, plus open defects.
-- [PROJECT-STATUS.md](PROJECT-STATUS.md): current state, blockers, and the reasoning behind them.
-- [CHANGELOG.md](CHANGELOG.md): every substantive change.
+- [CHANGELOG.md](CHANGELOG.md): notable changes, newest first.
 - [CONTRIBUTING.md](CONTRIBUTING.md): what's accepted right now and how to file a good issue.
 - [Verification and porting tools](services/tools/): most tools have their own README. [Merge and diff tooling](services/tools/README-merge.md) covers upstream porting.
-- Design notes and plans are kept outside the repository.
 - [Assets](docs/assets/): the title card lives here. It's concept art until the real hero art is done.
 
 ---

@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * Only the "wait a turn" branch is exercised: it is the one summon path that returns before
  * touching {@code sprite.finishSummoning()} (an NPE headless), and it is where both ported
- * guards live — the impassable check on the outer condition and the null-guard on the
+ * guards live: the impassable check on the outer condition and the null-guard on the
  * blocker-damage branch (the blocker cell can now legitimately be empty).
  */
 class NecromancerSummonPortTest {

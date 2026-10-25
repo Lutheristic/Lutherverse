@@ -267,4 +267,3 @@ Guardrails:
 - keyblade/Aeon trademark: rename or keep, now that "keyblade" is an in-game noun;
 - how far to take the README's "deep-ones, mythos creatures" direction, given the no-Lovecraft-names rule;
 - whether the binding promises (the bottom is never shown, no codex ever explains it, the story never reaches the answer) are ones to make publicly in the first person.
-

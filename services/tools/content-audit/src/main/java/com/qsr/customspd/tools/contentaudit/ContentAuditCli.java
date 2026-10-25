@@ -58,7 +58,7 @@ public final class ContentAuditCli {
             return;
         }
         if (result.entitiesScanned() < MIN_ENTITIES) {
-            // Reading almost nothing must not read as "all content complete" — the
+            // Reading almost nothing must not read as "all content complete", the
             // same defect class that made api-diff print PASS while scanning zero files.
             System.err.println("Only " + result.entitiesScanned() + " entities scanned (< "
                     + MIN_ENTITIES + ") -- the scan is broken, not clean");

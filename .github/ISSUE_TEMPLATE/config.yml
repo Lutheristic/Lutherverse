@@ -1,11 +1,11 @@
 blank_issues_enabled: false
 contact_links:
   - name: 📖 Project status & roadmap
-    url: https://github.com/luther-rotmg/Lutherverse/blob/main/PROJECT-STATUS.md
-    about: Check current status and roadmap before filing — your question might already be answered.
+    url: https://github.com/luther-rotmg/Lutherverse#006--where-the-work-is
+    about: Check current status and roadmap before filing, your question might already be answered.
   - name: 📜 Changelog
     url: https://github.com/luther-rotmg/Lutherverse/blob/main/CHANGELOG.md
     about: Recent changes and what's shipped.
   - name: 🎨 Design specs
-    url: https://github.com/luther-rotmg/Lutherverse/blob/main/README.md
+    url: https://github.com/luther-rotmg/Lutherverse/blob/main/docs/THEME.md
     about: Sub-project design docs.

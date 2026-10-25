@@ -1,5 +1,6 @@
 package com.qsr.customspd.items;
 
+import com.qsr.customspd.Badges;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.items.bombs.Bomb;
 import com.qsr.customspd.items.food.Food;
@@ -34,14 +35,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Slice 1 (v2.5.4) Generator parity (cpdu-3vq): the lookup-only entry upstream added in 6a313b135
- * (Dart in MIS_T1 at probability 0) and the category sub-orderings from fbcfc5900 (minus Trinket,
- * which CPDU has no subsystem for). 6a313b135's matching Pickaxe entry in WEP_T2 is deliberately held
- * back: Catalog.MELEE_WEAPONS is built from WEP_T*.classes, so it would change what the
- * weapon-identification badges require (see Generator's WEP_T2 comment).
+ * Slice 1 (v2.5.4) Generator parity: the lookup-only entries upstream added in 6a313b135
+ * (Dart in MIS_T1 and Pickaxe in WEP_T2, both at probability 0) and the category sub-orderings from
+ * fbcfc5900 (minus Trinket, which CPDU has no subsystem for). The Pickaxe entry landed only with the
+ * badge redesign (b003d1129): Catalog.MELEE_WEAPONS is built from WEP_T*.classes, and before the
+ * redesign that catalog gated ALL_WEAPONS_IDENTIFIED.
  *
  * What this pins and why:
- *  - Dart is listed at weight 0: it is for lookup only, never a drop.
+ *  - Dart and Pickaxe are listed at weight 0: they are for lookup only, never a drop.
  *  - A zero-weight entry must not change which item any roll picks. The deck system consumes
  *    exactly one Float per draw whatever the array length, so the picked classes must equal the
  *    picks of the array without that entry for the same seed -- otherwise seeded levelgen would
@@ -111,14 +112,15 @@ class GeneratorParityTest {
 	}
 
 	@Test
-	void weaponBadgesDoNotRequireThePickaxeYet() {
-		// Catalog.MELEE_WEAPONS feeds ALL_WEAPONS_IDENTIFIED (and so ALL_ITEMS_IDENTIFIED). Listing the
-		// Pickaxe in WEP_T2 without upstream's b003d1129 badge redesign would make those badges need
-		// a quest item that packs without a Blacksmith cannot provide.
-		assertTrue(indexOf(Generator.Category.WEP_T2, Pickaxe.class) < 0,
-				"Pickaxe belongs in WEP_T2 only together with the journal catalog + badge redesign port");
-		assertFalse(Catalog.MELEE_WEAPONS.items().contains(Pickaxe.class),
-				"the weapons catalog must not require the Pickaxe before the badge redesign is ported");
+	void pickaxeIsListedWithoutGatingAnyBadge() {
+		int pickaxe = indexOf(Generator.Category.WEP_T2, Pickaxe.class);
+		assertTrue(pickaxe >= 0, "Pickaxe must be listed in WEP_T2 (upstream 6a313b135)");
+		assertEquals(0f, Generator.Category.WEP_T2.defaultProbs[pickaxe], "Pickaxe must never drop");
+		assertTrue(Catalog.MELEE_WEAPONS.items().contains(Pickaxe.class), "the melee catalog lists the Pickaxe");
+		// packs without a Blacksmith cannot provide a Pickaxe, so no visible badge may need the whole
+		// melee catalog: the old weapons badge is internal since the redesign
+		assertEquals(Badges.BadgeType.HIDDEN, Badges.Badge.ALL_WEAPONS_IDENTIFIED.type);
+		assertEquals(Badges.BadgeType.HIDDEN, Badges.Badge.ALL_ITEMS_IDENTIFIED.type);
 	}
 
 	// ------------------------------------------------------------------------- determinism
@@ -160,16 +162,20 @@ class GeneratorParityTest {
 
 	@Test
 	void zeroWeightEntryDoesNotChangeAnyPick() {
-		Generator.Category cat = Generator.Category.MIS_T1;
-		int dart = indexOf(cat, Dart.class);
-		Class<?>[] oldClasses = without(cat.classes, dart);
-		float[] oldProbs = without(cat.defaultProbs, dart);
+		assertZeroWeightEntryChangesNoPick(Generator.Category.MIS_T1, Dart.class);
+		assertZeroWeightEntryChangesNoPick(Generator.Category.WEP_T2, Pickaxe.class);
+	}
+
+	private static void assertZeroWeightEntryChangesNoPick(Generator.Category cat, Class<?> entry) {
+		int index = indexOf(cat, entry);
+		Class<?>[] oldClasses = without(cat.classes, index);
+		float[] oldProbs = without(cat.defaultProbs, index);
 		for (long seed = 1; seed <= 20; seed++) {
 			List<Class<?>> before = drain(oldClasses, oldProbs, seed, 200);
 			List<Class<?>> after = drain(cat.classes, cat.defaultProbs, seed, 200);
 			assertEquals(before, after,
-					"a zero-weight entry must not perturb seeded picks (seed " + seed + ")");
-			assertFalse(after.contains(Dart.class), "the zero-weight Dart entry was picked");
+					"a zero-weight entry must not perturb seeded picks (" + cat + ", seed " + seed + ")");
+			assertFalse(after.contains(entry), "the zero-weight " + entry.getSimpleName() + " entry was picked");
 		}
 	}
 
@@ -182,6 +188,9 @@ class GeneratorParityTest {
 				Item missile = Generator.random(Generator.Category.MIS_T1);
 				assertFalse(missile instanceof Dart, "got " + missile.getClass());
 				assertFalse(Generator.randomUsingDefaults(Generator.Category.MIS_T1) instanceof Dart);
+				Item weapon = Generator.random(Generator.Category.WEP_T2);
+				assertFalse(weapon instanceof Pickaxe, "got " + weapon.getClass());
+				assertFalse(Generator.randomUsingDefaults(Generator.Category.WEP_T2) instanceof Pickaxe);
 			}
 		} finally {
 			Random.popGenerator();
@@ -274,6 +283,8 @@ class GeneratorParityTest {
 		old.put("mis_t1_probs", oldMis);
 		old.put("mis_t1_seed", 4321L);
 		old.put("mis_t1_dropped", 3);
+		// and WEP_T2 from before the Pickaxe entry, 6 weights
+		old.put("wep_t2_probs", new float[]{ 2, 1, 2, 0, 2, 2 });
 
 		Random.pushGenerator(0xC0FFEEL);
 		try {
@@ -289,6 +300,9 @@ class GeneratorParityTest {
 		// ...while the per-category seed and draw counter still come back
 		assertEquals(Long.valueOf(4321L), mis.seed);
 		assertEquals(3, mis.dropped);
+		Generator.Category wep = Generator.Category.WEP_T2;
+		assertArrayEquals(wep.defaultProbs, wep.probs, "WEP_T2 must fall back to the default deck");
+		assertEquals(wep.classes.length, wep.probs.length);
 
 		// and the restored deck keeps working
 		Random.pushGenerator(99L);

@@ -6,6 +6,7 @@ import com.qsr.customspd.actors.buffs.Cripple;
 import com.qsr.customspd.actors.mobs.Mob;
 import com.qsr.customspd.actors.mobs.Rat;
 import com.qsr.customspd.items.stones.Runestone;
+import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.test.HeadlessGdx;
 import com.qsr.customspd.test.HeadlessLevel;
 import com.watabou.utils.PathFinder;
@@ -54,6 +55,13 @@ class WardensSigilTest {
 		assertTrue(sigil.stackable, "runestones stack");
 		assertTrue(sigil.isIdentified(), "runestones need no identification");
 		assertTrue(sigil.value() > 0, "shops must be able to price it");
+	}
+
+	/** The text must name the buff the stone applies, not a hold the code never does. */
+	@Test
+	void descriptionNamesCripple() {
+		String desc = new WardensSigil().desc();
+		assertTrue(desc.contains("_" + Messages.get(Cripple.class, "name") + "_"), desc);
 	}
 
 	@Test

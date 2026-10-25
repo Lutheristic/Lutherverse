@@ -315,3 +315,16 @@ ShopRoom#generateItems()
 # deleteGame, saveGlobal) move out of SurfaceScene.create into the switchScene afterCreate
 # callback in Hero.actTransition, so a scene reset (window resize) cannot record the win again.
 SurfaceScene#create()
+
+# --- journal catalog split and badge redesign (5 entries), reviewed 2026-10-25 ---
+# upstream 39209884f and 6a313b135: Catalog.allSeen() became totalItems()/totalSeen(), and the
+# journal's catalog tab loops over the new categories instead of one branch per category (the
+# per-item code moved into CatalogTab.addListItems). Catalog.restore lost only its all-items
+# shortcut; the per-category badge restore for older journals stays.
+Catalog#allSeen()
+WndJournal.CatalogTab#updateList()
+Catalog#restore(Bundle)
+# upstream b003d1129: validateItemsIdentified() became validateCatalogBadges(), and Catalog.store
+# writes every seen item instead of skipping the categories whose old badge is unlocked.
+Badges#validateItemsIdentified()
+Catalog#store(Bundle)

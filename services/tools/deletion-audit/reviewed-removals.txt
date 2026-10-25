@@ -328,3 +328,15 @@ Catalog#restore(Bundle)
 # writes every seen item instead of skipping the categories whose old badge is unlocked.
 Badges#validateItemsIdentified()
 Catalog#store(Bundle)
+
+# --- combined lethality, statue and guardian ports (5 entries), reviewed 2026-10-25 ---
+# upstream 1466dea4b (v2.5.0): the combined lethality trigger tracker is gone; the talent now
+# fires from Char through the ability tracker, so its buff icon methods went with it.
+Talent.CombinedLethalityTriggerTracker#icon()
+Talent.CombinedLethalityTriggerTracker#tintIcon(Image)
+Talent.CombinedLethalityTriggerTracker#iconFadePercent()
+# upstream cf7ddd4db (v2.2.0): a statue takes one weapon and uncurses it instead of re-rolling
+# in its constructor, and a guardian rolls its weapon from default probs in createWeapon()
+# rather than replacing it in a constructor, so neither pulls extra cards from the decks.
+Statue#Statue()
+GuardianTrap.Guardian#Guardian()

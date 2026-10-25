@@ -145,15 +145,25 @@ public class WndSphereGrid extends Window {
 				? effectName(node.effect)
 				: "+" + node.magnitude + " " + effectName(node.effect);
 		if (activated) {
-			return "_" + node.name() + "_  (" + eff + ")  ✓";
+			return "_" + node.title() + "_  (" + eff + ")  ✓";
 		}
 		if (!unlocked) {
-			return node.name() + "  (" + eff + ")  - unlock: " + SphereGridProgress.unlockCost(node) + " Insight";
+			return node.title() + "  (" + eff + ")  - unlock: " + SphereGridProgress.unlockCost(node) + " Insight";
 		}
 		if (!grid.prerequisiteMet(node)) {
-			return node.name() + "  (" + eff + ")  - needs " + node.requires + " active";
+			return node.title() + "  (" + eff + ")  - needs " + requirements(node) + " active";
 		}
-		return node.name() + "  (" + eff + ")  - activate: " + node.cost + "pt";
+		return node.title() + "  (" + eff + ")  - activate: " + node.cost + "pt";
+	}
+
+	private static String requirements(SphereNode node) {
+		StringBuilder names = new StringBuilder();
+		for (SphereNode req : node.requiredNodes()) {
+			if (req == null) continue;
+			if (names.length() > 0) names.append(", ");
+			names.append(req.title());
+		}
+		return names.toString();
 	}
 
 	private static String effectName(SphereNode.Effect e) {

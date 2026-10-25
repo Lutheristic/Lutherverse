@@ -29,7 +29,9 @@ import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.items.weapon.missiles.darts.Dart;
 import com.qsr.customspd.mechanics.Ballistica;
+import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.sprites.MissileSprite;
+import com.qsr.customspd.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
@@ -85,6 +87,7 @@ public class WornDartTrap extends Trap {
 										finalTarget.damage(dmg, WornDartTrap.this);
 										if (finalTarget == Dungeon.hero && !finalTarget.isAlive()){
 											Dungeon.fail( WornDartTrap.this  );
+											GLog.n(Messages.get(WornDartTrap.class, "ondeath"));
 											if (reclaimed) Badges.validateDeathFromFriendlyMagic();
 										}
 										Sample.INSTANCE.play(Assets.Sounds.HIT, 1, 1, Random.Float(0.8f, 1.25f));

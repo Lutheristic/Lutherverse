@@ -32,7 +32,9 @@ import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.Poison;
 import com.qsr.customspd.items.weapon.missiles.darts.PoisonDart;
 import com.qsr.customspd.mechanics.Ballistica;
+import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.sprites.MissileSprite;
+import com.qsr.customspd.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
@@ -106,6 +108,7 @@ public class PoisonDartTrap extends Trap {
 											}
 											if (!finalTarget.isAlive()) {
 												Dungeon.fail(PoisonDartTrap.this);
+												GLog.n(Messages.get(PoisonDartTrap.class, "ondeath"));
 												if (reclaimed) Badges.validateDeathFromFriendlyMagic();
 											}
 										}

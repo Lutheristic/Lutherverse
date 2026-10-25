@@ -159,6 +159,27 @@ class CatalogBadgesTest {
 		assertTrue(Badges.isUnlocked(Badges.Badge.RESEARCHER_3));
 	}
 
+	@Test
+	void researcherFourIsSkippedWhileTheJournalHasFewerThan320Entries() {
+		// upstream's bestiary entries take its total past 320; without them a full journal goes
+		// from researcher 3 straight to 5
+		int total = 0;
+		for (Catalog cat : Catalog.values()) total += cat.totalItems();
+		for (Document doc : Document.values()) {
+			if (!doc.isLoreDoc()) total += doc.pageNames().size();
+		}
+		assertTrue(total < 320, total + " entries, so researcher 4 can be earned now");
+
+		for (Document doc : Document.values()) {
+			if (doc.isLoreDoc()) continue;
+			for (String page : doc.pageNames()) doc.findPage(page);
+		}
+		for (Class<? extends Item> item : everyCatalogItem()) Catalog.setSeen(item);
+		assertTrue(Badges.isUnlocked(Badges.Badge.RESEARCHER_5));
+		assertTrue(Badges.isUnlocked(Badges.Badge.RESEARCHER_3));
+		assertFalse(Badges.isUnlocked(Badges.Badge.RESEARCHER_4), "a full journal skips researcher 4");
+	}
+
 	// ----------------------------------------------------------------------- task badges
 
 	@Test

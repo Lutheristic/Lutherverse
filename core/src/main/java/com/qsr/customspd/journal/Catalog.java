@@ -234,6 +234,7 @@ public enum Catalog {
 
 	}
 
+	//old badges for pre-2.5
 	public static LinkedHashMap<Catalog, Badges.Badge> catalogBadges = new LinkedHashMap<>();
 	static {
 		catalogBadges.put(MELEE_WEAPONS, Badges.Badge.ALL_WEAPONS_IDENTIFIED);
@@ -288,7 +289,7 @@ public enum Catalog {
 				Journal.saveNeeded = true;
 			}
 		}
-		Badges.validateItemsIdentified();
+		Badges.validateCatalogBadges();
 	}
 
 	private static final String CATALOG_ITEMS = "catalog_items";
@@ -299,12 +300,9 @@ public enum Catalog {
 
 		ArrayList<Class> seen = new ArrayList<>();
 
-		//a category whose identification badge is unlocked is restored from that badge instead
 		for (Catalog cat : values()) {
-			if (!Badges.isUnlocked(catalogBadges.get(cat))) {
-				for (Class<? extends Item> item : cat.items()) {
-					if (cat.seen.get(item)) seen.add(item);
-				}
+			for (Class<? extends Item> item : cat.items()) {
+				if (cat.seen.get(item)) seen.add(item);
 			}
 		}
 
@@ -314,9 +312,8 @@ public enum Catalog {
 
 	public static void restore( Bundle bundle ){
 
+		//old logic for pre-v2.5 catalog-specific badges
 		Badges.loadGlobal();
-
-		//catalog-specific badge logic
 		for (Catalog cat : values()){
 			if (Badges.isUnlocked(catalogBadges.get(cat))){
 				for (Class<? extends Item> item : cat.items()){

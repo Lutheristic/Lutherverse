@@ -36,9 +36,12 @@ import com.qsr.customspd.items.bags.MagicalHolster;
 import com.qsr.customspd.items.bags.PotionBandolier;
 import com.qsr.customspd.items.bags.ScrollHolder;
 import com.qsr.customspd.items.bags.VelvetPouch;
+import com.qsr.customspd.items.potions.Potion;
 import com.qsr.customspd.items.remains.RemainsItem;
+import com.qsr.customspd.items.scrolls.Scroll;
 import com.qsr.customspd.items.weapon.melee.MeleeWeapon;
 import com.qsr.customspd.journal.Catalog;
+import com.qsr.customspd.journal.Document;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.PixelScene;
 import com.qsr.customspd.utils.GLog;
@@ -88,11 +91,13 @@ public class Badges {
 		FOOD_EATEN_1                ( GeneralAsset.FOOD_EATEN_1 ),
 		ITEMS_CRAFTED_1             ( GeneralAsset.ITEMS_CRAFTED_1 ),
 		BOSS_SLAIN_1                ( GeneralAsset.BOSS_SLAIN_1 ),
+		CATALOG_ONE_EQUIPMENT       ( GeneralAsset.CATALOG_ONE_EQUIPMENT, BadgeType.JOURNAL ),
 		DEATH_FROM_FIRE             ( GeneralAsset.DEATH_FROM_FIRE ),
 		DEATH_FROM_POISON           ( GeneralAsset.DEATH_FROM_POISON ),
 		DEATH_FROM_GAS              ( GeneralAsset.DEATH_FROM_GAS ),
 		DEATH_FROM_HUNGER           ( GeneralAsset.DEATH_FROM_HUNGER ),
 		DEATH_FROM_FALLING          ( GeneralAsset.DEATH_FROM_FALLING ),
+		RESEARCHER_1                ( GeneralAsset.RESEARCHER_1, BadgeType.JOURNAL ),
 		GAMES_PLAYED_1              ( GeneralAsset.GAMES_PLAYED_1, BadgeType.GLOBAL ),
 		HIGH_SCORE_1                ( GeneralAsset.HIGH_SCORE_1 ),
 
@@ -115,8 +120,9 @@ public class Badges {
 		ITEMS_CRAFTED_3             ( GeneralAsset.ITEMS_CRAFTED_3 ),
 		BOSS_SLAIN_2                ( GeneralAsset.BOSS_SLAIN_2 ),
 		BOSS_SLAIN_3                ( GeneralAsset.BOSS_SLAIN_3 ),
-		ALL_POTIONS_IDENTIFIED      ( GeneralAsset.ALL_POTIONS_IDENTIFIED ),
-		ALL_SCROLLS_IDENTIFIED      ( GeneralAsset.ALL_SCROLLS_IDENTIFIED ),
+		ALL_POTIONS_IDENTIFIED      , //still exists internally for pre-2.5 saves
+		ALL_SCROLLS_IDENTIFIED      , //still exists internally for pre-2.5 saves
+		CATALOG_POTIONS_SCROLLS     ( GeneralAsset.CATALOG_POTIONS_SCROLLS ),
 		DEATH_FROM_ENEMY_MAGIC      ( GeneralAsset.DEATH_FROM_ENEMY_MAGIC ),
 		DEATH_FROM_FRIENDLY_MAGIC   ( GeneralAsset.DEATH_FROM_FRIENDLY_MAGIC ),
 		DEATH_FROM_SACRIFICE        ( GeneralAsset.DEATH_FROM_SACRIFICE ),
@@ -126,6 +132,7 @@ public class Badges {
 		BOSS_SLAIN_1_HUNTRESS,
 		BOSS_SLAIN_1_DUELIST,
 		BOSS_SLAIN_1_ALL_CLASSES    ( GeneralAsset.BOSS_SLAIN_1_ALL_CLASSES, BadgeType.GLOBAL ),
+		RESEARCHER_2                ( GeneralAsset.RESEARCHER_2, BadgeType.JOURNAL ),
 		GAMES_PLAYED_2              ( GeneralAsset.GAMES_PLAYED_2, BadgeType.GLOBAL ),
 		HIGH_SCORE_2                ( GeneralAsset.HIGH_SCORE_2 ),
 
@@ -149,12 +156,13 @@ public class Badges {
 		ITEMS_CRAFTED_4             ( GeneralAsset.ITEMS_CRAFTED_4 ),
 		ITEMS_CRAFTED_5             ( GeneralAsset.ITEMS_CRAFTED_5 ),
 		BOSS_SLAIN_4                ( GeneralAsset.BOSS_SLAIN_4 ),
-		ALL_RINGS_IDENTIFIED        ( GeneralAsset.ALL_RINGS_IDENTIFIED ),
-		ALL_ARTIFACTS_IDENTIFIED    ( GeneralAsset.ALL_ARTIFACTS_IDENTIFIED ),
+		ALL_RINGS_IDENTIFIED        , //still exists internally for pre-2.5 saves
+		ALL_ARTIFACTS_IDENTIFIED    , //still exists internally for pre-2.5 saves
 		DEATH_FROM_GRIM_TRAP        ( GeneralAsset.DEATH_FROM_GRIM_TRAP ), //also disintegration traps
 		VICTORY                     ( GeneralAsset.VICTORY ),
 		BOSS_CHALLENGE_1            ( GeneralAsset.BOSS_CHALLENGE_1 ),
 		BOSS_CHALLENGE_2            ( GeneralAsset.BOSS_CHALLENGE_2 ),
+		RESEARCHER_3                ( GeneralAsset.RESEARCHER_3, BadgeType.JOURNAL ),
 		GAMES_PLAYED_3              ( GeneralAsset.GAMES_PLAYED_3, BadgeType.GLOBAL ),
 		HIGH_SCORE_3                ( GeneralAsset.HIGH_SCORE_3 ),
 
@@ -163,10 +171,11 @@ public class Badges {
 		LEVEL_REACHED_5             ( GeneralAsset.LEVEL_REACHED_5 ),
 		HAPPY_END                   ( GeneralAsset.HAPPY_END ),
 		HAPPY_END_REMAINS           ( GeneralAsset.HAPPY_END_REMAINS ),
-		ALL_WEAPONS_IDENTIFIED      ( GeneralAsset.ALL_WEAPONS_IDENTIFIED ),
-		ALL_ARMOR_IDENTIFIED        ( GeneralAsset.ALL_ARMOR_IDENTIFIED ),
-		ALL_WANDS_IDENTIFIED        ( GeneralAsset.ALL_WANDS_IDENTIFIED ),
-		ALL_ITEMS_IDENTIFIED        ( GeneralAsset.ALL_ITEMS_IDENTIFIED, BadgeType.GLOBAL ),
+		RODNEY                      ( GeneralAsset.RODNEY, BadgeType.JOURNAL ),
+		ALL_WEAPONS_IDENTIFIED      , //still exists internally for pre-2.5 saves
+		ALL_ARMOR_IDENTIFIED        , //still exists internally for pre-2.5 saves
+		ALL_WANDS_IDENTIFIED        , //still exists internally for pre-2.5 saves
+		ALL_ITEMS_IDENTIFIED        , //still exists internally for pre-2.5 saves
 		VICTORY_WARRIOR,
 		VICTORY_MAGE,
 		VICTORY_ROGUE,
@@ -187,12 +196,14 @@ public class Badges {
 		BOSS_SLAIN_3_ALL_SUBCLASSES ( GeneralAsset.BOSS_SLAIN_3_ALL_SUBCLASSES, BadgeType.GLOBAL ),
 		BOSS_CHALLENGE_3            ( GeneralAsset.BOSS_CHALLENGE_3 ),
 		BOSS_CHALLENGE_4            ( GeneralAsset.BOSS_CHALLENGE_4 ),
+		RESEARCHER_4                ( GeneralAsset.RESEARCHER_4, BadgeType.JOURNAL ),
 		GAMES_PLAYED_4              ( GeneralAsset.GAMES_PLAYED_4, BadgeType.GLOBAL ),
 		HIGH_SCORE_4                ( GeneralAsset.HIGH_SCORE_4 ),
 		CHAMPION_1                  ( GeneralAsset.CHAMPION_1 ),
 
 		//diamond
 		BOSS_CHALLENGE_5            ( GeneralAsset.BOSS_CHALLENGE_5 ),
+		RESEARCHER_5                ( GeneralAsset.RESEARCHER_5, BadgeType.JOURNAL ),
 		GAMES_PLAYED_5              ( GeneralAsset.GAMES_PLAYED_5, BadgeType.GLOBAL ),
 		HIGH_SCORE_5                ( GeneralAsset.HIGH_SCORE_5 ),
 		CHAMPION_2                  ( GeneralAsset.CHAMPION_2 ),
@@ -602,30 +613,74 @@ public class Badges {
 		}
 	}
 	
-	public static void validateItemsIdentified() {
-		
+	//several badges all tie into catalog completion
+	public static void validateCatalogBadges(){
+
+		int totalSeen = 0;
+		int totalThings = 0;
+
 		for (Catalog cat : Catalog.values()){
-			if (cat.totalItems() == cat.totalSeen()){
-				Badge b = Catalog.catalogBadges.get(cat);
-				if (!isUnlocked(b)){
-					displayBadge(b);
+			totalSeen += cat.totalSeen();
+			totalThings += cat.totalItems();
+		}
+
+		for (Document doc : Document.values()){
+			if (!doc.isLoreDoc()) {
+				for (String page : doc.pageNames()){
+					if (doc.isPageFound(page)) totalSeen++;
+					totalThings++;
 				}
 			}
 		}
-		
-		if (isUnlocked( Badge.ALL_WEAPONS_IDENTIFIED ) &&
-				isUnlocked( Badge.ALL_ARMOR_IDENTIFIED ) &&
-				isUnlocked( Badge.ALL_WANDS_IDENTIFIED ) &&
-				isUnlocked( Badge.ALL_RINGS_IDENTIFIED ) &&
-				isUnlocked( Badge.ALL_ARTIFACTS_IDENTIFIED ) &&
-				isUnlocked( Badge.ALL_POTIONS_IDENTIFIED ) &&
-				isUnlocked( Badge.ALL_SCROLLS_IDENTIFIED )) {
 
-			Badge badge = Badge.ALL_ITEMS_IDENTIFIED;
-			if (!isUnlocked( badge )) {
-				displayBadge( badge );
+		//overall unlock badges
+		Badge badge = null;
+		if (totalSeen >= 40) {
+			badge = Badge.RESEARCHER_1;
+		}
+		if (totalSeen >= 80) {
+			unlock(badge);
+			badge = Badge.RESEARCHER_2;
+		}
+		if (totalSeen >= 160) {
+			unlock(badge);
+			badge = Badge.RESEARCHER_3;
+		}
+		if (totalSeen >= 320) {
+			unlock(badge);
+			badge = Badge.RESEARCHER_4;
+		}
+		if (totalSeen == totalThings) {
+			unlock(badge);
+			badge = Badge.RESEARCHER_5;
+		}
+		displayBadge( badge );
+
+		//specific task badges
+
+		boolean qualified = true;
+		for (Catalog cat : Catalog.equipmentCatalogs) {
+			if (cat.totalSeen() == 0) {
+				qualified = false;
+				break;
 			}
 		}
+		if (qualified) {
+			displayBadge(Badge.CATALOG_ONE_EQUIPMENT);
+		}
+
+		//doesn't actually use catalogs, but triggers at the same time effectively
+		if (!local.contains(Badge.CATALOG_POTIONS_SCROLLS)
+				&& Potion.allKnown() && Scroll.allKnown()
+				&& Dungeon.hero != null && Dungeon.hero.isAlive()){
+			local.add(Badge.CATALOG_POTIONS_SCROLLS);
+			displayBadge(Badge.CATALOG_POTIONS_SCROLLS);
+		}
+
+		if (Document.HALLS_KING.isPageRead(Document.KING_ATTRITION)){
+			displayBadge(Badge.RODNEY);
+		}
+
 	}
 	
 	public static void validateDeathFromFire() {
@@ -1104,6 +1159,7 @@ public class Badges {
 			{Badge.FOOD_EATEN_1, Badge.FOOD_EATEN_2, Badge.FOOD_EATEN_3, Badge.FOOD_EATEN_4, Badge.FOOD_EATEN_5},
 			{Badge.ITEMS_CRAFTED_1, Badge.ITEMS_CRAFTED_2, Badge.ITEMS_CRAFTED_3, Badge.ITEMS_CRAFTED_4, Badge.ITEMS_CRAFTED_5},
 			{Badge.BOSS_SLAIN_1, Badge.BOSS_SLAIN_2, Badge.BOSS_SLAIN_3, Badge.BOSS_SLAIN_4},
+			{Badge.RESEARCHER_1, Badge.RESEARCHER_2, Badge.RESEARCHER_3, Badge.RESEARCHER_4, Badge.RESEARCHER_5},
 			{Badge.HIGH_SCORE_1, Badge.HIGH_SCORE_2, Badge.HIGH_SCORE_3, Badge.HIGH_SCORE_4, Badge.HIGH_SCORE_5},
 			{Badge.GAMES_PLAYED_1, Badge.GAMES_PLAYED_2, Badge.GAMES_PLAYED_3, Badge.GAMES_PLAYED_4, Badge.GAMES_PLAYED_5},
 			{Badge.CHAMPION_1, Badge.CHAMPION_2, Badge.CHAMPION_3}

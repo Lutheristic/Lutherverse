@@ -27,6 +27,9 @@ import com.qsr.customspd.actors.mobs.Mob;
 import com.qsr.customspd.actors.mobs.Statue;
 import com.qsr.customspd.effects.CellEmitter;
 import com.qsr.customspd.effects.Speck;
+import com.qsr.customspd.items.Generator;
+import com.qsr.customspd.items.weapon.Weapon;
+import com.qsr.customspd.items.weapon.melee.MeleeWeapon;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.sprites.StatueSprite;
@@ -77,11 +80,13 @@ public class GuardianTrap extends Trap {
 			levelGenStatue = false;
 		}
 
-		public Guardian(){
-			super();
-
-			weapon.enchant(null);
-			weapon.degrade(weapon.level());
+		@Override
+		public Weapon createWeapon() {
+			Weapon w = (MeleeWeapon) Generator.randomUsingDefaults(Generator.Category.WEAPON);
+			w.cursed = false;
+			w.enchant(null);
+			w.level(0);
+			return w;
 		}
 
 		@Override

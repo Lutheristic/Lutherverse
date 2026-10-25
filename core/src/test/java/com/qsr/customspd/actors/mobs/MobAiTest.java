@@ -118,6 +118,41 @@ class MobAiTest {
 	}
 
 	@Test
+	void withTwoAggressionTargetsInViewTheEarlierActorWins() {
+		try (HeadlessRun run = HeadlessRun.start(SEED)) {
+			Hero hero = floorWithoutMobs(run);
+			Random.pushGenerator(SEED);
+			try {
+				// chooseEnemy takes the first aggression-marked char it meets in Actor.chars().
+				// Every round uses new objects, so an identity-hash order would hand the later
+				// decoy the pick in about half the rounds.
+				for (int round = 0; round < 16; round++) {
+					Rat rat = place(new Rat(), freeNeighbour(hero.pos, -1));
+					Rat ally = place(new Rat(), freeNeighbour(rat.pos, hero.pos));
+					ally.alignment = Char.Alignment.ALLY;
+					ally.state = ally.PASSIVE;
+					rat.aggro(ally);
+					Rat first = place(new Rat(), freeNeighbour(rat.pos, hero.pos));
+					Rat second = place(new Rat(), freeNeighbour(rat.pos, hero.pos));
+					for (Rat decoy : new Rat[]{first, second}) {
+						decoy.state = decoy.PASSIVE;
+						Buff.prolong(decoy, StoneOfAggression.Aggression.class, StoneOfAggression.Aggression.DURATION);
+					}
+
+					new TurnPump().untilActed(rat, 10);
+
+					assertTrue(rat.isTargeting(first), "round " + round + ": the rat must pick the decoy added first");
+					for (Rat r : new Rat[]{rat, ally, first, second}) {
+						lift(r);
+					}
+				}
+			} finally {
+				Random.popGenerator();
+			}
+		}
+	}
+
+	@Test
 	void aMissedAttackResolvesThroughTheMissBranch() {
 		try (HeadlessRun run = HeadlessRun.start(SEED)) {
 			Hero hero = floorWithoutMobs(run);
@@ -182,6 +217,15 @@ class MobAiTest {
 		Actor.add(mob);
 		StubSprite.attach(mob);
 		return mob;
+	}
+
+	/** Takes a mob and its buffs off the level and out of the schedule. */
+	private static void lift(Mob mob) {
+		Dungeon.level.mobs.remove(mob);
+		for (Buff b : mob.buffs()) {
+			Actor.remove(b);
+		}
+		Actor.remove(mob);
 	}
 
 	/** The first walkable, unoccupied cell next to {@code cell}, in NEIGHBOURS8 order. */

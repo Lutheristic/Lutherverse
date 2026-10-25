@@ -384,9 +384,10 @@ public abstract class Actor implements Bundlable {
 		return ids.get( id );
 	}
 
+	//copies keep actor order for the same reason as the sets themselves
 	public static synchronized HashSet<Actor> all() {
-		return new HashSet<>(all);
+		return new LinkedHashSet<>(all);
 	}
 
-	public static synchronized HashSet<Char> chars() { return new HashSet<>(chars); }
+	public static synchronized HashSet<Char> chars() { return new LinkedHashSet<>(chars); }
 }

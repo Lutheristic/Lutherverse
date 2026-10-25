@@ -18,6 +18,8 @@
 
 package com.qsr.customspd.actors.hero.spheregrid;
 
+import com.qsr.customspd.messages.Messages;
+
 /**
  * Prototype fixed node set for the Keybearer sphere grid (build-craft spine).
  *
@@ -86,6 +88,10 @@ public enum SphereNode {
 		this.magnitude = magnitude;
 		this.cost = cost;
 		this.requires = requires;
+	}
+
+	public String title() {
+		return Messages.get(SphereNode.class, name() + ".title");
 	}
 
 	/** The node's first (or only) prerequisite, kept for single-prereq callers/UI. */

@@ -100,7 +100,6 @@ public class Messages {
 
 		Locale bundleLocale = new Locale(lang.code());
 
-		//strictly match the language code when fetching bundles however
 		bundles = new ArrayList<>();
 		for (String moddedFileHandle : ModManager.INSTANCE.getAllModdedAssetFilePaths(moddedAssetFile)) {
 			bundles.add(I18NBundle.createBundle(FileUtils.getFileHandle(
@@ -110,7 +109,20 @@ public class Messages {
 			), bundleLocale));
 		}
 		for (String file : prop_files) {
-			bundles.add(I18NBundle.createBundle(Gdx.files.internal(file), bundleLocale));
+			if (bundleLocale.getLanguage().equals("id")){
+				//This is a really silly hack to fix some platforms using "id" for indonesian and some using "in" (Android 14- mostly).
+				//So if we detect "id" then we treat "###_in" as the base bundle so that it gets loaded instead of English.
+				bundles.add(I18NBundle.createBundle(Gdx.files.internal(file + "_in"), bundleLocale));
+			} else {
+				bundles.add(I18NBundle.createBundle(Gdx.files.internal(file), bundleLocale));
+			}
+		}
+		if (bundleLocale.getLanguage().equals("id")){
+			//"###_in" as a base bundle has no English parent, and our Indonesian files lack keys
+			//that only exist here, so English goes after it as the fallback
+			for (String file : prop_files) {
+				bundles.add(I18NBundle.createBundle(Gdx.files.internal(file), Locale.ROOT));
+			}
 		}
 	}
 

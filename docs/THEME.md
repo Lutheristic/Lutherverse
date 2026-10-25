@@ -138,7 +138,7 @@ Derived from shipped names.
 - **Word bank from shipped text:** key, ward, warden, gaol, hex, sigil, tumbler, lockstone, rounds, tribute, graven. Extend it with real words from locks, prisons and old bureaucracy (bolt, hasp, turnkey, warrant, ledger, tally, oubliette). Don't coin fantasy syllables.
 - **One archaic spelling per name at most,** and only where it adds age (*gaol*, *graven*).
 - **Class and ability:** class names are title case in UI prose (Keybearer). Abilities are lower case (keyblade nova).
-- **Sphere grid:** a branch name plus a roman numeral for steps (Ember I, Ember II). Capstones are single nouns of escalation (Conflagration, Permafrost, Tempest), and the keystone is two words (Elemental Conflux). The UI currently shows raw enum names such as `EMBER_I`. Display text should read "Ember I".
+- **Sphere grid:** a branch name plus a roman numeral for steps (Ember I, Ember II). Capstones are single nouns of escalation (Conflagration, Permafrost, Tempest), and the keystone is two words (Elemental Conflux).
 - **No new named gods, and no Lovecraft names.** Lutherverse adds no gods of its own. Yog-Dzewa is inherited, stays exactly as Shattered wrote it, and is the last thing in the dungeon with a name. No "Eldritch X" or "Void Y".
 - **Seeds:** UPPERCASE words, a hyphen and a number, e.g. `COSMICNIGHTMARE-1`.
 - **Addons:** public names only (God Mode, Hard Mode, Bonfire Mode).
@@ -252,10 +252,6 @@ Guardrails:
 - The sphere grid's web visual; final hero art; all original audio.
 
 **Surfaces that don't match this theme yet** (each is a small separate fix):
-- The warden's sigil item text says the target is "locked in place". The code applies Cripple, which halves movement speed. Either the text or the mechanic (to Roots) should change.
-- The storm keyblade item text promises arcing shock unconditionally. The arc only fires once Storm nodes are active.
-- The Keybearer's in-game text uses engineering jargon ("build-craft spine"), and its long description says it starts with a basic weapon, which no longer matches the kit.
-- The sphere grid window shows raw enum names (`EMBER_I`).
 - The issue templates list Dark Souls as a tone reference, which the README leaves out.
 - CONTRIBUTING uses promotional phrasing ("cult-classic") and still calls the repo `CustomPixelDungeonUltimate`.
 - THIRD_PARTY_NOTICES.md still uses the old name in places.

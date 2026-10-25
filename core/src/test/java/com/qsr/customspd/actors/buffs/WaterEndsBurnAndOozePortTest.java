@@ -136,6 +136,43 @@ class WaterEndsBurnAndOozePortTest {
 		assertNotNull(rat.buff(Ooze.class), "and water below a flier does not wash it away");
 	}
 
+	/**
+	 * Upstream facd27b18 (v2.5.3): in the sewers ooze only hurts on half its turns, and a turn
+	 * that rolled no damage did not count as acting, so water could keep giving it a first turn.
+	 */
+	@Test
+	void sewerOozeTurnWithNoDamageStillCountsAsActing() {
+		Dungeon.depth = 1;
+		Rat rat = rat(DRY);
+		Ooze ooze = Buff.affect(rat, Ooze.class);
+		ooze.set(Ooze.DURATION);
+
+		Random.pushGenerator(seedRollingNoDamageThenDamage());
+		try {
+			ooze.act();
+			assertEquals(100, rat.HP, "fixture: the first sewer turn rolled no damage");
+
+			stepInto(rat, WET);
+		} finally {
+			Random.popGenerator();
+		}
+
+		assertNull(rat.buff(Ooze.class), "water washes the ooze away");
+		assertEquals(100, rat.HP, "without giving it another first turn");
+	}
+
+	/** A seed whose first two Random.Int(2) rolls are 1 (no ooze damage) then 0 (damage). */
+	private static long seedRollingNoDamageThenDamage() {
+		for (long seed = 1; ; seed++) {
+			Random.pushGenerator(seed);
+			try {
+				if (Random.Int(2) == 1 && Random.Int(2) == 0) return seed;
+			} finally {
+				Random.popGenerator();
+			}
+		}
+	}
+
 	@Test
 	void whetherTheBurnHasActedSurvivesASave() throws Exception {
 		Dungeon.depth = 0;

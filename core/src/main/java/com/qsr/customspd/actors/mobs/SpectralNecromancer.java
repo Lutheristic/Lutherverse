@@ -102,7 +102,7 @@ public class SpectralNecromancer extends Necromancer {
 
 	@Override
 	public void summonMinion() {
-		if (Actor.findChar(summoningPos) != null) {
+		if (Actor.findChar(summoningPos) != null || !Dungeon.level.passable[summoningPos]) {
 
 			//cancel if character cannot be moved
 			if (Char.hasProp(Actor.findChar(summoningPos), Property.IMMOVABLE)){
@@ -125,15 +125,20 @@ public class SpectralNecromancer extends Necromancer {
 			//push enemy, or wait a turn if there is no valid pushing position
 			if (pushPos != pos) {
 				Char ch = Actor.findChar(summoningPos);
-				Actor.addDelayed( new Pushing( ch, ch.pos, pushPos ), -1 );
+				//no char to push if the tile became impassable, move our wraith instead
+				if (ch == null){
+					summoningPos = pushPos;
+				} else {
+					Actor.addDelayed( new Pushing( ch, ch.pos, pushPos ), -1 );
 
-				ch.pos = pushPos;
-				Dungeon.level.occupyCell(ch );
+					ch.pos = pushPos;
+					Dungeon.level.occupyCell(ch );
+				}
 
 			} else {
 
 				Char blocker = Actor.findChar(summoningPos);
-				if (blocker.alignment != alignment){
+				if (blocker != null && blocker.alignment != alignment){
 					blocker.damage( Random.NormalIntRange(2, 10), new SummoningBlockDamage() );
 				if (blocker == Dungeon.hero && !blocker.isAlive()){
 					Badges.validateDeathFromEnemyMagic();

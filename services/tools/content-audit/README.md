@@ -10,6 +10,10 @@ IS the "how to add content" checklist: satisfy every row and the gate passes.
 
 Exit 0 within the ceiling, 1 over it or canary failed, 2 if the scan itself broke.
 
+CI runs this command and fails the job unless it prints `RESULT: PASS` after scanning
+more than 50 entities. The ceiling is 0: every known exception is in the allowlist, so any new
+finding fails the build.
+
 ## The touchpoints (the authoring checklist)
 
 Adding a **mob** (`core/.../actors/mobs/YourMob.java`):

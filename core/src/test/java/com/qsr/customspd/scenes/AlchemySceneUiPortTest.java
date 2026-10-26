@@ -2,6 +2,7 @@ package com.qsr.customspd.scenes;
 
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.qsr.customspd.Dungeon;
+import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.LiquidMetal;
 import com.qsr.customspd.test.HeadlessRun;
@@ -12,6 +13,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -126,5 +130,17 @@ class AlchemySceneUiPortTest {
 		assertNull(inputItem(0), "every ingredient was used");
 		IconButton cancel = (IconButton) read(scene, AlchemyScene.class, "cancel");
 		assertFalse(cancel.active, "nothing is left to cancel");
+	}
+
+	// upstream 75532abf0, cut from v2.5.4's icon sheet at 96,48
+	@Test
+	void theAlchemyIconShipsAt16x16() throws Exception {
+		assertEquals("interfaces/icons/alchemy.png", GeneralAsset.ICON_ALCHEMY.getPath());
+		// core:test runs with src/main/assets as the working directory (see HeadlessGdx)
+		File file = new File(GeneralAsset.ICON_ALCHEMY.getPath());
+		assertTrue(file.isFile(), "missing asset file " + file.getAbsolutePath());
+		BufferedImage png = ImageIO.read(file);
+		assertEquals(16, png.getWidth(), "width");
+		assertEquals(16, png.getHeight(), "height");
 	}
 }

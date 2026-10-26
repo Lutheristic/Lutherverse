@@ -539,6 +539,7 @@ enum class GeneralAsset(override val path: String) : Asset {
     TALENT_ICON_RATFORCEMENTS("interfaces/talent_icons/ratforcements.png"),
     TALENT_ICON_HEROIC_ENERGY_RAT("interfaces/talent_icons/heroic_energy_rat.png"),
 
+    ICON_ALCHEMY("interfaces/icons/alchemy.png"),
     ICON_ALEKS("interfaces/icons/aleks.png"),
     ICON_ALERT("interfaces/icons/alert.png"),
     ICON_ARCNOR("interfaces/icons/arcnor.png"),

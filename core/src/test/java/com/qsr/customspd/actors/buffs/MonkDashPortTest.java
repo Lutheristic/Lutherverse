@@ -158,6 +158,21 @@ class MonkDashPortTest {
 		assertTrue(log.contains(OCCUPIED), "log was " + log);
 	}
 
+	/** Upstream 1e59e2b42 (v2.4.0, "fixed dash unintentionally not cancelling when targeting chars"). */
+	@Test
+	void aDashOntoAnOccupiedCellIsCancelled() {
+		int start = 4 * W + 2;
+		Hero hero = monkAt(start);
+		Rat rat = ratAt(start + 2);
+
+		dash(hero, start + 2);
+
+		assertEquals(start, hero.pos, "the hero must not land on the rat");
+		assertEquals(start + 2, rat.pos);
+		assertEquals(5f, hero.buff(MonkEnergy.class).energy, 0.0001f, "a cancelled dash costs no energy");
+		assertEquals(0, hero.buff(MonkEnergy.class).cooldown, "and starts no cooldown");
+	}
+
 	@Test
 	void flurryOutOfReachSaysTheTargetIsOutOfRange() {
 		int start = 4 * W + 2;

@@ -4,6 +4,7 @@ import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.items.weapon.melee.Crossbow;
 import com.qsr.customspd.items.weapon.missiles.darts.Dart;
+import com.qsr.customspd.items.weapon.missiles.darts.PoisonDart;
 import com.qsr.customspd.sprites.GooSprite;
 import com.qsr.customspd.test.HeadlessGdx;
 import org.junit.jupiter.api.AfterEach;
@@ -22,9 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * previous run's crossbow alive. GooSprite's spray emitter comes from centerEmitter(), which is
  * null when there is no GameScene; update() used to dereference it.
  *
- * Upstream's TippedDart hunk of the same commit guards the charged-shot branch of a
- * durabilityPerUse() that CPDU does not have yet (upstream 11a410f07 / b6f7e7462), so it is not
- * ported and not tested here.
+ * Upstream's TippedDart hunk of the same commit guards the charged-shot branch of
+ * durabilityPerUse(), which since 11a410f07 also reads the crossbow: that static can outlive the
+ * hero it came from.
  */
 class DartWithoutHeroPortTest {
 
@@ -51,6 +52,19 @@ class DartWithoutHeroPortTest {
 		Dungeon.hero = null;
 		assertDoesNotThrow(dart::throwSound, "upstream 3cc21b55a: no hero must not crash updateCrossbow");
 		assertEquals(1, dart.min(0), "with no hero there is no crossbow: bare dart damage");
+	}
+
+	@Test
+	void aTippedDartsDurabilityNeedsNoHeroEvenWithAStaleCrossbow() {
+		Hero hero = new Hero();
+		hero.belongings.weapon = new Crossbow();
+		Dungeon.hero = hero;
+		new Dart().throwSound(); // the static crossbow now points at this hero's bow
+
+		Dungeon.hero = null;
+		PoisonDart tipped = new PoisonDart();
+		float perUse = assertDoesNotThrow(tipped::durabilityPerUse, "the charged-shot check must not need a hero");
+		assertEquals(100f + 0.001f, perUse, 0.0005f, "no hero, no charged shot: a single use");
 	}
 
 	@Test

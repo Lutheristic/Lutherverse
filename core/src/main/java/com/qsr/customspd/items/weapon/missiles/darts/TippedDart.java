@@ -195,9 +195,9 @@ public abstract class TippedDart extends Dart {
 
 		float usages = Math.round(MAX_DURABILITY/use);
 
-		//grants 4 extra uses with charged shot
-		if (Dungeon.hero != null && Dungeon.hero.buff(Crossbow.ChargedShot.class) != null){
-			usages += 4;
+		//grants 3+lvl extra uses with charged shot
+		if (bow != null && Dungeon.hero != null && Dungeon.hero.buff(Crossbow.ChargedShot.class) != null){
+			usages += 3 + bow.buffedLvl();
 		}
 
 		//at 100 uses, items just last forever.

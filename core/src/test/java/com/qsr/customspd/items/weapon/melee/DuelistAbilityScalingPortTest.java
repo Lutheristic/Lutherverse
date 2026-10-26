@@ -3,10 +3,12 @@ package com.qsr.customspd.items.weapon.melee;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.hero.Hero;
+import com.qsr.customspd.actors.mobs.Rat;
 import com.qsr.customspd.items.weapon.Weapon;
 import com.qsr.customspd.test.HeadlessGdx;
 import com.qsr.customspd.test.HeadlessLevel;
 import com.qsr.customspd.test.StubSprite;
+import com.watabou.utils.Callback;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -22,7 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * the description text is built from format strings (%d, %%, %1$d) that only fail when rendered.
  *
  * The sneak (dagger family) hunks landed separately and are pinned in
- * DaggerSneakPortTest. The crossbow's tipped-dart uses still wait on 11a410f07.
+ * DaggerSneakPortTest. The guard durations and the runic slash boost are 11a410f07's (v2.4.0)
+ * retune; the crossbow's tipped-dart uses are pinned in CrossbowChargedShotPortTest.
  */
 class DuelistAbilityScalingPortTest {
 
@@ -84,21 +87,23 @@ class DuelistAbilityScalingPortTest {
 		Greatshield great = identifiedAt(new Greatshield(), 2);
 
 		round.duelistAbility(hero, null);
-		assertEquals(10f, hero.buff(RoundShield.GuardTracker.class).cooldown(), 0.0001f);
-		assertTrue(round.abilityInfo().contains("_10 turns_"), round.abilityInfo());
+		assertEquals(7f, hero.buff(RoundShield.GuardTracker.class).cooldown(), 0.0001f, "5 + level");
+		assertTrue(round.abilityInfo().contains("for _7 turns_"), round.abilityInfo());
 
 		hero.buff(RoundShield.GuardTracker.class).detach(); // prolong keeps the longer of two
 		great.duelistAbility(hero, null);
-		assertEquals(7f, hero.buff(RoundShield.GuardTracker.class).cooldown(), 0.0001f);
-		assertTrue(great.abilityInfo().contains("_7 turns_"), great.abilityInfo());
+		assertEquals(5f, hero.buff(RoundShield.GuardTracker.class).cooldown(), 0.0001f, "3 + level");
+		assertTrue(great.abilityInfo().contains("for _5 turns_"), great.abilityInfo());
+		assertTrue(great.abilityInfo().contains("all physical or magical attacks"),
+				"a guard blocks every attack until it lapses, not just the next one");
 	}
 
 	@Test
 	void unidentifiedWeaponsDescribeTheTypicalBaseValue() {
 		assertTrue(new Quarterstaff().abilityInfo().contains("typically for _4 turns._"));
 		assertTrue(new Scimitar().abilityInfo().contains("typically for _4 turns._"));
-		assertTrue(new RoundShield().abilityInfo().contains("typically within _8 turns_"));
-		assertTrue(new Greatshield().abilityInfo().contains("typically within _5 turns_"));
+		assertTrue(new RoundShield().abilityInfo().contains("typically for _5 turns_"), new RoundShield().abilityInfo());
+		assertTrue(new Greatshield().abilityInfo().contains("typically for _3 turns_"), new Greatshield().abilityInfo());
 		assertTrue(new RunicBlade().abilityInfo().contains("typically has _+200% enchantment power._"),
 				new RunicBlade().abilityInfo());
 	}
@@ -107,15 +112,40 @@ class DuelistAbilityScalingPortTest {
 	void runicSlashEnchantBoostScalesWithLevelAndIsConsumed() {
 		Hero hero = heroOnFixture();
 		RunicBlade blade = identifiedAt(new RunicBlade(), 2);
-		assertTrue(blade.abilityInfo().contains("_+250% enchantment power._"), blade.abilityInfo());
+		assertTrue(blade.abilityInfo().contains("_+300% enchantment power._"), blade.abilityInfo());
 
 		RunicBlade.RunicSlashTracker tracker = Buff.affect(hero, RunicBlade.RunicSlashTracker.class);
 		assertEquals(2f, tracker.boost, 0.0001f, "unscaled tracker default is the +200% base");
-		tracker.boost = 2f + 0.25f * blade.buffedLvl();
+		tracker.boost = 3f;
 
-		// 1 (no arcana, no berserk) + 2.5 from the slash
-		assertEquals(3.5f, Weapon.Enchantment.genericProcChanceMultiplier(hero), 0.0001f);
+		// 1 (no arcana, no berserk) + 3 from the slash
+		assertEquals(4f, Weapon.Enchantment.genericProcChanceMultiplier(hero), 0.0001f);
 		assertEquals(null, hero.buff(RunicBlade.RunicSlashTracker.class), "the tracker is spent by the proc");
+	}
+
+	/** Holds the swing, so what the ability set up can be read before the attack spends it. */
+	private static final class HeldSwingSprite extends StubSprite {
+		@Override
+		public synchronized void attack(int cell, Callback callback) {
+		}
+	}
+
+	@Test
+	void runicSlashSetsTwoPlusHalfALevelOfEnchantPower() {
+		Hero hero = heroOnFixture();
+		HeldSwingSprite sprite = new HeldSwingSprite();
+		sprite.ch = hero;
+		hero.sprite = sprite;
+		RunicBlade blade = identifiedAt(new RunicBlade(), 2);
+		hero.belongings.weapon = blade;
+		int cell = hero.pos + 1;
+		Rat rat = HeadlessLevel.at(new Rat(), cell);
+		StubSprite.attach(rat);
+		Dungeon.level.heroFOV[cell] = true;
+
+		blade.duelistAbility(hero, cell);
+
+		assertEquals(3f, hero.buff(RunicBlade.RunicSlashTracker.class).boost, 0.0001f, "2 + 0.5 per level at +2");
 	}
 
 	@Test

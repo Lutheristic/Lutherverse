@@ -19,7 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * durability"). MissileWeapon rounded the base use count to a whole number before the tipped
  * dart's talent / lotus / charged-shot modifiers were applied, so the modifiers acted on an
  * already-rounded number. TippedDart now asks for the unrounded figure, applies every modifier,
- * and only then rounds to a whole number of uses (charged shot adds 4 on top of that).
+ * and only then rounds to a whole number of uses (a charged shot adds 3 + bow level on top of
+ * that, since 11a410f07).
  */
 class TippedDartDurabilityPortTest {
 
@@ -57,11 +58,13 @@ class TippedDartDurabilityPortTest {
 	}
 
 	@Test
-	void chargedShotAddsFourWholeUsesAfterRounding() {
+	void chargedShotAddsItsWholeUsesAfterRounding() {
 		Hero hero = huntress(1, 1);
+		hero.belongings.weapon = new Crossbow();
+		new Dart().throwSound(); // refreshes Dart's static crossbow from the hero
 		Buff.affect(hero, Crossbow.ChargedShot.class);
 		float perUse = new PoisonDart().durabilityPerUse();
-		assertEquals(100f / 7f + 0.001f, perUse, 0.0005f, "3 rounded uses + 4, not 4 + 4");
+		assertEquals(100f / 6f + 0.001f, perUse, 0.0005f, "3 rounded uses + 3 from a +0 crossbow, not 4 + 3");
 	}
 
 	@Test

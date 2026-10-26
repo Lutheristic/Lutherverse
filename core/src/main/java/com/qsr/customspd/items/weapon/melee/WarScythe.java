@@ -22,7 +22,6 @@
 package com.qsr.customspd.items.weapon.melee;
 
 import com.qsr.customspd.Assets;
-import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.messages.Messages;
@@ -45,27 +44,24 @@ public class WarScythe extends MeleeWeapon {
 	}
 
 	@Override
-	protected int baseChargeUse(Hero hero, Char target){
-		return 2;
-	}
-
-	@Override
 	public String targetingPrompt() {
 		return Messages.get(this, "prompt");
 	}
 
 	@Override
 	protected void duelistAbility(Hero hero, Integer target) {
-		//uses the weapon's norma damage
-		Sickle.harvestAbility(hero, target, 1f, 0, this);
+		//replaces damage with 22.5+3.5*lvl bleed, exactly 100% avg damage.
+		int bleedAmt = augment.damageFactor(Math.round(22.5f + 3.5f*buffedLvl()));
+		Sickle.harvestAbility(hero, target, 0f, bleedAmt, this);
 	}
 
 	@Override
 	public String abilityInfo() {
-		if (levelKnown) {
-			return Messages.get(this, "ability_desc", augment.damageFactor(min()), augment.damageFactor(max()));
+		int bleedAmt = levelKnown ? Math.round(22.5f + 3.5f*buffedLvl()) : 23;
+		if (levelKnown){
+			return Messages.get(this, "ability_desc", augment.damageFactor(bleedAmt));
 		} else {
-			return Messages.get(this, "typical_ability_desc", min(0), max(0));
+			return Messages.get(this, "typical_ability_desc", bleedAmt);
 		}
 	}
 

@@ -22,7 +22,6 @@
 package com.qsr.customspd.items.weapon.melee;
 
 import com.qsr.customspd.Assets;
-import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.FlavourBuff;
 import com.qsr.customspd.actors.hero.Hero;
@@ -48,11 +47,6 @@ public class Scimitar extends MeleeWeapon {
 	public int max(int lvl) {
 		return  4*(tier+1) +    //16 base, down from 20
 				lvl*(tier+1);   //scaling unchanged
-	}
-
-	@Override
-	protected int baseChargeUse(Hero hero, Char target){
-		return 2;
 	}
 
 	@Override

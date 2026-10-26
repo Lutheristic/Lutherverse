@@ -8,6 +8,7 @@ import com.qsr.customspd.actors.mobs.Rat;
 import com.qsr.customspd.effects.Pushing;
 import com.qsr.customspd.items.weapon.missiles.darts.Dart;
 import com.qsr.customspd.items.weapon.missiles.darts.ParalyticDart;
+import com.qsr.customspd.items.weapon.missiles.darts.PoisonDart;
 import com.qsr.customspd.test.HeadlessGdx;
 import com.qsr.customspd.test.HeadlessLevel;
 import com.qsr.customspd.test.StubSprite;
@@ -23,7 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Port regression for upstream 3f63a6b40 (v2.5.0, "overhauled the crossbow's weapon ability").
  * A charged crossbow's next attack always hits and does one of three things: a melee attack
  * knocks the enemy back (and spends the charge), an untipped dart deals bonus damage, a tipped
- * dart is unchanged (extra uses and the area effect live in TippedDart / Dart.processChargedShot).
+ * dart keeps its damage but gains 3 + bow level uses (11a410f07, v2.4.0) and an area effect,
+ * pinned in ChargedShotAreaPortTest.
  */
 class CrossbowChargedShotPortTest {
 
@@ -97,13 +99,33 @@ class CrossbowChargedShotPortTest {
 		Crossbow bow = new Crossbow();
 		heroWith(bow);
 
-		assertTrue(bow.abilityInfo().contains("typically deal _+3 damage_"),
-				"unidentified: the typical +3 base bonus; was: " + bow.abilityInfo());
+		String typical = bow.abilityInfo();
+		assertTrue(typical.contains("typically deal _+3 damage_"), "unidentified: the typical +3 base bonus; was: " + typical);
+		assertTrue(typical.contains("typically last for _3 more uses_"), typical);
+		assertTrue(typical.contains("in a 7x7 area"), typical);
 
 		bow.identify();
 		bow.level(2);
-		assertTrue(bow.abilityInfo().contains("deal _+5 damage_"),
-				"identified +2: the bonus is 3 + level; was: " + bow.abilityInfo());
+		String known = bow.abilityInfo();
+		assertTrue(known.contains("deal _+5 damage_"), "identified +2: the bonus is 3 + level; was: " + known);
+		assertTrue(known.contains("last for _5 more uses_"), "and so are the extra tipped dart uses; was: " + known);
+	}
+
+	@Test
+	void aChargedShotGivesATippedDartThreePlusBowLevelUses() {
+		HeadlessLevel.install(10, 10);
+		Crossbow bow = new Crossbow();
+		Hero hero = heroWith(bow);
+		HeadlessLevel.at(hero, 4 * 10 + 4);
+		new Dart().throwSound(); // refreshes Dart's static crossbow from the hero
+		PoisonDart tipped = new PoisonDart();
+		assertEquals(100f + 0.001f, tipped.durabilityPerUse(), 0.0005f, "fixture: one use uncharged");
+
+		Buff.affect(hero, Crossbow.ChargedShot.class);
+		assertEquals(100f / 4f + 0.001f, tipped.durabilityPerUse(), 0.0005f, "1 use + 3 with a +0 crossbow");
+
+		bow.level(2);
+		assertEquals(100f / 6f + 0.001f, tipped.durabilityPerUse(), 0.0005f, "1 use + 3 + 2 with a +2 crossbow");
 	}
 
 	private static int countPushers() {

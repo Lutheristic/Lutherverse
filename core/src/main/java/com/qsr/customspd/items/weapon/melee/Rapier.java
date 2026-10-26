@@ -69,14 +69,14 @@ public class Rapier extends MeleeWeapon {
 
 	@Override
 	protected void duelistAbility(Hero hero, Integer target) {
-		//+(3+lvl) damage, equivalent to +67% damage
-		int dmgBoost = augment.damageFactor(3 + buffedLvl());
+		//+(4+lvl) damage, roughly +90% base damage, +67% scaling
+		int dmgBoost = augment.damageFactor(4 + buffedLvl());
 		lungeAbility(hero, target, 1, dmgBoost, this);
 	}
 
 	@Override
 	public String abilityInfo() {
-		int dmgBoost = levelKnown ? 3+buffedLvl() : 3;
+		int dmgBoost = levelKnown ? 4+buffedLvl() : 4;
 		if (levelKnown){
 			return Messages.get(this, "ability_desc", augment.damageFactor(min()+dmgBoost), augment.damageFactor(max()+dmgBoost));
 		} else {
@@ -157,22 +157,11 @@ public class Rapier extends MeleeWeapon {
 					});
 				} else {
 					//spends charge but otherwise does not count as an ability use
-					//CPDU keeps separate primary/second-weapon charge pools (upstream 11a410f07's
-					//shared pool is not ported), so pay from the pool of the weapon that lunged,
-					//selected exactly as MeleeWeapon.beforeAbilityUsed does.
 					Charger charger = Buff.affect(hero, Charger.class);
-					if (hero.belongings.weapon == wep) {
-						charger.partialCharge -= 1;
-						while (charger.partialCharge < 0 && charger.charges > 0) {
-							charger.charges--;
-							charger.partialCharge++;
-						}
-					} else {
-						charger.secondPartialCharge -= 1;
-						while (charger.secondPartialCharge < 0 && charger.secondCharges > 0) {
-							charger.secondCharges--;
-							charger.secondPartialCharge++;
-						}
+					charger.partialCharge -= 1;
+					while (charger.partialCharge < 0 && charger.charges > 0) {
+						charger.charges--;
+						charger.partialCharge++;
 					}
 					hero.belongings.abilityWeapon = null;
 					updateQuickslot();

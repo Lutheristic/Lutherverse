@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  *    ability within 3 turns of the afterimage being attacked refunds charge instead.
  *  - e3313717d (v2.4.0) then re-tuned the refund (0.375 charge per point, at every level).
  * Weapons keep stating only their base cost, which is what the first two tests pin; the rest pin
- * the refund as it stands now.
+ * the refund as it stands now. Since 11a410f07 (v2.4.0) no weapon costs 2 any more.
  */
 class CounterAbilityChargePortTest {
 
@@ -59,14 +59,14 @@ class CounterAbilityChargePortTest {
 	@Test
 	void withoutTheTalentBuffAWeaponCostsItsBase() {
 		Hero hero = duelist(2, false);
-		assertEquals(2f, new Dagger().abilityChargeUse(hero, null), 0f);
+		assertEquals(1f, new Dagger().abilityChargeUse(hero, null), 0f);
 		assertEquals(1f, new Sword().abilityChargeUse(hero, null), 0f);
 	}
 
 	@Test
 	void theTalentNoLongerDiscountsTheCost() {
 		Hero hero = duelist(4, true);
-		assertEquals(2f, new Dagger().abilityChargeUse(hero, null), 0f,
+		assertEquals(1f, new Dagger().abilityChargeUse(hero, null), 0f,
 				"upstream 20cd08c32: the cost is the weapon's base cost, primed or not");
 		assertEquals(1f, new Sword().abilityChargeUse(hero, null), 0f);
 	}
@@ -74,6 +74,7 @@ class CounterAbilityChargePortTest {
 	/** Charges after using a weapon ability, starting from 1 full charge and nothing partial. */
 	private static float chargeAfterAbility(int points, boolean primed) {
 		Hero hero = duelist(points, primed);
+		hero.lvl = 25; // a cap of 8, so no refund reaches it
 		MeleeWeapon.Charger charger = Buff.affect(hero, MeleeWeapon.Charger.class);
 		charger.charges = 1;
 		charger.partialCharge = 0f;

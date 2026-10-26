@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -198,12 +199,13 @@ class DaggerSneakPortTest {
 	@Test
 	void sneakDescriptionsStateTheScaledInvisibility() {
 		heroAt(4 * W + 2, null); // buffedLvl asks whether the hero holds the weapon
-		assertTrue(identifiedAt(new Dagger(), 3).abilityInfo().contains("_5 turns of invisibility_"),
+		assertTrue(identifiedAt(new Dagger(), 3).abilityInfo().contains("_5 turns of invisibility._"),
 				new Dagger().abilityInfo());
-		assertTrue(identifiedAt(new Dirk(), 1).abilityInfo().contains("_3 turns of invisibility_"));
-		assertTrue(identifiedAt(new AssassinsBlade(), 0).abilityInfo().contains("_2 turns of invisibility,_"));
+		assertTrue(identifiedAt(new Dirk(), 1).abilityInfo().contains("_3 turns of invisibility._"));
+		assertTrue(identifiedAt(new AssassinsBlade(), 0).abilityInfo().contains("_2 turns of invisibility._"));
 		String typical = new Dagger().abilityInfo();
-		assertTrue(typical.contains("typically grants her _2 turns of invisibility_"), typical);
+		assertTrue(typical.contains("typically grants her _2 turns of invisibility._"), typical);
+		assertFalse(typical.contains("charges"), "11a410f07: the sneak costs one charge like every ability");
 		assertTrue(typical.contains("instantly blink up to 5 tiles"), typical);
 	}
 }

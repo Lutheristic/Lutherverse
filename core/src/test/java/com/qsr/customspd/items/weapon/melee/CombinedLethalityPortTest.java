@@ -61,7 +61,7 @@ class CombinedLethalityPortTest {
 		HeadlessLevel.at(hero, 4 * W + 2);
 		hero.belongings.weapon = new Sword();
 		hero.belongings.secondWep = new Spear();
-		Buff.affect(hero, MeleeWeapon.Charger.class).secondCharges = 3;
+		Buff.affect(hero, MeleeWeapon.Charger.class).charges = 3;
 		return hero;
 	}
 

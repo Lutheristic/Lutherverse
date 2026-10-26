@@ -165,7 +165,7 @@ public enum Talent {
 	//Duelist T3
     PRECISE_ASSAULT(GeneralAsset.TALENT_ICON_PRECISE_ASSAULT, 3), DEADLY_FOLLOWUP(GeneralAsset.TALENT_ICON_DEADLY_FOLLOWUP, 3),
 	//Champion T3
-	SECONDARY_CHARGE(GeneralAsset.TALENT_ICON_SECONDARY_CHARGE, 3), TWIN_UPGRADES(GeneralAsset.TALENT_ICON_TWIN_UPGRADES, 3), COMBINED_LETHALITY(GeneralAsset.TALENT_ICON_COMBINED_LETHALITY, 3),
+	VARIED_CHARGE(GeneralAsset.TALENT_ICON_SECONDARY_CHARGE, 3), TWIN_UPGRADES(GeneralAsset.TALENT_ICON_TWIN_UPGRADES, 3), COMBINED_LETHALITY(GeneralAsset.TALENT_ICON_COMBINED_LETHALITY, 3),
 	//Monk T3
 	UNENCUMBERED_SPIRIT(GeneralAsset.TALENT_ICON_UNENCUMBERED_SPIRIT, 3), MONASTIC_VIGOR(GeneralAsset.TALENT_ICON_MONASTIC_VIGOR, 3), COMBINED_ENERGY(GeneralAsset.TALENT_ICON_COMBINED_ENERGY, 3),
 	//Challenge T4
@@ -348,6 +348,21 @@ public enum Talent {
 		public void tintIcon(Image icon) { icon.hardlight(1f, 1f, 0.0f); }
 		public float iconFadePercent() { return Math.max(0, 1f - (visualcooldown() / 5)); }
 	};
+	public static class VariedChargeTracker extends Buff{
+		public Class weapon;
+
+		private static final String WEAPON    = "weapon";
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(WEAPON, weapon);
+		}
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			weapon = bundle.getClass(WEAPON);
+		}
+	}
 	public static class CombinedLethalityAbilityTracker extends FlavourBuff{
 		public MeleeWeapon weapon;
 	};
@@ -479,7 +494,7 @@ public enum Talent {
 			Dungeon.observe();
 		}
 
-		if (talent == SECONDARY_CHARGE || talent == TWIN_UPGRADES || talent == DESPERATE_POWER || talent == STRONGMAN){
+		if (talent == TWIN_UPGRADES || talent == DESPERATE_POWER || talent == STRONGMAN){
 			Item.updateQuickslot();
 		}
 
@@ -935,7 +950,7 @@ public enum Talent {
 				Collections.addAll(tierTalents, DURABLE_TIPS, BARKSKIN, SHIELDING_DEW);
 				break;
 			case CHAMPION:
-				Collections.addAll(tierTalents, SECONDARY_CHARGE, TWIN_UPGRADES, COMBINED_LETHALITY);
+				Collections.addAll(tierTalents, VARIED_CHARGE, TWIN_UPGRADES, COMBINED_LETHALITY);
 				break;
 			case MONK:
 				Collections.addAll(tierTalents, UNENCUMBERED_SPIRIT, MONASTIC_VIGOR, COMBINED_ENERGY);
@@ -1002,6 +1017,9 @@ public enum Talent {
 
 	private static final HashMap<String, String> renamedTalents = new HashMap<>();
 	static{
+		//v2.4.0
+		renamedTalents.put("SECONDARY_CHARGE",          "VARIED_CHARGE");
+
 		//v2.2.0
 		renamedTalents.put("RESTORED_WILLPOWER",        "LIQUID_WILLPOWER");
 		renamedTalents.put("ENERGIZING_UPGRADE",        "INSCRIBED_POWER");

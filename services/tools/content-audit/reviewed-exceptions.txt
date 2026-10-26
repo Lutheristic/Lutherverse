@@ -249,10 +249,10 @@ Item TelekineticGrab#I3
 Item WildEnergy#I3
 # Alchemize: spell, alchemy Recipe output (also ShopRoom stock)
 Item Alchemize#I3
-# ArcaneCatalyst: alchemy Recipe output; spell-recipe ingredient
-Item ArcaneCatalyst#I3
-# AlchemicalCatalyst: alchemy Recipe output; brew/elixir ingredient
-Item AlchemicalCatalyst#I3
+# UnstableSpell: spell, alchemy Recipe output (also a ring of wealth drop)
+Item UnstableSpell#I3
+# UnstableBrew: brew, alchemy Recipe output (also a ring of wealth drop)
+Item UnstableBrew#I3
 # ArcaneResin: alchemy Recipe output (wand-upgrade resin)
 Item ArcaneResin#I3
 # LiquidMetal: alchemy Recipe output (missile-repair metal)

@@ -102,7 +102,7 @@ public abstract class ExoticScroll extends Scroll {
 	public void reset() {
 		super.reset();
 		if (handler != null && handler.contains(exoToReg.get(this.getClass()))) {
-			image = GeneralAsset.values()[((GeneralAsset)handler.image(exoToReg.get(this.getClass()))).ordinal() + 14];
+			image = GeneralAsset.values()[((GeneralAsset)handler.image(exoToReg.get(this.getClass()))).ordinal() + 13];
 			rune = handler.label(exoToReg.get(this.getClass()));
 		}
 	}

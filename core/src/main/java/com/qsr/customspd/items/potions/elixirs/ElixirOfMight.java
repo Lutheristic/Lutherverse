@@ -27,7 +27,6 @@ import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.effects.FloatingText;
-import com.qsr.customspd.items.potions.AlchemicalCatalyst;
 import com.qsr.customspd.items.potions.PotionOfStrength;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.sprites.CharSprite;

@@ -73,6 +73,7 @@ import com.qsr.customspd.items.potions.brews.BlizzardBrew;
 import com.qsr.customspd.items.potions.brews.CausticBrew;
 import com.qsr.customspd.items.potions.brews.InfernalBrew;
 import com.qsr.customspd.items.potions.brews.ShockingBrew;
+import com.qsr.customspd.items.potions.brews.UnstableBrew;
 import com.qsr.customspd.items.potions.elixirs.ElixirOfAquaticRejuvenation;
 import com.qsr.customspd.items.potions.elixirs.ElixirOfArcaneArmor;
 import com.qsr.customspd.items.potions.elixirs.ElixirOfDragonsBlood;
@@ -91,7 +92,6 @@ import com.qsr.customspd.items.remains.CloakScrap;
 import com.qsr.customspd.items.remains.SealShard;
 import com.qsr.customspd.items.scrolls.exotic.ExoticScroll;
 import com.qsr.customspd.items.spells.Alchemize;
-import com.qsr.customspd.items.spells.ArcaneCatalyst;
 import com.qsr.customspd.items.spells.BeaconOfReturning;
 import com.qsr.customspd.items.spells.CurseInfusion;
 import com.qsr.customspd.items.spells.MagicalInfusion;
@@ -100,6 +100,7 @@ import com.qsr.customspd.items.spells.ReclaimTrap;
 import com.qsr.customspd.items.spells.Recycle;
 import com.qsr.customspd.items.spells.SummonElemental;
 import com.qsr.customspd.items.spells.TelekineticGrab;
+import com.qsr.customspd.items.spells.UnstableSpell;
 import com.qsr.customspd.items.spells.WildEnergy;
 import com.qsr.customspd.items.weapon.SpiritBow;
 import com.qsr.customspd.items.weapon.missiles.darts.TippedDart;
@@ -214,13 +215,12 @@ public enum Catalog {
 
 		TIPPED_DARTS.addItems(TippedDart.types.values().toArray(new Class[0]));
 
-		BREWS_ELIXIRS.addItems( InfernalBrew.class, BlizzardBrew.class,
+		BREWS_ELIXIRS.addItems( UnstableBrew.class, InfernalBrew.class, BlizzardBrew.class,
 				ShockingBrew.class, CausticBrew.class, AquaBrew.class, ElixirOfHoneyedHealing.class,
 				ElixirOfAquaticRejuvenation.class, ElixirOfArcaneArmor.class, ElixirOfDragonsBlood.class,
 				ElixirOfIcyTouch.class, ElixirOfToxicEssence.class, ElixirOfMight.class, ElixirOfFeatherFall.class);
 
-		//CPDU still has the arcane catalyst
-		SPELLS.addItems( ArcaneCatalyst.class, WildEnergy.class, TelekineticGrab.class, PhaseShift.class,
+		SPELLS.addItems( UnstableSpell.class, WildEnergy.class, TelekineticGrab.class, PhaseShift.class,
 				Alchemize.class, CurseInfusion.class, MagicalInfusion.class, Recycle.class,
 				ReclaimTrap.class, SummonElemental.class, BeaconOfReturning.class);
 

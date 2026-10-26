@@ -38,21 +38,23 @@ import com.qsr.customspd.items.scrolls.ScrollOfTerror;
 import com.qsr.customspd.items.scrolls.ScrollOfTransmutation;
 import com.qsr.customspd.items.scrolls.exotic.ExoticScroll;
 import com.qsr.customspd.items.stones.Runestone;
-import com.qsr.customspd.plants.Plant;
-import com.qsr.customspd.assets.GeneralAsset;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
-public class ArcaneCatalyst extends Spell {
-	
+public class UnstableSpell extends Spell {
+
 	{
-		image = GeneralAsset.SCROLL_CATALYST;
+		image = GeneralAsset.UNSTABLE_SPELL;
 	}
 	
-	private static HashMap<Class<? extends Scroll>, Float> scrollChances = new HashMap<>();
+	//LinkedHashMap, not HashMap: fed to Random.chances(), which selects via keySet().toArray().
+	//Class does not override hashCode(), so plain-HashMap order varies between JVM runs and the
+	//same seed would read a different scroll on different runs.
+	private static HashMap<Class<? extends Scroll>, Float> scrollChances = new LinkedHashMap<>();
 	static{
 		scrollChances.put( ScrollOfIdentify.class,      3f );
 		scrollChances.put( ScrollOfRemoveCurse.class,   2f );
@@ -78,7 +80,8 @@ public class ArcaneCatalyst extends Spell {
 		curItem = s;
 		s.doRead();
 	}
-	
+
+	//lower values, as it's cheaper to make
 	@Override
 	public int value() {
 		return 40 * quantity;
@@ -90,50 +93,43 @@ public class ArcaneCatalyst extends Spell {
 	}
 
 	public static class Recipe extends com.qsr.customspd.items.Recipe {
-		
+
 		@Override
 		public boolean testIngredients(ArrayList<Item> ingredients) {
 			boolean scroll = false;
-			boolean secondary = false;
-			
+			boolean stone = false;
+
 			for (Item i : ingredients){
-				if (i instanceof Plant.Seed || i instanceof Runestone){
-					secondary = true;
+				if (i instanceof Runestone){
+					stone = true;
 					//if it is a regular or exotic potion
 				} else if (ExoticScroll.regToExo.containsKey(i.getClass())
 						|| ExoticScroll.regToExo.containsValue(i.getClass())) {
 					scroll = true;
 				}
 			}
-			
-			return scroll && secondary;
+
+			return scroll && stone;
 		}
 		
 		@Override
 		public int cost(ArrayList<Item> ingredients) {
-			for (Item i : ingredients){
-				if (i instanceof Plant.Seed){
-					return 1;
-				} else if (i instanceof Runestone){
-					return 0;
-				}
-			}
-			return 0;
+			return 2;
 		}
-		
+
 		@Override
 		public Item brew(ArrayList<Item> ingredients) {
-			
+
 			for (Item i : ingredients){
 				i.quantity(i.quantity()-1);
 			}
-			
+
 			return sampleOutput(null);
 		}
-		
+
 		@Override
 		public Item sampleOutput(ArrayList<Item> ingredients) {
-			return new ArcaneCatalyst();
+			return new UnstableSpell();
 		}
 	}
 }

@@ -32,7 +32,6 @@ import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.KindOfWeapon;
 import com.qsr.customspd.items.artifacts.Artifact;
 import com.qsr.customspd.items.artifacts.DriedRose;
-import com.qsr.customspd.items.potions.AlchemicalCatalyst;
 import com.qsr.customspd.items.potions.Potion;
 import com.qsr.customspd.items.potions.brews.Brew;
 import com.qsr.customspd.items.potions.elixirs.Elixir;
@@ -68,7 +67,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 	protected boolean usableOnItem(Item item) {
 		return item instanceof MeleeWeapon ||
 				(item instanceof MissileWeapon && (!(item instanceof Dart) || item instanceof TippedDart)) ||
-				(item instanceof Potion && !(item instanceof Elixir || item instanceof Brew || item instanceof AlchemicalCatalyst)) ||
+				(item instanceof Potion && !(item instanceof Elixir || item instanceof Brew)) ||
 				//all regular or exotic scrolls, except itself (unless un-ided, in which case it was already consumed)
 				(item instanceof Scroll && (item != this || item.quantity() > 1 || identifiedByUse)) ||
 				item instanceof Ring ||

@@ -37,13 +37,13 @@ import com.qsr.customspd.items.food.MeatPie;
 import com.qsr.customspd.items.food.MysteryMeat;
 import com.qsr.customspd.items.food.Pasty;
 import com.qsr.customspd.items.food.StewedMeat;
-import com.qsr.customspd.items.potions.AlchemicalCatalyst;
 import com.qsr.customspd.items.potions.Potion;
 import com.qsr.customspd.items.potions.brews.AquaBrew;
 import com.qsr.customspd.items.potions.brews.BlizzardBrew;
 import com.qsr.customspd.items.potions.brews.CausticBrew;
 import com.qsr.customspd.items.potions.brews.InfernalBrew;
 import com.qsr.customspd.items.potions.brews.ShockingBrew;
+import com.qsr.customspd.items.potions.brews.UnstableBrew;
 import com.qsr.customspd.items.potions.elixirs.ElixirOfAquaticRejuvenation;
 import com.qsr.customspd.items.potions.elixirs.ElixirOfArcaneArmor;
 import com.qsr.customspd.items.potions.elixirs.ElixirOfDragonsBlood;
@@ -56,7 +56,6 @@ import com.qsr.customspd.items.potions.exotic.ExoticPotion;
 import com.qsr.customspd.items.scrolls.Scroll;
 import com.qsr.customspd.items.scrolls.exotic.ExoticScroll;
 import com.qsr.customspd.items.spells.Alchemize;
-import com.qsr.customspd.items.spells.ArcaneCatalyst;
 import com.qsr.customspd.items.spells.BeaconOfReturning;
 import com.qsr.customspd.items.spells.CurseInfusion;
 import com.qsr.customspd.items.spells.MagicalInfusion;
@@ -65,6 +64,7 @@ import com.qsr.customspd.items.spells.ReclaimTrap;
 import com.qsr.customspd.items.spells.Recycle;
 import com.qsr.customspd.items.spells.SummonElemental;
 import com.qsr.customspd.items.spells.TelekineticGrab;
+import com.qsr.customspd.items.spells.UnstableSpell;
 import com.qsr.customspd.items.spells.WildEnergy;
 import com.qsr.customspd.items.stones.Runestone;
 import com.qsr.customspd.items.wands.Wand;
@@ -357,19 +357,12 @@ public class QuickRecipe extends Component {
 						new ArcaneResin()));
 				return result;
 			case 7:
-				result.add(new QuickRecipe(new AlchemicalCatalyst.Recipe(), new ArrayList<>(Arrays.asList(new Potion.PlaceHolder(), new Plant.Seed.PlaceHolder())), new AlchemicalCatalyst()));
-				result.add(new QuickRecipe(new AlchemicalCatalyst.Recipe(), new ArrayList<>(Arrays.asList(new Potion.PlaceHolder(), new Runestone.PlaceHolder())), new AlchemicalCatalyst()));
-				result.add(null);
-				result.add(null);
-				result.add(new QuickRecipe(new ArcaneCatalyst.Recipe(), new ArrayList<>(Arrays.asList(new Scroll.PlaceHolder(), new Runestone.PlaceHolder())), new ArcaneCatalyst()));
-				result.add(new QuickRecipe(new ArcaneCatalyst.Recipe(), new ArrayList<>(Arrays.asList(new Scroll.PlaceHolder(), new Plant.Seed.PlaceHolder())), new ArcaneCatalyst()));
-				return result;
-			case 8:
 				result.add(new QuickRecipe(new CausticBrew.Recipe()));
 				result.add(new QuickRecipe(new BlizzardBrew.Recipe()));
 				result.add(new QuickRecipe(new InfernalBrew.Recipe()));
 				result.add(new QuickRecipe(new AquaBrew.Recipe()));
 				result.add(new QuickRecipe(new ShockingBrew.Recipe()));
+				result.add(new QuickRecipe(new UnstableBrew.Recipe(), new ArrayList<>(Arrays.asList(new Potion.PlaceHolder(), new  Plant.Seed.PlaceHolder())), new UnstableBrew()));
 				result.add(null);
 				result.add(new QuickRecipe(new ElixirOfHoneyedHealing.Recipe()));
 				result.add(new QuickRecipe(new ElixirOfAquaticRejuvenation.Recipe()));
@@ -380,13 +373,14 @@ public class QuickRecipe extends Component {
 				result.add(new QuickRecipe(new ElixirOfFeatherFall.Recipe()));
 				result.add(new QuickRecipe(new ElixirOfArcaneArmor.Recipe()));
 				return result;
-			case 9:
+			case 8:
 				result.add(new QuickRecipe(new TelekineticGrab.Recipe()));
 				result.add(new QuickRecipe(new PhaseShift.Recipe()));
 				result.add(new QuickRecipe(new WildEnergy.Recipe()));
 				result.add(new QuickRecipe(new BeaconOfReturning.Recipe()));
 				result.add(new QuickRecipe(new SummonElemental.Recipe()));
 				result.add(null);
+				result.add(new QuickRecipe(new UnstableSpell.Recipe(), new ArrayList<>(Arrays.asList(new Scroll.PlaceHolder(), new  Runestone.PlaceHolder())), new UnstableSpell()));
 				result.add(new QuickRecipe(new ReclaimTrap.Recipe()));
 				result.add(null);
 				result.add(new QuickRecipe(new Alchemize.Recipe(), new ArrayList<>(Arrays.asList(new Plant.Seed.PlaceHolder(), new Runestone.PlaceHolder())), new Alchemize().quantity(8)));

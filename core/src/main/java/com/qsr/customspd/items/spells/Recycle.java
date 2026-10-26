@@ -27,7 +27,6 @@ import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.effects.Transmuting;
 import com.qsr.customspd.items.Generator;
 import com.qsr.customspd.items.Item;
-import com.qsr.customspd.items.potions.AlchemicalCatalyst;
 import com.qsr.customspd.items.potions.Potion;
 import com.qsr.customspd.items.potions.brews.Brew;
 import com.qsr.customspd.items.potions.elixirs.Elixir;
@@ -51,7 +50,7 @@ public class Recycle extends InventorySpell {
 
 	@Override
 	protected boolean usableOnItem(Item item) {
-		return (item instanceof Potion && !(item instanceof Elixir || item instanceof Brew || item instanceof AlchemicalCatalyst)) ||
+		return (item instanceof Potion && !(item instanceof Elixir || item instanceof Brew)) ||
 				item instanceof Scroll ||
 				item instanceof Plant.Seed ||
 				item instanceof Runestone ||

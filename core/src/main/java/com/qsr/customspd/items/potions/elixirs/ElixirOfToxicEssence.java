@@ -25,7 +25,6 @@ import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.ToxicImbue;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.effects.particles.PoisonParticle;
-import com.qsr.customspd.items.potions.AlchemicalCatalyst;
 import com.qsr.customspd.items.potions.PotionOfToxicGas;
 import com.qsr.customspd.assets.GeneralAsset;
 

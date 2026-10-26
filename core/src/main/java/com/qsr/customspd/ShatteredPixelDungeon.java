@@ -70,6 +70,12 @@ public class ShatteredPixelDungeon extends Game {
 
 		//pre-v2.4.0
 		com.watabou.utils.Bundle.addAlias(
+				com.qsr.customspd.items.potions.brews.UnstableBrew.class,
+				"com.qsr.customspd.items.potions.AlchemicalCatalyst" );
+		com.watabou.utils.Bundle.addAlias(
+				com.qsr.customspd.items.spells.UnstableSpell.class,
+				"com.qsr.customspd.items.spells.ArcaneCatalyst" );
+		com.watabou.utils.Bundle.addAlias(
 				com.qsr.customspd.items.potions.elixirs.ElixirOfFeatherFall.class,
 				"com.qsr.customspd.items.spells.FeatherFall" );
 		com.watabou.utils.Bundle.addAlias(

@@ -19,16 +19,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.qsr.customspd.items.potions;
+package com.qsr.customspd.items.potions.brews;
 
 import com.qsr.customspd.Challenges;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.hero.Hero;
-import com.qsr.customspd.items.Item;
-import com.qsr.customspd.items.potions.exotic.ExoticPotion;
-import com.qsr.customspd.items.stones.Runestone;
-import com.qsr.customspd.plants.Plant;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.items.Item;
+import com.qsr.customspd.items.potions.Potion;
+import com.qsr.customspd.items.potions.PotionOfExperience;
+import com.qsr.customspd.items.potions.PotionOfFrost;
+import com.qsr.customspd.items.potions.PotionOfHaste;
+import com.qsr.customspd.items.potions.PotionOfHealing;
+import com.qsr.customspd.items.potions.PotionOfInvisibility;
+import com.qsr.customspd.items.potions.PotionOfLevitation;
+import com.qsr.customspd.items.potions.PotionOfLiquidFlame;
+import com.qsr.customspd.items.potions.PotionOfMindVision;
+import com.qsr.customspd.items.potions.PotionOfParalyticGas;
+import com.qsr.customspd.items.potions.PotionOfPurity;
+import com.qsr.customspd.items.potions.PotionOfToxicGas;
+import com.qsr.customspd.items.potions.exotic.ExoticPotion;
+import com.qsr.customspd.plants.Plant;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
@@ -36,29 +47,40 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-public class AlchemicalCatalyst extends Potion {
-	
+public class UnstableBrew extends Brew {
+
 	{
-		image = GeneralAsset.POTION_CATALYST;
-		
+		image = GeneralAsset.BREW_UNSTABLE;
 	}
-	
+
+	@Override
+	public ArrayList<String> actions(Hero hero) {
+		ArrayList<String> actions = super.actions(hero);
+		actions.add(AC_DRINK);
+		return actions;
+	}
+
+	@Override
+	public String defaultAction() {
+		return AC_CHOOSE;
+	}
+
 	//LinkedHashMap, not HashMap: fed to Random.chances(), which selects via keySet().toArray().
 	//Class does not override hashCode(), so plain-HashMap order varies between JVM runs and the
 	//same seed would brew a different potion on different runs.
 	private static HashMap<Class<? extends Potion>, Float> potionChances = new LinkedHashMap<>();
-	static{
-		potionChances.put(PotionOfHealing.class,        3f);
-		potionChances.put(PotionOfMindVision.class,     2f);
-		potionChances.put(PotionOfFrost.class,          2f);
-		potionChances.put(PotionOfLiquidFlame.class,    2f);
-		potionChances.put(PotionOfToxicGas.class,       2f);
-		potionChances.put(PotionOfHaste.class,          2f);
-		potionChances.put(PotionOfInvisibility.class,   2f);
-		potionChances.put(PotionOfLevitation.class,     2f);
-		potionChances.put(PotionOfParalyticGas.class,   2f);
-		potionChances.put(PotionOfPurity.class,         2f);
-		potionChances.put(PotionOfExperience.class,     1f);
+	static {
+		potionChances.put(PotionOfHealing.class, 3f);
+		potionChances.put(PotionOfMindVision.class, 2f);
+		potionChances.put(PotionOfFrost.class, 2f);
+		potionChances.put(PotionOfLiquidFlame.class, 2f);
+		potionChances.put(PotionOfToxicGas.class, 2f);
+		potionChances.put(PotionOfHaste.class, 2f);
+		potionChances.put(PotionOfInvisibility.class, 2f);
+		potionChances.put(PotionOfLevitation.class, 2f);
+		potionChances.put(PotionOfParalyticGas.class, 2f);
+		potionChances.put(PotionOfPurity.class, 2f);
+		potionChances.put(PotionOfExperience.class, 1f);
 	}
 	
 	@Override
@@ -84,11 +106,12 @@ public class AlchemicalCatalyst extends Potion {
 	public boolean isKnown() {
 		return true;
 	}
-	
+
+	//lower values, as it's cheaper to make
 	@Override
 	public int value() {
 		return 40 * quantity;
-}
+	}
 
 	@Override
 	public int energyVal() {
@@ -100,36 +123,29 @@ public class AlchemicalCatalyst extends Potion {
 		@Override
 		public boolean testIngredients(ArrayList<Item> ingredients) {
 			boolean potion = false;
-			boolean secondary = false;
-			
+			boolean seed = false;
+
 			for (Item i : ingredients){
-				if (i instanceof Plant.Seed || i instanceof Runestone){
-					secondary = true;
-				//if it is a regular or exotic potion
+				if (i instanceof Plant.Seed) {
+					seed = true;
+					//if it is a regular or exotic potion
 				} else if (ExoticPotion.regToExo.containsKey(i.getClass())
 						|| ExoticPotion.regToExo.containsValue(i.getClass())) {
 					potion = true;
 				}
 			}
-			
-			return potion && secondary;
+
+			return potion && seed;
 		}
-		
+
 		@Override
 		public int cost(ArrayList<Item> ingredients) {
-			for (Item i : ingredients){
-				if (i instanceof Plant.Seed){
-					return 0;
-				} else if (i instanceof Runestone){
-					return 1;
-				}
-			}
-			return 0;
+			return 2;
 		}
-		
+
 		@Override
 		public Item brew(ArrayList<Item> ingredients) {
-			
+
 			for (Item i : ingredients){
 				i.quantity(i.quantity()-1);
 			}
@@ -139,7 +155,7 @@ public class AlchemicalCatalyst extends Potion {
 		
 		@Override
 		public Item sampleOutput(ArrayList<Item> ingredients) {
-			return new AlchemicalCatalyst();
+			return new UnstableBrew();
 		}
 	}
 	

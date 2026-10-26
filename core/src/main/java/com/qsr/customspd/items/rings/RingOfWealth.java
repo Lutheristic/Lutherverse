@@ -32,12 +32,12 @@ import com.qsr.customspd.items.Honeypot;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.armor.Armor;
 import com.qsr.customspd.items.bombs.Bomb;
-import com.qsr.customspd.items.potions.AlchemicalCatalyst;
 import com.qsr.customspd.items.potions.PotionOfExperience;
+import com.qsr.customspd.items.potions.brews.UnstableBrew;
 import com.qsr.customspd.items.potions.exotic.ExoticPotion;
 import com.qsr.customspd.items.scrolls.ScrollOfTransmutation;
 import com.qsr.customspd.items.scrolls.exotic.ExoticScroll;
-import com.qsr.customspd.items.spells.ArcaneCatalyst;
+import com.qsr.customspd.items.spells.UnstableSpell;
 import com.qsr.customspd.items.stones.StoneOfEnchantment;
 import com.qsr.customspd.items.weapon.Weapon;
 import com.qsr.customspd.messages.Messages;
@@ -235,7 +235,7 @@ public class RingOfWealth extends Ring {
 				i = Generator.randomUsingDefaults(Generator.Category.SCROLL);
 				return Reflection.newInstance(ExoticScroll.regToExo.get(i.getClass()));
 			case 3:
-				return Random.Int(2) == 0 ? new ArcaneCatalyst() : new AlchemicalCatalyst();
+				return Random.Int(2) == 0 ? new UnstableBrew() : new UnstableSpell();
 			case 4:
 				return new Bomb();
 			case 5:

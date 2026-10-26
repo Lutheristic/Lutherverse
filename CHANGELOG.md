@@ -10,6 +10,20 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 Everything on `main` since the fork base (`cpd-sync-base-2025-08-15`, CPD commit `c97fb83`).
 
+### 2026-10-25: tier-2 talents, monk and guard fixes
+
+**Ported**
+- The tier-2 potion and scroll talents now work the way upstream's do: they trigger from any potion or scroll, rare ones (strength, experience, upgrade, transmutation and a few others) count double, and five of them take upstream's names (Inscribed Power, Inscribed Stealth, Liquid Willpower, Liquid Nature, Liquid Agility). Old saves keep their points.
+- Empowering Scrolls is replaced by Desperate Power. Exotic potions that skip the normal drink step still trigger the potion talents.
+- A rooted monk can't dash, and a dash aimed at an occupied cell is cancelled instead of landing on the enemy.
+- Ability warnings now say whether a target is out of range or the cell is occupied, instead of one vague message.
+- Swift Equip lets any hero with the talent quickslot a weapon, not just the Duelist.
+
+**Fixed**
+- Once a Duelist's guard had blocked a hit, it kept its evasion even while they attacked. Attacking now ends it, as it does upstream.
+- The combined force ring description words its weapon bonus as an increase.
+- Every talent now has its title and description text, with a test to keep it that way.
+
 ### 2026-10-25: Slice 1 loose ends
 
 **Ported**

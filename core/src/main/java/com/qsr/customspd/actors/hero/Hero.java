@@ -523,10 +523,10 @@ public class Hero extends Char {
 							accuracy *= Float.POSITIVE_INFINITY; break;
 					}
 					buff(Talent.PreciseAssaultTracker.class).detach();
-				} else if (buff(Talent.RestoredAgilACCTracker.class) != null){
+				} else if (buff(Talent.LiquidAgilACCTracker.class) != null){
 					// 3x/inf. ACC, depending on talent level
 					accuracy *= pointsInTalent(Talent.LIQUID_AGILITY) == 2 ? Float.POSITIVE_INFINITY : 3f;
-					Talent.RestoredAgilACCTracker buff = buff(Talent.RestoredAgilACCTracker.class);
+					Talent.LiquidAgilACCTracker buff = buff(Talent.LiquidAgilACCTracker.class);
 					buff.uses--;
 					if (buff.uses <= 0) {
 						buff.detach();
@@ -564,7 +564,7 @@ public class Hero extends Char {
 		
 		evasion *= RingOfEvasion.evasionMultiplier( this );
 
-		if (buff(Talent.RestoredAgilityTracker.class) != null){
+		if (buff(Talent.LiquidAgilEVATracker.class) != null){
 			if (pointsInTalent(Talent.LIQUID_AGILITY) == 1){
 				evasion *= 3f;
 			} else if (pointsInTalent(Talent.LIQUID_AGILITY) == 2){

@@ -273,15 +273,15 @@ public enum Talent {
 		public void tintIcon(Image icon) { icon.hardlight(0.35f, 0f, 0.7f); }
 		public float iconFadePercent() { return Math.max(0, visualcooldown() / 50); }
 	};
-	public static class RestoredAgilityTracker extends FlavourBuff{};
-	//upstream splits its liquid-agility tracker into EVA and ACC halves; CPDU keeps its own
-	//RESTORED_AGILITY flavour and trigger, so only the new ACC half is added here
-	public static class RestoredAgilACCTracker extends FlavourBuff{
+	public static class LiquidAgilEVATracker extends FlavourBuff{};
+	public static class LiquidAgilACCTracker extends FlavourBuff{
 		public int uses;
+
 		{ type = buffType.POSITIVE; }
 		public Pair<Asset, Asset> icon() { return BuffIndicator.INVERT_MARK; }
-		public void tintIcon(Image icon) { icon.hardlight(0f, 0.6f, 1f); }
+		public void tintIcon(Image icon) { icon.hardlight(0.5f, 0f, 1f); }
 		public float iconFadePercent() { return Math.max(0, 1f - (visualcooldown() / 5)); }
+
 		private static final String USES = "uses";
 		@Override
 		public void storeInBundle(Bundle bundle) {
@@ -622,9 +622,9 @@ public enum Talent {
 			Dungeon.observe();
 		}
 		if (hero.hasTalent(LIQUID_AGILITY)){
-			Buff.prolong(hero, RestoredAgilityTracker.class, hero.cooldown() + Math.max(0, factor-1));
+			Buff.prolong(hero, LiquidAgilEVATracker.class, hero.cooldown() + Math.max(0, factor-1));
 			if (factor >= 0.5f){
-				Buff.prolong(hero, RestoredAgilACCTracker.class, 5f).uses = Math.round(factor);
+				Buff.prolong(hero, LiquidAgilACCTracker.class, 5f).uses = Math.round(factor);
 			}
 		}
 	}

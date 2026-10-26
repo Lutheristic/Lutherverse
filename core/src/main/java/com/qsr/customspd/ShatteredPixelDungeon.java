@@ -60,6 +60,13 @@ public class ShatteredPixelDungeon extends Game {
 		com.watabou.utils.Bundle.addAlias(
 				com.qsr.customspd.actors.buffs.FlavourBuff.class,
 				"com.qsr.customspd.actors.hero.Talent$CombinedLethalityTriggerTracker" );
+		//the liquid agility buffs took upstream's names
+		com.watabou.utils.Bundle.addAlias(
+				com.qsr.customspd.actors.hero.Talent.LiquidAgilEVATracker.class,
+				"com.qsr.customspd.actors.hero.Talent$RestoredAgilityTracker" );
+		com.watabou.utils.Bundle.addAlias(
+				com.qsr.customspd.actors.hero.Talent.LiquidAgilACCTracker.class,
+				"com.qsr.customspd.actors.hero.Talent$RestoredAgilACCTracker" );
 	}
 	
 	@Override

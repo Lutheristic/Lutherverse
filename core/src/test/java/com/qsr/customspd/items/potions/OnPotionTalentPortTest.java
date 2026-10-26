@@ -143,10 +143,10 @@ class OnPotionTalentPortTest {
 
 		Talent.onPotionUsed(hero, hero.pos, 2f);
 
-		assertNotNull(hero.buff(Talent.RestoredAgilityTracker.class));
-		assertEquals(1f, hero.buff(Talent.RestoredAgilityTracker.class).cooldown(), 0.0001f,
+		assertNotNull(hero.buff(Talent.LiquidAgilEVATracker.class));
+		assertEquals(1f, hero.buff(Talent.LiquidAgilEVATracker.class).cooldown(), 0.0001f,
 				"the evasion bonus lasts one extra turn");
-		assertEquals(2, hero.buff(Talent.RestoredAgilACCTracker.class).uses,
+		assertEquals(2, hero.buff(Talent.LiquidAgilACCTracker.class).uses,
 				"and the accuracy bonus covers one extra attack");
 	}
 

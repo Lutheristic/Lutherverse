@@ -27,7 +27,6 @@ import com.qsr.customspd.Statistics;
 import com.qsr.customspd.actors.buffs.Degrade;
 import com.qsr.customspd.actors.hero.Belongings;
 import com.qsr.customspd.actors.hero.Hero;
-import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.effects.particles.ShadowParticle;
@@ -46,6 +45,8 @@ public class ScrollOfUpgrade extends InventoryScroll {
 		preferredBag = Belongings.Backpack.class;
 
 		unique = true;
+
+		talentFactor = 2f;
 	}
 
 	@Override
@@ -108,8 +109,6 @@ public class ScrollOfUpgrade extends InventoryScroll {
 		} else {
 			item.upgrade();
 		}
-
-		Talent.onUpgradeScrollUsed( Dungeon.hero );
 		
 		Badges.validateItemLevelAquired( item );
 		Statistics.upgradesUsed++;

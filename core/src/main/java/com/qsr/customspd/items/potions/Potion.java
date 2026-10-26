@@ -30,6 +30,7 @@ import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.Burning;
 import com.qsr.customspd.actors.buffs.Ooze;
 import com.qsr.customspd.actors.hero.Hero;
+import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.effects.Splash;
@@ -136,6 +137,9 @@ public class Potion extends Item {
 	protected static ItemStatusHandler<Potion> handler;
 	
 	protected String color;
+
+	//affects how strongly on-potion talents trigger from this potion
+	protected float talentFactor = 1;
 	
 	{
 		stackable = true;
@@ -284,6 +288,10 @@ public class Potion extends Item {
 		Sample.INSTANCE.play( Assets.Sounds.DRINK );
 		
 		hero.sprite.operate( hero.pos );
+
+		if (!anonymous){
+			Talent.onPotionUsed(curUser, curUser.pos, talentFactor);
+		}
 	}
 	
 	@Override
@@ -300,6 +308,10 @@ public class Potion extends Item {
 				Dungeon.level.pressCell( cell );
 			}
 			shatter( cell );
+
+			if (!anonymous){
+				Talent.onPotionUsed(curUser, cell, talentFactor);
+			}
 			
 		}
 	}

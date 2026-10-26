@@ -25,7 +25,6 @@ import com.qsr.customspd.Challenges;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.hero.Hero;
-import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.Speck;
@@ -55,7 +54,6 @@ public class ElixirOfAquaticRejuvenation extends Elixir {
 		} else {
 			Buff.affect(hero, AquaHealing.class).set(Math.round(hero.HT * 1.5f));
 		}
-		Talent.onHealingPotionUsed( hero );
 	}
 	
 	public static class AquaHealing extends Buff {

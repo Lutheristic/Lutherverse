@@ -23,10 +23,8 @@ package com.qsr.customspd.items.scrolls;
 
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.buffs.Blindness;
-import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.Invisibility;
 import com.qsr.customspd.actors.buffs.MagicImmune;
-import com.qsr.customspd.actors.buffs.ScrollEmpower;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.Asset;
@@ -90,6 +88,9 @@ public abstract class Scroll extends Item {
 	protected static ItemStatusHandler<Scroll> handler;
 	
 	protected String rune;
+
+	//affects how strongly on-scroll talents trigger from this scroll
+	protected float talentFactor = 1;
 	
 	{
 		stackable = true;
@@ -187,9 +188,8 @@ public abstract class Scroll extends Item {
 		curUser.busy();
 		((HeroSprite)curUser.sprite).read();
 
-		if (curUser.hasTalent(Talent.EMPOWERING_SCROLLS)){
-			Buff.affect(curUser, ScrollEmpower.class).reset();
-			updateQuickslot();
+		if (!anonymous) {
+			Talent.onScrollUsed(curUser, curUser.pos, talentFactor);
 		}
 
 	}

@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * The heal / shield sites of upstream 34b5035e7 ("floating text + icons for loads more
  * heal/shield cases") and b859b7a9e (Integer.toString amounts): a representative call site per
  * category - heal over time (WellFed), instant heal (Water of Health, Corruption, Phantom Meat,
- * Chalice), shield (Restored Willpower, Blocking), mob heal (Bat) and mob heal + shield
+ * Chalice), shield (Liquid Willpower, Blocking), mob heal (Bat) and mob heal + shield
  * (Succubus) - each must hand showStatusWithIcon the right icon and amount. The sprites are
  * recording stubs; the icon id and text are the whole contract. Complements
  * FloatingTextCallSiteIconTest, which covers the 1c8b13fa6 sites.
@@ -187,11 +187,11 @@ class HealShieldCallSiteIconTest {
 	// ---------------------------------------------------------------- shields
 
 	@Test
-	void restoredWillpowerShowsTheShieldItGrants() {
+	void liquidWillpowerShowsTheShieldItGrants() {
 		// the non-warrior branch: a barrier of 5% max HP (the warrior's supercharge needs a seal)
 		hero.heroClass = HeroClass.MAGE;
-		hero.talents.get(0).put(Talent.RESTORED_WILLPOWER, 2);
-		Talent.onHealingPotionUsed(hero);
+		hero.talents.get(0).put(Talent.LIQUID_WILLPOWER, 2);
+		Talent.onPotionUsed(hero, hero.pos, 1f);
 		assertEquals(FloatingText.SHIELDING, firstIcon(heroSprite));
 		assertTrue(heroSprite.texts.get(0).matches("\\d+"), heroSprite.texts.get(0));
 	}

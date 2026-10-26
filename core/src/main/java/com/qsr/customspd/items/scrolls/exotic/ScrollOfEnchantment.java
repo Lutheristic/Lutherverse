@@ -22,9 +22,7 @@
 package com.qsr.customspd.items.scrolls.exotic;
 
 import com.qsr.customspd.Assets;
-import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.hero.Belongings;
-import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.effects.Enchanting;
@@ -52,6 +50,8 @@ public class ScrollOfEnchantment extends ExoticScroll {
 		icon = GeneralAsset.ITEM_ICON_SCROLL_ENCHANT;
 
 		unique = true;
+
+		talentFactor = 2f;
 	}
 
 	protected static boolean identifiedByUse = false;
@@ -186,7 +186,6 @@ public class ScrollOfEnchantment extends ExoticScroll {
 
 				Sample.INSTANCE.play( Assets.Sounds.READ );
 				Enchanting.show(curUser, wep);
-				Talent.onUpgradeScrollUsed( Dungeon.hero );
 			} else {
 				GameScene.show(new WndConfirmCancel());
 			}
@@ -249,7 +248,6 @@ public class ScrollOfEnchantment extends ExoticScroll {
 
 				Sample.INSTANCE.play( Assets.Sounds.READ );
 				Enchanting.show(curUser, arm);
-				Talent.onUpgradeScrollUsed( Dungeon.hero );
 			} else {
 				GameScene.show(new WndConfirmCancel());
 			}

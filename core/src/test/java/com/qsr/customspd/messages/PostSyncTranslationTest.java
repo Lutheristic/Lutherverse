@@ -227,4 +227,17 @@ class PostSyncTranslationTest {
 		assertEveryLanguage(Talent.class, "combined_energy.desc", t -> !t.contains("50"),
 				"must refund 1 energy, not half the energy spent");
 	}
+
+	/**
+	 * Upstream 00c45dc7f (v2.1.1) added a closing paragraph to Assassin's Reach: the blink crosses
+	 * hazards and enemies but not walls. The English took it with that port.
+	 */
+	@Test
+	void assassinsReachHasTheHazardParagraphInEveryLanguage() {
+		Messages.setup(Languages.ENGLISH);
+		int english = paragraphs(Messages.get(Talent.class, "assassins_reach.desc"));
+		assertEquals(4, english, "test setup: English is v2.5.4's four paragraphs");
+		assertEveryLanguage(Talent.class, "assassins_reach.desc", t -> paragraphs(t) == english,
+				"must carry the paragraph about crossing hazards");
+	}
 }

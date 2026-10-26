@@ -8,12 +8,18 @@ import com.qsr.customspd.actors.buffs.Degrade;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.mobs.Rat;
 import com.qsr.customspd.items.quest.Pickaxe;
+import com.qsr.customspd.items.weapon.Weapon;
 import com.qsr.customspd.test.HeadlessGdx;
 import com.qsr.customspd.test.HeadlessLevel;
 import com.qsr.customspd.test.StubSprite;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -121,6 +127,76 @@ class DuelistAbilityDamagePortTest {
 		}
 	}
 
+	public static class FixedRollHandAxe extends HandAxe {
+		@Override
+		public int damageRoll(Char owner) {
+			return 5;
+		}
+	}
+
+	public static class FixedRollBattleAxe extends BattleAxe {
+		@Override
+		public int damageRoll(Char owner) {
+			return 5;
+		}
+	}
+
+	public static class FixedRollWarHammer extends WarHammer {
+		@Override
+		public int damageRoll(Char owner) {
+			return 5;
+		}
+	}
+
+	public static class FixedRollGlaive extends Glaive {
+		@Override
+		public int damageRoll(Char owner) {
+			return 5;
+		}
+	}
+
+	public static class FixedRollShortsword extends Shortsword {
+		@Override
+		public int damageRoll(Char owner) {
+			return 5;
+		}
+	}
+
+	public static class FixedRollWornShortsword extends WornShortsword {
+		@Override
+		public int damageRoll(Char owner) {
+			return 5;
+		}
+	}
+
+	public static class FixedRollLongsword extends Longsword {
+		@Override
+		public int damageRoll(Char owner) {
+			return 5;
+		}
+	}
+
+	public static class FixedRollGreatsword extends Greatsword {
+		@Override
+		public int damageRoll(Char owner) {
+			return 5;
+		}
+	}
+
+	public static class FixedRollGloves extends Gloves {
+		@Override
+		public int damageRoll(Char owner) {
+			return 5;
+		}
+	}
+
+	public static class FixedRollGauntlet extends Gauntlet {
+		@Override
+		public int damageRoll(Char owner) {
+			return 5;
+		}
+	}
+
 	/** Stands in for the rigid-skinned enemies the pickaxe pierces. */
 	public static class RigidRat extends SturdyRat {
 		{
@@ -164,7 +240,10 @@ class DuelistAbilityDamagePortTest {
 		return rat;
 	}
 
+	// The weapon is secretly made +3 first: unidentified, it must still show the +0 numbers. That
+	// also tells the typical text from the known one where both say "typically" (greataxe).
 	private static void assertTypicalRange(MeleeWeapon unidentified, int min, int max) {
+		unidentified.level(3);
 		String info = unidentified.abilityInfo();
 		assertTrue(info.contains("typically"), info);
 		assertTrue(info.contains("_" + min + "-" + max), info);
@@ -432,6 +511,119 @@ class DuelistAbilityDamagePortTest {
 
 		// a roll of 5 plus 8 at +0; the old 2x multiplier made it 10
 		assertEquals(13, rat.HT - rat.HP);
+	}
+
+	/** Uses the ability of a fresh +3 weapon on a sturdy rat at the cell and returns the damage dealt. */
+	private static int damageAtPlusThree(Supplier<MeleeWeapon> make, int cell, Consumer<Hero> setup) {
+		Hero hero = heroOnFixture();
+		MeleeWeapon weapon = identifiedAt(make.get(), 3);
+		hero.belongings.weapon = weapon;
+		setup.accept(hero);
+		SturdyRat rat = ratAt(cell);
+		weapon.duelistAbility(hero, cell);
+		return rat.HT - rat.HP;
+	}
+
+	private static void expect(List<String> wrong, String name, int expected, int actual) {
+		if (expected != actual) wrong.add(name + ": expected " + expected + ", got " + actual);
+	}
+
+	@Test
+	void everyDamageAbilityAddsItsBoostAtPlusThree() {
+		int adjacent = 4 * W + 5;
+		int twoAway = 4 * W + 6;
+		Consumer<Hero> none = hero -> { };
+		Consumer<Hero> belowHalfHealth = hero -> hero.HP = hero.HT / 4;
+		Consumer<Hero> twoRecentHits = hero -> {
+			Sai.ComboStrikeTracker combo = Buff.affect(hero, Sai.ComboStrikeTracker.class);
+			combo.addHit();
+			combo.addHit();
+		};
+		List<String> wrong = new ArrayList<>();
+
+		// heavy blow on a rat that has not noticed the hero: a roll of 5 plus the boost at +3
+		expect(wrong, "hand axe", 5 + 6, damageAtPlusThree(FixedRollHandAxe::new, adjacent, none));
+		expect(wrong, "battle axe", 5 + 7, damageAtPlusThree(FixedRollBattleAxe::new, adjacent, none));
+		expect(wrong, "war hammer", 5 + 7, damageAtPlusThree(FixedRollWarHammer::new, adjacent, none));
+		// retribution: a roll of 10 plus 12.5+1.75*3, rounded
+		expect(wrong, "greataxe", 10 + 18, damageAtPlusThree(FixedRollGreataxe::new, adjacent, belowHalfHealth));
+
+		// spike and lunge reach a rat two tiles away
+		expect(wrong, "spear", 5 + 8, damageAtPlusThree(FixedRollSpear::new, twoAway, none));
+		expect(wrong, "glaive", 5 + 11, damageAtPlusThree(FixedRollGlaive::new, twoAway, none));
+		expect(wrong, "katana", 5 + 7, damageAtPlusThree(FixedRollKatana::new, twoAway, none));
+
+		// cleave
+		expect(wrong, "sword", 5 + 5, damageAtPlusThree(FixedRollSword::new, adjacent, none));
+		expect(wrong, "shortsword", 5 + 4, damageAtPlusThree(FixedRollShortsword::new, adjacent, none));
+		expect(wrong, "worn shortsword", 5 + 4, damageAtPlusThree(FixedRollWornShortsword::new, adjacent, none));
+		expect(wrong, "longsword", 5 + 6, damageAtPlusThree(FixedRollLongsword::new, adjacent, none));
+		expect(wrong, "greatsword", 5 + 6, damageAtPlusThree(FixedRollGreatsword::new, adjacent, none));
+
+		// combo strike after two recent hits: the boost counts once per hit
+		expect(wrong, "sai", 5 + 2 * 4, damageAtPlusThree(FixedRollSai::new, adjacent, twoRecentHits));
+		expect(wrong, "studded gloves", 5 + 2 * 3, damageAtPlusThree(FixedRollGloves::new, adjacent, twoRecentHits));
+		expect(wrong, "stone gauntlet", 5 + 2 * 6, damageAtPlusThree(FixedRollGauntlet::new, adjacent, twoRecentHits));
+
+		assertTrue(wrong.isEmpty(), String.join("\n", wrong));
+	}
+
+	@Test
+	void heavyBlowBoostFollowsTheAugment() {
+		heroOnFixture();
+		HandAxe info = identifiedAt(new HandAxe(), 3);
+		info.augment = Weapon.Augment.DAMAGE;
+		// 5-21 at +3, plus 6, times 1.5 rounded
+		assertKnownRange(info, 17, 41);
+
+		Consumer<Hero> none = hero -> { };
+		int dealt = damageAtPlusThree(() -> {
+			FixedRollHandAxe axe = new FixedRollHandAxe();
+			axe.augment = Weapon.Augment.DAMAGE;
+			return axe;
+		}, 4 * W + 5, none);
+		// a roll of 5 plus 6*1.5 rounded; without the augment the boost would be 6
+		assertEquals(5 + 9, dealt);
+	}
+
+	@Test
+	void flailSpinBoostScalesWithLevelAndAugment() {
+		int[] dealt = new int[2];
+		Weapon.Augment[] augments = {Weapon.Augment.NONE, Weapon.Augment.DAMAGE};
+		for (int i = 0; i < 2; i++) {
+			Hero hero = heroOnFixture();
+			FixedRangeFlail flail = identifiedAt(new FixedRangeFlail(), 3);
+			flail.augment = augments[i];
+			hero.belongings.weapon = flail;
+			hero.STR = flail.STRReq(); // no bonus damage from excess strength
+			SturdyRat rat = ratAt(4 * W + 5);
+
+			flail.duelistAbility(hero, null);
+			flail.duelistAbility(hero, null);
+			hero.attack(rat);
+			dealt[i] = rat.HT - rat.HP;
+		}
+
+		// 10 plus 11 per spin at +3
+		assertEquals(10 + 2 * 11, dealt[0], "no augment");
+		// the roll and the boost both take the 1.5x damage augment: 15 plus 17 per spin
+		assertEquals(15 + 2 * 17, dealt[1], "damage augment");
+	}
+
+	@Test
+	void pickaxePierceBoostScalesWithLevel() {
+		Hero hero = heroOnFixture();
+		FixedRollPickaxe pickaxe = identifiedAt(new FixedRollPickaxe(), 3);
+		hero.belongings.weapon = pickaxe;
+		int cell = 4 * W + 5;
+		SturdyRat rat = HeadlessLevel.at(new RigidRat(), cell);
+		StubSprite.attach(rat);
+		Dungeon.level.heroFOV[cell] = true;
+
+		((MeleeWeapon) pickaxe).duelistAbility(hero, cell);
+
+		// a roll of 5 plus 8+2*3
+		assertEquals(19, rat.HT - rat.HP);
 	}
 
 	@Test

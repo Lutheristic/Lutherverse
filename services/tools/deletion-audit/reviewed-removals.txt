@@ -349,3 +349,35 @@ GuardianTrap.Guardian#Guardian()
 ScrollEmpower#reset()
 Talent#onHealingPotionUsed(Hero)
 Talent#onUpgradeScrollUsed(Hero)
+
+# --- v2.4.0 alchemy items and charge caps (24 entries), reviewed 2026-10-26 ---
+# upstream a00355b71: the alchemical and arcane catalysts became potions/brews/UnstableBrew and
+# spells/UnstableSpell. Their methods moved with them; old saves load through Bundle aliases.
+AlchemicalCatalyst#apply(Hero)
+AlchemicalCatalyst#shatter(int)
+AlchemicalCatalyst#isKnown()
+AlchemicalCatalyst#value()
+AlchemicalCatalyst#energyVal()
+AlchemicalCatalyst.Recipe#testIngredients(ArrayList)
+AlchemicalCatalyst.Recipe#cost(ArrayList)
+AlchemicalCatalyst.Recipe#brew(ArrayList)
+AlchemicalCatalyst.Recipe#sampleOutput(ArrayList)
+ArcaneCatalyst#onCast(Hero)
+ArcaneCatalyst#value()
+ArcaneCatalyst#energyVal()
+ArcaneCatalyst.Recipe#testIngredients(ArrayList)
+ArcaneCatalyst.Recipe#cost(ArrayList)
+ArcaneCatalyst.Recipe#brew(ArrayList)
+ArcaneCatalyst.Recipe#sampleOutput(ArrayList)
+# upstream e67d25967: aqua blast became potions/brews/AquaBrew (its effect is now AquaBrew.shatter)
+# and feather fall became potions/elixirs/ElixirOfFeatherFall with its FeatherBuff.
+AquaBlast#affectTarget(Ballistica, Hero)
+AquaBlast#value()
+FeatherFall#onCast(Hero)
+FeatherFall#value()
+FeatherFall.FeatherBuff#icon()
+FeatherFall.FeatherBuff#tintIcon(Image)
+FeatherFall.FeatherBuff#iconFadePercent()
+# upstream 4ec2c80e1 (v2.4.0): sandals recharge directly; grass charging goes through
+# Naturalism.charge() with no amount, so charge(float) is gone.
+SandalsOfNature.Naturalism#charge(float)

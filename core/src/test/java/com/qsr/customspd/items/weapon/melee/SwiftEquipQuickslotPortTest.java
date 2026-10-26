@@ -6,10 +6,9 @@ import com.qsr.customspd.actors.hero.HeroClass;
 import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.items.quest.Pickaxe;
 import com.qsr.customspd.messages.Messages;
-import com.qsr.customspd.scenes.CellSelector;
-import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.test.HeadlessGdx;
 import com.qsr.customspd.test.HeadlessLevel;
+import com.qsr.customspd.test.IdleCellSelector;
 import com.qsr.customspd.test.StubSprite;
 import com.qsr.customspd.utils.GLog;
 import com.watabou.utils.Signal;
@@ -19,7 +18,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,31 +40,19 @@ class SwiftEquipQuickslotPortTest {
 
 	private static final int W = 10;
 
-	private static Field selectorField;
-	private static Object prevSelector;
-
 	private final List<String> log = new ArrayList<>();
 	private final Signal.Listener<String> logListener = log::add;
 
 	@BeforeAll
-	static void boot() throws Exception {
+	static void boot() {
 		HeadlessGdx.boot();
-		// Item.execute starts with GameScene.cancel(), which needs a cell selector. An idle one
-		// (no listener) makes that call a no-op; a real one needs the scene's tilemap.
-		selectorField = GameScene.class.getDeclaredField("cellSelector");
-		selectorField.setAccessible(true);
-		prevSelector = selectorField.get(null);
-		Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
-		Field theUnsafe = unsafeClass.getDeclaredField("theUnsafe");
-		theUnsafe.setAccessible(true);
-		Object idle = unsafeClass.getMethod("allocateInstance", Class.class)
-				.invoke(theUnsafe.get(null), CellSelector.class);
-		selectorField.set(null, idle);
+		// Item.execute starts with GameScene.cancel(), which needs a cell selector.
+		IdleCellSelector.install();
 	}
 
 	@AfterAll
-	static void restoreSelector() throws Exception {
-		selectorField.set(null, prevSelector);
+	static void restoreSelector() {
+		IdleCellSelector.uninstall();
 	}
 
 	@BeforeEach

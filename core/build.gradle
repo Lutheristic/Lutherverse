@@ -57,6 +57,10 @@ test {
     inputs.file(rootProject.file('build.gradle'))
         .withPropertyName('rootBuildScript')
         .withPathSensitivity(PathSensitivity.NONE)
+    //TranslationPlaceholderTest checks the marketplace packs' message overrides
+    inputs.files(fileTree(rootProject.file('marketplace')) { include '*/messages*.properties' })
+        .withPropertyName('packMessages')
+        .withPathSensitivity(PathSensitivity.RELATIVE)
 }
 
 dependencies {

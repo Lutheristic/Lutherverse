@@ -9,10 +9,13 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.IllegalFormatException;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -240,6 +243,79 @@ class TranslationPlaceholderTest {
 			msg.append(total).append(" offending keys in ").append(offenders.size()).append(" languages");
 			throw new AssertionError(msg.toString());
 		}
+	}
+
+	// Pack overrides already stale before the pack check existed. Anything else that fails it is new;
+	// remove an entry here once its pack string is fixed.
+	private static final List<String> KNOWN_PACK_MISMATCHES = Arrays.asList(
+			"Jowiro's Class Reskins/messages.properties items.weapon.melee.assassinsblade.ability_desc",
+			"Jowiro's Class Reskins/messages.properties items.weapon.melee.crossbow.ability_desc",
+			"Jowiro's Class Reskins/messages.properties items.weapon.melee.dagger.ability_desc",
+			"Jowiro's Class Reskins/messages.properties items.weapon.melee.dirk.ability_desc",
+			"Jowiro's Class Reskins/messages.properties items.weapon.melee.greatshield.ability_desc",
+			"Jowiro's Class Reskins/messages.properties items.weapon.melee.quarterstaff.ability_desc",
+			"Jowiro's Class Reskins/messages.properties items.weapon.melee.roundshield.ability_desc",
+			"Jowiro's Class Reskins/messages.properties items.weapon.melee.runicblade.ability_desc",
+			"Jowiro's Class Reskins/messages.properties items.weapon.melee.scimitar.ability_desc",
+			"Jowiro's Class Reskins/messages.properties items.weapon.melee.whip.ability_desc",
+			"Slugcat skins/messages.properties items.weapon.spiritbow.stats"
+	);
+
+	// Messages loads a pack's messages.properties (or messages_<code>.properties) ahead of the
+	// base bundles, so a pack override of a key the code formats must take the same arguments.
+	@Test
+	void everyPackOverrideTakesTheSameArgumentsAsTheEnglishOne() throws IOException {
+		Map<String, String> english = new TreeMap<>();
+		for (String bundle : BUNDLES) english.putAll(load(Paths.get(bundle + ".properties")));
+
+		Path marketplace = Paths.get("../../../../marketplace");
+		assertTrue(Files.isDirectory(marketplace), "missing " + marketplace.toAbsolutePath());
+		List<Path> packFiles = new ArrayList<>();
+		try (DirectoryStream<Path> packs = Files.newDirectoryStream(marketplace)) {
+			for (Path pack : packs) {
+				if (!Files.isDirectory(pack)) continue;
+				try (DirectoryStream<Path> files = Files.newDirectoryStream(pack, "messages*.properties")) {
+					for (Path file : files) packFiles.add(file);
+				}
+			}
+		}
+		Collections.sort(packFiles);
+
+		List<String> offenders = new ArrayList<>();
+		List<String> stillParked = new ArrayList<>();
+		int keysCompared = 0;
+		for (Path file : packFiles) {
+			Map<String, String> pack = load(file);
+			for (Map.Entry<String, String> entry : pack.entrySet()) {
+				String en = english.get(entry.getKey());
+				if (en == null) continue;
+				keysCompared++;
+				String why = incompatibility(en, entry.getValue());
+				// unidentified items read the typical_ form, which would otherwise fall back to English
+				String key = entry.getKey();
+				int dot = key.lastIndexOf('.');
+				String typical = key.substring(0, dot + 1) + "typical_" + key.substring(dot + 1);
+				if (why == null && english.containsKey(typical) && !pack.containsKey(typical)) {
+					why = "overridden without " + typical.substring(dot + 1);
+				}
+				if (why == null) continue;
+				String id = file.getParent().getFileName() + "/" + file.getFileName() + " " + entry.getKey();
+				if (KNOWN_PACK_MISMATCHES.contains(id)) {
+					stillParked.add(id);
+				} else {
+					offenders.add(id + ": " + why + " (English " + signature(en).args
+							+ ", pack " + signature(entry.getValue()).args + ")");
+				}
+			}
+		}
+
+		assertTrue(packFiles.size() > 20, "only " + packFiles.size() + " pack message files found");
+		assertTrue(keysCompared > 1000, "only " + keysCompared + " pack keys compared");
+		assertTrue(offenders.isEmpty(), "Pack strings whose format placeholders do not match English:\n    "
+				+ String.join("\n    ", offenders) + "\n" + offenders.size() + " offending keys");
+		List<String> fixed = new ArrayList<>(KNOWN_PACK_MISMATCHES);
+		fixed.removeAll(stillParked);
+		assertTrue(fixed.isEmpty(), "now match English, remove from KNOWN_PACK_MISMATCHES: " + fixed);
 	}
 
 	@Test

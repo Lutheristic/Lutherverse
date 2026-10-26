@@ -10,6 +10,18 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 Everything on `main` since the fork base (`cpd-sync-base-2025-08-15`, CPD commit `c97fb83`).
 
+### 2026-10-26: the Duelist's shared charge pool
+
+**Ported**
+- Both of the Duelist's weapons now draw on one charge pool, as in upstream v2.4.0. It starts at 2 charges, grows with the Duelist's level, and refills faster the emptier it is; the Champion gets a bigger pool that refills half again as fast. Every weapon ability costs 1 charge.
+- The weapon abilities are retuned to match. Sai's combo strike counts recent hits on a timer, the sickle and war scythe harvest deals its damage as bleed, sword and greataxe kills don't use up the turn, and the whip lashes every enemy in reach without missing.
+- Round shield and greatshield guards and runic slash have new numbers, and a charged crossbow shot now hits a 7x7 area and gives tipped darts 3 uses plus the crossbow's level.
+- Secondary Charge is replaced by Varied Charge, which gives back part of a charge when an ability is used with a different weapon than the last one. Old saves keep their points.
+- The changes, news, rankings, start and supporter screens have icon titles.
+
+**Notes**
+- A save from before this change keeps whatever charges it had, even above the new cap, until they're spent. Upstream does the same.
+
 ### 2026-10-26: Duelist damage, the Monk rework and the alchemy screen
 
 **Ported**

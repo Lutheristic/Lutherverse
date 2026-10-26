@@ -52,6 +52,7 @@ import com.qsr.customspd.ui.HeroIcon;
 import com.qsr.customspd.utils.GLog;
 import com.qsr.customspd.windows.WndMonkAbilities;
 import com.watabou.noosa.BitmapText;
+import com.watabou.noosa.Camera;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.Visual;
 import com.watabou.noosa.audio.Sample;
@@ -495,6 +496,13 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 				int range = 3;
 				if (Buff.affect(hero, MonkEnergy.class).abilitiesEmpowered(hero)){
 					range += 3;
+				}
+
+				if (Dungeon.hero.rooted){
+					//CPDU has no PixelScene.shake (upstream 02210b0a8's screen-shake setting); Camera.main.shake is its equivalent
+					Camera.main.shake( 1, 1f );
+					GLog.w(Messages.get(MeleeWeapon.class, "ability_bad_position"));
+					return;
 				}
 
 				if (Dungeon.level.distance(hero.pos, target) > range){

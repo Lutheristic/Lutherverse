@@ -60,6 +60,8 @@ public class ScrollOfTransmutation extends InventoryScroll {
 		icon = GeneralAsset.ITEM_ICON_SCROLL_TRANSMUTE;
 		
 		bones = true;
+
+		talentFactor = 2f;
 	}
 
 	@Override

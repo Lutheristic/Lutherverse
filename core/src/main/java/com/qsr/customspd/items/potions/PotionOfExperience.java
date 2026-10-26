@@ -33,6 +33,8 @@ public class PotionOfExperience extends Potion {
 		icon = GeneralAsset.ITEM_ICON_POTION_EXP;
 
 		bones = true;
+
+		talentFactor = 2f;
 	}
 	
 	@Override

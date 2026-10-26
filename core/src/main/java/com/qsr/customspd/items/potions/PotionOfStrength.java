@@ -35,6 +35,8 @@ public class PotionOfStrength extends Potion {
 		icon = GeneralAsset.ITEM_ICON_POTION_STRENGTH;
 
 		unique = true;
+
+		talentFactor = 2f;
 	}
 	
 	@Override

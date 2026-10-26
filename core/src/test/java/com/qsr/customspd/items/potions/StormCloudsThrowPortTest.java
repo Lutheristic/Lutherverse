@@ -2,6 +2,7 @@ package com.qsr.customspd.items.potions;
 
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.hero.Hero;
+import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.potions.exotic.PotionOfStormClouds;
 import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.levels.traps.Trap;
@@ -10,6 +11,8 @@ import com.qsr.customspd.test.HeadlessLevel;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import java.lang.reflect.Field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -34,11 +37,19 @@ class StormCloudsThrowPortTest {
 	}
 
 	private Hero prevHero;
+	private Object prevUser;
 
 	@AfterEach
-	void tearDown() {
+	void tearDown() throws Exception {
 		HeadlessLevel.uninstall();
 		Dungeon.hero = prevHero;
+		curUser().set(null, prevUser);
+	}
+
+	private static Field curUser() throws Exception {
+		Field f = Item.class.getDeclaredField("curUser");
+		f.setAccessible(true);
+		return f;
 	}
 
 	private static final class CountingTrap extends Trap {
@@ -50,9 +61,12 @@ class StormCloudsThrowPortTest {
 		}
 	}
 
-	private CountingTrap armTrapAndGetHeroSetUp(HeadlessLevel level, int cell) {
+	private CountingTrap armTrapAndGetHeroSetUp(HeadlessLevel level, int cell) throws Exception {
 		prevHero = Dungeon.hero;
+		prevUser = curUser().get(null);
 		Dungeon.hero = new Hero();
+		// a thrown potion triggers the thrower's on-potion talents
+		curUser().set(null, Dungeon.hero);
 		HeadlessLevel.at(Dungeon.hero, 1 * level.width() + 1);
 		CountingTrap trap = new CountingTrap();
 		trap.set(cell);
@@ -63,7 +77,7 @@ class StormCloudsThrowPortTest {
 	}
 
 	@Test
-	void aThrownPotionOfStormCloudsDoesNotSetOffTheTrapItLandsOn() {
+	void aThrownPotionOfStormCloudsDoesNotSetOffTheTrapItLandsOn() throws Exception {
 		HeadlessLevel level = HeadlessLevel.install(8, 8);
 		int cell = 5 * level.width() + 5;
 		CountingTrap trap = armTrapAndGetHeroSetUp(level, cell);
@@ -74,7 +88,7 @@ class StormCloudsThrowPortTest {
 	}
 
 	@Test
-	void controlAnOrdinaryThrownPotionStillSetsOffTheTrap() {
+	void controlAnOrdinaryThrownPotionStillSetsOffTheTrap() throws Exception {
 		HeadlessLevel level = HeadlessLevel.install(8, 8);
 		int cell = 5 * level.width() + 5;
 		CountingTrap trap = armTrapAndGetHeroSetUp(level, cell);

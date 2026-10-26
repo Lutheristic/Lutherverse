@@ -22,10 +22,8 @@
 package com.qsr.customspd.items.spells;
 
 import com.qsr.customspd.Badges;
-import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.Statistics;
 import com.qsr.customspd.actors.buffs.Degrade;
-import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.armor.Armor;
@@ -69,7 +67,6 @@ public class MagicalInfusion extends InventorySpell {
 		}
 		
 		GLog.p( Messages.get(this, "infuse") );
-		Talent.onUpgradeScrollUsed( Dungeon.hero );
 		Badges.validateItemLevelAquired(item);
 
 		Statistics.upgradesUsed++;

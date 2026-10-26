@@ -21,8 +21,6 @@
 
 package com.qsr.customspd.actors.buffs;
 
-import com.qsr.customspd.Dungeon;
-import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.messages.Messages;
@@ -40,8 +38,8 @@ public class ScrollEmpower extends Buff {
 
 	private int left;
 
-	public void reset(){
-		left = Dungeon.hero.pointsInTalent(Talent.EMPOWERING_SCROLLS);
+	public void reset(int left){
+		this.left = left;
 		Item.updateQuickslot();
 	}
 
@@ -80,7 +78,7 @@ public class ScrollEmpower extends Buff {
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", 3, left);
+		return Messages.get(this, "desc", 2, left);
 	}
 
 	private static final String LEFT = "left";

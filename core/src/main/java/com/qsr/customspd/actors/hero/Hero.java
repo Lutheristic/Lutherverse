@@ -498,12 +498,12 @@ public class Hero extends Char {
 			} else {
 				accuracy *= 1.5f;
 			}
-		//precise assault and restored agility
+		//precise assault and liquid agility
 		} else {
-			if ((hasTalent(Talent.PRECISE_ASSAULT) || hasTalent(Talent.RESTORED_AGILITY))
+			if ((hasTalent(Talent.PRECISE_ASSAULT) || hasTalent(Talent.LIQUID_AGILITY))
 					//does not trigger on ability attacks
 					&& belongings.abilityWeapon != wep && buff(MonkEnergy.MonkAbility.UnarmedAbilityTracker.class) == null){
-				//non-duelist benefit for precise assault, can stack with restored agility
+				//non-duelist benefit for precise assault, can stack with liquid agility
 				if (heroClass != HeroClass.DUELIST) {
 					//persistent +10%/20%/30% ACC for other heroes
 					accuracy *= 1f + 0.1f * pointsInTalent(Talent.PRECISE_ASSAULT);
@@ -523,10 +523,10 @@ public class Hero extends Char {
 							accuracy *= Float.POSITIVE_INFINITY; break;
 					}
 					buff(Talent.PreciseAssaultTracker.class).detach();
-				} else if (buff(Talent.RestoredAgilACCTracker.class) != null){
+				} else if (buff(Talent.LiquidAgilACCTracker.class) != null){
 					// 3x/inf. ACC, depending on talent level
-					accuracy *= pointsInTalent(Talent.RESTORED_AGILITY) == 2 ? Float.POSITIVE_INFINITY : 3f;
-					Talent.RestoredAgilACCTracker buff = buff(Talent.RestoredAgilACCTracker.class);
+					accuracy *= pointsInTalent(Talent.LIQUID_AGILITY) == 2 ? Float.POSITIVE_INFINITY : 3f;
+					Talent.LiquidAgilACCTracker buff = buff(Talent.LiquidAgilACCTracker.class);
 					buff.uses--;
 					if (buff.uses <= 0) {
 						buff.detach();
@@ -564,10 +564,10 @@ public class Hero extends Char {
 		
 		evasion *= RingOfEvasion.evasionMultiplier( this );
 
-		if (buff(Talent.RestoredAgilityTracker.class) != null){
-			if (pointsInTalent(Talent.RESTORED_AGILITY) == 1){
+		if (buff(Talent.LiquidAgilEVATracker.class) != null){
+			if (pointsInTalent(Talent.LIQUID_AGILITY) == 1){
 				evasion *= 3f;
-			} else if (pointsInTalent(Talent.RESTORED_AGILITY) == 2){
+			} else if (pointsInTalent(Talent.LIQUID_AGILITY) == 2){
 				return INFINITE_EVASION;
 			}
 		}

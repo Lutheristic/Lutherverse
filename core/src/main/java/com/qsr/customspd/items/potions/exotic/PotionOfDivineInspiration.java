@@ -25,6 +25,7 @@ import com.qsr.customspd.Assets;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.hero.Hero;
+import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.effects.Flare;
 import com.qsr.customspd.messages.Messages;
@@ -42,6 +43,8 @@ public class PotionOfDivineInspiration extends ExoticPotion {
 	
 	{
 		icon = GeneralAsset.ITEM_ICON_POTION_DIVINE;
+
+		talentFactor = 2f;
 	}
 
 	protected static boolean identifiedByUse = false;
@@ -129,6 +132,10 @@ public class PotionOfDivineInspiration extends ExoticPotion {
 					Sample.INSTANCE.playDelayed(Assets.Sounds.LEVELUP, 0.6f, 0.7f, 1.2f);
 					new Flare( 6, 32 ).color(0xFFFF00, true).show( curUser.sprite, 2f );
 					GLog.p(Messages.get(PotionOfDivineInspiration.class, "bonus"));
+
+					if (!anonymous){
+						Talent.onPotionUsed(curUser, curUser.pos, talentFactor);
+					}
 
 				}
 			}

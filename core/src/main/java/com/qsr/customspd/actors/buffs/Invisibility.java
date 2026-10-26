@@ -29,6 +29,7 @@ import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.items.artifacts.CloakOfShadows;
 import com.qsr.customspd.items.artifacts.TimekeepersHourglass;
+import com.qsr.customspd.items.weapon.melee.RoundShield;
 import com.qsr.customspd.plants.Swiftthistle;
 import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.ui.BuffIndicator;
@@ -113,6 +114,11 @@ public class Invisibility extends FlavourBuff {
 		Swiftthistle.TimeBubble bubble =  ch.buff( Swiftthistle.TimeBubble.class );
 		if (bubble != null){
 			bubble.detach();
+		}
+
+		RoundShield.GuardTracker guard = ch.buff(RoundShield.GuardTracker.class);
+		if (guard != null && guard.hasBlocked){
+			guard.detach();
 		}
 	}
 }

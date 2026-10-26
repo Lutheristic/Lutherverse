@@ -2,10 +2,12 @@ package com.qsr.customspd.items.weapon.melee;
 
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.Char;
+import com.qsr.customspd.actors.buffs.Bleeding;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.Degrade;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.mobs.Rat;
+import com.qsr.customspd.items.quest.Pickaxe;
 import com.qsr.customspd.test.HeadlessGdx;
 import com.qsr.customspd.test.HeadlessLevel;
 import com.qsr.customspd.test.StubSprite;
@@ -88,6 +90,41 @@ class DuelistAbilityDamagePortTest {
 		@Override
 		public int damageRoll(Char owner) {
 			return 5;
+		}
+	}
+
+	public static class FixedRollSai extends Sai {
+		@Override
+		public int damageRoll(Char owner) {
+			return 5;
+		}
+	}
+
+	public static class FixedRollSickle extends Sickle {
+		@Override
+		public int damageRoll(Char owner) {
+			return 5;
+		}
+	}
+
+	public static class FixedRollWarScythe extends WarScythe {
+		@Override
+		public int damageRoll(Char owner) {
+			return 10;
+		}
+	}
+
+	public static class FixedRollPickaxe extends Pickaxe {
+		@Override
+		public int damageRoll(Char owner) {
+			return 5;
+		}
+	}
+
+	/** Stands in for the rigid-skinned enemies the pickaxe pierces. */
+	public static class RigidRat extends SturdyRat {
+		{
+			properties.add(Property.INORGANIC);
 		}
 	}
 
@@ -301,5 +338,112 @@ class DuelistAbilityDamagePortTest {
 
 		// 10 plus 7 per spin at +0; the old +33% per spin made it 17
 		assertEquals(24, rat.HT - rat.HP);
+	}
+
+	@Test
+	void comboStrikeWeaponsDescribeTheirBoostPerHit() {
+		heroOnFixture();
+		assertTrue(new Sai().abilityInfo().contains("typically deals _+3 damage_"), new Sai().abilityInfo());
+		assertTrue(new Gloves().abilityInfo().contains("typically deals _+2 damage_"), new Gloves().abilityInfo());
+		assertTrue(new Gauntlet().abilityInfo().contains("typically deals _+4 damage_"), new Gauntlet().abilityInfo());
+
+		String sai = identifiedAt(new Sai(), 3).abilityInfo();
+		assertTrue(sai.contains("deals _+4 damage_"), sai);
+		String gloves = identifiedAt(new Gloves(), 3).abilityInfo();
+		assertTrue(gloves.contains("deals _+3 damage_"), gloves);
+		String gauntlet = identifiedAt(new Gauntlet(), 3).abilityInfo();
+		assertTrue(gauntlet.contains("deals _+6 damage_"), gauntlet);
+	}
+
+	@Test
+	void harvestWeaponsDescribeTheirBleedRange() {
+		heroOnFixture();
+		assertTypicalRange(new Sickle(), 2 + 1, 20 + 1);
+		assertTypicalRange(new WarScythe(), 5, 40);
+
+		assertKnownRange(identifiedAt(new Sickle(), 3), 5 + 2, 29 + 2);
+		assertKnownRange(identifiedAt(new WarScythe(), 3), 8, 58);
+	}
+
+	@Test
+	void pickaxeDescribesItsDamageAgainstRigidEnemies() {
+		heroOnFixture();
+		assertKnownRange(new Pickaxe(), 2 + 8, 15 + 8);
+		assertKnownRange(identifiedAt(new Pickaxe(), 3), 5 + 14, 24 + 14);
+	}
+
+	@Test
+	void comboStrikeAddsAFlatBoostPerRecentHit() {
+		Hero hero = heroOnFixture();
+		FixedRollSai sai = new FixedRollSai();
+		hero.belongings.weapon = sai;
+		Sai.ComboStrikeTracker combo = Buff.affect(hero, Sai.ComboStrikeTracker.class);
+		combo.addHit();
+		combo.addHit();
+		int cell = 4 * W + 5;
+		SturdyRat rat = ratAt(cell);
+
+		sai.duelistAbility(hero, cell);
+
+		// a roll of 5 plus 3 for each of two hits at +0; the old +40% per hit made it 9
+		assertEquals(11, rat.HT - rat.HP);
+	}
+
+	@Test
+	void sickleHarvestBleedTakesAFlatBoost() {
+		Hero hero = heroOnFixture();
+		FixedRollSickle sickle = identifiedAt(new FixedRollSickle(), 3);
+		hero.belongings.weapon = sickle;
+		int cell = 4 * W + 5;
+		SturdyRat rat = ratAt(cell);
+
+		sickle.duelistAbility(hero, cell);
+
+		assertEquals(rat.HT, rat.HP, "fixture: the harvest deals its damage as bleeding");
+		// a roll of 5 plus 2 at +3; the old 1.1x multiplier made it 6
+		assertEquals(7f, rat.buff(Bleeding.class).level(), 0.0001f);
+	}
+
+	@Test
+	void warScytheHarvestBleedsItsNormalDamage() {
+		Hero hero = heroOnFixture();
+		FixedRollWarScythe scythe = new FixedRollWarScythe();
+		hero.belongings.weapon = scythe;
+		int cell = 4 * W + 5;
+		SturdyRat rat = ratAt(cell);
+
+		scythe.duelistAbility(hero, cell);
+
+		// the old shared 1.1x multiplier made it 11
+		assertEquals(10f, rat.buff(Bleeding.class).level(), 0.0001f);
+	}
+
+	@Test
+	void pickaxePierceAddsAFlatBoostAgainstRigidEnemies() {
+		Hero hero = heroOnFixture();
+		FixedRollPickaxe pickaxe = new FixedRollPickaxe();
+		hero.belongings.weapon = pickaxe;
+		int cell = 4 * W + 5;
+		SturdyRat rat = HeadlessLevel.at(new RigidRat(), cell);
+		StubSprite.attach(rat);
+		Dungeon.level.heroFOV[cell] = true;
+
+		((MeleeWeapon) pickaxe).duelistAbility(hero, cell);
+
+		// a roll of 5 plus 8 at +0; the old 2x multiplier made it 10
+		assertEquals(13, rat.HT - rat.HP);
+	}
+
+	@Test
+	void pickaxePierceAddsNothingAgainstOtherEnemies() {
+		Hero hero = heroOnFixture();
+		FixedRollPickaxe pickaxe = new FixedRollPickaxe();
+		hero.belongings.weapon = pickaxe;
+		int cell = 4 * W + 5;
+		SturdyRat rat = ratAt(cell);
+
+		((MeleeWeapon) pickaxe).duelistAbility(hero, cell);
+
+		assertEquals(5, rat.HT - rat.HP);
 	}
 }

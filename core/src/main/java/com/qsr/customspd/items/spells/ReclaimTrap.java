@@ -117,12 +117,12 @@ public class ReclaimTrap extends TargetedSpell {
 	
 	@Override
 	public int value() {
-		return (int)(60 * (quantity/5f));
+		return (int)(60 * (quantity/(float)Recipe.OUT_QUANTITY));
 	}
 
 	@Override
 	public int energyVal() {
-		return (int)(12 * (quantity/5f));
+		return (int)(12 * (quantity/(float)Recipe.OUT_QUANTITY));
 	}
 	
 	private static final String STORED_TRAP = "stored_trap";
@@ -140,6 +140,8 @@ public class ReclaimTrap extends TargetedSpell {
 	}
 	
 	public static class Recipe extends com.qsr.customspd.items.Recipe.SimpleRecipe {
+
+		private static final int OUT_QUANTITY = 5;
 		
 		{
 			inputs =  new Class[]{ScrollOfMagicMapping.class, MetalShard.class};
@@ -148,7 +150,7 @@ public class ReclaimTrap extends TargetedSpell {
 			cost = 8;
 			
 			output = ReclaimTrap.class;
-			outQuantity = 5;
+			outQuantity = OUT_QUANTITY;
 		}
 		
 	}

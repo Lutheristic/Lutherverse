@@ -52,6 +52,7 @@ import com.qsr.customspd.ui.HeroIcon;
 import com.qsr.customspd.utils.GLog;
 import com.qsr.customspd.windows.WndMonkAbilities;
 import com.watabou.noosa.BitmapText;
+import com.watabou.noosa.Camera;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.Visual;
 import com.watabou.noosa.audio.Sample;
@@ -362,7 +363,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 				UnarmedAbilityTracker tracker = Buff.affect(hero, UnarmedAbilityTracker.class);
 				if (!hero.canAttack(enemy)){
-					GLog.w(Messages.get(MeleeWeapon.class, "ability_bad_position"));
+					GLog.w(Messages.get(MeleeWeapon.class, "ability_target_range"));
 					tracker.detach();
 					if (hero.buff(FlurryEmpowerTracker.class) != null){
 						hero.buff(FlurryEmpowerTracker.class).detach();
@@ -497,17 +498,28 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 					range += 3;
 				}
 
+				if (Dungeon.hero.rooted){
+					//CPDU has no PixelScene.shake (upstream 02210b0a8's screen-shake setting); Camera.main.shake is its equivalent
+					Camera.main.shake( 1, 1f );
+					GLog.w(Messages.get(MeleeWeapon.class, "ability_target_range"));
+					return;
+				}
+
 				if (Dungeon.level.distance(hero.pos, target) > range){
-					GLog.w(Messages.get(MeleeWeapon.class, "ability_bad_position"));
+					GLog.w(Messages.get(MeleeWeapon.class, "ability_target_range"));
+					return;
+				}
+
+				if (Actor.findChar(target) != null){
+					GLog.w(Messages.get(MeleeWeapon.class, "ability_occupied"));
 					return;
 				}
 
 				Ballistica dash = new Ballistica(hero.pos, target, Ballistica.PROJECTILE);
 
 				if (!dash.collisionPos.equals(target)
-						|| Actor.findChar(target) != null
 						|| (Dungeon.level.solid[target] && !Dungeon.level.passable[target])){
-					GLog.w(Messages.get(MeleeWeapon.class, "ability_bad_position"));
+					GLog.w(Messages.get(MeleeWeapon.class, "ability_target_range"));
 					return;
 				}
 
@@ -572,7 +584,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 				UnarmedAbilityTracker tracker = Buff.affect(hero, UnarmedAbilityTracker.class);
 				if (!hero.canAttack(enemy)){
-					GLog.w(Messages.get(MeleeWeapon.class, "ability_bad_position"));
+					GLog.w(Messages.get(MeleeWeapon.class, "ability_target_range"));
 					tracker.detach();
 					return;
 				}

@@ -113,16 +113,16 @@ public class Dagger extends MeleeWeapon {
 			return;
 		}
 
-		if (Actor.findChar(target) != null || !Dungeon.level.heroFOV[target] || hero.rooted) {
-			GLog.w(Messages.get(wep, "ability_bad_position"));
+		PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null), maxDist);
+		if (PathFinder.distance[target] == Integer.MAX_VALUE || !Dungeon.level.heroFOV[target] || hero.rooted) {
+			GLog.w(Messages.get(wep, "ability_target_range"));
 			//CPDU has no PixelScene.shake (upstream 02210b0a8's screen-shake setting); Camera.main.shake is its equivalent
 			if (Dungeon.hero.rooted) Camera.main.shake( 1, 1f );
 			return;
 		}
 
-		PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null), maxDist);
-		if (PathFinder.distance[target] == Integer.MAX_VALUE) {
-			GLog.w(Messages.get(wep, "ability_bad_position"));
+		if (Actor.findChar(target) != null) {
+			GLog.w(Messages.get(wep, "ability_occupied"));
 			return;
 		}
 

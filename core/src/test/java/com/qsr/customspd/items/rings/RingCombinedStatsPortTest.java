@@ -68,4 +68,13 @@ class RingCombinedStatsPortTest {
 			assertFalse(solo.statsInfo().contains(COMBINED), type.getSimpleName() + " alone has nothing to combine");
 		}
 	}
+
+	/** Upstream 120c7dc24 (v2.2.0): the combined force rings word their weapon bonus as the single ring does. */
+	@Test
+	void combinedForceRingsDescribeTheirWeaponBonusAsADamageIncrease() {
+		RingOfForce a = new RingOfForce();
+		wear(a, new RingOfForce());
+		String info = a.statsInfo();
+		assertTrue(info.contains("without a weapon, or increasing damage by _"), info);
+	}
 }

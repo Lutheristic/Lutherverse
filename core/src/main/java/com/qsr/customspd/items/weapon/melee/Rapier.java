@@ -90,7 +90,7 @@ public class Rapier extends MeleeWeapon {
 
 		if (hero.rooted || Dungeon.level.distance(hero.pos, target) < 2
 				|| Dungeon.level.distance(hero.pos, target)-1 > wep.reachFactor(hero)){
-			GLog.w(Messages.get(wep, "ability_bad_position"));
+			GLog.w(Messages.get(wep, "ability_target_range"));
 			//CPDU has no PixelScene.shake (upstream 02210b0a8's screen-shake setting); Camera.main.shake is its equivalent
 			if (hero.rooted) Camera.main.shake( 1, 1f );
 			return;
@@ -108,7 +108,7 @@ public class Rapier extends MeleeWeapon {
 		}
 
 		if (lungeCell == -1){
-			GLog.w(Messages.get(wep, "ability_bad_position"));
+			GLog.w(Messages.get(wep, "ability_target_range"));
 			return;
 		}
 

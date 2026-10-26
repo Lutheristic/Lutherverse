@@ -32,6 +32,7 @@ import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.Burning;
 import com.qsr.customspd.actors.buffs.Cripple;
 import com.qsr.customspd.actors.hero.Hero;
+import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.effects.MagicMissile;
 import com.qsr.customspd.levels.Level;
@@ -196,6 +197,10 @@ public class PotionOfDragonsBreath extends ExoticPotion {
 										}
 
 										curUser.spendAndNext(1f);
+
+										if (!anonymous){
+											Talent.onPotionUsed(curUser, curUser.pos, talentFactor);
+										}
 									}
 								});
 						

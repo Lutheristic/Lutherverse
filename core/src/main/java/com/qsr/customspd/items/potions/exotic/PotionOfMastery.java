@@ -23,6 +23,7 @@ package com.qsr.customspd.items.potions.exotic;
 
 import com.qsr.customspd.Assets;
 import com.qsr.customspd.actors.hero.Hero;
+import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.armor.Armor;
@@ -118,6 +119,9 @@ public class PotionOfMastery extends ExoticPotion {
 					curItem.detach(curUser.belongings.backpack);
 				}
 				identifiedByUse = false;
+				if (!anonymous){
+					Talent.onPotionUsed(curUser, curUser.pos, talentFactor);
+				}
 
 			}
 

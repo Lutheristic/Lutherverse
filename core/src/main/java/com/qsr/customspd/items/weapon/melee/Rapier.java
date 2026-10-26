@@ -69,9 +69,19 @@ public class Rapier extends MeleeWeapon {
 
 	@Override
 	protected void duelistAbility(Hero hero, Integer target) {
-		//+(3+lvl) damage, equivalent to +67% damage, but more consistent
-		int dmgBoost = augment.damageFactor(3 + level());
+		//+(3+lvl) damage, equivalent to +67% damage
+		int dmgBoost = augment.damageFactor(3 + buffedLvl());
 		lungeAbility(hero, target, 1, dmgBoost, this);
+	}
+
+	@Override
+	public String abilityInfo() {
+		int dmgBoost = levelKnown ? 3+buffedLvl() : 3;
+		if (levelKnown){
+			return Messages.get(this, "ability_desc", augment.damageFactor(min()+dmgBoost), augment.damageFactor(max()+dmgBoost));
+		} else {
+			return Messages.get(this, "typical_ability_desc", min(0)+dmgBoost, max(0)+dmgBoost);
+		}
 	}
 
 	public static void lungeAbility(Hero hero, Integer target, float dmgMulti, int dmgBoost, MeleeWeapon wep){

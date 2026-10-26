@@ -2,6 +2,8 @@ package com.qsr.customspd.items.weapon.melee;
 
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.Char;
+import com.qsr.customspd.actors.buffs.Buff;
+import com.qsr.customspd.actors.buffs.Degrade;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.mobs.Rat;
 import com.qsr.customspd.test.HeadlessGdx;
@@ -58,6 +60,27 @@ class DuelistAbilityDamagePortTest {
 		@Override
 		public int damageRoll(Char owner) {
 			return 10;
+		}
+	}
+
+	public static class FixedRollSpear extends Spear {
+		@Override
+		public int damageRoll(Char owner) {
+			return 5;
+		}
+	}
+
+	public static class FixedRollRapier extends Rapier {
+		@Override
+		public int damageRoll(Char owner) {
+			return 5;
+		}
+	}
+
+	public static class FixedRollKatana extends Katana {
+		@Override
+		public int damageRoll(Char owner) {
+			return 5;
 		}
 	}
 
@@ -142,5 +165,64 @@ class DuelistAbilityDamagePortTest {
 
 		// a roll of 10 plus 13 at +0; the old 1.5x multiplier made it 15
 		assertEquals(23, rat.HT - rat.HP);
+	}
+
+	@Test
+	void spikeAndLungeWeaponsDescribeTheirBoostedRange() {
+		heroOnFixture();
+		assertTypicalRange(new Spear(), 2 + 5, 20 + 5);
+		assertTypicalRange(new Glaive(), 5 + 7, 40 + 7);
+		assertTypicalRange(new Rapier(), 1 + 3, 8 + 3);
+		assertTypicalRange(new Katana(), 4 + 4, 20 + 4);
+
+		assertKnownRange(identifiedAt(new Spear(), 3), 5 + 8, 32 + 8);
+		assertKnownRange(identifiedAt(new Glaive(), 3), 8 + 11, 64 + 11);
+		assertKnownRange(identifiedAt(new Rapier(), 3), 4 + 6, 14 + 6);
+		assertKnownRange(identifiedAt(new Katana(), 3), 7 + 7, 35 + 7);
+	}
+
+	@Test
+	void spikeAddsAFlatBoost() {
+		Hero hero = heroOnFixture();
+		FixedRollSpear spear = new FixedRollSpear();
+		hero.belongings.weapon = spear;
+		int cell = 4 * W + 6; // in reach, not adjacent
+		SturdyRat rat = ratAt(cell);
+
+		spear.duelistAbility(hero, cell);
+
+		// a roll of 5 plus 5 at +0; the old 1.45x multiplier made it 7
+		assertEquals(10, rat.HT - rat.HP);
+	}
+
+	@Test
+	void katanaLungeAddsAFlatBoost() {
+		Hero hero = heroOnFixture();
+		FixedRollKatana katana = new FixedRollKatana();
+		hero.belongings.weapon = katana;
+		int cell = 4 * W + 6; // one tile between them
+		SturdyRat rat = ratAt(cell);
+
+		katana.duelistAbility(hero, cell);
+
+		assertEquals(4 * W + 5, hero.pos, "fixture: the hero lunged next to the rat");
+		// a roll of 5 plus 4 at +0; the old 1.35x multiplier made it 7
+		assertEquals(9, rat.HT - rat.HP);
+	}
+
+	@Test
+	void rapierLungeBoostUsesTheBuffedLevel() {
+		Hero hero = heroOnFixture();
+		FixedRollRapier rapier = identifiedAt(new FixedRollRapier(), 4);
+		hero.belongings.weapon = rapier;
+		Buff.affect(hero, Degrade.class, 30f);
+		assertEquals(3, rapier.buffedLvl(), "fixture: degrade lowers a +4 rapier to +3");
+		int cell = 4 * W + 6;
+		SturdyRat rat = ratAt(cell);
+
+		rapier.duelistAbility(hero, cell);
+
+		// a roll of 5 plus 3+3; the boost read the unbuffed level and made it 12
+		assertEquals(11, rat.HT - rat.HP);
 	}
 }

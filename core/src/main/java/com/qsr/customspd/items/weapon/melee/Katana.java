@@ -55,6 +55,19 @@ public class Katana extends MeleeWeapon {
 
 	@Override
 	protected void duelistAbility(Hero hero, Integer target) {
-		Rapier.lungeAbility(hero, target, 1.35f, 0, this);
+		//+(4+lvl) damage, equivalent to +33% damage
+		int dmgBoost = augment.damageFactor(4 + buffedLvl());
+		Rapier.lungeAbility(hero, target, 1, dmgBoost, this);
 	}
+
+	@Override
+	public String abilityInfo() {
+		int dmgBoost = levelKnown ? 4+buffedLvl() : 4;
+		if (levelKnown){
+			return Messages.get(this, "ability_desc", augment.damageFactor(min()+dmgBoost), augment.damageFactor(max()+dmgBoost));
+		} else {
+			return Messages.get(this, "typical_ability_desc", min(0)+dmgBoost, max(0)+dmgBoost);
+		}
+	}
+
 }

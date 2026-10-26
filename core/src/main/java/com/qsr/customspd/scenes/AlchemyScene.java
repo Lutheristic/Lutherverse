@@ -657,7 +657,16 @@ public class AlchemyScene extends PixelScene {
 
 		lastRecipe = recipe;
 		repeat.enable(foundItems);
+
 		cancel.enable(false);
+		synchronized (inputs) {
+			for (int i = 0; i < inputs.length; i++) {
+				if (inputs[i] != null && inputs[i].item() != null) {
+					cancel.enable(true);
+					break;
+				}
+			}
+		}
 	}
 	
 	public void populate(ArrayList<Item> toFind, Belongings inventory){

@@ -38,6 +38,7 @@ import com.qsr.customspd.items.Generator;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.ItemStatusHandler;
 import com.qsr.customspd.items.Recipe;
+import com.qsr.customspd.items.potions.brews.AquaBrew;
 import com.qsr.customspd.items.potions.elixirs.ElixirOfHoneyedHealing;
 import com.qsr.customspd.items.potions.exotic.ExoticPotion;
 import com.qsr.customspd.items.potions.exotic.PotionOfCleansing;
@@ -300,9 +301,8 @@ public class Potion extends Item {
 			
 		} else  {
 
-			//storm clouds specifically doesn't press cells, so it can disarm traps
-			//(upstream also excludes AquaBrew here; add it when upstream e67d25967 is ported)
-			if (!(this instanceof PotionOfStormClouds)){
+			//aqua brew and storm clouds specifically don't press cells, so they can disarm traps
+			if (!(this instanceof AquaBrew) && !(this instanceof PotionOfStormClouds)){
 				Dungeon.level.pressCell( cell );
 			}
 			shatter( cell );

@@ -3,6 +3,7 @@ package com.qsr.customspd.items.potions;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.items.Item;
+import com.qsr.customspd.items.potions.brews.AquaBrew;
 import com.qsr.customspd.items.potions.exotic.PotionOfStormClouds;
 import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.levels.traps.Trap;
@@ -18,13 +19,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Port regression test for upstream SPD bb90b1640 (v2.5.0): "storm clouds now no longer presses
- * cells when thrown".
+ * cells when thrown", and 466ca870d (v2.4.0): "fixed aqua brew triggering traps when thrown".
  *
  * Potion.onThrow hard-presses the landing cell before shattering. A thrown potion of storm clouds
  * therefore set off a trap it landed on, instead of letting the cloud's water disarm the trap
- * (StormCloud.evolve turns trap cells to water). Upstream excludes storm clouds, and aqua brew,
- * from the press. CPDU has no AquaBrew yet (upstream e67d25967), so only the storm clouds term
- * is exercised here.
+ * (StormCloud.evolve turns trap cells to water). Aqua brew had the same problem. Upstream
+ * excludes both from the press.
  *
  * The control case throws a potion that must still press the cell, proving the trap fixture
  * really does fire when pressed.
@@ -85,6 +85,17 @@ class StormCloudsThrowPortTest {
 		new PotionOfStormClouds().onThrow(cell);
 
 		assertEquals(0, trap.activations, "storm clouds must not press the cell, so the trap can be disarmed by the water");
+	}
+
+	@Test
+	void aThrownAquaBrewDoesNotSetOffTheTrapItLandsOn() throws Exception {
+		HeadlessLevel level = HeadlessLevel.install(8, 8);
+		int cell = 5 * level.width() + 5;
+		CountingTrap trap = armTrapAndGetHeroSetUp(level, cell);
+
+		new AquaBrew().onThrow(cell);
+
+		assertEquals(0, trap.activations, "aqua brew must not press the cell, so the trap can be disarmed by the water");
 	}
 
 	@Test

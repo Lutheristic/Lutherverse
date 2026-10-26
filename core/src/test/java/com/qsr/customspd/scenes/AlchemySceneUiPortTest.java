@@ -6,6 +6,7 @@ import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.LiquidMetal;
+import com.qsr.customspd.journal.Document;
 import com.qsr.customspd.test.HeadlessRun;
 import com.qsr.customspd.ui.IconButton;
 import com.qsr.customspd.ui.RedButton;
@@ -30,12 +31,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -285,5 +288,67 @@ class AlchemySceneUiPortTest {
 		wide.setRect(0, 20, 180, 130);
 		pages = (RedButton[]) read(wide, WndJournal.AlchemyTab.class, "pageButtons");
 		assertEquals(20, pages[pages.length - 1].top(), "all pages on one row");
+	}
+
+	// upstream 543455727
+	@Test
+	void theSceneCanRefreshTheAlchemyGuide() throws Exception {
+		Method updateList = WndJournal.AlchemyTab.class.getDeclaredMethod("updateList");
+		assertTrue(Modifier.isPublic(updateList.getModifiers()), "AlchemyTab.updateList must be public");
+	}
+
+	/** A split guide open on the potions page, which lists recipes. */
+	private WndJournal.AlchemyTab openSplitGuide() throws Exception {
+		Document.ALCHEMY_GUIDE.findPage(0);
+		WndJournal.AlchemyTab.currentPageIdx = 0;
+		splitGuide(true);
+		createScene();
+		WndJournal.AlchemyTab guide = (WndJournal.AlchemyTab) read(scene, AlchemyScene.class, "alchGuide");
+		assertNotNull(guide, "test setup: the guide is split out");
+		assertFalse(shownRecipes(guide).isEmpty(), "test setup: the guide shows a page of recipes");
+		return guide;
+	}
+
+	/** The guide rebuilds every recipe it shows each time it refreshes. */
+	private static List<?> shownRecipes(WndJournal.AlchemyTab guide) throws Exception {
+		return (List<?>) read(guide, WndJournal.AlchemyTab.class, "recipes");
+	}
+
+	// upstream 543455727
+	@Test
+	void clearingTheBenchRefreshesTheSplitGuide() throws Exception {
+		WndJournal.AlchemyTab guide = openSplitGuide();
+		Object shown = shownRecipes(guide).get(0);
+
+		scene.clearSlots();
+
+		assertNotSame(shown, shownRecipes(guide).get(0), "the guide must refresh");
+	}
+
+	// upstream 543455727
+	@Test
+	void aRecipeOnTheBenchRefreshesTheSplitGuide() throws Exception {
+		WndJournal.AlchemyTab guide = openSplitGuide();
+		benchFifteenMetal();
+		Object shown = shownRecipes(guide).get(0);
+
+		Method updateState = AlchemyScene.class.getDeclaredMethod("updateState");
+		updateState.setAccessible(true);
+		updateState.invoke(scene);
+
+		assertNotSame(shown, shownRecipes(guide).get(0), "the guide must refresh");
+	}
+
+	// upstream 543455727
+	@Test
+	void craftingRefreshesTheSplitGuide() throws Exception {
+		WndJournal.AlchemyTab guide = openSplitGuide();
+		benchFifteenMetal();
+		Object shown = shownRecipes(guide).get(0);
+
+		// the five metal left over make no recipe, so only the craft itself can refresh the guide
+		combine(scene, 0);
+
+		assertNotSame(shown, shownRecipes(guide).get(0), "the guide must refresh");
 	}
 }

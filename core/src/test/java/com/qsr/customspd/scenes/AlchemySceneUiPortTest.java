@@ -11,9 +11,14 @@ import com.qsr.customspd.ui.IconButton;
 import com.qsr.customspd.ui.RedButton;
 import com.qsr.customspd.ui.RenderedTextBlock;
 import com.qsr.customspd.ui.ScrollPane;
+import com.qsr.customspd.ui.StyledButton;
 import com.qsr.customspd.windows.IconTitle;
 import com.qsr.customspd.windows.WndJournal;
+import com.watabou.gltextures.TextureCache;
+import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.Gizmo;
+import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
 import com.watabou.utils.PlatformSupport;
 import org.junit.jupiter.api.AfterEach;
@@ -26,11 +31,13 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -179,5 +186,104 @@ class AlchemySceneUiPortTest {
 		assertEquals(100, list.left(), "recipe list left");
 		assertEquals(pages[pages.length - 1].bottom() + 1, list.top(), "recipe list starts under the buttons");
 		assertEquals(180, list.bottom(), 0.001f, "recipe list ends at the tab's bottom");
+	}
+
+	private static List<Gizmo> members(Group group) throws Exception {
+		@SuppressWarnings("unchecked")
+		List<Gizmo> members = (List<Gizmo>) read(group, Group.class, "members");
+		return members;
+	}
+
+	private static <T> T only(Group group, Class<T> type) throws Exception {
+		T found = null;
+		for (Gizmo g : members(group)) {
+			if (type.isInstance(g)) {
+				assertNull(found, "more than one " + type.getSimpleName());
+				found = type.cast(g);
+			}
+		}
+		return found;
+	}
+
+	private static void splitGuide(boolean split) throws Exception {
+		Field f = AlchemyScene.class.getDeclaredField("splitAlchGuide");
+		f.setAccessible(true);
+		f.setBoolean(null, split);
+	}
+
+	// upstream a6fe68317
+	@Test
+	void theTitleCarriesTheAlchemyIconAndIsCentred() throws Exception {
+		createScene();
+		IconTitle title = only(scene, IconTitle.class);
+		assertNotNull(title, "the scene title is an icon title");
+		Image icon = (Image) read(title, IconTitle.class, "imIcon");
+		assertSame(TextureCache.get(Asset.getAssetFilePath(GeneralAsset.ICON_ALCHEMY)), icon.texture, "alchemy icon");
+		assertEquals((Camera.main.width - title.reqWidth()) / 2f, title.left(), 0.5f, "centred on its own width");
+	}
+
+	// upstream a6fe68317
+	@Test
+	void theGuideButtonSitsCentredAboveTheEnergyLine() throws Exception {
+		createScene();
+		StyledButton guide = only(scene, StyledButton.class);
+		assertNotNull(guide, "the guide opens from a labelled button");
+		assertEquals("Guide", guide.text());
+		int centerW = (int) read(null, AlchemyScene.class, "centerW");
+		assertEquals(centerW, guide.left() + guide.width() / 2f, 0.5f, "centred on the bench");
+		IconButton energyAdd = (IconButton) read(scene, AlchemyScene.class, "energyAdd");
+		assertEquals(energyAdd.top() - 2, guide.bottom(), 0.5f, "just above the energy line");
+	}
+
+	// upstream a6fe68317
+	@Test
+	void aWideScreenShowsTheGuideBesideTheBench() throws Exception {
+		splitGuide(true);
+		createScene();
+		assertEquals(375, Camera.main.width, "test setup: camera width");
+		assertEquals(250, Camera.main.height, "test setup: camera height");
+
+		assertTrue((boolean) read(null, AlchemyScene.class, "splitAlchGuide"), "the split stays on");
+		WndJournal.AlchemyTab guide = only(scene, WndJournal.AlchemyTab.class);
+		assertNotNull(guide, "the guide is part of the scene");
+		assertTrue(guide.left() >= Camera.main.width / 2f, "the guide fills the right half");
+		assertEquals(126, guide.width(), "the guide is a portrait journal wide");
+
+		// the bench takes the left half, and under 280 tall the energy line stays with it
+		assertEquals(112, (int) read(null, AlchemyScene.class, "centerW"));
+		RenderedTextBlock energy = (RenderedTextBlock) read(scene, AlchemyScene.class, "energyLeft");
+		assertEquals(112, energy.left() + energy.width() / 2f, 0.5f, "energy line centre");
+	}
+
+	// upstream a6fe68317
+	@Test
+	void aNarrowScreenKeepsTheGuideInAWindow() throws Exception {
+		splitGuide(true);
+		createScene(500, 800);
+		assertTrue(Camera.main.width < 300, "test setup: too narrow to split");
+
+		assertFalse((boolean) read(null, AlchemyScene.class, "splitAlchGuide"), "the split turns itself off");
+		assertNull(only(scene, WndJournal.AlchemyTab.class), "no guide in the scene");
+		assertEquals(Camera.main.width / 2, (int) read(null, AlchemyScene.class, "centerW"), "the bench is centred");
+	}
+
+	// upstream a6fe68317, WndJournal part
+	@Test
+	void theGuidePutsAllPagesOnOneRowFrom180Wide() throws Exception {
+		createScene();
+		assertTrue(PixelScene.landscape(), "test setup: a landscape screen");
+
+		WndJournal.AlchemyTab narrow = new WndJournal.AlchemyTab();
+		scene.add(narrow);
+		narrow.setRect(0, 20, 126, 191);
+		RedButton[] pages = (RedButton[]) read(narrow, WndJournal.AlchemyTab.class, "pageButtons");
+		assertEquals(20, pages[4].top(), "five pages on the first row");
+		assertEquals(20 + pages[4].height(), pages[5].top(), "the rest on a second row, even in landscape");
+
+		WndJournal.AlchemyTab wide = new WndJournal.AlchemyTab();
+		scene.add(wide);
+		wide.setRect(0, 20, 180, 130);
+		pages = (RedButton[]) read(wide, WndJournal.AlchemyTab.class, "pageButtons");
+		assertEquals(20, pages[pages.length - 1].top(), "all pages on one row");
 	}
 }

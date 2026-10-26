@@ -97,7 +97,7 @@ public class Flail extends MeleeWeapon {
 		if (Dungeon.hero.buff(SpinAbilityTracker.class) != null){
 			return 0;
 		} else {
-			return 2;
+			return 1;
 		}
 	}
 

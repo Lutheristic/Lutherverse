@@ -80,13 +80,13 @@ class RapierMissQuickslotPortTest {
 		Rapier rapier = new Rapier();
 		hero.belongings.secondWep = rapier;
 		MeleeWeapon.Charger charger = Buff.affect(hero, MeleeWeapon.Charger.class);
-		charger.secondCharges = 2;
-		charger.secondPartialCharge = 0;
+		charger.charges = 2;
+		charger.partialCharge = 0;
 		GameScene.updateItemDisplays = false;
 
 		rapier.duelistAbility(hero, 4 * level.width() + 6);
 
-		assertEquals(1, charger.secondCharges, "fixture: the miss spent a second-pool charge");
+		assertEquals(1, charger.charges, "fixture: the miss spent a charge from the shared pool");
 		assertTrue(GameScene.updateItemDisplays, "the spent charge is shown on the quickslot");
 	}
 }

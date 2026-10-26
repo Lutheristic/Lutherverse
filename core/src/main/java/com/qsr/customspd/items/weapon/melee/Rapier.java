@@ -157,22 +157,11 @@ public class Rapier extends MeleeWeapon {
 					});
 				} else {
 					//spends charge but otherwise does not count as an ability use
-					//CPDU keeps separate primary/second-weapon charge pools (upstream 11a410f07's
-					//shared pool is not ported), so pay from the pool of the weapon that lunged,
-					//selected exactly as MeleeWeapon.beforeAbilityUsed does.
 					Charger charger = Buff.affect(hero, Charger.class);
-					if (hero.belongings.weapon == wep) {
-						charger.partialCharge -= 1;
-						while (charger.partialCharge < 0 && charger.charges > 0) {
-							charger.charges--;
-							charger.partialCharge++;
-						}
-					} else {
-						charger.secondPartialCharge -= 1;
-						while (charger.secondPartialCharge < 0 && charger.secondCharges > 0) {
-							charger.secondCharges--;
-							charger.secondPartialCharge++;
-						}
+					charger.partialCharge -= 1;
+					while (charger.partialCharge < 0 && charger.charges > 0) {
+						charger.charges--;
+						charger.partialCharge++;
 					}
 					hero.belongings.abilityWeapon = null;
 					updateQuickslot();

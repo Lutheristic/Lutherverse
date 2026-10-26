@@ -248,15 +248,10 @@ class TranslationPlaceholderTest {
 	// Pack overrides already stale before the pack check existed. Anything else that fails it is new;
 	// remove an entry here once its pack string is fixed.
 	private static final List<String> KNOWN_PACK_MISMATCHES = Arrays.asList(
-			"Jowiro's Class Reskins/messages.properties items.weapon.melee.assassinsblade.ability_desc",
 			"Jowiro's Class Reskins/messages.properties items.weapon.melee.crossbow.ability_desc",
-			"Jowiro's Class Reskins/messages.properties items.weapon.melee.dagger.ability_desc",
-			"Jowiro's Class Reskins/messages.properties items.weapon.melee.dirk.ability_desc",
 			"Jowiro's Class Reskins/messages.properties items.weapon.melee.greatshield.ability_desc",
-			"Jowiro's Class Reskins/messages.properties items.weapon.melee.quarterstaff.ability_desc",
 			"Jowiro's Class Reskins/messages.properties items.weapon.melee.roundshield.ability_desc",
 			"Jowiro's Class Reskins/messages.properties items.weapon.melee.runicblade.ability_desc",
-			"Jowiro's Class Reskins/messages.properties items.weapon.melee.scimitar.ability_desc",
 			"Jowiro's Class Reskins/messages.properties items.weapon.melee.whip.ability_desc",
 			"Slugcat skins/messages.properties items.weapon.spiritbow.stats"
 	);

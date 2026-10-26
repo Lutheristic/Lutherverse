@@ -62,15 +62,6 @@ public class Mace extends MeleeWeapon {
 	}
 
 	@Override
-	protected int baseChargeUse(Hero hero, Char target){
-		if (target == null || (target instanceof Mob && ((Mob) target).surprisedBy(hero))) {
-			return 1;
-		} else {
-			return 2;
-		}
-	}
-
-	@Override
 	protected void duelistAbility(Hero hero, Integer target) {
 		//+(4+lvl) damage, roughly equivalent to +40% damage
 		int dmgBoost = augment.damageFactor(4 + buffedLvl());
@@ -106,28 +97,20 @@ public class Mace extends MeleeWeapon {
 		}
 		hero.belongings.abilityWeapon = null;
 
-		//need to separately check charges here, as non-surprise attacks cost 2
+		//no bonus damage if attack isn't a surprise
 		if (enemy instanceof Mob && !((Mob) enemy).surprisedBy(hero)){
-			Charger charger = Buff.affect(hero, Charger.class);
-			if (Dungeon.hero.belongings.weapon == wep) {
-				if (charger.charges + charger.partialCharge < wep.abilityChargeUse(hero, enemy)){
-					GLog.w(Messages.get(wep, "ability_no_charge"));
-					return;
-				}
-			} else {
-				if (charger.secondCharges + charger.secondPartialCharge < wep.abilityChargeUse(hero, enemy)){
-					GLog.w(Messages.get(wep, "ability_no_charge"));
-					return;
-				}
-			}
+			dmgMulti = Math.min(1, dmgMulti);
+			dmgBoost = 0;
 		}
 
+		float finalDmgMulti = dmgMulti;
+		int finalDmgBoost = dmgBoost;
 		hero.sprite.attack(enemy.pos, new Callback() {
 			@Override
 			public void call() {
 				wep.beforeAbilityUsed(hero, enemy);
 				AttackIndicator.target(enemy);
-				if (hero.attack(enemy, dmgMulti, dmgBoost, Char.INFINITE_ACCURACY)) {
+				if (hero.attack(enemy, finalDmgMulti, finalDmgBoost, Char.INFINITE_ACCURACY)) {
 					Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);
 					if (enemy.isAlive()){
 						Buff.affect(enemy, Daze.class, Daze.DURATION);

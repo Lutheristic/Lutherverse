@@ -22,7 +22,6 @@
 package com.qsr.customspd.items.weapon.melee;
 
 import com.qsr.customspd.Assets;
-import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.messages.Messages;
@@ -42,11 +41,6 @@ public class WarScythe extends MeleeWeapon {
 	public int max(int lvl) {
 		return  Math.round(6.67f*(tier+1)) +    //40 base, up from 30
 				lvl*(tier+1);                   //scaling unchanged
-	}
-
-	@Override
-	protected int baseChargeUse(Hero hero, Char target){
-		return 2;
 	}
 
 	@Override

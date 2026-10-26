@@ -22,9 +22,7 @@
 package com.qsr.customspd.items.weapon.melee;
 
 import com.qsr.customspd.Assets;
-import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.hero.Hero;
-import com.qsr.customspd.actors.mobs.Mob;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.assets.GeneralAsset;
 
@@ -48,15 +46,6 @@ public class BattleAxe extends MeleeWeapon {
 	@Override
 	public String targetingPrompt() {
 		return Messages.get(this, "prompt");
-	}
-
-	@Override
-	protected int baseChargeUse(Hero hero, Char target){
-		if (target == null || (target instanceof Mob && ((Mob) target).surprisedBy(hero))) {
-			return 1;
-		} else {
-			return 2;
-		}
 	}
 
 	@Override

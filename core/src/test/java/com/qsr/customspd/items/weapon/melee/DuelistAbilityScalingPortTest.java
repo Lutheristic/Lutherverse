@@ -61,7 +61,7 @@ class DuelistAbilityScalingPortTest {
 
 		// 3 + level: the extra turn of the stated 4 + level is spent by the instant activation
 		assertEquals(5f, hero.buff(Quarterstaff.DefensiveStance.class).cooldown(), 0.0001f);
-		assertTrue(staff.abilityInfo().contains("_6 turns_"), staff.abilityInfo());
+		assertTrue(staff.abilityInfo().contains("_6 turns._"), staff.abilityInfo());
 	}
 
 	@Test
@@ -72,8 +72,9 @@ class DuelistAbilityScalingPortTest {
 		scimitar.duelistAbility(hero, null);
 
 		assertEquals(6f, hero.buff(Scimitar.SwordDance.class).cooldown(), 0.0001f);
-		assertTrue(scimitar.abilityInfo().contains("_7 turns_"), scimitar.abilityInfo());
+		assertTrue(scimitar.abilityInfo().contains("_7 turns._"), scimitar.abilityInfo());
 		assertTrue(scimitar.abilityInfo().contains("+60% attack speed"), "%% must render as a literal percent");
+		assertTrue(scimitar.abilityInfo().contains("+50% accuracy"), "11a410f07: the text states Hero's 1.5x sword dance accuracy");
 	}
 
 	@Test
@@ -94,8 +95,8 @@ class DuelistAbilityScalingPortTest {
 
 	@Test
 	void unidentifiedWeaponsDescribeTheTypicalBaseValue() {
-		assertTrue(new Quarterstaff().abilityInfo().contains("typically for _4 turns_"));
-		assertTrue(new Scimitar().abilityInfo().contains("typically for _4 turns_"));
+		assertTrue(new Quarterstaff().abilityInfo().contains("typically for _4 turns._"));
+		assertTrue(new Scimitar().abilityInfo().contains("typically for _4 turns._"));
 		assertTrue(new RoundShield().abilityInfo().contains("typically within _8 turns_"));
 		assertTrue(new Greatshield().abilityInfo().contains("typically within _5 turns_"));
 		assertTrue(new RunicBlade().abilityInfo().contains("typically has _+200% enchantment power._"),

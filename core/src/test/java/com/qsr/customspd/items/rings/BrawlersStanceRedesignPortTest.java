@@ -108,7 +108,7 @@ class BrawlersStanceRedesignPortTest {
 		MeleeWeapon.Charger charger = emptyCharger();
 		charger.act();
 		float normal = charger.partialCharge;
-		assertEquals(1f / 37f, normal, 1e-6f, "test setup: cap 3, 0 charges -> 1/(40-3) per turn");
+		assertEquals(1f / 57f, normal, 1e-6f, "test setup: cap 2, 0 charges -> 1/(60-1.5*2) per turn");
 
 		charger.partialCharge = 0f;
 		toggle();
@@ -117,22 +117,19 @@ class BrawlersStanceRedesignPortTest {
 	}
 
 	@Test
-	void theStanceAlsoHalvesTheChampionSecondPool() {
+	void theStanceAlsoHalvesTheChampionsFasterGain() {
 		duelist();
 		hero.subClass = HeroSubClass.CHAMPION;
 		MeleeWeapon.Charger charger = emptyCharger();
-		charger.charges = charger.chargeCap(); // keep the primary pool out of the way
-		charger.secondCharges = 0;
-		charger.secondPartialCharge = 0f;
 		charger.act();
-		float normal = charger.secondPartialCharge;
-		assertTrue(normal > 0f, "test setup: the champion pool regenerates");
+		float normal = charger.partialCharge;
+		assertEquals(1.5f / 54f, normal, 1e-6f, "test setup: champion cap 4, 0 charges -> 1.5/(60-1.5*4) per turn");
 
-		charger.secondPartialCharge = 0f;
+		charger.partialCharge = 0f;
 		toggle();
 		charger.act();
-		assertEquals(normal / 2f, charger.secondPartialCharge, 1e-6f,
-				"upstream's single shared pool is halved; CPDU's second pool must be too");
+		assertEquals(normal / 2f, charger.partialCharge, 1e-6f,
+				"the stance halves the shared pool after the Champion's bonus");
 	}
 
 	// --- 25ef7a59e + f6f9f5eb6: toggling and the 50-turn minimum ---
@@ -167,7 +164,7 @@ class BrawlersStanceRedesignPortTest {
 
 		MeleeWeapon.Charger charger = emptyCharger();
 		charger.act();
-		assertEquals(1f / 74f, charger.partialCharge, 1e-6f,
+		assertEquals(1f / 114f, charger.partialCharge, 1e-6f,
 				"25ef7a59e: the charge penalty persists while the inactive stance lingers");
 
 		for (int i = 10; i < 49; i++) stance.act();
@@ -324,7 +321,7 @@ class BrawlersStanceRedesignPortTest {
 
 		MeleeWeapon.Charger charger = emptyCharger();
 		charger.act();
-		assertEquals(1f / 37f, charger.partialCharge, 1e-6f, "full-speed charge once it is gone");
+		assertEquals(1f / 57f, charger.partialCharge, 1e-6f, "full-speed charge once it is gone");
 	}
 
 	@Test

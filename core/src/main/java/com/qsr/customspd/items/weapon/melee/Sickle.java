@@ -54,11 +54,6 @@ public class Sickle extends MeleeWeapon {
 	}
 
 	@Override
-	protected int baseChargeUse(Hero hero, Char target){
-		return 2;
-	}
-
-	@Override
 	public String targetingPrompt() {
 		return Messages.get(this, "prompt");
 	}

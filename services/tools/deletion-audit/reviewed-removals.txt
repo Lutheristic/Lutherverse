@@ -381,3 +381,20 @@ FeatherFall.FeatherBuff#iconFadePercent()
 # upstream 4ec2c80e1 (v2.4.0): sandals recharge directly; grass charging goes through
 # Naturalism.charge() with no amount, so charge(float) is gone.
 SandalsOfNature.Naturalism#charge(float)
+
+# --- Duelist flat boosts and the monk rework (11 entries), reviewed 2026-10-26 ---
+# upstream dafbb6f85 (v2.4.0): damage abilities take a flat int boost, so these shared helpers
+# gained an int parameter (Sai's became a per-hit multiplier plus a per-hit boost).
+Mace#heavyBlowAbility(Hero, Integer, float, MeleeWeapon)
+Sai#comboStrikeAbility(Hero, Integer, float, MeleeWeapon)
+Spear#spikeAbility(Hero, Integer, float, MeleeWeapon)
+Sword#cleaveAbility(Hero, Integer, float, MeleeWeapon)
+# upstream bf56446d0 (v2.5.0): monk abilities lose their shared cooldown; usable() decides
+# instead (Flurry through FlurryCooldownTracker), and FocusBuff is a plain Buff with no fade.
+MonkEnergy.MonkAbility#cooldown()
+MonkEnergy.MonkAbility.Flurry#cooldown()
+MonkEnergy.MonkAbility.Focus#cooldown()
+MonkEnergy.MonkAbility.Focus.FocusBuff#iconFadePercent()
+MonkEnergy.MonkAbility.Dash#cooldown()
+MonkEnergy.MonkAbility.DragonKick#cooldown()
+MonkEnergy.MonkAbility.Meditate#cooldown()

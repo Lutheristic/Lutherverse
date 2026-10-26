@@ -166,7 +166,7 @@ class MobAiTest {
 				defender.state = defender.PASSIVE;
 				rat.aggro(defender);
 				// Monk Focus: Char.hit treats any defender's evasion as infinite, so this attack must miss.
-				Buff.affect(defender, MonkEnergy.MonkAbility.Focus.FocusBuff.class, 30f);
+				Buff.affect(defender, MonkEnergy.MonkAbility.Focus.FocusBuff.class);
 				int hp = defender.HP;
 
 				new TurnPump().untilActed(rat, 10);

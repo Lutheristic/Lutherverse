@@ -206,11 +206,11 @@ class BrawlersStanceRedesignPortTest {
 		hero.subClass = HeroSubClass.MONK;
 		hero.talents.get(2).put(Talent.UNENCUMBERED_SPIRIT, 1);
 
-		assertEquals(1.4f, energyFromOneRat(), 1e-6f, "test setup: tier-1 weapon at +1 gives +40%");
+		assertEquals(1.5f, energyFromOneRat(), 1e-6f, "test setup: tier-1 weapon at +1 gives +50%");
 		toggle();
 		assertEquals(1f, energyFromOneRat(), 1e-6f, "an active stance forfeits the weapon bonus");
 		toggle();
-		assertEquals(1.4f, energyFromOneRat(), 1e-6f, "25ef7a59e: a lingering inactive stance does not");
+		assertEquals(1.5f, energyFromOneRat(), 1e-6f, "25ef7a59e: a lingering inactive stance does not");
 	}
 
 	private float energyFromOneRat() {

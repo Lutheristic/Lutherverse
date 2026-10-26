@@ -37,6 +37,7 @@ import com.qsr.customspd.ui.RedButton;
 import com.qsr.customspd.ui.RenderedTextBlock;
 import com.qsr.customspd.ui.StyledButton;
 import com.qsr.customspd.ui.Window;
+import com.qsr.customspd.windows.IconTitle;
 import com.qsr.customspd.windows.WndTitledMessage;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Camera;
@@ -74,10 +75,10 @@ public class NewsScene extends PixelScene {
 		btnExit.setPos(w - btnExit.width(), 0);
 		add(btnExit);
 
-		RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(this, "title"), 9);
-		title.hardlight(Window.TITLE_COLOR);
+		IconTitle title = new IconTitle(new Image(Asset.getAssetFilePath(GeneralAsset.ICON_NEWS)), Messages.get(this, "title"));
+		title.setSize(200, 0);
 		title.setPos(
-				(w - title.width()) / 2f,
+				(w - title.reqWidth()) / 2f,
 				(20 - title.height()) / 2f
 		);
 		align(title);

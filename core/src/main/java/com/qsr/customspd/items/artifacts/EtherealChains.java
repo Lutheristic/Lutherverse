@@ -44,6 +44,7 @@ import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.tiles.DungeonTilemap;
 import com.qsr.customspd.utils.BArray;
 import com.qsr.customspd.utils.GLog;
+import com.watabou.noosa.Camera;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
@@ -208,6 +209,8 @@ public class EtherealChains extends Artifact {
 
 		//don't pull if rooted
 		if (hero.rooted){
+			//CPDU has no PixelScene.shake (upstream 02210b0a8's screen-shake setting); Camera.main.shake is its equivalent
+			Camera.main.shake( 1, 1f );
 			GLog.w( Messages.get(EtherealChains.class, "rooted") );
 			return;
 		}

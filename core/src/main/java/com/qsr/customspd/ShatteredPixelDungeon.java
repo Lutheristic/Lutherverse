@@ -67,6 +67,13 @@ public class ShatteredPixelDungeon extends Game {
 		com.watabou.utils.Bundle.addAlias(
 				com.qsr.customspd.actors.hero.Talent.LiquidAgilACCTracker.class,
 				"com.qsr.customspd.actors.hero.Talent$RestoredAgilACCTracker" );
+		//v2.5.0 removed these monk trackers, an old save gets a plain buff that just expires
+		com.watabou.utils.Bundle.addAlias(
+				com.qsr.customspd.actors.buffs.FlavourBuff.class,
+				"com.qsr.customspd.actors.buffs.MonkEnergy$MonkAbility$JustHitTracker" );
+		com.watabou.utils.Bundle.addAlias(
+				com.qsr.customspd.actors.buffs.FlavourBuff.class,
+				"com.qsr.customspd.actors.buffs.MonkEnergy$MonkAbility$Focus$FocusActivation" );
 
 		//pre-v2.4.0
 		com.watabou.utils.Bundle.addAlias(

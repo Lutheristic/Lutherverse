@@ -5,6 +5,7 @@ import com.badlogic.gdx.utils.PropertiesUtils;
 import com.qsr.customspd.Assets;
 import com.qsr.customspd.actors.buffs.Barkskin;
 import com.qsr.customspd.actors.buffs.Charm;
+import com.qsr.customspd.actors.buffs.MonkEnergy;
 import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.levels.traps.PoisonDartTrap;
 import com.qsr.customspd.levels.traps.WornDartTrap;
@@ -22,11 +23,13 @@ import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Keys the cpdu-fz84 v2.5.4 translation sync could not see when it ran, because CPDU's English for
@@ -171,5 +174,70 @@ class PostSyncTranslationTest {
 				"You were killed by the poison dart trap...");
 		assertKeyShipsEverywhere(Assets.Messages.LEVELS, WornDartTrap.class, "ondeath",
 				"You were killed by the worn dart trap...");
+	}
+
+	private static void assertEveryLanguage(Class<?> cls, String key, Predicate<String> holds, String what) {
+		for (Languages lang : Languages.values()) {
+			Messages.setup(lang);
+			String text = Messages.get(cls, key);
+			assertTrue(holds.test(text), lang + " " + cls.getSimpleName() + "." + key + " " + what + ": " + text);
+		}
+	}
+
+	/**
+	 * Upstream bf56446d0 (v2.5.0) reworked the monk. These keys only matched v2.5.4's English once
+	 * that port landed, so every translation was still describing the old abilities and talents,
+	 * and none had the empowered ability lines at all.
+	 */
+	@Test
+	void empoweredFlurryShipsInEveryLanguage() throws IOException {
+		assertKeyShipsEverywhere(MonkEnergy.MonkAbility.Flurry.class, "empower_desc",
+				"Two instant strikes that deal %1$d-%2$d damage, ignore armor, _and use your weapon's enchantment._ This ability cannot be used repeatedly.");
+	}
+
+	@Test
+	void focusTranslationsLastUntilTheParry() throws IOException {
+		assertEveryLanguage(MonkEnergy.MonkAbility.Focus.class, "desc", t -> !t.contains("30"), "must not run out after 30 turns");
+		assertEveryLanguage(MonkEnergy.MonkAbility.Focus.class, "empower_desc", t -> !t.contains("30"), "must not run out after 30 turns");
+		assertKeyShipsEverywhere(MonkEnergy.MonkAbility.Focus.class, "empower_desc",
+				"The Monk _instantly focuses,_ letting her parry the next attack made against her.");
+	}
+
+	@Test
+	void dashTranslationsGiveTheNewRange() throws IOException {
+		assertEveryLanguage(MonkEnergy.MonkAbility.Dash.class, "desc", t -> t.contains("4") && !t.contains("3"), "must reach 4 tiles");
+		assertEveryLanguage(MonkEnergy.MonkAbility.Dash.class, "empower_desc", t -> t.contains("8") && !t.contains("6"), "must reach 8 tiles");
+		assertKeyShipsEverywhere(MonkEnergy.MonkAbility.Dash.class, "empower_desc",
+				"An instant dash up to _8 tiles_ away. This ability can go over hazards, but not through enemies or solid terrain.");
+	}
+
+	@Test
+	void unencumberedSpiritTranslationsGiveTheNewBonus() {
+		assertEveryLanguage(Talent.class, "unencumbered_spirit.desc", t -> t.contains("75") && !t.contains("120"),
+				"must give 50/75/100% more energy");
+	}
+
+	@Test
+	void monasticVigorTranslationsGiveTheNewDashRange() {
+		assertEveryLanguage(Talent.class, "monastic_vigor.desc", t -> t.contains("4"), "must give dash +4 range");
+	}
+
+	@Test
+	void combinedEnergyTranslationsRefundOneEnergy() {
+		assertEveryLanguage(Talent.class, "combined_energy.desc", t -> !t.contains("50"),
+				"must refund 1 energy, not half the energy spent");
+	}
+
+	/**
+	 * Upstream 00c45dc7f (v2.1.1) added a closing paragraph to Assassin's Reach: the blink crosses
+	 * hazards and enemies but not walls. The English took it with that port.
+	 */
+	@Test
+	void assassinsReachHasTheHazardParagraphInEveryLanguage() {
+		Messages.setup(Languages.ENGLISH);
+		int english = paragraphs(Messages.get(Talent.class, "assassins_reach.desc"));
+		assertEquals(4, english, "test setup: English is v2.5.4's four paragraphs");
+		assertEveryLanguage(Talent.class, "assassins_reach.desc", t -> paragraphs(t) == english,
+				"must carry the paragraph about crossing hazards");
 	}
 }

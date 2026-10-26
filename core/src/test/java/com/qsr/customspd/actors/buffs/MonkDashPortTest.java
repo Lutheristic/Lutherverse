@@ -127,7 +127,7 @@ class MonkDashPortTest {
 		int start = 4 * W + 2;
 		Hero hero = monkAt(start);
 
-		dash(hero, start + 4);
+		dash(hero, start + 5);
 
 		assertEquals(start, hero.pos);
 		assertEquals(5f, hero.buff(MonkEnergy.class).energy, 0.0001f);
@@ -170,7 +170,6 @@ class MonkDashPortTest {
 		assertEquals(start, hero.pos, "the hero must not land on the rat");
 		assertEquals(start + 2, rat.pos);
 		assertEquals(5f, hero.buff(MonkEnergy.class).energy, 0.0001f, "a cancelled dash costs no energy");
-		assertEquals(0, hero.buff(MonkEnergy.class).cooldown, "and starts no cooldown");
 	}
 
 	@Test

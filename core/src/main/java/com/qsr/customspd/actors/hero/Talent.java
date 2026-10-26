@@ -352,8 +352,23 @@ public enum Talent {
 		public MeleeWeapon weapon;
 	};
 	public static class CombinedEnergyAbilityTracker extends FlavourBuff{
-		public int energySpent = -1;
+		public boolean monkAbilused = false;
 		public boolean wepAbilUsed = false;
+
+		private static final String MONK_ABIL_USED  = "monk_abil_used";
+		private static final String WEP_ABIL_USED   = "wep_abil_used";
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(MONK_ABIL_USED, monkAbilused);
+			bundle.put(WEP_ABIL_USED, wepAbilUsed);
+		}
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			monkAbilused = bundle.getBoolean(MONK_ABIL_USED);
+			wepAbilUsed = bundle.getBoolean(WEP_ABIL_USED);
+		}
 	}
 	public static class CounterAbilityTacker extends FlavourBuff{};
 

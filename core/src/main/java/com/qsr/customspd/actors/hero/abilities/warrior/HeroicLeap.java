@@ -68,6 +68,12 @@ public class HeroicLeap extends ArmorAbility {
 	public void activate( ClassArmor armor, Hero hero, Integer target ) {
 		if (target != null) {
 
+			if (hero.rooted){
+				//CPDU has no PixelScene.shake (upstream 02210b0a8's screen-shake setting); Camera.main.shake is its equivalent
+				Camera.main.shake( 1, 1f );
+				return;
+			}
+
 			Ballistica route = new Ballistica(hero.pos, target, Ballistica.STOP_TARGET | Ballistica.STOP_SOLID);
 			int cell = route.collisionPos;
 

@@ -54,6 +54,7 @@ import com.qsr.customspd.sprites.MobSprite;
 import com.qsr.customspd.ui.HeroIcon;
 import com.qsr.customspd.utils.BArray;
 import com.qsr.customspd.utils.GLog;
+import com.watabou.noosa.Camera;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PathFinder;
@@ -90,11 +91,17 @@ public class SmokeBomb extends ArmorAbility {
 	protected void activate(ClassArmor armor, Hero hero, Integer target) {
 		if (target != null) {
 
+			if (target != hero.pos && hero.rooted){
+				//CPDU has no PixelScene.shake (upstream 02210b0a8's screen-shake setting); Camera.main.shake is its equivalent
+				Camera.main.shake( 1, 1f );
+				return;
+			}
+
 			PathFinder.buildDistanceMap(hero.pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null), 6);
 
 			if ( PathFinder.distance[target] == Integer.MAX_VALUE ||
 					!Dungeon.level.heroFOV[target] ||
-					Actor.findChar( target ) != null) {
+					(target != hero.pos && Actor.findChar( target ) != null)) {
 
 				GLog.w( Messages.get(this, "fov") );
 				return;

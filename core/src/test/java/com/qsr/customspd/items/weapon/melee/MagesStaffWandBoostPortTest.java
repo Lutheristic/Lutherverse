@@ -21,8 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * charge) also raised the staff's melee damage. The override now covers only
  * buffedVisiblyUpgraded(), the level shown on the item.
  *
- * Upstream's second hunk rewords the Desperate Power talent description; CPDU has no such talent
- * (or message key), so that hunk is dependency-deferred.
+ * Upstream's second hunk rewords the Desperate Power talent description, which arrived with that
+ * talent (upstream 935b831af).
  */
 class MagesStaffWandBoostPortTest {
 

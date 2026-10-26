@@ -112,8 +112,7 @@ public enum Talent {
 	//Mage T2
 	ENERGIZING_MEAL(GeneralAsset.TALENT_ICON_ENERGIZING_MEAL), INSCRIBED_POWER(GeneralAsset.TALENT_ICON_ENERGIZING_UPGRADE), WAND_PRESERVATION(GeneralAsset.TALENT_ICON_WAND_PRESERVATION), ARCANE_VISION(GeneralAsset.TALENT_ICON_ARCANE_VISION), SHIELD_BATTERY(GeneralAsset.TALENT_ICON_SHIELD_BATTERY),
 	//Mage T3
-	//TODO current empowering scrolls does nothing
-	EMPOWERING_SCROLLS(GeneralAsset.TALENT_ICON_EMPOWERING_SCROLLS, 3), ALLY_WARP(GeneralAsset.TALENT_ICON_ALLY_WARP, 3),
+	DESPERATE_POWER(GeneralAsset.TALENT_ICON_EMPOWERING_SCROLLS, 3), ALLY_WARP(GeneralAsset.TALENT_ICON_ALLY_WARP, 3),
 	//Battlemage T3
 	EMPOWERED_STRIKE(GeneralAsset.TALENT_ICON_EMPOWERED_STRIKE, 3), MYSTICAL_CHARGE(GeneralAsset.TALENT_ICON_MYSTICAL_CHARGE, 3), EXCESS_CHARGE(GeneralAsset.TALENT_ICON_EXCESS_CHARGE, 3),
 	//Warlock T3
@@ -465,7 +464,7 @@ public enum Talent {
 			Dungeon.observe();
 		}
 
-		if (talent == SECONDARY_CHARGE || talent == TWIN_UPGRADES || talent == STRONGMAN){
+		if (talent == SECONDARY_CHARGE || talent == TWIN_UPGRADES || talent == DESPERATE_POWER || talent == STRONGMAN){
 			Item.updateQuickslot();
 		}
 
@@ -857,7 +856,7 @@ public enum Talent {
 				Collections.addAll(tierTalents, HOLD_FAST, STRONGMAN);
 				break;
 			case MAGE:
-				Collections.addAll(tierTalents, EMPOWERING_SCROLLS, ALLY_WARP);
+				Collections.addAll(tierTalents, DESPERATE_POWER, ALLY_WARP);
 				break;
 			case ROGUE:
 				Collections.addAll(tierTalents, ENHANCED_RINGS, LIGHT_CLOAK);
@@ -977,6 +976,11 @@ public enum Talent {
 
 	private static final HashSet<String> removedTalents = new HashSet<>();
 	static{
+		//v2.4.0
+		removedTalents.add("TEST_SUBJECT");
+		removedTalents.add("TESTED_HYPOTHESIS");
+		//v2.2.0
+		removedTalents.add("EMPOWERING_SCROLLS");
 		//v1.4.0
 		removedTalents.add("BERSERKING_STAMINA");
 	}

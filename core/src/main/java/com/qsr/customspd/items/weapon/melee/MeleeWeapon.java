@@ -40,6 +40,7 @@ import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.KindOfWeapon;
 import com.qsr.customspd.items.rings.RingOfForce;
+import com.qsr.customspd.items.scrolls.ScrollOfRecharging;
 import com.qsr.customspd.items.weapon.Weapon;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.CellSelector;
@@ -216,6 +217,17 @@ public class MeleeWeapon extends Weapon {
 		hero.belongings.abilityWeapon = null;
 		if (hero.hasTalent(Talent.PRECISE_ASSAULT)){
 			Buff.prolong(hero, Talent.PreciseAssaultTracker.class, hero.cooldown()+4f);
+		}
+		if (hero.hasTalent(Talent.VARIED_CHARGE)){
+			Talent.VariedChargeTracker tracker = hero.buff(Talent.VariedChargeTracker.class);
+			if (tracker == null || tracker.weapon == getClass() || tracker.weapon == null){
+				Buff.affect(hero, Talent.VariedChargeTracker.class).weapon = getClass();
+			} else {
+				tracker.detach();
+				Charger charger = Buff.affect(hero, Charger.class);
+				charger.gainCharge(hero.pointsInTalent(Talent.VARIED_CHARGE) / 6f);
+				ScrollOfRecharging.charge(hero);
+			}
 		}
 		if (hero.hasTalent(Talent.COMBINED_LETHALITY)) {
 			Talent.CombinedLethalityAbilityTracker tracker = hero.buff(Talent.CombinedLethalityAbilityTracker.class);
@@ -485,7 +497,10 @@ public class MeleeWeapon extends Weapon {
 					charges++;
 					partialCharge--;
 				}
-				charges = Math.min(charges, chargeCap());
+				if (charges >= chargeCap()){
+					partialCharge = 0;
+					charges = chargeCap();
+				}
 				updateQuickslot();
 			}
 		}

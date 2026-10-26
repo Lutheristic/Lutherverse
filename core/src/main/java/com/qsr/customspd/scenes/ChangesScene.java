@@ -34,7 +34,6 @@ import com.qsr.customspd.ui.ExitButton;
 import com.qsr.customspd.ui.RenderedTextBlock;
 import com.qsr.customspd.ui.ScrollPane;
 import com.qsr.customspd.ui.StyledButton;
-import com.qsr.customspd.ui.Window;
 import com.qsr.customspd.ui.changelist.ChangeInfo;
 import com.qsr.customspd.ui.changelist.WndChanges;
 import com.qsr.customspd.ui.changelist.WndChangesTabbed;
@@ -80,10 +79,10 @@ public class ChangesScene extends PixelScene {
 		int w = Camera.main.width;
 		int h = Camera.main.height;
 
-		RenderedTextBlock title = PixelScene.renderTextBlock( Messages.get(this, "title"), 9 );
-		title.hardlight(Window.TITLE_COLOR);
+		IconTitle title = new IconTitle(new Image(Asset.getAssetFilePath(GeneralAsset.ICON_CHANGES)), Messages.get(this, "title"));
+		title.setSize(200, 0);
 		title.setPos(
-				(w - title.width()) / 2f,
+				(w - title.reqWidth()) / 2f,
 				(20 - title.height()) / 2f
 		);
 		align(title);
@@ -101,12 +100,12 @@ public class ChangesScene extends PixelScene {
 		if (h >= PixelScene.MIN_HEIGHT_FULL && w >= 300) {
 			panel.size( pw, ph );
 			panel.x = (w - pw) / 2f - pw/2 - 1;
-			panel.y = title.bottom() + 5;
+			panel.y = 20;
 
 			rightPanel = Chrome.get(Chrome.Type.TOAST);
 			rightPanel.size( pw, ph );
 			rightPanel.x = (w - pw) / 2f + pw/2 + 1;
-			rightPanel.y = title.bottom() + 5;
+			rightPanel.y = 20;
 			add(rightPanel);
 
 			rightScroll = new ScrollPane(new Component());
@@ -133,7 +132,7 @@ public class ChangesScene extends PixelScene {
 		} else {
 			panel.size( pw, ph );
 			panel.x = (w - pw) / 2f;
-			panel.y = title.bottom() + 5;
+			panel.y = 20;
 		}
 		align( panel );
 		add( panel );

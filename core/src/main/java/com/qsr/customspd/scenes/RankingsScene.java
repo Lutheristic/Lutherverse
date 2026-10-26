@@ -37,6 +37,7 @@ import com.qsr.customspd.ui.IconButton;
 import com.qsr.customspd.ui.IconUtils;
 import com.qsr.customspd.ui.RenderedTextBlock;
 import com.qsr.customspd.ui.Window;
+import com.qsr.customspd.windows.IconTitle;
 import com.qsr.customspd.windows.WndDailies;
 import com.qsr.customspd.windows.WndRanking;
 import com.watabou.noosa.BitmapText;
@@ -78,10 +79,10 @@ public class RankingsScene extends PixelScene {
 		
 		Rankings.INSTANCE.load();
 
-		RenderedTextBlock title = PixelScene.renderTextBlock( Messages.get(this, "title"), 9);
-		title.hardlight(Window.TITLE_COLOR);
+		IconTitle title = new IconTitle(new Image(Asset.getAssetFilePath(GeneralAsset.ICON_RANKINGS)), Messages.get(this, "title"));
+		title.setSize(200, 0);
 		title.setPos(
-				(w - title.width()) / 2f,
+				(w - title.reqWidth()) / 2f,
 				(20 - title.height()) / 2f
 		);
 		align(title);

@@ -10,6 +10,17 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 Everything on `main` since the fork base (`cpd-sync-base-2025-08-15`, CPD commit `c97fb83`).
 
+### 2026-10-26: alchemy items and charge caps
+
+**Ported**
+- Aqua blast is now aqua brew and feather fall is now an elixir, as in upstream v2.4.0. Old saves convert them. Feather fall now lasts through the landing, and one recipe gives a single elixir.
+- The alchemical and arcane catalysts are now the unstable brew and unstable spell. They pick their effect from an ordered table so a seed always rolls the same one, and they reroll once when the first pick doesn't suit the moment.
+- Brew, elixir and spell costs and output amounts match v2.5.4. Frost imbue chills for 3 turns, toxic imbue spreads 54 gas over 9 cells and lingers briefly, wild energy now takes a scroll of recharging, and wild energy and reclaim trap have upstream's new art.
+- Wands and artifacts drop their leftover partial charge once they're full, and the sandals of nature recharge directly instead of through grass charging.
+
+**Fixed**
+- A thrown aqua brew no longer sets off the trap it lands on, so its water can disarm it.
+
 ### 2026-10-25: tier-2 talents, monk and guard fixes
 
 **Ported**

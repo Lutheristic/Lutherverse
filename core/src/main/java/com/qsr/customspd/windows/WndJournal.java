@@ -271,10 +271,10 @@ public class WndJournal extends WndTabbed {
 		protected void layout() {
 			super.layout();
 
-			if (PixelScene.landscape()){
+			if (width() >= 180){
 				float buttonWidth = width()/pageButtons.length;
 				for (int i = 0; i < NUM_BUTTONS; i++) {
-					pageButtons[i].setRect(i*buttonWidth, 0, buttonWidth, ITEM_HEIGHT);
+					pageButtons[i].setRect(x + i*buttonWidth, y, buttonWidth, ITEM_HEIGHT);
 					PixelScene.align(pageButtons[i]);
 				}
 			} else {
@@ -283,7 +283,7 @@ public class WndJournal extends WndTabbed {
 				float y = 0;
 				float x = 0;
 				for (int i = 0; i < NUM_BUTTONS; i++) {
-					pageButtons[i].setRect(x, y, buttonWidth, ITEM_HEIGHT);
+					pageButtons[i].setRect(this.x + x, this.y + y, buttonWidth, ITEM_HEIGHT);
 					PixelScene.align(pageButtons[i]);
 					x += buttonWidth;
 					if (i == 4){
@@ -294,13 +294,13 @@ public class WndJournal extends WndTabbed {
 				}
 			}
 
-			list.setRect(0, pageButtons[NUM_BUTTONS-1].bottom() + 1, width,
-					height - pageButtons[NUM_BUTTONS-1].bottom() - 1);
+			list.setRect(x, pageButtons[NUM_BUTTONS-1].bottom() + 1, width,
+					height - pageButtons[NUM_BUTTONS-1].bottom() + y - 1);
 
 			updateList();
 		}
 
-		private void updateList() {
+		public void updateList() {
 
 			if (currentPageIdx != -1 && !Document.ALCHEMY_GUIDE.isPageFound(currentPageIdx)){
 				currentPageIdx = -1;

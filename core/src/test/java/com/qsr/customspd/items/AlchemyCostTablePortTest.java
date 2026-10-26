@@ -60,6 +60,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -201,6 +202,75 @@ class AlchemyCostTablePortTest {
 				new TelekineticGrab().quantity(8)}) {
 			assertEquals(60, stack.value(), stack.getClass().getSimpleName() + " gold");
 			assertEquals(12, stack.energyVal(), stack.getClass().getSimpleName() + " energy");
+		}
+	}
+
+	/**
+	 * Upstream 5cc36a8f0 moved each recipe's output count into a private OUT_QUANTITY constant that
+	 * value() and energyVal() divide by. One row per item that commit touched: the gold and energy a
+	 * whole brew is worth and how many one brew makes, so the prices cannot move with the refactor.
+	 */
+	private static final class Pricing {
+		final Class<?> recipe;
+		final Item item;
+		final int gold;
+		final int energy;
+		final int perBrew;
+
+		Pricing(Class<?> recipe, Item item, int gold, int energy, int perBrew) {
+			this.recipe = recipe;
+			this.item = item;
+			this.gold = gold;
+			this.energy = energy;
+			this.perBrew = perBrew;
+		}
+	}
+
+	private static List<Pricing> pricing() {
+		return Arrays.asList(
+				new Pricing(AquaBrew.Recipe.class, new AquaBrew(), 60, 12, 8),
+				new Pricing(ElixirOfFeatherFall.Recipe.class, new ElixirOfFeatherFall(), 60, 12, 1),
+				new Pricing(Alchemize.Recipe.class, new Alchemize(), 20, 4, 8),
+				new Pricing(BeaconOfReturning.Recipe.class, new BeaconOfReturning(), 60, 12, 5),
+				new Pricing(CurseInfusion.Recipe.class, new CurseInfusion(), 60, 12, 4),
+				new Pricing(PhaseShift.Recipe.class, new PhaseShift(), 60, 12, 6),
+				new Pricing(ReclaimTrap.Recipe.class, new ReclaimTrap(), 60, 12, 5),
+				new Pricing(Recycle.Recipe.class, new Recycle(), 60, 12, 12),
+				// summon elemental has no price of its own
+				new Pricing(SummonElemental.Recipe.class, new SummonElemental(), 0, 0, 6),
+				new Pricing(TelekineticGrab.Recipe.class, new TelekineticGrab(), 60, 12, 8),
+				new Pricing(WildEnergy.Recipe.class, new WildEnergy(), 60, 12, 5));
+	}
+
+	@Test
+	void eachRecipeKeepsItsOutputCountInOneConstant() throws Exception {
+		for (Pricing p : pricing()) {
+			String name = p.recipe.getName();
+			Field f = p.recipe.getDeclaredField("OUT_QUANTITY");
+			int mods = f.getModifiers();
+			assertTrue(Modifier.isPrivate(mods) && Modifier.isStatic(mods) && Modifier.isFinal(mods),
+					name + ".OUT_QUANTITY must be private static final");
+			assertEquals(int.class, f.getType(), name + ".OUT_QUANTITY type");
+			f.setAccessible(true);
+			assertEquals(p.perBrew, f.getInt(null), name + ".OUT_QUANTITY");
+
+			Recipe recipe = (Recipe) p.recipe.getDeclaredConstructor().newInstance();
+			ArrayList<Item> ingredients = recipe instanceof Recipe.SimpleRecipe
+					? ((Recipe.SimpleRecipe) recipe).getIngredients()
+					: items(new Sungrass.Seed(), new StoneOfAugmentation());
+			assertEquals(p.perBrew, recipe.sampleOutput(ingredients).quantity(), name + " makes");
+		}
+	}
+
+	@Test
+	void goldAndEnergyValuesAreUnchangedAtEveryStackSize() {
+		for (Pricing p : pricing()) {
+			String name = p.item.getClass().getSimpleName();
+			for (int q = 1; q <= 2 * p.perBrew + 1; q++) {
+				p.item.quantity(q);
+				assertEquals((int) (p.gold * (q / (float) p.perBrew)), p.item.value(), name + " x" + q + " gold");
+				assertEquals((int) (p.energy * (q / (float) p.perBrew)), p.item.energyVal(), name + " x" + q + " energy");
+			}
 		}
 	}
 }

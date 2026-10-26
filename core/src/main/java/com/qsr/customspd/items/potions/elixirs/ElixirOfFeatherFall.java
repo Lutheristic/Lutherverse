@@ -55,6 +55,13 @@ public class ElixirOfFeatherFall extends Elixir {
 			type = buffType.POSITIVE;
 		}
 
+		public void processFall(){
+			spend(-10f);
+			if (cooldown() <= 0) {
+				detach();
+			}
+		}
+
 		public static final float DURATION	= 50f;
 
 		@Override
@@ -75,24 +82,26 @@ public class ElixirOfFeatherFall extends Elixir {
 
 	@Override
 	public int value() {
-		return (int)(60 * (quantity/2f));
+		return (int)(60 * (quantity/(float) Recipe.OUT_QUANTITY));
 	}
 
 	@Override
 	public int energyVal() {
-		return (int)(12 * (quantity/2f));
+		return (int)(12 * (quantity/(float) Recipe.OUT_QUANTITY));
 	}
 
 	public static class Recipe extends com.qsr.customspd.items.Recipe.SimpleRecipe {
+
+		private static final int OUT_QUANTITY = 1;
 
 		{
 			inputs =  new Class[]{PotionOfLevitation.class};
 			inQuantity = new int[]{1};
 
-			cost = 17;
+			cost = 10;
 
 			output = ElixirOfFeatherFall.class;
-			outQuantity = 2;
+			outQuantity = OUT_QUANTITY;
 		}
 
 	}

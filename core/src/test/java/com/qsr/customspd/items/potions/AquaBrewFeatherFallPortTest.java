@@ -2,6 +2,7 @@ package com.qsr.customspd.items.potions;
 
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.ShatteredPixelDungeon;
+import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.Recipe;
@@ -10,6 +11,7 @@ import com.qsr.customspd.items.potions.brews.AquaBrew;
 import com.qsr.customspd.items.potions.elixirs.ElixirOfFeatherFall;
 import com.qsr.customspd.items.potions.exotic.PotionOfStormClouds;
 import com.qsr.customspd.levels.Terrain;
+import com.qsr.customspd.levels.features.Chasm;
 import com.qsr.customspd.messages.Languages;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.test.HeadlessGdx;
@@ -42,6 +44,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * whose protection lasts 50 turns instead of 30. Saves carry the old class names, so Bundle
  * aliases map them onto the new classes, and a bag that held one under its old category keeps it
  * on load even though it could no longer be put there.
+ *
+ * Upstream c63539188 (v2.5.0): one elixir per brew, for 10 energy, and landing in a chasm costs
+ * the protection 10 turns instead of ending it.
  */
 class AquaBrewFeatherFallPortTest {
 
@@ -158,16 +163,17 @@ class AquaBrewFeatherFallPortTest {
 	}
 
 	@Test
-	void levitationBrewsTwoFeatherFallElixirsForSeventeenEnergy() {
+	void levitationBrewsOneFeatherFallElixirForTenEnergy() {
 		ElixirOfFeatherFall.Recipe recipe = new ElixirOfFeatherFall.Recipe();
 		ArrayList<Item> ingredients = identified(recipe.getIngredients());
 
 		assertTrue(ingredients.get(0) instanceof PotionOfLevitation);
 		assertTrue(recipe.testIngredients(ingredients));
-		assertEquals(17, recipe.cost(ingredients));
+		assertEquals(10, recipe.cost(ingredients));
 		Item out = recipe.sampleOutput(ingredients);
 		assertTrue(out instanceof ElixirOfFeatherFall, "brews " + out);
-		assertEquals(2, out.quantity());
+		assertEquals(1, out.quantity());
+		assertEquals(60, out.value(), "one elixir is worth the whole brew");
 		assertTrue(registered(ingredients, ElixirOfFeatherFall.Recipe.class), "the alchemy pot must offer the recipe");
 	}
 
@@ -217,5 +223,29 @@ class AquaBrewFeatherFallPortTest {
 		ElixirOfFeatherFall.FeatherBuff buff = hero.buff(ElixirOfFeatherFall.FeatherBuff.class);
 		assertNotNull(buff, "drinking the elixir grants feather fall");
 		assertEquals(50f, buff.cooldown(), 0.001f);
+	}
+
+	@Test
+	void landingInAChasmCostsTenTurnsOfFeatherFall() throws Exception {
+		HeadlessLevel level = HeadlessLevel.install(8, 8);
+		Hero hero = heroOn(level, 3 * level.width() + 3);
+		new ElixirOfFeatherFall().apply(hero);
+
+		Chasm.heroLand();
+
+		ElixirOfFeatherFall.FeatherBuff buff = hero.buff(ElixirOfFeatherFall.FeatherBuff.class);
+		assertNotNull(buff, "one fall no longer uses up the elixir");
+		assertEquals(40f, buff.cooldown(), 0.001f);
+	}
+
+	@Test
+	void landingWithLessThanTenTurnsLeftEndsFeatherFall() throws Exception {
+		HeadlessLevel level = HeadlessLevel.install(8, 8);
+		Hero hero = heroOn(level, 3 * level.width() + 3);
+		Buff.append(hero, ElixirOfFeatherFall.FeatherBuff.class, 8f);
+
+		Chasm.heroLand();
+
+		assertNull(hero.buff(ElixirOfFeatherFall.FeatherBuff.class));
 	}
 }

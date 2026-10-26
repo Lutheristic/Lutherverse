@@ -340,3 +340,12 @@ Talent.CombinedLethalityTriggerTracker#iconFadePercent()
 # rather than replacing it in a constructor, so neither pulls extra cards from the decks.
 Statue#Statue()
 GuardianTrap.Guardian#Guardian()
+
+# --- tier-2 potion and scroll talent rework (3 entries), reviewed 2026-10-25 ---
+# upstream 33b065e69 (v2.2.0): healing-potion talents became potion talents, so
+# onHealingPotionUsed(Hero) gave way to onPotionUsed(Hero, int, float); ScrollEmpower.reset()
+# became reset(int); and onUpgradeScrollUsed lost its MYSTICAL_UPGRADE branch to onScrollUsed,
+# keeping no callers, exactly as in v2.5.4.
+ScrollEmpower#reset()
+Talent#onHealingPotionUsed(Hero)
+Talent#onUpgradeScrollUsed(Hero)

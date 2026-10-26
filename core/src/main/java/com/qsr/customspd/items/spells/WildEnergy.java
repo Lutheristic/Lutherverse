@@ -30,7 +30,6 @@ import com.qsr.customspd.effects.SpellSprite;
 import com.qsr.customspd.items.artifacts.Artifact;
 import com.qsr.customspd.items.quest.MetalShard;
 import com.qsr.customspd.items.scrolls.ScrollOfRecharging;
-import com.qsr.customspd.items.scrolls.exotic.ScrollOfMysticalEnergy;
 import com.qsr.customspd.items.wands.CursedWand;
 import com.qsr.customspd.mechanics.Ballistica;
 import com.qsr.customspd.assets.GeneralAsset;
@@ -82,7 +81,7 @@ public class WildEnergy extends TargetedSpell {
 	public static class Recipe extends com.qsr.customspd.items.Recipe.SimpleRecipe {
 		
 		{
-			inputs =  new Class[]{ScrollOfMysticalEnergy.class, MetalShard.class};
+			inputs =  new Class[]{ScrollOfRecharging.class, MetalShard.class};
 			inQuantity = new int[]{1, 1};
 			
 			cost = 4;

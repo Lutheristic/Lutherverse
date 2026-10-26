@@ -149,13 +149,13 @@ class AquaBrewFeatherFallPortTest {
 	}
 
 	@Test
-	void stormCloudsBrewsEightAquaBrewsForElevenEnergy() {
+	void stormCloudsBrewsEightAquaBrewsForEightEnergy() {
 		AquaBrew.Recipe recipe = new AquaBrew.Recipe();
 		ArrayList<Item> ingredients = identified(recipe.getIngredients());
 
 		assertTrue(ingredients.get(0) instanceof PotionOfStormClouds);
 		assertTrue(recipe.testIngredients(ingredients));
-		assertEquals(11, recipe.cost(ingredients));
+		assertEquals(8, recipe.cost(ingredients), "a83be1d28 cut the cost from 11");
 		Item out = recipe.sampleOutput(ingredients);
 		assertTrue(out instanceof AquaBrew, "brews " + out);
 		assertEquals(8, out.quantity());

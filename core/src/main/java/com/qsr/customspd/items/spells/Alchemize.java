@@ -85,7 +85,7 @@ public class Alchemize extends Spell {
 
 		@Override
 		public int cost(ArrayList<Item> ingredients) {
-			return 6;
+			return 2;
 		}
 
 		@Override

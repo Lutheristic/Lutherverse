@@ -61,10 +61,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Upstream a00355b71 (v2.4.0): the catalysts are gone. The alchemical catalyst becomes the unstable
- * brew (potion + seed, 2 energy) and the arcane catalyst becomes the unstable spell (scroll +
- * runestone, 2 energy); the other pairing each catalyst accepted no longer brews anything. Saves
- * carry the old class names, so Bundle aliases map them. The alchemy guide loses its catalysts
- * page, leaving nine.
+ * brew (potion + seed) and the arcane catalyst becomes the unstable spell (scroll + runestone),
+ * each for 1 energy since 938a78883; the other pairing each catalyst accepted no longer brews
+ * anything. Saves carry the old class names, so Bundle aliases map them. The alchemy guide loses
+ * its catalysts page, leaving nine.
  *
  * The random-effect tables keep v2.5.4's entries and weights in a LinkedHashMap, not upstream's
  * HashMap: Random.chances walks the key set, and Class keys hash by identity, so a HashMap would
@@ -137,12 +137,12 @@ class UnstableBrewSpellPortTest {
 	}
 
 	@Test
-	void aPotionAndASeedBrewAnUnstableBrewForTwoEnergy() {
+	void aPotionAndASeedBrewAnUnstableBrewForOneEnergy() {
 		ArrayList<Item> ingredients = items(potion(new PotionOfHealing()), new Sungrass.Seed());
 		UnstableBrew.Recipe recipe = new UnstableBrew.Recipe();
 
 		assertTrue(recipe.testIngredients(ingredients));
-		assertEquals(2, recipe.cost(ingredients));
+		assertEquals(1, recipe.cost(ingredients));
 		assertTrue(recipe.sampleOutput(ingredients) instanceof UnstableBrew);
 		assertTrue(offered(ingredients, UnstableBrew.Recipe.class), "the alchemy pot must offer it");
 	}
@@ -156,12 +156,12 @@ class UnstableBrewSpellPortTest {
 	}
 
 	@Test
-	void aScrollAndARunestoneMakeAnUnstableSpellForTwoEnergy() {
+	void aScrollAndARunestoneMakeAnUnstableSpellForOneEnergy() {
 		ArrayList<Item> ingredients = items(scroll(new ScrollOfIdentify()), new StoneOfAugmentation());
 		UnstableSpell.Recipe recipe = new UnstableSpell.Recipe();
 
 		assertTrue(recipe.testIngredients(ingredients));
-		assertEquals(2, recipe.cost(ingredients));
+		assertEquals(1, recipe.cost(ingredients));
 		assertTrue(recipe.sampleOutput(ingredients) instanceof UnstableSpell);
 		assertTrue(offered(ingredients, UnstableSpell.Recipe.class), "the alchemy pot must offer it");
 	}

@@ -2,12 +2,16 @@ package com.qsr.customspd.scenes;
 
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.qsr.customspd.Dungeon;
+import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.LiquidMetal;
 import com.qsr.customspd.test.HeadlessRun;
 import com.qsr.customspd.ui.IconButton;
+import com.qsr.customspd.ui.RenderedTextBlock;
+import com.qsr.customspd.windows.IconTitle;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.Image;
 import com.watabou.utils.PlatformSupport;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -130,6 +134,19 @@ class AlchemySceneUiPortTest {
 		assertNull(inputItem(0), "every ingredient was used");
 		IconButton cancel = (IconButton) read(scene, AlchemyScene.class, "cancel");
 		assertFalse(cancel.active, "nothing is left to cancel");
+	}
+
+	// upstream 80abc8376, IconTitle part
+	@Test
+	void anIconTitleIsLaidOutAsSoonAsItIsBuilt() throws Exception {
+		createScene();
+		Image icon = new Image(Asset.getAssetFilePath(GeneralAsset.ICON_ALCHEMY));
+		IconTitle title = new IconTitle(icon, "Alchemy");
+
+		assertEquals(16, title.height(), "the title is as tall as its icon before anything sizes it");
+		RenderedTextBlock label = (RenderedTextBlock) read(title, IconTitle.class, "tfLabel");
+		assertEquals(18, label.left(), "the label sits after the icon and the gap");
+		assertEquals(icon.width() + label.width() + 2, title.reqWidth(), "icon, gap and label");
 	}
 
 	// upstream 75532abf0, cut from v2.5.4's icon sheet at 96,48

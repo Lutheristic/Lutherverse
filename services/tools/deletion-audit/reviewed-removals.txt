@@ -398,3 +398,16 @@ MonkEnergy.MonkAbility.Focus.FocusBuff#iconFadePercent()
 MonkEnergy.MonkAbility.Dash#cooldown()
 MonkEnergy.MonkAbility.DragonKick#cooldown()
 MonkEnergy.MonkAbility.Meditate#cooldown()
+
+# --- Duelist shared charge pool (8 entries), reviewed 2026-10-26 ---
+# upstream 11a410f07 (v2.4.0): both weapons draw on one charge pool, so the second pool's cap,
+# multiplier, regen and checks are gone from MeleeWeapon and its Charger, and Sai's combo tracker
+# counts hits with a timer instead of keeping an array of recent hits.
+MeleeWeapon.Charger#secondChargeCap()
+MeleeWeapon.Charger#secondChargeMultiplier()
+MeleeWeapon#execute(Hero, String)
+MeleeWeapon#beforeAbilityUsed(Hero, Char)
+MeleeWeapon#status()
+MeleeWeapon.Charger#act()
+Sai.ComboStrikeTracker#totalHits()
+Sai.ComboStrikeTracker#act()

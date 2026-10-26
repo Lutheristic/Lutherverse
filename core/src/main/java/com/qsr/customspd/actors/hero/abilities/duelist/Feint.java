@@ -48,6 +48,7 @@ import com.qsr.customspd.sprites.MirrorSprite;
 import com.qsr.customspd.ui.HeroIcon;
 import com.qsr.customspd.ui.TargetHealthIndicator;
 import com.qsr.customspd.utils.GLog;
+import com.watabou.noosa.Camera;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.tweeners.AlphaTweener;
 import com.watabou.noosa.tweeners.Delayer;
@@ -85,7 +86,14 @@ public class Feint extends ArmorAbility {
 			return;
 		}
 
-		if (!Dungeon.level.passable[target] || Actor.findChar(target) != null){
+		if (Dungeon.hero.rooted){
+			//CPDU has no PixelScene.shake (upstream 02210b0a8's screen-shake setting); Camera.main.shake is its equivalent
+			Camera.main.shake( 1, 1f );
+			GLog.w(Messages.get(this, "bad_location"));
+			return;
+		}
+
+		if (Dungeon.level.solid[target] || Actor.findChar(target) != null){
 			GLog.w(Messages.get(this, "bad_location"));
 			return;
 		}

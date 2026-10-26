@@ -48,6 +48,7 @@ import com.qsr.customspd.ui.BuffIndicator;
 import com.qsr.customspd.ui.HeroIcon;
 import com.qsr.customspd.utils.BArray;
 import com.qsr.customspd.utils.GLog;
+import com.watabou.noosa.Camera;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
@@ -108,7 +109,7 @@ public class Challenge extends ArmorAbility {
 			return;
 		}
 
-		boolean[] passable = Dungeon.level.passable.clone();
+		boolean[] passable = BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null);
 		for (Char c : Actor.chars()) {
 			if (c != hero) passable[c.pos] = false;
 		}
@@ -116,7 +117,7 @@ public class Challenge extends ArmorAbility {
 		int[] reachable = PathFinder.distance.clone();
 
 		int blinkpos = hero.pos;
-		if (hero.hasTalent(Talent.CLOSE_THE_GAP)){
+		if (hero.hasTalent(Talent.CLOSE_THE_GAP) && !hero.rooted){
 
 			int blinkrange = 1 + hero.pointsInTalent(Talent.CLOSE_THE_GAP);
 			PathFinder.buildDistanceMap(hero.pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null), blinkrange);
@@ -124,6 +125,7 @@ public class Challenge extends ArmorAbility {
 			for (int i = 0; i < PathFinder.distance.length; i++){
 				if (PathFinder.distance[i] == Integer.MAX_VALUE
 						|| reachable[i] == Integer.MAX_VALUE
+						|| (!Dungeon.level.passable[i] && !(hero.flying && Dungeon.level.avoid[i]))
 						|| i == targetCh.pos){
 					continue;
 				}
@@ -138,13 +140,17 @@ public class Challenge extends ArmorAbility {
 			}
 		}
 
-		if (PathFinder.distance[blinkpos] == Integer.MAX_VALUE){
+		if (reachable[blinkpos] == Integer.MAX_VALUE){
 			GLog.w(Messages.get(this, "unreachable_target"));
+			//CPDU has no PixelScene.shake (upstream 02210b0a8's screen-shake setting); Camera.main.shake is its equivalent
+			if (hero.rooted) Camera.main.shake( 1, 1f );
 			return;
 		}
 
 		if (Dungeon.level.distance(blinkpos, targetCh.pos) > 5){
 			GLog.w(Messages.get(this, "distant_target"));
+			//CPDU has no PixelScene.shake (upstream 02210b0a8's screen-shake setting); Camera.main.shake is its equivalent
+			if (hero.rooted) Camera.main.shake( 1, 1f );
 			return;
 		}
 

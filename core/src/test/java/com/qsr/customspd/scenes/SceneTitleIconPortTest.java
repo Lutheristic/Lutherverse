@@ -5,6 +5,7 @@ import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.test.HeadlessRun;
 import com.qsr.customspd.windows.IconTitle;
+import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
@@ -19,7 +20,9 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -35,10 +38,19 @@ class SceneTitleIconPortTest {
 
 	private HeadlessRun run;
 	private PixelScene scene;
+	private Map<Object, SmartTexture> textures;
+	private Map<Object, SmartTexture> earlierTextures;
 
 	@BeforeEach
-	void start() {
+	void start() throws Exception {
 		run = HeadlessRun.start(20261026L);
+		// StartScene empties the texture cache, and deleting a texture needs GL. Start each test
+		// with nothing cached, whatever earlier test classes loaded, and put it all back after.
+		@SuppressWarnings("unchecked")
+		Map<Object, SmartTexture> cache = (Map<Object, SmartTexture>) read(null, TextureCache.class, "all");
+		textures = cache;
+		earlierTextures = new LinkedHashMap<>(textures);
+		textures.clear();
 		Game.platform = new PlatformSupport() {
 			@Override public void updateDisplaySize() {}
 			@Override public void updateSystemUI() {}
@@ -55,6 +67,10 @@ class SceneTitleIconPortTest {
 		try {
 			if (scene != null) scene.destroy();
 		} finally {
+			if (textures != null) {
+				textures.clear();
+				textures.putAll(earlierTextures);
+			}
 			run.close();
 		}
 	}

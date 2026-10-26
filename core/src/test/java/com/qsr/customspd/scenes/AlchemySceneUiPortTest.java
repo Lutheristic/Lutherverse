@@ -8,8 +8,11 @@ import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.LiquidMetal;
 import com.qsr.customspd.test.HeadlessRun;
 import com.qsr.customspd.ui.IconButton;
+import com.qsr.customspd.ui.RedButton;
 import com.qsr.customspd.ui.RenderedTextBlock;
+import com.qsr.customspd.ui.ScrollPane;
 import com.qsr.customspd.windows.IconTitle;
+import com.qsr.customspd.windows.WndJournal;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.utils.PlatformSupport;
@@ -159,5 +162,22 @@ class AlchemySceneUiPortTest {
 		BufferedImage png = ImageIO.read(file);
 		assertEquals(16, png.getWidth(), "width");
 		assertEquals(16, png.getHeight(), "height");
+	}
+
+	// upstream ebaace5f9, AlchemyTab part
+	@Test
+	void theAlchemyGuideLaysOutFromItsOwnCorner() throws Exception {
+		createScene();
+		WndJournal.AlchemyTab tab = new WndJournal.AlchemyTab();
+		scene.add(tab); // the recipe list scrolls with the scene's camera
+		tab.setRect(100, 50, 200, 130);
+
+		RedButton[] pages = (RedButton[]) read(tab, WndJournal.AlchemyTab.class, "pageButtons");
+		assertEquals(100, pages[0].left(), "first page button left");
+		assertEquals(50, pages[0].top(), "first page button top");
+		ScrollPane list = (ScrollPane) read(tab, WndJournal.AlchemyTab.class, "list");
+		assertEquals(100, list.left(), "recipe list left");
+		assertEquals(pages[pages.length - 1].bottom() + 1, list.top(), "recipe list starts under the buttons");
+		assertEquals(180, list.bottom(), 0.001f, "recipe list ends at the tab's bottom");
 	}
 }

@@ -25,7 +25,6 @@ import com.qsr.customspd.Assets;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.blobs.Blob;
 import com.qsr.customspd.actors.blobs.Electricity;
-import com.qsr.customspd.items.potions.AlchemicalCatalyst;
 import com.qsr.customspd.items.potions.PotionOfParalyticGas;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.assets.GeneralAsset;
@@ -60,7 +59,7 @@ public class ShockingBrew extends Brew {
 			inputs =  new Class[]{PotionOfParalyticGas.class};
 			inQuantity = new int[]{1};
 			
-			cost = 14;
+			cost = 10;
 			
 			output = ShockingBrew.class;
 			outQuantity = 1;

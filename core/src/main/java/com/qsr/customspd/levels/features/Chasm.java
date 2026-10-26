@@ -30,7 +30,7 @@ import com.qsr.customspd.actors.buffs.Cripple;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.mobs.Mob;
 import com.qsr.customspd.effects.Speck;
-import com.qsr.customspd.items.spells.FeatherFall;
+import com.qsr.customspd.items.potions.elixirs.ElixirOfFeatherFall;
 import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.levels.RegularLevel;
 import com.qsr.customspd.levels.rooms.Room;
@@ -130,11 +130,11 @@ public class Chasm implements Hero.Doom {
 		
 		Hero hero = Dungeon.hero;
 		
-		FeatherFall.FeatherBuff b = hero.buff(FeatherFall.FeatherBuff.class);
+		ElixirOfFeatherFall.FeatherBuff b = hero.buff(ElixirOfFeatherFall.FeatherBuff.class);
 		
 		if (b != null){
 			hero.sprite.emitter().burst( Speck.factory( Speck.JET ), 20);
-			b.detach();
+			b.processFall();
 			return;
 		}
 		

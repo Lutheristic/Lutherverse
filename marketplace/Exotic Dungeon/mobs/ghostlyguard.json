@@ -45,7 +45,7 @@
   "min_armor": 3,
   "max_armor": 7,
   "loot": {
-    "type": "spells.FeatherFall"
+    "type": "potions.elixirs.ElixirOfFeatherFall"
   },
   "loot_chance": 0.04,
   "flying": true,

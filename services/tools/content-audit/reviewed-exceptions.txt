@@ -225,14 +225,14 @@ Item ElixirOfIcyTouch#I3
 Item ElixirOfMight#I3
 # ElixirOfToxicEssence: elixir, alchemy Recipe output
 Item ElixirOfToxicEssence#I3
-# AquaBlast: spell, alchemy Recipe output
-Item AquaBlast#I3
+# AquaBrew: brew, alchemy Recipe output
+Item AquaBrew#I3
 # BeaconOfReturning: spell, alchemy Recipe output
 Item BeaconOfReturning#I3
 # CurseInfusion: spell, alchemy Recipe output
 Item CurseInfusion#I3
-# FeatherFall: spell, alchemy Recipe output
-Item FeatherFall#I3
+# ElixirOfFeatherFall: elixir, alchemy Recipe output
+Item ElixirOfFeatherFall#I3
 # MagicalInfusion: spell, alchemy Recipe output
 Item MagicalInfusion#I3
 # PhaseShift: spell, alchemy Recipe output
@@ -249,10 +249,10 @@ Item TelekineticGrab#I3
 Item WildEnergy#I3
 # Alchemize: spell, alchemy Recipe output (also ShopRoom stock)
 Item Alchemize#I3
-# ArcaneCatalyst: alchemy Recipe output; spell-recipe ingredient
-Item ArcaneCatalyst#I3
-# AlchemicalCatalyst: alchemy Recipe output; brew/elixir ingredient
-Item AlchemicalCatalyst#I3
+# UnstableSpell: spell, alchemy Recipe output (also a ring of wealth drop)
+Item UnstableSpell#I3
+# UnstableBrew: brew, alchemy Recipe output (also a ring of wealth drop)
+Item UnstableBrew#I3
 # ArcaneResin: alchemy Recipe output (wand-upgrade resin)
 Item ArcaneResin#I3
 # LiquidMetal: alchemy Recipe output (missile-repair metal)

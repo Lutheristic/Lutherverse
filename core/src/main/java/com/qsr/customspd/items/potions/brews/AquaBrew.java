@@ -19,35 +19,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.qsr.customspd.items.spells;
+package com.qsr.customspd.items.potions.brews;
 
-import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.potions.exotic.PotionOfStormClouds;
 import com.qsr.customspd.levels.traps.GeyserTrap;
 import com.qsr.customspd.mechanics.Ballistica;
-import com.qsr.customspd.assets.GeneralAsset;
 
-public class AquaBlast extends TargetedSpell {
-	
+public class AquaBrew extends Brew {
+
 	{
-		image = GeneralAsset.AQUA_BLAST;
-		usesTargeting = true;
+		image = GeneralAsset.BREW_AQUA;
 	}
-	
-	@Override
-	protected void affectTarget(Ballistica bolt, Hero hero) {
-		int cell = bolt.collisionPos;
 
+	@Override
+	public void shatter(int cell) {
 		GeyserTrap geyser = new GeyserTrap();
 		geyser.pos = cell;
 		geyser.source = this;
-		if (bolt.path.size() > bolt.dist+1) {
-			geyser.centerKnockBackDirection = bolt.path.get(bolt.dist + 1);
+
+		int userPos = curUser.pos;
+		Ballistica aim = new Ballistica(userPos, cell, Ballistica.STOP_TARGET);
+		if (aim.path.size() > aim.dist+1) {
+			geyser.centerKnockBackDirection = aim.path.get(aim.dist + 1);
 		}
 		geyser.activate();
 	}
-	
+
 	@Override
 	public int value() {
 		return (int)(60 * (quantity/8f));
@@ -57,18 +55,19 @@ public class AquaBlast extends TargetedSpell {
 	public int energyVal() {
 		return (int)(12 * (quantity/8f));
 	}
-	
+
 	public static class Recipe extends com.qsr.customspd.items.Recipe.SimpleRecipe {
-		
+
 		{
 			inputs =  new Class[]{PotionOfStormClouds.class};
 			inQuantity = new int[]{1};
-			
-			cost = 11;
-			
-			output = AquaBlast.class;
+
+			cost = 8;
+
+			output = AquaBrew.class;
 			outQuantity = 8;
 		}
-		
+
 	}
+
 }

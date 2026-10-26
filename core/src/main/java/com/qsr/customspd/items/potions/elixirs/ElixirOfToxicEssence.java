@@ -25,8 +25,7 @@ import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.ToxicImbue;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.effects.particles.PoisonParticle;
-import com.qsr.customspd.items.potions.AlchemicalCatalyst;
-import com.qsr.customspd.items.potions.PotionOfToxicGas;
+import com.qsr.customspd.items.potions.exotic.PotionOfCorrosiveGas;
 import com.qsr.customspd.assets.GeneralAsset;
 
 public class ElixirOfToxicEssence extends Elixir {
@@ -44,10 +43,10 @@ public class ElixirOfToxicEssence extends Elixir {
 	public static class Recipe extends com.qsr.customspd.items.Recipe.SimpleRecipe {
 		
 		{
-			inputs =  new Class[]{PotionOfToxicGas.class};
+			inputs =  new Class[]{PotionOfCorrosiveGas.class};
 			inQuantity = new int[]{1};
 			
-			cost = 14;
+			cost = 8;
 			
 			output = ElixirOfToxicEssence.class;
 			outQuantity = 1;

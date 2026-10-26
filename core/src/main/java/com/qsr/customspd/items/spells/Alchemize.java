@@ -57,13 +57,12 @@ public class Alchemize extends Spell {
 	
 	@Override
 	public int value() {
-		//cheap, as ingredients are cheap
+		//lower value, as it's very cheap to make (and also sold at shops)
 		return (int)(20 * (quantity/8f));
 	}
 
 	@Override
 	public int energyVal() {
-		//also cheap, same reason
 		return (int)(4 * (quantity/8f));
 	}
 
@@ -86,7 +85,7 @@ public class Alchemize extends Spell {
 
 		@Override
 		public int cost(ArrayList<Item> ingredients) {
-			return 6;
+			return 2;
 		}
 
 		@Override

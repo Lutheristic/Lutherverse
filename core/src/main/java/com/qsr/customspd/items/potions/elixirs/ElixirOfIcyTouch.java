@@ -25,7 +25,6 @@ import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.FrostImbue;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.effects.particles.SnowParticle;
-import com.qsr.customspd.items.potions.AlchemicalCatalyst;
 import com.qsr.customspd.items.potions.exotic.PotionOfSnapFreeze;
 import com.qsr.customspd.assets.GeneralAsset;
 
@@ -47,7 +46,7 @@ public class ElixirOfIcyTouch extends Elixir {
 			inputs =  new Class[]{PotionOfSnapFreeze.class};
 			inQuantity = new int[]{1};
 			
-			cost = 14;
+			cost = 6;
 			
 			output = ElixirOfIcyTouch.class;
 			outQuantity = 1;

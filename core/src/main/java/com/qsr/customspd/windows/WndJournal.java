@@ -214,7 +214,7 @@ public class WndJournal extends WndTabbed {
 	public static class AlchemyTab extends Component {
 
 		private RedButton[] pageButtons;
-		private static final int NUM_BUTTONS = 10;
+		private static final int NUM_BUTTONS = 9;
 
 		private static final Asset[] spriteIndexes = {
 			GeneralAsset.SEED_HOLDER,
@@ -224,7 +224,6 @@ public class WndJournal extends WndTabbed {
             GeneralAsset.SCROLL_HOLDER,
             GeneralAsset.BOMB_HOLDER,
             GeneralAsset.MISSILE_HOLDER,
-            GeneralAsset.CATA_HOLDER,
             GeneralAsset.ELIXIR_HOLDER,
             GeneralAsset.SPELL_HOLDER,
         };
@@ -290,7 +289,7 @@ public class WndJournal extends WndTabbed {
 					if (i == 4){
 						y += ITEM_HEIGHT;
 						x = 0;
-						buttonWidth = width()/5;
+						buttonWidth = width()/4;
 					}
 				}
 			}

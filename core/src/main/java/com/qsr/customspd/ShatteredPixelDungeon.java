@@ -67,6 +67,23 @@ public class ShatteredPixelDungeon extends Game {
 		com.watabou.utils.Bundle.addAlias(
 				com.qsr.customspd.actors.hero.Talent.LiquidAgilACCTracker.class,
 				"com.qsr.customspd.actors.hero.Talent$RestoredAgilACCTracker" );
+
+		//pre-v2.4.0
+		com.watabou.utils.Bundle.addAlias(
+				com.qsr.customspd.items.potions.brews.UnstableBrew.class,
+				"com.qsr.customspd.items.potions.AlchemicalCatalyst" );
+		com.watabou.utils.Bundle.addAlias(
+				com.qsr.customspd.items.spells.UnstableSpell.class,
+				"com.qsr.customspd.items.spells.ArcaneCatalyst" );
+		com.watabou.utils.Bundle.addAlias(
+				com.qsr.customspd.items.potions.elixirs.ElixirOfFeatherFall.class,
+				"com.qsr.customspd.items.spells.FeatherFall" );
+		com.watabou.utils.Bundle.addAlias(
+				com.qsr.customspd.items.potions.elixirs.ElixirOfFeatherFall.FeatherBuff.class,
+				"com.qsr.customspd.items.spells.FeatherFall$FeatherBuff" );
+		com.watabou.utils.Bundle.addAlias(
+				com.qsr.customspd.items.potions.brews.AquaBrew.class,
+				"com.qsr.customspd.items.spells.AquaBlast" );
 	}
 	
 	@Override

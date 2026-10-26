@@ -21,6 +21,7 @@
 
 package com.qsr.customspd.actors.buffs;
 
+import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.blobs.Blob;
 import com.qsr.customspd.actors.blobs.ToxicGas;
@@ -30,6 +31,7 @@ import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.PathFinder;
 
 import kotlin.Pair;
 
@@ -65,11 +67,22 @@ public class ToxicImbue extends Buff {
 
 	@Override
 	public boolean act() {
-		GameScene.add(Blob.seed(target.pos, 50, ToxicGas.class));
+		if (left > 0) {
+			//spreads 54 units of gas total
+			int centerVolume = 6;
+			for (int i : PathFinder.NEIGHBOURS8) {
+				if (!Dungeon.level.solid[target.pos + i]) {
+					GameScene.add(Blob.seed(target.pos + i, 6, ToxicGas.class));
+				} else {
+					centerVolume += 6;
+				}
+			}
+			GameScene.add(Blob.seed(target.pos, centerVolume, ToxicGas.class));
+		}
 
 		spend(TICK);
 		left -= TICK;
-		if (left <= 0){
+		if (left <= -5){
 			detach();
 		}
 
@@ -78,7 +91,7 @@ public class ToxicImbue extends Buff {
 
 	@Override
 	public Pair<Asset, Asset> icon() {
-		return BuffIndicator.IMBUE;
+		return left > 0 ? BuffIndicator.IMBUE : BuffIndicator.NONE;
 	}
 
 	@Override

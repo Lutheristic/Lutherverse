@@ -25,7 +25,6 @@ import com.qsr.customspd.Assets;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.blobs.Blizzard;
 import com.qsr.customspd.actors.blobs.Blob;
-import com.qsr.customspd.items.potions.AlchemicalCatalyst;
 import com.qsr.customspd.items.potions.PotionOfFrost;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.assets.GeneralAsset;
@@ -64,7 +63,7 @@ public class BlizzardBrew extends Brew {
 			inputs =  new Class[]{PotionOfFrost.class};
 			inQuantity = new int[]{1};
 			
-			cost = 11;
+			cost = 8;
 			
 			output = BlizzardBrew.class;
 			outQuantity = 1;

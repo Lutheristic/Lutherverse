@@ -225,14 +225,14 @@ Item ElixirOfIcyTouch#I3
 Item ElixirOfMight#I3
 # ElixirOfToxicEssence: elixir, alchemy Recipe output
 Item ElixirOfToxicEssence#I3
-# AquaBlast: spell, alchemy Recipe output
-Item AquaBlast#I3
+# AquaBrew: brew, alchemy Recipe output
+Item AquaBrew#I3
 # BeaconOfReturning: spell, alchemy Recipe output
 Item BeaconOfReturning#I3
 # CurseInfusion: spell, alchemy Recipe output
 Item CurseInfusion#I3
-# FeatherFall: spell, alchemy Recipe output
-Item FeatherFall#I3
+# ElixirOfFeatherFall: elixir, alchemy Recipe output
+Item ElixirOfFeatherFall#I3
 # MagicalInfusion: spell, alchemy Recipe output
 Item MagicalInfusion#I3
 # PhaseShift: spell, alchemy Recipe output

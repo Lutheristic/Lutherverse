@@ -579,7 +579,7 @@ public class v1_X_Changes {
 				"_- Summon Elemental_ energy cost down to 6 from 8\n" +
 				"_- Alchemize_ energy cost down to 2 from 3"));
 
-		changes.addButton( new ChangeButton(new ItemSprite(GeneralAsset.AQUA_BLAST), "Alchemy Buffs",
+		changes.addButton( new ChangeButton(new ItemSprite(GeneralAsset.ENERGY), "Alchemy Buffs",
 				"Several recipes have also been buffed, in addition to the cost reductions:\n\n" +
 				"_- Scroll of Foresight_ duration up to 400 from 250\n" +
 				"_- Scroll of Dread_ now grants 1/2 exp for defeated enemies\n" +

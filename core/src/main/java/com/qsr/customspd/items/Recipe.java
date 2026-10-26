@@ -28,6 +28,7 @@ import com.qsr.customspd.items.food.MeatPie;
 import com.qsr.customspd.items.food.StewedMeat;
 import com.qsr.customspd.items.potions.AlchemicalCatalyst;
 import com.qsr.customspd.items.potions.Potion;
+import com.qsr.customspd.items.potions.brews.AquaBrew;
 import com.qsr.customspd.items.potions.brews.BlizzardBrew;
 import com.qsr.customspd.items.potions.brews.CausticBrew;
 import com.qsr.customspd.items.potions.brews.InfernalBrew;
@@ -35,6 +36,7 @@ import com.qsr.customspd.items.potions.brews.ShockingBrew;
 import com.qsr.customspd.items.potions.elixirs.ElixirOfAquaticRejuvenation;
 import com.qsr.customspd.items.potions.elixirs.ElixirOfArcaneArmor;
 import com.qsr.customspd.items.potions.elixirs.ElixirOfDragonsBlood;
+import com.qsr.customspd.items.potions.elixirs.ElixirOfFeatherFall;
 import com.qsr.customspd.items.potions.elixirs.ElixirOfHoneyedHealing;
 import com.qsr.customspd.items.potions.elixirs.ElixirOfIcyTouch;
 import com.qsr.customspd.items.potions.elixirs.ElixirOfMight;
@@ -43,11 +45,9 @@ import com.qsr.customspd.items.potions.exotic.ExoticPotion;
 import com.qsr.customspd.items.scrolls.Scroll;
 import com.qsr.customspd.items.scrolls.exotic.ExoticScroll;
 import com.qsr.customspd.items.spells.Alchemize;
-import com.qsr.customspd.items.spells.AquaBlast;
 import com.qsr.customspd.items.spells.ArcaneCatalyst;
 import com.qsr.customspd.items.spells.BeaconOfReturning;
 import com.qsr.customspd.items.spells.CurseInfusion;
-import com.qsr.customspd.items.spells.FeatherFall;
 import com.qsr.customspd.items.spells.MagicalInfusion;
 import com.qsr.customspd.items.spells.PhaseShift;
 import com.qsr.customspd.items.spells.ReclaimTrap;
@@ -176,15 +176,15 @@ public abstract class Recipe {
 		new ArcaneResin.Recipe(),
 		new BlizzardBrew.Recipe(),
 		new InfernalBrew.Recipe(),
+		new AquaBrew.Recipe(),
 		new ShockingBrew.Recipe(),
 		new ElixirOfDragonsBlood.Recipe(),
 		new ElixirOfIcyTouch.Recipe(),
 		new ElixirOfToxicEssence.Recipe(),
 		new ElixirOfMight.Recipe(),
+		new ElixirOfFeatherFall.Recipe(),
 		new MagicalInfusion.Recipe(),
-		new AquaBlast.Recipe(),
 		new BeaconOfReturning.Recipe(),
-		new FeatherFall.Recipe(),
 		new PhaseShift.Recipe(),
 		new Recycle.Recipe(),
 		new TelekineticGrab.Recipe(),

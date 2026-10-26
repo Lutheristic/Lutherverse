@@ -31,7 +31,6 @@ import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.effects.MagicMissile;
 import com.qsr.customspd.effects.Pushing;
-import com.qsr.customspd.items.spells.AquaBlast;
 import com.qsr.customspd.items.weapon.enchantments.Elastic;
 import com.qsr.customspd.items.weapon.melee.MagesStaff;
 import com.qsr.customspd.levels.Terrain;
@@ -164,7 +163,7 @@ public class WandOfBlastWave extends DamageWand {
 					if (ch.isActive()) {
 						Paralysis.prolong(ch, Paralysis.class, 1 + finalDist/2f);
 					} else if (ch == Dungeon.hero){
-						if (cause instanceof WandOfBlastWave || cause instanceof AquaBlast){
+						if (cause instanceof WandOfBlastWave){
 							Badges.validateDeathFromFriendlyMagic();
 						}
 						Dungeon.fail(cause);

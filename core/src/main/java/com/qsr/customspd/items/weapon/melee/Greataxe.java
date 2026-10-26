@@ -90,7 +90,11 @@ public class Greataxe extends MeleeWeapon {
 			public void call() {
 				beforeAbilityUsed(hero, enemy);
 				AttackIndicator.target(enemy);
-				if (hero.attack(enemy, 1.50f, 0, Char.INFINITE_ACCURACY)){
+
+				//+(12.5+(1.75*lvl)) damage, equivalent to +50% damage
+				int dmgBoost = augment.damageFactor(Math.round(12.5f + 1.75f*buffedLvl()));
+
+				if (hero.attack(enemy, 1, dmgBoost, Char.INFINITE_ACCURACY)){
 					Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);
 					if (!enemy.isAlive()){
 						onAbilityKill(hero, enemy);
@@ -101,5 +105,15 @@ public class Greataxe extends MeleeWeapon {
 				afterAbilityUsed(hero);
 			}
 		});
+	}
+
+	@Override
+	public String abilityInfo() {
+		int dmgBoost = levelKnown ? Math.round(12.5f + 1.75f*buffedLvl()) : 13;
+		if (levelKnown){
+			return Messages.get(this, "ability_desc", augment.damageFactor(min()+dmgBoost), augment.damageFactor(max()+dmgBoost));
+		} else {
+			return Messages.get(this, "typical_ability_desc", min(0)+dmgBoost, max(0)+dmgBoost);
+		}
 	}
 }

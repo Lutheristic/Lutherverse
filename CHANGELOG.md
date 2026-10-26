@@ -10,6 +10,18 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 Everything on `main` since the fork base (`cpd-sync-base-2025-08-15`, CPD commit `c97fb83`).
 
+### 2026-10-26: Duelist damage, the Monk rework and the alchemy screen
+
+**Ported**
+- Duelist weapon abilities that deal damage now show their damage range, and they add a flat amount of damage instead of multiplying it, as in upstream v2.4.0. That covers heavy blow, spike and lunge, cleave, flail spins, combo strike, harvest and the pickaxe's pierce.
+- The Monk works as it does in v2.5.0. Abilities no longer share one cooldown; each decides for itself when it's usable. Flurry has its own cooldown, Focus is a normal buff, Dash reaches 4 tiles (4 more when empowered), Dragon Kick's damage is retuned, and Combined Energy gives back 1 energy when an ability and a weapon ability land within 5 turns of each other. Old saves keep their Monk state.
+- Rooted heroes can't use movement abilities (leap, Challenge, Feint, smoke bomb, Heroic Leap), and flying heroes can land on tiles they would normally avoid.
+- The alchemy screen uses the space on larger screens: the guide sits beside the bench when there's room, and the scene has a proper title with an icon.
+
+**Fixed**
+- The alchemy cancel button stays usable while ingredients are still on the bench, and the split guide refreshes when the bench changes.
+- The bundled Jowiro's Class Reskins pack had weapon ability text that no longer matched the new numbers. Its overrides are updated, and a test now checks pack overrides against the English placeholders.
+
 ### 2026-10-26: alchemy items and charge caps
 
 **Ported**

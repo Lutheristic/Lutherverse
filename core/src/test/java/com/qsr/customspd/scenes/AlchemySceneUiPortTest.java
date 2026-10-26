@@ -54,7 +54,7 @@ class AlchemySceneUiPortTest {
 	private AlchemyScene scene;
 
 	@BeforeEach
-	void start() {
+	void start() throws Exception {
 		run = HeadlessRun.start(20261026L);
 		run.enterFirstLevel();
 		Game.platform = new PlatformSupport() {
@@ -66,6 +66,10 @@ class AlchemySceneUiPortTest {
 			@Override protected FreeTypeFontGenerator getGeneratorForString(String input) { return null; }
 			@Override public String[] splitforTextBlock(String text, boolean multiline) { return text.split(" "); }
 		};
+		// run.close() puts these statics back, so a test that changes them needs no reset
+		assertFalse((boolean) read(null, AlchemyScene.class, "splitAlchGuide"), "test setup: the guide starts in a window");
+		assertEquals(0, WndJournal.AlchemyTab.currentPageIdx, "test setup: the guide starts on its first page");
+		assertFalse(Document.ALCHEMY_GUIDE.isPageFound(0), "test setup: no guide page found yet");
 	}
 
 	@AfterEach

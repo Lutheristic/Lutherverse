@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Keys the cpdu-fz84 v2.5.4 translation sync could not see when it ran, because CPDU's English for
+ * Keys the first v2.5.4 translation sync could not see when it ran, because CPDU's English for
  * them was wrong or missing at the snapshot it was computed against (9dc90bfbd). Each was fixed in
  * English afterwards, so the sync's own rule now selects it; these pin the result in every language.
  *
@@ -119,7 +119,7 @@ class PostSyncTranslationTest {
 	 * A key the code reads must exist: Messages.get walks the class's superclasses and, finding
 	 * nothing, returns the last key it tried, ending at java.lang.Object. Checks the English and
 	 * that each shipped translation of the bundle has its own line (v2.5.4's, imported by the
-	 * cpdu-fz84 4/4 rule), and that nothing renders as a key path in any language.
+	 * sync rule), and that nothing renders as a key path in any language.
 	 */
 	private static void assertKeyShipsEverywhere(Class<?> cls, String key, String englishText) throws IOException {
 		assertKeyShipsEverywhere(Assets.Messages.ACTORS, cls, key, englishText);

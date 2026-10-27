@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -239,5 +240,102 @@ class PostSyncTranslationTest {
 		assertEquals(4, english, "test setup: English is v2.5.4's four paragraphs");
 		assertEveryLanguage(Talent.class, "assassins_reach.desc", t -> paragraphs(t) == english,
 				"must carry the paragraph about crossing hazards");
+	}
+
+	/**
+	 * Keys our English only reached v2.5.4's text for with the tier-2 talent, shared charge pool,
+	 * flat boost and alchemy ports, after the first sync. The second sync imported v2.5.4's line
+	 * for each, so every translated bundle must carry its own text.
+	 */
+	private static void assertTranslatedEverywhere(String base, String fullKey) throws IOException {
+		Messages.setup(Languages.ENGLISH);
+		String english = Messages.get(fullKey);
+		assertNotEquals(fullKey, english, "English lacks " + fullKey);
+		for (Languages lang : Languages.values()) {
+			Messages.setup(lang);
+			assertNotEquals(fullKey, Messages.get(fullKey), lang + " renders a missing key");
+		}
+		for (Map.Entry<Languages, ObjectMap<String, String>> e : translatedBundles(base).entrySet()) {
+			String value = e.getValue().get(fullKey);
+			assertNotNull(value, e.getKey() + " lacks " + fullKey);
+			assertNotEquals(english, value, e.getKey() + " has only the English text of " + fullKey);
+		}
+	}
+
+	/** Rendered text in every language and each translated file's own line must satisfy holds. */
+	private static void assertEveryTranslation(String base, String fullKey, Predicate<String> holds, String what) throws IOException {
+		for (Languages lang : Languages.values()) {
+			Messages.setup(lang);
+			String text = Messages.get(fullKey);
+			assertTrue(holds.test(text), lang + " " + fullKey + " " + what + ": " + text);
+		}
+		for (Map.Entry<Languages, ObjectMap<String, String>> e : translatedBundles(base).entrySet()) {
+			String value = e.getValue().get(fullKey);
+			assertNotNull(value, e.getKey() + " lacks " + fullKey);
+			assertTrue(holds.test(value), e.getKey() + " file's " + fullKey + " " + what + ": " + value);
+		}
+	}
+
+	@Test
+	void tierTwoPotionAndScrollTalentsShipInEveryLanguage() throws IOException {
+		assertTranslatedEverywhere(Assets.Messages.ACTORS, "actors.hero.talent.liquid_willpower.desc");
+		assertTranslatedEverywhere(Assets.Messages.ACTORS, "actors.hero.talent.liquid_nature.desc");
+		assertTranslatedEverywhere(Assets.Messages.ACTORS, "actors.hero.talent.inscribed_power.title");
+		assertTranslatedEverywhere(Assets.Messages.ACTORS, "actors.hero.talent.inscribed_stealth.title");
+	}
+
+	@Test
+	void variedChargeShipsInEveryLanguage() throws IOException {
+		assertTranslatedEverywhere(Assets.Messages.ACTORS, "actors.hero.talent.varied_charge.title");
+		assertTranslatedEverywhere(Assets.Messages.ACTORS, "actors.hero.talent.varied_charge.desc");
+	}
+
+	/**
+	 * v2.1.0's Champion text gave the secondary weapon its own pool at half cap and speed; v2.5.4's
+	 * shares one pool and adds 2 max charges. Aggressive barrier went from 3 shielding below 40%/60%
+	 * health to 3/5 shielding at or below 50%.
+	 */
+	@Test
+	void championAndAggressiveBarrierTranslationsDescribeTheSharedPool() throws IOException {
+		assertEveryTranslation(Assets.Messages.ACTORS, "actors.hero.herosubclass.champion_desc",
+				t -> t.contains("2"), "must give 2 more max charges");
+		assertEveryTranslation(Assets.Messages.ACTORS, "actors.hero.talent.aggressive_barrier.desc",
+				t -> t.contains("5") && t.contains("50") && !t.contains("40") && !t.contains("60"),
+				"must give 3/5 shielding at or below 50% health");
+	}
+
+	/** v2.5.4's el and tr lines for these are only English, so ours went and the English shows. */
+	@Test
+	void duelistTalentsShowEnglishWhereUpstreamHasNoTranslation() throws IOException {
+		Map<Languages, ObjectMap<String, String>> files = translatedActorBundles();
+		for (String key : new String[]{"actors.hero.talent.lethal_haste.desc", "actors.hero.talent.precise_assault.desc"}) {
+			Messages.setup(Languages.ENGLISH);
+			String english = Messages.get(key);
+			for (Languages lang : new Languages[]{Languages.GREEK, Languages.TURKISH}) {
+				assertNull(files.get(lang).get(key), lang + " file must not carry " + key);
+				Messages.setup(lang);
+				assertEquals(english, Messages.get(key), lang + " " + key);
+			}
+		}
+	}
+
+	@Test
+	void alchemyItemsShipInEveryLanguage() throws IOException {
+		assertTranslatedEverywhere(Assets.Messages.ITEMS, "items.potions.brews.aquabrew.name");
+		assertTranslatedEverywhere(Assets.Messages.ITEMS, "items.potions.brews.aquabrew.desc");
+		assertTranslatedEverywhere(Assets.Messages.ITEMS, "items.potions.elixirs.elixiroffeatherfall.desc");
+	}
+
+	@Test
+	void duelistAbilityTextsShipInEveryLanguage() throws IOException {
+		assertTranslatedEverywhere(Assets.Messages.ITEMS, "items.weapon.melee.sword.typical_ability_desc");
+		assertTranslatedEverywhere(Assets.Messages.ITEMS, "items.weapon.melee.dagger.typical_ability_desc");
+		assertTranslatedEverywhere(Assets.Messages.ITEMS, "items.weapon.melee.greatshield.typical_ability_desc");
+	}
+
+	@Test
+	void journalCatalogTitlesShipInEveryLanguage() throws IOException {
+		assertTranslatedEverywhere(Assets.Messages.JOURNAL, "journal.catalog.brews_elixirs.title");
+		assertTranslatedEverywhere(Assets.Messages.WINDOWS, "windows.wndjournal$catalogtab.title_equipment");
 	}
 }

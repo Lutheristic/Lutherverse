@@ -411,3 +411,10 @@ MeleeWeapon#status()
 MeleeWeapon.Charger#act()
 Sai.ComboStrikeTracker#totalHits()
 Sai.ComboStrikeTracker#act()
+
+# --- Champion swap tag refresh (3 entries), reviewed 2026-10-26 ---
+# upstream bee976798 (v2.4.2): GameScene.updateItemDisplays refreshes the Charger action
+# indicator, so MeleeWeapon no longer overrides the equip and unequip paths to do it.
+MeleeWeapon#doEquip(Hero)
+MeleeWeapon#equipSecondary(Hero)
+MeleeWeapon#doUnequip(Hero, boolean, boolean)

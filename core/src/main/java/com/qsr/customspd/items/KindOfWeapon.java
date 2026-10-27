@@ -33,7 +33,6 @@ import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.sprites.ItemSprite;
-import com.qsr.customspd.ui.ActionIndicator;
 import com.qsr.customspd.utils.BArray;
 import com.qsr.customspd.utils.GLog;
 import com.qsr.customspd.windows.WndOptions;
@@ -121,7 +120,6 @@ abstract public class KindOfWeapon extends EquipableItem {
 			activate( hero );
 			Talent.onItemEquipped(hero, this);
 			Badges.validateDuelistUnlock();
-			ActionIndicator.refresh();
 			updateQuickslot();
 
 			cursedKnown = true;
@@ -169,7 +167,6 @@ abstract public class KindOfWeapon extends EquipableItem {
 			activate( hero );
 			Talent.onItemEquipped(hero, this);
 			Badges.validateDuelistUnlock();
-			ActionIndicator.refresh();
 			updateQuickslot();
 
 			cursedKnown = true;

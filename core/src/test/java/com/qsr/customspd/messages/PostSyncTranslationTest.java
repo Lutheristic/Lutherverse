@@ -20,7 +20,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -262,8 +264,13 @@ class PostSyncTranslationTest {
 		}
 	}
 
-	/** Rendered text in every language and each translated file's own line must satisfy holds. */
-	private static void assertEveryTranslation(String base, String fullKey, Predicate<String> holds, String what) throws IOException {
+	/**
+	 * Rendered text in every language and each translated file's own line must satisfy holds. The
+	 * files of showEnglish must lack the key, as v2.5.4's line there is only the English.
+	 */
+	private static void assertEveryTranslation(String base, String fullKey, Predicate<String> holds, String what,
+	                                           Languages... showEnglish) throws IOException {
+		List<Languages> english = Arrays.asList(showEnglish);
 		for (Languages lang : Languages.values()) {
 			Messages.setup(lang);
 			String text = Messages.get(fullKey);
@@ -271,9 +278,20 @@ class PostSyncTranslationTest {
 		}
 		for (Map.Entry<Languages, ObjectMap<String, String>> e : translatedBundles(base).entrySet()) {
 			String value = e.getValue().get(fullKey);
+			if (english.contains(e.getKey())) {
+				assertNull(value, e.getKey() + " file must not carry " + fullKey);
+				continue;
+			}
 			assertNotNull(value, e.getKey() + " lacks " + fullKey);
 			assertTrue(holds.test(value), e.getKey() + " file's " + fullKey + " " + what + ": " + value);
 		}
+	}
+
+	/** One language's line, rendered and in its file, must be exactly v2.5.4's. */
+	private static void assertV254Line(String base, Languages lang, String fullKey, String v254) throws IOException {
+		Messages.setup(lang);
+		assertEquals(v254, Messages.get(fullKey), lang + " " + fullKey);
+		assertEquals(v254, translatedBundles(base).get(lang).get(fullKey), lang + " file's " + fullKey);
 	}
 
 	@Test
@@ -324,6 +342,31 @@ class PostSyncTranslationTest {
 		assertTranslatedEverywhere(Assets.Messages.ITEMS, "items.potions.brews.aquabrew.name");
 		assertTranslatedEverywhere(Assets.Messages.ITEMS, "items.potions.brews.aquabrew.desc");
 		assertTranslatedEverywhere(Assets.Messages.ITEMS, "items.potions.elixirs.elixiroffeatherfall.desc");
+	}
+
+	/**
+	 * Sword dance went from +25% to +50% accuracy. Every language had a v2.1.0 line for it, so only
+	 * the content shows whether the sync replaced it. v2.5.4's tr line is only English.
+	 */
+	@Test
+	void swordDanceTranslationsGiveTheNewAccuracy() throws IOException {
+		assertEveryTranslation(Assets.Messages.ITEMS, "items.weapon.melee.scimitar$sworddance.desc",
+				t -> t.contains("50") && !t.contains("25"), "must give +50% accuracy", Languages.TURKISH);
+	}
+
+	/**
+	 * The alchemy guide and the no healing challenge also had v2.1.0 lines in every language; their
+	 * text changed without a number to check, so German pins v2.5.4's lines.
+	 */
+	@Test
+	void alchemyGuideAndNoHealingTranslationsAreV254s() throws IOException {
+		assertV254Line(Assets.Messages.JOURNAL, Languages.GERMAN, "journal.document.alchemy_guide.brews_elixirs.body",
+				"Gebräue und Elixiere sind fortgeschrittene Tränke mit einer Vielzahl von Effekten, üblicherweise für eine Anwendung.");
+		assertV254Line(Assets.Messages.MISC, Languages.GERMAN, "challenges.no_healing_desc",
+				"Heiltränke sind sicher praktisch, leider bist du dagegen allergisch!\n\n"
+						+ "- Heiltränke und Gegenstände, die mit Heiltränken hergestellt werden, sowie Sonnenfrucht vergiften den Helden, anstatt ihn zu heilen.\n"
+						+ "- Instabiles Gebräu kann den Helden nicht zufällig vergiften oder heilen.\n"
+						+ "- Diese Gegenstände funktionieren für andere Charaktere weiterhin normal.");
 	}
 
 	@Test

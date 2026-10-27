@@ -125,7 +125,7 @@ class LevelgenDeterminismTest {
 	 * Parked, not passing: boss floors whose exit stays cut off even with the gate open. Empty now.
 	 * Floor 20 used to be here: CPDU's ImpShopRoom.paint still walled its whole rect (the
 	 * pre-baea3b7e8 standalone-room paint) across CityBossLevel's exit hallway, boxing in the stairs
-	 * after the Dwarf King (cpdu-jw1e). A parked floor must be named here; this ratchet then fails
+	 * after the Dwarf King. A parked floor must be named here; this ratchet then fails
 	 * once the floor is fixed, so the entry gets removed.
 	 */
 	private static final Set<String> KNOWN_DISCONNECTED_BOSS_FLOORS = Collections.emptySet();

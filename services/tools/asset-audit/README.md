@@ -29,7 +29,7 @@ measured the actual cost for the first time.
 
 **The audio is the finding.** Every orphan is a conditional-music track: `*_tense.ogg`,
 `*_boss_finale.ogg`, `theme_finale.ogg`, and the `*_3.ogg` variants. The files landed with
-the Task 9 music batches on 2026-07-23; the code that would name them is `cpdu-15l`, which is
+the music batches on 2026-07-23; the code that would name them is
 deliberately blocked on a design decision about whether track selection belongs in pack config
 or level code. So roughly **30% of the APK is audio nothing can currently play**, and it stays
 that way until that decision is made.
@@ -61,5 +61,5 @@ constant that is itself never used, a second-order orphan.
 
 `-MaxOrphanKb` is a ratchet, like the lint baselines and deletion-audit's `--max-findings`:
 the known backlog is parked so anything **new** fails. The PASS message says *TRACKED, NOT
-ACCEPTED* on purpose. Lower the ceiling when `cpdu-15l` is decided and the music is either
+ACCEPTED* on purpose. Lower the ceiling once that decision is made and the music is either
 wired up or deleted.

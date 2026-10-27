@@ -332,7 +332,7 @@ public class CustomLevel extends Level {
 	protected void createItems() {
 		List<ItemSpawn> itemsToSpawn = new ArrayList<>(layout.getItems());
 		// The level's pushed generator (Level.create), not Collections.shuffle's own unseeded one: a
-		// seeded run must place the same items at the same cells every time (cpdu-s26z).
+		// seeded run must place the same items at the same cells every time.
 		if (layout.getShuffleItems()) Random.shuffle(itemsToSpawn);
 		for (int i = 0; i < itemsToSpawn.size(); i++) {
 			ItemSpawn itemSpawn = itemsToSpawn.get(i);

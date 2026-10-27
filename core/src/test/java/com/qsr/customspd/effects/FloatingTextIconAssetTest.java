@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * Upstream (1c8b13fa6 / 9e32c1880 / 3dc39de06) draws FloatingText icons from one
  * text_icons.png sheet by index. CPDU ships one PNG per icon under effects/text_icons/ and maps
- * each index to a GeneralAsset (cpdu-cxr). An index with no asset, or an asset whose file is
+ * each index to a GeneralAsset. An index with no asset, or an asset whose file is
  * missing, only shows up at runtime as a crash the first time that icon is drawn, so pin both.
  */
 class FloatingTextIconAssetTest {

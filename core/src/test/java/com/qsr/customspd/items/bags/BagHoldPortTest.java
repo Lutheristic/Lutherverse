@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Upstream 213f7a2f6 (v2.5.0, cpdu-1be): the waterskin fits in the potion bandolier and arcane styli
+ * Upstream 213f7a2f6 (v2.5.0): the waterskin fits in the potion bandolier and arcane styli
  * fit in the scroll holder. Everything each bag already held must still fit, and the two bags must
  * not start taking each other's items.
  */

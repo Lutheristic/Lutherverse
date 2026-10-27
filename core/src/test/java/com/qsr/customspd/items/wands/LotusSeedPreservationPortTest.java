@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Upstream c1fabfbd8 (v2.4.0), the wand of regrowth half: a lotus from a high-level wand
  * (0.40 + 0.04 per level passes 100% at level 15) must not preserve more than every seed-based
  * item, which showed up as tipped darts with NEGATIVE durability use. The tipped-dart half of the
- * commit depends on f9e6fbc94 (cpdu-w3d) and is not ported here.
+ * commit depends on f9e6fbc94 and is not ported here.
  */
 class LotusSeedPreservationPortTest {
 

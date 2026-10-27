@@ -13,7 +13,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Upstream c1e446580 (v2.5.0, cpdu-5h0): the spellbook's upgrade order is weighted by the full
+ * Upstream c1e446580 (v2.5.0): the spellbook's upgrade order is weighted by the full
  * scroll table (defaultProbsTotal), not only the first of the two scroll decks. Mirror image and
  * recharging are 1+2 and 2+1 cards: equally likely overall, 1:2 in the first deck alone.
  */

@@ -84,7 +84,7 @@ class InsightCrystalTest {
 		// in the live Generator. This reads what the initializer itself leaves behind by loading
 		// a private copy of Generator (child-first for Generator* only; every item class still
 		// comes from the normal loader) -- the state any pre-reset reader sees. That is how
-		// WEP_T3.probs = WEP_T1.defaultProbs.clone() (cpdu-lr8) went unnoticed: 5 weights for
+		// WEP_T3.probs = WEP_T1.defaultProbs.clone() went unnoticed: 5 weights for
 		// 6 classes, until upstream b1d82dee5.
 		java.net.URL here = Generator.class.getProtectionDomain().getCodeSource().getLocation();
 		try (FreshGeneratorLoader loader = new FreshGeneratorLoader(
@@ -110,7 +110,7 @@ class InsightCrystalTest {
 							name + ": static-initializer defaultProbs[] must match classes[]");
 				}
 
-				// the two-deck variant (upstream v2.3.0, ported for cpdu-5h0)
+				// the two-deck variant (upstream v2.3.0)
 				float[] defaults2 = (float[]) category.getField("defaultProbs2").get(cat);
 				if (defaults2 != null) {
 					assertEquals(classes.length, defaults2.length,

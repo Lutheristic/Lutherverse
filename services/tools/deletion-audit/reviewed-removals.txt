@@ -64,7 +64,7 @@ StandardRoom.SizeCategory#connectionWeight()
 
 
 # --- DM201 vent logic moved into a Hunting state class (1 entry) ---
-# Reviewed 2026-08-10 (cpdu-5p6). Verified against upstream-spd/master: CPDU's
+# Reviewed 2026-08-10. Verified against upstream-spd/master: CPDU's
 # DM201.Hunting.act is byte-for-byte identical to upstream's, upstream likewise has no
 # act() override, and upstream ALSO leaves canVent as an overridden-but-never-called
 # method. The dropped canVent/adjacency guards are upstream's own change, not a CPDU
@@ -72,7 +72,7 @@ StandardRoom.SizeCategory#connectionWeight()
 DM201#act()
 
 # --- Noisemaker Trigger -> NoisemakerFuse (7 entries) ---
-# Reviewed 2026-08-10 (cpdu-jm4). Verified against upstream-spd/master: upstream replaced
+# Reviewed 2026-08-10. Verified against upstream-spd/master: upstream replaced
 # the Trigger buff with NoisemakerFuse extends Fuse and dropped setTrigger/glowing. CPDU
 # matches.
 #
@@ -94,7 +94,7 @@ Noisemaker.Trigger#restoreFromBundle(Bundle)
 Noisemaker#doPickUp(Hero, int)
 
 # --- Superseded by upstream, verified against v2.5.4 (7 entries) ---
-# Reviewed 2026-08-10 (cpdu-bnp). Compared against the tag v2.5.4, which is Slice 1's actual
+# Reviewed 2026-08-10. Compared against the tag v2.5.4, which is Slice 1's actual
 # target -- NOT upstream-spd/master, which is v3.3.8 and contains later slices' work that
 # would show up as spurious divergence.
 #
@@ -122,17 +122,17 @@ WndTextInput#update()
 Wraith#spawnAt(int, boolean)
 
 # --- Foresight extract-method (1 entry) ---
-# Reviewed 2026-08-10 (cpdu-ijc). TalismanOfForesight.Foresight#act() shrank 58 -> 19
+# Reviewed 2026-08-10. TalismanOfForesight.Foresight#act() shrank 58 -> 19
 # statements because upstream fae73101 splits the awareness scan out into a new
 # checkAwareness(), which the hero calls on level load and at high movespeed. Nothing was
 # lost: the statements moved to checkAwareness() in the same class. port-verify reports
 # 96.2% against fae73101, and its single unaccounted line is `&& Regeneration.regenOn()) {`,
 # which was deliberately NOT taken -- that belongs to the deferred regeneration-pause
-# cluster (cpdu-q7t), so CPDU's LockedFloor form is preserved for now.
+# cluster, so CPDU's LockedFloor form is preserved for now.
 TalismanOfForesight.Foresight#act()
 
 # --- Talent.onItemIdentified emptied by upstream (1 entry) ---
-# Reviewed 2026-08-11 (cpdu-8o4.1). Shrank 13 -> 1 statements because upstream bfee2fb9
+# Reviewed 2026-08-11. Shrank 13 -> 1 statements because upstream bfee2fb9
 # replaced TEST_SUBJECT and TESTED_HYPOTHESIS, the only two talents that triggered on item
 # identification, with PROVOKED_ANGER and LINGERING_MAGIC which trigger elsewhere. Verified
 # byte-identical to v2.5.4, comment included:
@@ -143,7 +143,7 @@ TalismanOfForesight.Foresight#act()
 Talent#onItemIdentified(Hero, Item)
 
 # --- MeleeWeapon.accuracyFactor moved to Hero.attackSkill (1 entry) ---
-# Reviewed 2026-08-11 (cpdu-flc.1). Upstream d167ce29 moves the melee accuracy-talent logic
+# Reviewed 2026-08-11. Upstream d167ce29 moves the melee accuracy-talent logic
 # out of MeleeWeapon.accuracyFactor into Hero.attackSkill so it also fires for unarmed
 # attacks -- that relocation is the entire point of the commit. The override is gone, not the
 # behaviour: its body is now the else-branch of the MissileWeapon check in Hero.attackSkill,
@@ -153,7 +153,7 @@ Talent#onItemIdentified(Hero, Item)
 MeleeWeapon#accuracyFactor(Char, Char)
 
 # --- FloatingText damage-icon framework (4 entries) ---
-# Reviewed 2026-10-23 (cpdu-ta6.2, upstream 1c8b13fa6). Upstream's own signature refactor:
+# Reviewed 2026-10-23 (upstream 1c8b13fa6). Upstream's own signature refactor:
 # reset/show gained iconIdx + left parameters, the old 4-arg reset became the 6-arg form, and
 # the old show overloads and CharSprite.showStatus now delegate to the icon-aware forms (all
 # present at HEAD). No behaviour is lost; callers without an icon pass NO_ICON.
@@ -165,11 +165,11 @@ CharSprite#showStatus(int, String, Object[])
 # --- Generator and dew upstream simplifications (2 entries) ---
 # Reviewed 2026-10-23. Both shrinks are exactly the named upstream hunks, each checked
 # against the upstream commit.
-# upstream 213f7a2f6 (cpdu-1be): stones of intuition always get two uses, so WndGuess's guess
+# upstream 213f7a2f6: stones of intuition always get two uses, so WndGuess's guess
 # handler drops the separate preserved/incorrect branches and runs the use-tracker once after
 # either outcome.
 StoneOfIntuition.WndGuess#WndGuess(Item)
-# upstream 1c8b13fa6 (cpdu-ixv): consumeDew's three-way heal/shield/both showStatus branch and
+# upstream 1c8b13fa6: consumeDew's three-way heal/shield/both showStatus branch and
 # Speck burst became two independent showStatusWithIcon calls (HEALING, SHIELDING).
 Dewdrop#consumeDew(int, Hero, boolean)
 
@@ -177,44 +177,44 @@ Dewdrop#consumeDew(int, Hero, boolean)
 # Reviewed 2026-10-24. Each removal is the named upstream hunk, ported under the named issue,
 # checked against the upstream commit, and re-mapped here against the merged tree (all 66
 # findings of the merged run, no others).
-# upstream 3aab64684 (cpdu-79f): Badge.meta replaced by Badge.type (BadgeType); the boolean-meta
+# upstream 3aab64684: Badge.meta replaced by Badge.type (BadgeType); the boolean-meta
 # constructor gives way to the BadgeType one.
 Badges.Badge#Badge(Asset, boolean)
-# upstream 73129585e (cpdu-tn6): Drowsy becomes a FlavourBuff; iconTextDisplay()/desc() are
+# upstream 73129585e: Drowsy becomes a FlavourBuff; iconTextDisplay()/desc() are
 # inherited and attachTo drops its self-spend (Buff.affect(..., DURATION) supplies the delay).
 Drowsy#iconTextDisplay()
 Drowsy#desc()
 Drowsy#attachTo(Char)
-# upstream c1ed0f8ab (cpdu-vga): EnhancedRings' desc() override (it passed an int to %d) removed;
+# upstream c1ed0f8ab: EnhancedRings' desc() override (it passed an int to %d) removed;
 # FlavourBuff.desc() supplies the turns argument.
 EnhancedRings#desc()
-# upstream be15d9737 (cpdu-vga): SnipersMark's desc() override removed so FlavourBuff.desc()
+# upstream be15d9737: SnipersMark's desc() override removed so FlavourBuff.desc()
 # supplies dispTurns(); the string gains 'Turns remaining'.
 SnipersMark#desc()
-# upstream 375368403 (cpdu-xr7): Hearty Meal's two-tier heal (50% / 25% HP) collapses to one tier.
+# upstream 375368403: Hearty Meal's two-tier heal (50% / 25% HP) collapses to one tier.
 Talent#onFoodEaten(Hero, float, Item)
-# upstream c9a3819d5 (cpdu-0qx): EquipableItem.time2equip renamed timeToEquip (same body).
+# upstream c9a3819d5: EquipableItem.time2equip renamed timeToEquip (same body).
 EquipableItem#time2equip(Hero)
-# upstream 8de664e3d (cpdu-njg): Armor's equip-time override removed; armor takes the
+# upstream 8de664e3d: Armor's equip-time override removed; armor takes the
 # EquipableItem default of 1 turn like every other equipable.
 Armor#time2equip(Hero)
-# upstream 5ea26eedf (cpdu-xp1): Armor.execute's detach branch drops the inlined Runic
+# upstream 5ea26eedf: Armor.execute's detach branch drops the inlined Runic
 # Transference glyph rule for BrokenSeal.canTransferGlyph(), the same rule moved into the seal.
 Armor#execute(Hero, String)
-# upstream 8f1fc51a5 (cpdu-njg): ClassArmor's always-true isIdentified override removed; Item's
+# upstream 8f1fc51a5: ClassArmor's always-true isIdentified override removed; Item's
 # levelKnown && cursedKnown applies.
 ClassArmor#isIdentified()
-# upstream c8b4b87e0 (cpdu-0qx): Viscosity.DeferedDamage.attachTo (postpone on attach) removed;
+# upstream c8b4b87e0: Viscosity.DeferedDamage.attachTo (postpone on attach) removed;
 # the postpone moves into prolong() so a save/load no longer re-postpones.
 Viscosity.DeferedDamage#attachTo(Char)
-# upstream 1ec5434c1 (cpdu-aro): the Armor and Weapon buffedLvl overrides ("only the hero is
+# upstream 1ec5434c1: the Armor and Weapon buffedLvl overrides ("only the hero is
 # affected by Degradation") removed; the check lives once in Item.buffedLvl.
 Armor#buffedLvl()
 Weapon#buffedLvl()
-# upstream 7a05cdb41 (cpdu-xp1): MagesStaff's buffedLvl() override (max of staff and wand level)
+# upstream 7a05cdb41: MagesStaff's buffedLvl() override (max of staff and wand level)
 # replaced by a buffedVisiblyUpgraded() override, so wand boosts no longer affect melee.
 MagesStaff#buffedLvl()
-# upstream e2372805b (cpdu-51w): per-class 'price of ingredients' value() overrides removed; the
+# upstream e2372805b: per-class 'price of ingredients' value() overrides removed; the
 # Brew/Elixir base classes now carry the standardised value 60 / energy 12.
 BlizzardBrew#value()
 CausticBrew#value()
@@ -227,22 +227,22 @@ ElixirOfHoneyedHealing#value()
 ElixirOfIcyTouch#value()
 ElixirOfMight#value()
 ElixirOfToxicEssence#value()
-# upstream 919f1428e (cpdu-tn6): redundant splashColor overrides removed; Potion.splashColor()
+# upstream 919f1428e: redundant splashColor overrides removed; Potion.splashColor()
 # reads the same sprite colour.
 ElixirOfDragonsBlood#splashColor()
 ElixirOfIcyTouch#splashColor()
 ElixirOfToxicEssence#splashColor()
-# upstream 9f5c11817 (cpdu-tn6): typo rename changeTippeDart -> changeTippedDart.
+# upstream 9f5c11817: typo rename changeTippeDart -> changeTippedDart.
 ScrollOfTransmutation#changeTippeDart(TippedDart)
-# upstream 2879e9ae5 (cpdu-c55): multi-step items are consumed when used; the CPDU override that
+# upstream 2879e9ae5: multi-step items are consumed when used; the CPDU override that
 # handed the intuition stone back on cancel is gone because the stone is no longer detached up front.
 StoneOfIntuition.WndGuess#onBackPressed()
-# upstream 288f0ea18 (cpdu-c55): Duelist sneak reworked to a blink (sneakAbility(Hero, int,
+# upstream 288f0ea18: Duelist sneak reworked to a blink (sneakAbility(Hero, int,
 # MeleeWeapon) replaced by sneakAbility(Hero, Integer, int, MeleeWeapon)); Sickle harvest retuned.
 Dagger#sneakAbility(Hero, int, MeleeWeapon)
 Sickle#harvestAbility(Hero, Integer, float, MeleeWeapon)
 Sickle#call()
-# upstream 9067a486c (cpdu-njg): each weapon's abilityChargeUse override becomes a
+# upstream 9067a486c: each weapon's abilityChargeUse override becomes a
 # baseChargeUse(Hero, Char) override returning int; MeleeWeapon.abilityChargeUse is final.
 AssassinsBlade#abilityChargeUse(Hero, Char)
 BattleAxe#abilityChargeUse(Hero, Char)
@@ -261,23 +261,23 @@ Sword#abilityChargeUse(Hero, Char)
 WarHammer#abilityChargeUse(Hero, Char)
 WarScythe#abilityChargeUse(Hero, Char)
 WornShortsword#abilityChargeUse(Hero, Char)
-# upstream 20cd08c32 (cpdu-w3d): Counter Ability no longer discounts the charge cost, so
+# upstream 20cd08c32: Counter Ability no longer discounts the charge cost, so
 # abilityChargeUse() is just baseChargeUse(); the refund moved to afterAbilityUsed.
 MeleeWeapon#abilityChargeUse(Hero, Char)
-# upstream f9e6fbc94 (cpdu-w3d): the body moved into the new durabilityPerUse(boolean rounded)
+# upstream f9e6fbc94: the body moved into the new durabilityPerUse(boolean rounded)
 # overload; durabilityPerUse() forwards with rounded=true.
 MissileWeapon#durabilityPerUse()
-# upstream baea3b7e8 (cpdu-jw1e): ImpShopRoom.paint only decides the stock now; CityBossLevel
+# upstream baea3b7e8: ImpShopRoom.paint only decides the stock now; CityBossLevel
 # paints the terrain and calls spawnShop after the boss and Imp quest.
 ImpShopRoom#paint(Level)
-# upstream 387748319 (cpdu-url): utm_* tracking suffixes removed from in-game ShatteredPixel.com
+# upstream 387748319: utm_* tracking suffixes removed from in-game ShatteredPixel.com
 # links (link building folded into literal URLs).
 AboutScene#create()
 NewsScene#create()
 NewsScene#onClick()
 NewsScene.WndArticle#WndArticle(NewsArticle)
 NewsScene.WndArticle#onClick()
-# upstream 4a8d4f228 (cpdu-c55): WndBlacksmith.ItemButton moved to ui.ItemButton (same body).
+# upstream 4a8d4f228: WndBlacksmith.ItemButton moved to ui.ItemButton (same body).
 WndBlacksmith.ItemButton#createChildren()
 WndBlacksmith.ItemButton#onPointerDown()
 WndBlacksmith.ItemButton#onPointerUp()
@@ -287,7 +287,7 @@ WndBlacksmith.ItemButton#item(Item)
 WndBlacksmith.ItemButton#clear()
 
 # --- Brawler's Stance redesign (5 entries) ---
-# Reviewed 2026-10-24. upstream c448f9731 (v2.4.0, cpdu-9hyd): the stance no longer
+# Reviewed 2026-10-24. upstream c448f9731 (v2.4.0): the stance no longer
 # spends charge per hit, so the hits-left counter and everything that displayed it went
 # upstream; the buff uses Buff's default desc()/no icon text, as at v2.5.4.
 RingOfForce.BrawlersStance#hitsLeft()
@@ -297,18 +297,18 @@ RingOfForce.BrawlersStance#iconTextDisplay()
 RingOfForce.BrawlersStance#desc()
 
 # --- badge ending, Warlock and shop ports (5 entries), reviewed 2026-10-24 ---
-# upstream e8c824e6e (v2.4.0, cpdu-jtik): the whole ending (validateHappyEnd, Dungeon.win,
+# upstream e8c824e6e (v2.4.0): the whole ending (validateHappyEnd, Dungeon.win,
 # deleteGame, Badges.saveGlobal) moved into SurfaceScene.create, so silentValidateHappyEnd is gone
 # and Hero.actTransition (CPDU's equivalent of upstream's SewerLevel.activateTransition) lost its
 # silent-validate / win / deleteGame calls.
 Badges#silentValidateHappyEnd()
 Hero#actTransition(HeroAction.LvlTransition)
-# upstream cf7ddd4db (v2.2.0, cpdu-xmif): Warlock.createLoot re-rolls a rejected healing potion
+# upstream cf7ddd4db (v2.2.0): Warlock.createLoot re-rolls a rejected healing potion
 # instead of adding it back into POTION.probs (it draws with randomUsingDefaults; no deck entry).
 Warlock#createLoot()
-# upstream f23962ec5 (v2.4.0, cpdu-38j6): ShopRoom.itemCount() became spacesNeeded().
+# upstream f23962ec5 (v2.4.0): ShopRoom.itemCount() became spacesNeeded().
 ShopRoom#itemCount()
-# upstream 6a05169b5 (v2.3.2, cpdu-38j6): ShopRoom.generateItems drops the 63-item hard-limit
+# upstream 6a05169b5 (v2.3.2): ShopRoom.generateItems drops the 63-item hard-limit
 # throw; the new placeItems fill-in pass and reportException replace it.
 ShopRoom#generateItems()
 # upstream d029c0d7d (v3.0.0, pulled forward): the ending calls (validateHappyEnd, Dungeon.win,

@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Upstream v2.3.0's two-deck consumable system (27312460f), cpdu-5h0: potions and scrolls deal
+ * Upstream v2.3.0's two-deck consumable system (27312460f): potions and scrolls deal
  * from two half-size decks that alternate on every reshuffle.
  *
  * What this pins and why:

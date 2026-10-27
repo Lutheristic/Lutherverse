@@ -8,8 +8,8 @@
     and JAR unplayable and unlookable.
 
     This is not hypothetical. It happened with the conditional-music cluster,
-    and a 2026-08-11 sweep found 29 orphaned assets totalling ~9.99 MB, of which 14 .ogg files are ~9.8 MB -- 54% of the
-    game's music, in a 31 MB APK -- all blocked behind the cpdu-15l design decision.
+    and a 2026-08-11 sweep found 29 orphaned assets totalling ~9.99 MB, of which 14 .ogg files are ~9.8 MB (54% of the
+    game's music, in a 31 MB APK), all blocked behind the music design decision.
 
     An asset counts as referenced if its file name appears anywhere in core's Java/Kotlin
     sources or in any JSON/properties file. That is deliberately loose: CPDU addresses some

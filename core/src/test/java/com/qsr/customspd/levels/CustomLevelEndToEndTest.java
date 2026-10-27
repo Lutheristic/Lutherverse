@@ -123,7 +123,7 @@ class CustomLevelEndToEndTest {
 	}
 
 	/**
-	 * cpdu-s26z: a layout with shuffle_items permutes which item spec lands on which cell. That
+	 * A layout with shuffle_items permutes which item spec lands on which cell. That
 	 * shuffle must draw from the level's seeded generator, not Collections.shuffle's own unseeded
 	 * one, or the same seed gives a different dungeon every run. Six distinct fixed items give 720
 	 * arrangements, so an unseeded shuffle matches itself on all of three rebuilds with

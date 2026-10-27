@@ -78,7 +78,7 @@ public class FloatingText extends RenderedTextBlock {
 
 	//CPDU divergence: upstream slices one text_icons.png sheet at runtime with a TextureFilm
 	//indexed by the constants above. CPDU ships one PNG per icon (effects/text_icons/), so the
-	//indices map to GeneralAsset entries instead (cpdu-cxr).
+	//indices map to GeneralAsset entries instead.
 	private static final SparseArray<GeneralAsset> ICON_ASSETS = new SparseArray<>();
 	static {
 		ICON_ASSETS.put(PHYS_DMG,          GeneralAsset.TEXT_ICON_PHYS_DMG);

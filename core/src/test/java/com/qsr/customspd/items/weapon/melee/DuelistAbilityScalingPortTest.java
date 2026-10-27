@@ -154,9 +154,10 @@ class DuelistAbilityScalingPortTest {
 		heroOnFixture(); // min()/max() read the hero's strength
 		Whip whip = identifiedAt(new Whip(), 1);
 		String known = whip.abilityInfo();
-		// 11a410f07: plus a 2+round(0.5*lvl) boost, 3 at +1
-		assertTrue(known.contains("_" + whip.augment.damageFactor(whip.min() + 3) + "-"
-				+ whip.augment.damageFactor(whip.max() + 3) + " damage_"), known);
-		assertNotNull(new Whip().abilityInfo());
+		// ea3d9db28 removed 11a410f07's 2+round(0.5*lvl) boost: just the weapon's own range
+		assertTrue(known.contains("_" + whip.augment.damageFactor(whip.min()) + "-"
+				+ whip.augment.damageFactor(whip.max()) + " damage_"), known);
+		String typical = new Whip().abilityInfo();
+		assertTrue(typical.contains("typically deals _" + new Whip().min(0) + "-" + new Whip().max(0) + " damage_"), typical);
 	}
 }

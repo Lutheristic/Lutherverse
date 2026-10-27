@@ -29,8 +29,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Pins upstream 998cc211c, dafbb6f85 and 729a86295 (v2.4.0): damage-dealing weapon abilities
  * state their damage range, and the boost is a flat amount that grows with the weapon's level
  * instead of a damage multiplier. The numbers are 11a410f07's (v2.4.0) retune, which raised the
- * boosts and turned harvest into pure bleeding, with 753b340f0's (v2.4.2) spin and harvest buffs.
- * The expected numbers are written out by hand so that a wrong boost formula cannot agree with
+ * boosts and turned harvest into pure bleeding, with 753b340f0's (v2.4.2) spin and harvest buffs
+ * and ea3d9db28's (v2.5.0) lunge, cleave, spike and retribution buffs and lash boost removal. The
+ * expected numbers are written out by hand so that a wrong boost formula cannot agree with
  * itself.
  */
 class DuelistAbilityDamagePortTest {
@@ -281,14 +282,14 @@ class DuelistAbilityDamagePortTest {
 		assertTypicalRange(new HandAxe(), 2 + 4, 12 + 4);
 		assertTypicalRange(new BattleAxe(), 4 + 5, 20 + 5);
 		assertTypicalRange(new WarHammer(), 5 + 6, 24 + 6);
-		assertTypicalRange(new Greataxe(), 5 + 12, 45 + 12);
+		assertTypicalRange(new Greataxe(), 5 + 15, 45 + 15);
 
 		// +3 identified: upgraded range plus the boost at +3 (1.5*3 rounds up to 5)
 		assertKnownRange(identifiedAt(new Mace(), 3), 6 + 10, 28 + 10);
 		assertKnownRange(identifiedAt(new HandAxe(), 3), 5 + 9, 21 + 9);
 		assertKnownRange(identifiedAt(new BattleAxe(), 3), 7 + 10, 35 + 10);
 		assertKnownRange(identifiedAt(new WarHammer(), 3), 8 + 11, 42 + 11);
-		assertKnownRange(identifiedAt(new Greataxe(), 3), 8 + 18, 63 + 18);
+		assertKnownRange(identifiedAt(new Greataxe(), 3), 8 + 21, 63 + 21);
 	}
 
 	@Test
@@ -317,22 +318,23 @@ class DuelistAbilityDamagePortTest {
 
 		axe.duelistAbility(hero, cell);
 
-		// a roll of 10 plus 12 at +0; the earlier 12.5+1.75*lvl made it 23
-		assertEquals(22, rat.HT - rat.HP);
+		// a roll of 10 plus 15 at +0; 11a410f07's 12+2*lvl made it 22
+		assertEquals(25, rat.HT - rat.HP);
 	}
 
 	@Test
 	void spikeAndLungeWeaponsDescribeTheirBoostedRange() {
 		heroOnFixture();
-		assertTypicalRange(new Spear(), 2 + 7, 20 + 7);
+		assertTypicalRange(new Spear(), 2 + 9, 20 + 9);
 		assertTypicalRange(new Glaive(), 5 + 12, 40 + 12);
-		assertTypicalRange(new Rapier(), 1 + 4, 8 + 4);
-		assertTypicalRange(new Katana(), 4 + 6, 20 + 6);
+		assertTypicalRange(new Rapier(), 1 + 5, 8 + 5);
+		assertTypicalRange(new Katana(), 4 + 8, 20 + 8);
 
-		assertKnownRange(identifiedAt(new Spear(), 3), 5 + 12, 32 + 12);
-		assertKnownRange(identifiedAt(new Glaive(), 3), 8 + 18, 64 + 18);
-		assertKnownRange(identifiedAt(new Rapier(), 3), 4 + 7, 14 + 7);
-		assertKnownRange(identifiedAt(new Katana(), 3), 7 + 11, 35 + 11);
+		// 2*3, round(2.5*3), round(1.5*3) and 2*3 on top of the base boosts
+		assertKnownRange(identifiedAt(new Spear(), 3), 5 + 15, 32 + 15);
+		assertKnownRange(identifiedAt(new Glaive(), 3), 8 + 20, 64 + 20);
+		assertKnownRange(identifiedAt(new Rapier(), 3), 4 + 10, 14 + 10);
+		assertKnownRange(identifiedAt(new Katana(), 3), 7 + 14, 35 + 14);
 	}
 
 	@Test
@@ -345,8 +347,8 @@ class DuelistAbilityDamagePortTest {
 
 		spear.duelistAbility(hero, cell);
 
-		// a roll of 5 plus 7 at +0; the earlier 5+lvl made it 10
-		assertEquals(12, rat.HT - rat.HP);
+		// a roll of 5 plus 9 at +0; 11a410f07's 7+1.5*lvl made it 12
+		assertEquals(14, rat.HT - rat.HP);
 	}
 
 	@Test
@@ -360,8 +362,8 @@ class DuelistAbilityDamagePortTest {
 		katana.duelistAbility(hero, cell);
 
 		assertEquals(4 * W + 5, hero.pos, "fixture: the hero lunged next to the rat");
-		// a roll of 5 plus 6 at +0; the earlier 4+lvl made it 9
-		assertEquals(11, rat.HT - rat.HP);
+		// a roll of 5 plus 8 at +0; 11a410f07's 6+1.5*lvl made it 11
+		assertEquals(13, rat.HT - rat.HP);
 	}
 
 	@Test
@@ -376,24 +378,25 @@ class DuelistAbilityDamagePortTest {
 
 		rapier.duelistAbility(hero, cell);
 
-		// a roll of 5 plus 4+3; the boost read the unbuffed level and made it 13
-		assertEquals(12, rat.HT - rat.HP);
+		// a roll of 5 plus 5+round(1.5*3); the unbuffed +4 would make it 16
+		assertEquals(15, rat.HT - rat.HP);
 	}
 
 	@Test
 	void cleaveWeaponsDescribeTheirBoostedRange() {
 		heroOnFixture();
-		assertTypicalRange(new Sword(), 3 + 4, 20 + 4);
-		assertTypicalRange(new Shortsword(), 2 + 3, 15 + 3);
+		// ea3d9db28 left the worn shortsword at 3+lvl
+		assertTypicalRange(new Sword(), 3 + 5, 20 + 5);
+		assertTypicalRange(new Shortsword(), 2 + 4, 15 + 4);
 		assertTypicalRange(new WornShortsword(), 1 + 3, 10 + 3);
-		assertTypicalRange(new Longsword(), 4 + 4, 25 + 4);
-		assertTypicalRange(new Greatsword(), 5 + 5, 30 + 5);
+		assertTypicalRange(new Longsword(), 4 + 6, 25 + 6);
+		assertTypicalRange(new Greatsword(), 5 + 7, 30 + 7);
 
-		assertKnownRange(identifiedAt(new Sword(), 3), 6 + 7, 32 + 7);
-		assertKnownRange(identifiedAt(new Shortsword(), 3), 5 + 6, 24 + 6);
+		assertKnownRange(identifiedAt(new Sword(), 3), 6 + 8, 32 + 8);
+		assertKnownRange(identifiedAt(new Shortsword(), 3), 5 + 7, 24 + 7);
 		assertKnownRange(identifiedAt(new WornShortsword(), 3), 4 + 6, 16 + 6);
-		assertKnownRange(identifiedAt(new Longsword(), 3), 7 + 7, 40 + 7);
-		assertKnownRange(identifiedAt(new Greatsword(), 3), 8 + 8, 48 + 8);
+		assertKnownRange(identifiedAt(new Longsword(), 3), 7 + 9, 40 + 9);
+		assertKnownRange(identifiedAt(new Greatsword(), 3), 8 + 10, 48 + 10);
 	}
 
 	@Test
@@ -415,8 +418,8 @@ class DuelistAbilityDamagePortTest {
 
 		sword.duelistAbility(hero, cell);
 
-		// a roll of 5 plus 4 at +0; the earlier 3+0.67*lvl made it 8
-		assertEquals(9, rat.HT - rat.HP);
+		// a roll of 5 plus 5 at +0; 11a410f07's 4+lvl made it 9
+		assertEquals(10, rat.HT - rat.HP);
 	}
 
 	@Test
@@ -570,20 +573,20 @@ class DuelistAbilityDamagePortTest {
 		expect(wrong, "hand axe", 5 + 9, damageAtPlusThree(FixedRollHandAxe::new, adjacent, none));
 		expect(wrong, "battle axe", 5 + 10, damageAtPlusThree(FixedRollBattleAxe::new, adjacent, none));
 		expect(wrong, "war hammer", 5 + 11, damageAtPlusThree(FixedRollWarHammer::new, adjacent, none));
-		// retribution: a roll of 10 plus 12+2*3
-		expect(wrong, "greataxe", 10 + 18, damageAtPlusThree(FixedRollGreataxe::new, adjacent, belowHalfHealth));
+		// retribution: a roll of 10 plus 15+2*3
+		expect(wrong, "greataxe", 10 + 21, damageAtPlusThree(FixedRollGreataxe::new, adjacent, belowHalfHealth));
 
 		// spike and lunge reach a rat two tiles away
-		expect(wrong, "spear", 5 + 12, damageAtPlusThree(FixedRollSpear::new, twoAway, none));
-		expect(wrong, "glaive", 5 + 18, damageAtPlusThree(FixedRollGlaive::new, twoAway, none));
-		expect(wrong, "katana", 5 + 11, damageAtPlusThree(FixedRollKatana::new, twoAway, none));
+		expect(wrong, "spear", 5 + 15, damageAtPlusThree(FixedRollSpear::new, twoAway, none));
+		expect(wrong, "glaive", 5 + 20, damageAtPlusThree(FixedRollGlaive::new, twoAway, none));
+		expect(wrong, "katana", 5 + 14, damageAtPlusThree(FixedRollKatana::new, twoAway, none));
 
 		// cleave
-		expect(wrong, "sword", 5 + 7, damageAtPlusThree(FixedRollSword::new, adjacent, none));
-		expect(wrong, "shortsword", 5 + 6, damageAtPlusThree(FixedRollShortsword::new, adjacent, none));
+		expect(wrong, "sword", 5 + 8, damageAtPlusThree(FixedRollSword::new, adjacent, none));
+		expect(wrong, "shortsword", 5 + 7, damageAtPlusThree(FixedRollShortsword::new, adjacent, none));
 		expect(wrong, "worn shortsword", 5 + 6, damageAtPlusThree(FixedRollWornShortsword::new, adjacent, none));
-		expect(wrong, "longsword", 5 + 7, damageAtPlusThree(FixedRollLongsword::new, adjacent, none));
-		expect(wrong, "greatsword", 5 + 8, damageAtPlusThree(FixedRollGreatsword::new, adjacent, none));
+		expect(wrong, "longsword", 5 + 9, damageAtPlusThree(FixedRollLongsword::new, adjacent, none));
+		expect(wrong, "greatsword", 5 + 10, damageAtPlusThree(FixedRollGreatsword::new, adjacent, none));
 
 		// combo strike after two recent hits: the boost counts once per hit
 		expect(wrong, "sai", 5 + 2 * 5, damageAtPlusThree(FixedRollSai::new, adjacent, twoRecentHits));
@@ -652,7 +655,7 @@ class DuelistAbilityDamagePortTest {
 	}
 
 	@Test
-	void lashHitsEveryEnemyInReachWithAFlatBoost() {
+	void lashHitsEveryEnemyInReachWithNoBoost() {
 		Hero hero = heroOnFixture();
 		FixedRollWhip whip = new FixedRollWhip();
 		hero.belongings.weapon = whip;
@@ -668,9 +671,9 @@ class DuelistAbilityDamagePortTest {
 			Random.popGenerator();
 		}
 
-		// a roll of 5 plus 2 at +0, on every target
-		assertEquals(7, closest.HT - closest.HP, "the closest enemy");
-		assertEquals(7, far.HT - far.HP, "11a410f07: the others are guaranteed hits too, not just the closest");
+		// just the roll of 5 on every target; 11a410f07's 2+0.5*lvl boost made it 7
+		assertEquals(5, closest.HT - closest.HP, "the closest enemy");
+		assertEquals(5, far.HT - far.HP, "11a410f07: the others are guaranteed hits too, not just the closest");
 	}
 
 	@Test

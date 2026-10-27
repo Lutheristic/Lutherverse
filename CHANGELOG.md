@@ -10,6 +10,22 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 Everything on `main` since the fork base (`cpd-sync-base-2025-08-15`, CPD commit `c97fb83`).
 
+### 2026-10-26: talent chances, Duelist retunes and artifact charging
+
+**Ported**
+- Spells now trigger the scroll talents, the way brews and elixirs already triggered the potion talents (upstream v2.4.0). Items that a recipe makes several of only trigger them some of the time: one use in eight for aqua brew, one in five for a beacon of returning. A whole batch counts about the same as a single potion or scroll. Elixir of might, magical infusion and recycle count double.
+- The unstable brew and unstable spell now keep rerolling until the effect suits the moment, as in v2.5.0. Before, they rerolled only once.
+- Aggressive Barrier now kicks in at half health or lower and gives 3 shielding, or 5 with both points. Provoked Anger adds a flat 2 or 3 damage.
+- The Duelist's charge pool grows every 3 levels instead of every 4.
+- Duelist abilities take upstream's v2.4.2 and v2.5.0 numbers. Flail spins, runic slash (now +300% enchantment power), harvest on the sickle and war scythe, lunge, cleave, spike and the greataxe's retribution all hit harder. The whip's lash loses its flat bonus.
+- The combo strike, spin and charged shot texts now say "regular attack". The longsword, studded gloves and whip texts match v2.5.4.
+
+**Fixed**
+- The cloak of shadows, dried rose, ethereal chains, talisman of foresight, timekeeper's hourglass and unstable spellbook can gain more than one charge in a single turn, and the ethereal chains and horn of plenty more than one from a single recharge. Before, anything past one charge waited for later turns.
+- When the talisman of foresight fills up on its own, it now says so and drops its leftover partial charge. Before, only a recharge effect that filled it did that.
+- Combo strike no longer writes to the log when no combo weapon is held.
+- The Champion's weapon swap tag refreshes whenever the item displays do, so it no longer shows the old weapon.
+
 ### 2026-10-26: the Duelist's shared charge pool
 
 **Ported**

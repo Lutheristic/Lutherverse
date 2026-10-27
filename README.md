@@ -187,7 +187,7 @@ Everything glowed green over an empty cell. So now every gate has to prove it ca
 - **Android Lint** now runs as a ratcheted gate over `core` and `android`.
 - **`options.release = 8`** holds the game modules to the Java 8 *API*, not just the language level, so nothing ships that an old Android phone can't run.
 - **CI** runs on every push to `main` and on pull requests, and every step asserts it actually analysed something.
-- **Tests in `core`** went from zero to 843.
+- **Tests in `core`** went from zero to 878.
 
 <details>
   <summary><strong>The rest of the toolbelt, and earlier milestones</strong></summary>

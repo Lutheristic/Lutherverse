@@ -381,4 +381,20 @@ class PostSyncTranslationTest {
 		assertTranslatedEverywhere(Assets.Messages.JOURNAL, "journal.catalog.brews_elixirs.title");
 		assertTranslatedEverywhere(Assets.Messages.WINDOWS, "windows.wndjournal$catalogtab.title_equipment");
 	}
+
+	// The loading screen adds its own dots, so a v2.1.0 line ending in "..." would show six.
+	// v2.5.4's Turkish return line keeps its ellipsis, so return is left out.
+	@Test
+	void loadingScreenTranslationsLeaveTheDotsToTheScene() throws IOException {
+		for (String mode : new String[]{"descend", "ascend", "continue", "resurrect", "reset", "fall"}) {
+			assertEveryTranslation(Assets.Messages.SCENES, "scenes.interlevelscene$mode." + mode,
+					t -> !t.endsWith("...") && !t.endsWith("…"), "ends in its own dots");
+		}
+	}
+
+	@Test
+	void imbueWindowTranslationsNoLongerQuoteAChance() throws IOException {
+		assertEveryTranslation(Assets.Messages.ITEMS, "items.weapon.melee.magesstaff.imbue_talent",
+				t -> !t.contains("%"), "still carries the old chance and uses", Languages.TURKISH);
+	}
 }

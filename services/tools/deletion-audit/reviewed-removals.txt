@@ -418,3 +418,11 @@ Sai.ComboStrikeTracker#act()
 MeleeWeapon#doEquip(Hero)
 MeleeWeapon#equipSecondary(Hero)
 MeleeWeapon#doUnequip(Hero, boolean, boolean)
+
+# --- Wand preservation rework (2 entries), reviewed 2026-10-26 ---
+# upstream b7051a219 (v2.5.0): wand preservation always succeeds and never gives resin, so
+# imbueWand loses its preserve roll and resin branch, and the imbue window drops the chance and
+# uses-left numbers. CPDU moves the window's text choice into MagesStaff.oldWandText() so a test
+# can reach it; the condition is v2.5.4's.
+MagesStaff#imbueWand(Wand, Char)
+MagesStaff#onSelect(Item)

@@ -20,9 +20,6 @@ class CpduOnlyEnglishTest {
 	static final String[] KEYS = {
 			"actors.hero.talent.rogues_foresight.desc",
 			"items.scrolls.exotic.scrollofantimagic.desc",
-			"items.weapon.melee.crossbow$chargedshot.desc",
-			"items.weapon.melee.sickle.ability_desc",
-			"items.weapon.melee.warscythe.ability_desc",
 			"scenes.titlescene$changesbutton.desc",
 			"scenes.welcomescene.patch_intro",
 			"scenes.welcomescene.save_warning",

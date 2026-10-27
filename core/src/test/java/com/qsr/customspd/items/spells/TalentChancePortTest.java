@@ -18,6 +18,7 @@ import com.qsr.customspd.items.potions.elixirs.ElixirOfMight;
 import com.qsr.customspd.items.potions.exotic.PotionOfMastery;
 import com.qsr.customspd.items.scrolls.Scroll;
 import com.qsr.customspd.items.scrolls.ScrollOfIdentify;
+import com.qsr.customspd.items.scrolls.ScrollOfMagicMapping;
 import com.qsr.customspd.items.weapon.melee.Sword;
 import com.qsr.customspd.mechanics.Ballistica;
 import com.qsr.customspd.scenes.CellSelector;
@@ -54,7 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Talent.onScrollUsed themselves: inventory and targeted spells once the spell is used, and
  * alchemize, beacon of returning, summon elemental and unstable spell from their own cast code.
  *
- * The fields are read and written by reflection so the file compiles against code without them.
+ * talentChance and talentFactor are protected, so the test reaches them by reflection.
  */
 class TalentChancePortTest {
 
@@ -140,12 +141,16 @@ class TalentChancePortTest {
 		@Override public Emitter bottomEmitter() { return new Emitter(); }
 	}
 
-	private static void giveHeadlessHeroSprite(Hero hero) throws Exception {
+	/** Skips the constructor, for UI classes whose constructors load textures or fonts. */
+	private static <T> T allocate(Class<T> type) throws Exception {
 		Field f = Class.forName("sun.misc.Unsafe").getDeclaredField("theUnsafe");
 		f.setAccessible(true);
 		Object unsafe = f.get(null);
-		HeroSprite sprite = (HeroSprite) unsafe.getClass()
-				.getMethod("allocateInstance", Class.class).invoke(unsafe, HeadlessHeroSprite.class);
+		return type.cast(unsafe.getClass().getMethod("allocateInstance", Class.class).invoke(unsafe, type));
+	}
+
+	private static void giveHeadlessHeroSprite(Hero hero) throws Exception {
+		HeroSprite sprite = allocate(HeadlessHeroSprite.class);
 		sprite.ch = hero;
 		hero.sprite = sprite;
 	}
@@ -333,17 +338,20 @@ class TalentChancePortTest {
 		@Override protected void fx(Ballistica bolt, Callback callback) { callback.call(); }
 	}
 
+	private static void castAtTwoCellsAway(Hero hero, TargetedSpell spell) throws Exception {
+		spell.collect(hero.belongings.backpack);
+		itemStatic("curItem").set(null, spell);
+		Field targeter = TargetedSpell.class.getDeclaredField("targeter");
+		targeter.setAccessible(true);
+		((CellSelector.Listener) targeter.get(null)).onSelect(hero.pos + 2);
+	}
+
 	@Test
 	void castingATargetedSpellTriggersTheOnScrollTalents() throws Exception {
 		Hero hero = mage();
 		hero.talents.get(1).put(Talent.INSCRIBED_STEALTH, 1);
-		ProbeTargetedSpell spell = new ProbeTargetedSpell();
-		spell.collect(hero.belongings.backpack);
-		itemStatic("curItem").set(null, spell);
 
-		Field targeter = TargetedSpell.class.getDeclaredField("targeter");
-		targeter.setAccessible(true);
-		((CellSelector.Listener) targeter.get(null)).onSelect(hero.pos + 2);
+		castAtTwoCellsAway(hero, new ProbeTargetedSpell());
 
 		Invisibility invis = hero.buff(Invisibility.class);
 		assertNotNull(invis, "the spell triggers inscribed stealth");
@@ -351,7 +359,26 @@ class TalentChancePortTest {
 	}
 
 	@Test
+	void aTargetedSpellTriggersOnlyAtItsChance() throws Exception {
+		Hero hero = mage();
+		hero.talents.get(1).put(Talent.INSCRIBED_STEALTH, 1);
+
+		int triggered = 0;
+		Random.pushGenerator(2405);
+		try {
+			for (int i = 0; i < USES; i++) {
+				castAtTwoCellsAway(hero, withChance(new ProbeTargetedSpell(), 0.25f));
+				if (invisibleThenCleared(hero)) triggered++;
+			}
+		} finally {
+			Random.popGenerator();
+		}
+		assertQuarterOfTheTime(triggered, "a targeted spell");
+	}
+
+	@Test
 	void castingAnUnstableSpellTriggersTheOnScrollTalentsButNotItsScroll() throws Exception {
+		//magic mapping is read at once, before the spell's own trigger, and needs no enemies in view
 		HashMap<?, ?> scrolls = (HashMap<?, ?>) field(UnstableSpell.class, "scrollChances").get(null);
 		long seed = 0;
 		for (long s = 1; s < 200 && seed == 0; s++) {
@@ -359,15 +386,16 @@ class TalentChancePortTest {
 			try {
 				@SuppressWarnings("unchecked")
 				Object first = Random.chances((HashMap<Object, Float>) scrolls);
-				if (first == ScrollOfIdentify.class) seed = s;
+				if (first == ScrollOfMagicMapping.class) seed = s;
 			} finally {
 				Random.popGenerator();
 			}
 		}
-		assertTrue(seed != 0, "fixture: a seed whose first roll is identify");
+		assertTrue(seed != 0, "fixture: a seed whose first roll is magic mapping");
 
 		Hero hero = mage();
-		hero.talents.get(1).put(Talent.INSCRIBED_POWER, 1);
+		level.cleanWalls(); //builds the discoverable map that magic mapping reads
+		hero.talents.get(1).put(Talent.INSCRIBED_STEALTH, 1);
 		giveHeadlessHeroSprite(hero);
 		UnstableSpell spell = new UnstableSpell();
 		spell.collect(hero.belongings.backpack);
@@ -379,9 +407,11 @@ class TalentChancePortTest {
 			Random.popGenerator();
 		}
 
-		assertEquals(ScrollOfIdentify.class, itemStatic("curItem").get(null).getClass(), "fixture: identify was read");
-		assertNotNull(hero.buff(com.qsr.customspd.actors.buffs.ScrollEmpower.class),
-				"the spell triggers inscribed power once its scroll is read");
+		assertEquals(ScrollOfMagicMapping.class, itemStatic("curItem").get(null).getClass(),
+				"fixture: magic mapping was read");
+		Invisibility invis = hero.buff(Invisibility.class);
+		assertNotNull(invis, "the spell triggers inscribed stealth");
+		assertEquals(3f, invis.cooldown(), 0.0001f, "3 turns at +1 from the spell alone, 6 if its scroll also triggered");
 	}
 
 	/** An elemental with a sprite that has a parent, so the summon's appear tween can attach. */
@@ -416,27 +446,57 @@ class TalentChancePortTest {
 		assertNull(hero.buff(Invisibility.class), "a 0% chance never triggers");
 	}
 
+	private static void alchemizeOnce(Hero hero, Alchemize alchemize) throws Exception {
+		alchemize.collect(hero.belongings.backpack);
+		itemStatic("curItem").set(null, alchemize);
+		Method consume = Alchemize.WndAlchemizeItem.class.getDeclaredMethod("consumeAlchemize");
+		consume.setAccessible(true);
+		consume.invoke(allocate(Alchemize.WndAlchemizeItem.class));
+		assertNull(hero.belongings.getItem(Alchemize.class), "fixture: the alchemize was used up");
+	}
+
 	@Test
-	void returningByBeaconTriggersTheOnScrollTalents() throws Exception {
+	void alchemizingTriggersTheOnScrollTalentsAtItsChance() throws Exception {
 		Hero hero = mage();
 		hero.talents.get(1).put(Talent.INSCRIBED_STEALTH, 1);
-		BeaconOfReturning beacon = withChance(new BeaconOfReturning(), 1f);
-		beacon.returnPos = 5 * level.width() + 5;
+
+		alchemizeOnce(hero, withChance(new Alchemize(), 1f));
+		assertNotNull(hero.buff(Invisibility.class), "alchemizing triggers inscribed stealth");
+
+		hero.buff(Invisibility.class).detach();
+		alchemizeOnce(hero, withChance(new Alchemize(), 0f));
+		assertNull(hero.buff(Invisibility.class), "a 0% chance never triggers");
+	}
+
+	/** A beacon set on the current level teleports within it instead of switching scenes. */
+	private void returnWithinTheLevel(Hero hero, float chance, int returnPos) throws Exception {
+		BeaconOfReturning beacon = withChance(new BeaconOfReturning(), chance);
+		beacon.returnPos = returnPos;
 		beacon.collect(hero.belongings.backpack);
 
 		Method returnBeacon = BeaconOfReturning.class.getDeclaredMethod("returnBeacon", Hero.class);
 		returnBeacon.setAccessible(true);
 		String levelName = Dungeon.levelName;
 		try {
-			//a beacon set on the current level teleports within it instead of switching scenes
 			Dungeon.levelName = "headless";
 			beacon.returnLevel = Dungeon.levelName;
 			returnBeacon.invoke(beacon, hero);
 		} finally {
 			Dungeon.levelName = levelName;
 		}
+		assertEquals(returnPos, hero.pos, "fixture: the hero returned");
+	}
 
-		assertEquals(5 * level.width() + 5, hero.pos, "fixture: the hero returned");
+	@Test
+	void returningByBeaconTriggersTheOnScrollTalentsAtItsChance() throws Exception {
+		Hero hero = mage();
+		hero.talents.get(1).put(Talent.INSCRIBED_STEALTH, 1);
+
+		returnWithinTheLevel(hero, 1f, 5 * level.width() + 5);
 		assertNotNull(hero.buff(Invisibility.class), "the beacon triggers inscribed stealth");
+
+		hero.buff(Invisibility.class).detach();
+		returnWithinTheLevel(hero, 0f, 3 * level.width() + 3);
+		assertNull(hero.buff(Invisibility.class), "a 0% chance never triggers");
 	}
 }

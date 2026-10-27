@@ -10,6 +10,18 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 Everything on `main` since the fork base (`cpd-sync-base-2025-08-15`, CPD commit `c97fb83`).
 
+### 2026-10-26: tier-2 talent buffs, text catch-up and translations
+
+**Ported**
+- Wand Preservation no longer rolls a chance and never gives resin, as in upstream v2.5.0. Each time it works, the old wand comes back at +0. At +1 it works once, and at +2 once per hero level.
+- Rogue's Foresight notices that a floor has a secret room 75% of the time at +1 and every time at +2.
+- Swift Equip's second instant swap at +2 can be used any time in the 20-turn cooldown, instead of only in the first few turns after the first swap.
+- About sixty English texts take v2.5.4's wording. Most catch up with code that already worked the way v2.5.4 describes it, and the rest are typo and punctuation fixes. The gladiator and monk descriptions list their abilities, the basic bomb shows its damage, the empower buffs and meal talents count hits instead of attacks, heavy blow says it always hits, the katana blocks 0-3, and a run of buff, well, talent, scroll and guide texts follow upstream.
+- All 18 translations take v2.5.4's translated lines wherever our English now matches v2.5.4's: the tier-2 talents, the Champion and the Duelist abilities, the alchemy items, the journal catalog and every text above. A few lines are left out, either because v2.5.4's version drops a placeholder or because upstream left it in English, and those show the English. Translated lines for keys that no longer exist are gone.
+
+**Fixed**
+- The loading texts showed four to six dots after "Descending" and the rest, because the scene adds one to three dots of its own to a text that already ended in three. The texts no longer carry dots of their own, and falling reads "Falling!" as upstream has it. Turkish "returning" keeps its ellipsis, because v2.5.4's Turkish line has one.
+
 ### 2026-10-26: talent chances, Duelist retunes and artifact charging
 
 **Ported**

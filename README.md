@@ -187,7 +187,7 @@ Everything glowed green over an empty cell. So now every gate has to prove it ca
 - **Android Lint** now runs as a ratcheted gate over `core` and `android`.
 - **`options.release = 8`** holds the game modules to the Java 8 *API*, not just the language level, so nothing ships that an old Android phone can't run.
 - **CI** runs on every push to `main` and on pull requests, and every step asserts it actually analysed something.
-- **Tests in `core`** went from zero to 878.
+- **Tests in `core`** went from zero to 905.
 
 <details>
   <summary><strong>The rest of the toolbelt, and earlier milestones</strong></summary>
@@ -210,7 +210,7 @@ Short bulletin. The [CHANGELOG](CHANGELOG.md) has the longer list.
 - **Landed from upstream:** most of Slice 1, the catch-up to Shattered v2.5.4. All 23 batches that sat parked since July are worked through: about 245 upstream commits checked, roughly 170 ported, and each of the rest tracked on its own. Also in: the remains and bones catch-up from v2.3.0, the floating-text damage icons, the journal catalog and its badges, and translations synced to v2.5.4.
 - **Landed:** a headless test harness that runs the real dungeon setup, save and load with no display, and pins same-seed level generation.
 - **In progress: seeded runs.** The bugs that broke seeded generation are fixed: guaranteed floors were being picked with an unseeded RNG before the dungeon seed existed, actor order varied between runs, and the shop could pick a different bag for the same seed. Layouts reproduce now, but full-run determinism is still being pinned down, so the same seed doesn't promise the same run yet.
-- **Still to port for Slice 1:** the last of the talent changes, custom journal notes along with the journal rework they build on, and a final pass bringing translations up to v2.5.4.
+- **Still to port for Slice 1:** custom journal notes along with the journal rework they build on, and whatever the batches missed. Checking every commit on the Slice 1 list against v2.5.4 still finds upstream code with no match here in about 330 of them. Some of that is deliberate adaptation, and the rest still has to be sorted into Slice 1 work and later slices.
 
 <details>
   <summary><strong>Roadmap to v0.1, and what comes after</strong></summary>

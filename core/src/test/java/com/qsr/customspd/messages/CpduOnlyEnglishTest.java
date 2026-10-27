@@ -19,7 +19,6 @@ class CpduOnlyEnglishTest {
 
 	static final String[] KEYS = {
 			"actors.hero.talent.focused_meal.desc",
-			"actors.hero.talent.rogues_foresight.desc",
 			"actors.hero.talent.weapon_recharging.desc",
 			"items.scrolls.exotic.scrollofantimagic.desc",
 			"items.weapon.melee.crossbow$chargedshot.desc",

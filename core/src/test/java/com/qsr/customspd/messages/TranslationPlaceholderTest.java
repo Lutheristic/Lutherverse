@@ -190,9 +190,17 @@ class TranslationPlaceholderTest {
 		return sorted;
 	}
 
+	// Keys whose English changed its arguments ahead of the translations, which the next
+	// translation sync replaces. Remove an entry once no translation of it mismatches.
+	private static final List<String> KNOWN_TRANSLATION_MISMATCHES = Arrays.asList(
+			"items.bombs.bomb.desc",
+			"items.weapon.melee.magesstaff.imbue_talent"
+	);
+
 	@Test
 	void everyTranslatedFormatStringTakesTheSameArgumentsAsTheEnglishOne() throws IOException {
 		Map<String, List<String>> offenders = new LinkedHashMap<>();
+		List<String> stillParked = new ArrayList<>();
 		int filesCompared = 0;
 		int keysCompared = 0;
 		int formatKeysCompared = 0;
@@ -214,7 +222,9 @@ class TranslationPlaceholderTest {
 					keysCompared++;
 					if (signature(en).isFormat()) formatKeysCompared++;
 					String why = incompatibility(en, entry.getValue());
-					if (why != null) {
+					if (why != null && KNOWN_TRANSLATION_MISMATCHES.contains(entry.getKey())) {
+						if (!stillParked.contains(entry.getKey())) stillParked.add(entry.getKey());
+					} else if (why != null) {
 						List<String> list = offenders.get(lang.code());
 						if (list == null) offenders.put(lang.code(), list = new ArrayList<>());
 						list.add(file.getFileName() + " " + entry.getKey() + ": " + why
@@ -243,6 +253,10 @@ class TranslationPlaceholderTest {
 			msg.append(total).append(" offending keys in ").append(offenders.size()).append(" languages");
 			throw new AssertionError(msg.toString());
 		}
+
+		List<String> fixed = new ArrayList<>(KNOWN_TRANSLATION_MISMATCHES);
+		fixed.removeAll(stillParked);
+		assertTrue(fixed.isEmpty(), "translations now match English, remove from KNOWN_TRANSLATION_MISMATCHES: " + fixed);
 	}
 
 	// Pack overrides already stale before the pack check existed. Anything else that fails it is new;

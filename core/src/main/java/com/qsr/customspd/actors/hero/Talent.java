@@ -302,7 +302,7 @@ public enum Talent {
 	public static class SwiftEquipCooldown extends FlavourBuff{
 		public boolean secondUse;
 		public boolean hasSecondUse(){
-			return secondUse && cooldown() > 14f;
+			return secondUse;
 		}
 
 		public Pair<Asset, Asset> icon() { return BuffIndicator.TIME; }

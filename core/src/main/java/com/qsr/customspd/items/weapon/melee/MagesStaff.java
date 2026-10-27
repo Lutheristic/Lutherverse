@@ -32,7 +32,6 @@ import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.actors.mobs.Mob;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.effects.particles.ElmoParticle;
-import com.qsr.customspd.items.ArcaneResin;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.artifacts.Artifact;
 import com.qsr.customspd.items.bags.Bag;
@@ -230,7 +229,7 @@ public class MagesStaff extends MeleeWeapon {
 
 		if (owner == Dungeon.hero && Dungeon.hero.hasTalent(Talent.WAND_PRESERVATION)){
 			Talent.WandPreservationCounter counter = Buff.affect(Dungeon.hero, Talent.WandPreservationCounter.class);
-			if (counter.count() < 5 && Random.Float() < 0.34f + 0.33f*Dungeon.hero.pointsInTalent(Talent.WAND_PRESERVATION)){
+			if (counter.count() == 0){
 				counter.countUp(1);
 				this.wand.level(0);
 				if (!this.wand.collect()) {
@@ -238,13 +237,6 @@ public class MagesStaff extends MeleeWeapon {
 				}
 				GLog.newLine();
 				GLog.p(Messages.get(this, "preserved"));
-			} else {
-				ArcaneResin resin = new ArcaneResin();
-				if (!resin.collect()) {
-					Dungeon.level.drop(resin, owner.pos);
-				}
-				GLog.newLine();
-				GLog.p(Messages.get(this, "preserved_resin"));
 			}
 		}
 
@@ -406,6 +398,16 @@ public class MagesStaff extends MeleeWeapon {
 		}
 		return super.enchant(ench);
 	}
+
+	//what the imbue window says happens to the wand already in the staff
+	static String oldWandText(){
+		if (Dungeon.hero.hasTalent(Talent.WAND_PRESERVATION)
+			&& Dungeon.hero.buff(Talent.WandPreservationCounter.class) == null){
+			return Messages.get(MagesStaff.class, "imbue_talent");
+		} else {
+			return Messages.get(MagesStaff.class, "imbue_lost");
+		}
+	}
 	
 	private final WndBag.ItemSelector itemSelector = new WndBag.ItemSelector() {
 
@@ -449,16 +451,7 @@ public class MagesStaff extends MeleeWeapon {
 					}
 
 					String bodyText = Messages.get(MagesStaff.class, "imbue_desc", newLevel);
-					int preservesLeft = Dungeon.hero.hasTalent(Talent.WAND_PRESERVATION) ? 5 : 0;
-					if (Dungeon.hero.buff(Talent.WandPreservationCounter.class) != null){
-						preservesLeft -= Dungeon.hero.buff(Talent.WandPreservationCounter.class).count();
-					}
-					if (Dungeon.hero.hasTalent(Talent.WAND_PRESERVATION)){
-						int preserveChance = Dungeon.hero.pointsInTalent(Talent.WAND_PRESERVATION) == 1 ? 67 : 100;
-						bodyText += "\n\n" + Messages.get(MagesStaff.class, "imbue_talent", preserveChance, preservesLeft);
-					} else {
-						bodyText += "\n\n" + Messages.get(MagesStaff.class, "imbue_lost");
-					}
+					bodyText += "\n\n" + oldWandText();
 
 					GameScene.show(
 							new WndOptions(new ItemSprite(item),

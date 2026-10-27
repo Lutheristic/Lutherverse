@@ -122,6 +122,7 @@ class SaiComboTrackerPortTest {
 	@Test
 	void theComboIsAnnouncedFromTheSecondHit() {
 		Hero hero = hero();
+		hero.belongings.weapon = new Sai();
 		List<String> log = new ArrayList<>();
 		Signal.Listener<String> listener = text -> {
 			log.add(text);
@@ -135,6 +136,29 @@ class SaiComboTrackerPortTest {
 			combo.addHit();
 			assertEquals(1, log.size());
 			assertTrue(log.get(0).endsWith("2 hit combo!"), log.get(0));
+		} finally {
+			GLog.update.remove(listener);
+		}
+	}
+
+	/** Upstream 9154f32c6: with no sai, gloves or gauntlet held the combo is not announced. */
+	@Test
+	void withoutAComboWeaponHeldTheComboIsNotAnnounced() {
+		Hero hero = hero();
+		hero.belongings.weapon = new Sword();
+		List<String> log = new ArrayList<>();
+		Signal.Listener<String> listener = text -> {
+			log.add(text);
+			return false;
+		};
+		GLog.update.add(listener);
+		try {
+			Sai.ComboStrikeTracker combo = Buff.affect(hero, Sai.ComboStrikeTracker.class);
+			combo.addHit();
+			combo.addHit();
+			combo.addHit();
+			assertTrue(log.isEmpty(), "nothing to announce it for: " + log);
+			assertEquals(3, combo.hits, "the hits still count");
 		} finally {
 			GLog.update.remove(listener);
 		}

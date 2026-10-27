@@ -24,8 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * the description text is built from format strings (%d, %%, %1$d) that only fail when rendered.
  *
  * The sneak (dagger family) hunks landed separately and are pinned in
- * DaggerSneakPortTest. The guard durations and the runic slash boost are 11a410f07's (v2.4.0)
- * retune; the crossbow's tipped-dart uses are pinned in CrossbowChargedShotPortTest.
+ * DaggerSneakPortTest. The guard durations are 11a410f07's (v2.4.0) retune and the runic slash
+ * boost is 753b340f0's (v2.4.2); the crossbow's tipped-dart uses are pinned in
+ * CrossbowChargedShotPortTest.
  */
 class DuelistAbilityScalingPortTest {
 
@@ -104,7 +105,7 @@ class DuelistAbilityScalingPortTest {
 		assertTrue(new Scimitar().abilityInfo().contains("typically for _4 turns._"));
 		assertTrue(new RoundShield().abilityInfo().contains("typically for _5 turns_"), new RoundShield().abilityInfo());
 		assertTrue(new Greatshield().abilityInfo().contains("typically for _3 turns_"), new Greatshield().abilityInfo());
-		assertTrue(new RunicBlade().abilityInfo().contains("typically has _+200% enchantment power._"),
+		assertTrue(new RunicBlade().abilityInfo().contains("typically has _+300% enchantment power._"),
 				new RunicBlade().abilityInfo());
 	}
 
@@ -112,10 +113,10 @@ class DuelistAbilityScalingPortTest {
 	void runicSlashEnchantBoostScalesWithLevelAndIsConsumed() {
 		Hero hero = heroOnFixture();
 		RunicBlade blade = identifiedAt(new RunicBlade(), 2);
-		assertTrue(blade.abilityInfo().contains("_+300% enchantment power._"), blade.abilityInfo());
+		assertTrue(blade.abilityInfo().contains("_+400% enchantment power._"), blade.abilityInfo());
 
 		RunicBlade.RunicSlashTracker tracker = Buff.affect(hero, RunicBlade.RunicSlashTracker.class);
-		assertEquals(2f, tracker.boost, 0.0001f, "unscaled tracker default is the +200% base");
+		assertEquals(2f, tracker.boost, 0.0001f, "the buff's own default, which the ability overwrites");
 		tracker.boost = 3f;
 
 		// 1 (no arcana, no berserk) + 3 from the slash
@@ -131,7 +132,7 @@ class DuelistAbilityScalingPortTest {
 	}
 
 	@Test
-	void runicSlashSetsTwoPlusHalfALevelOfEnchantPower() {
+	void runicSlashSetsThreePlusHalfALevelOfEnchantPower() {
 		Hero hero = heroOnFixture();
 		HeldSwingSprite sprite = new HeldSwingSprite();
 		sprite.ch = hero;
@@ -145,7 +146,7 @@ class DuelistAbilityScalingPortTest {
 
 		blade.duelistAbility(hero, cell);
 
-		assertEquals(3f, hero.buff(RunicBlade.RunicSlashTracker.class).boost, 0.0001f, "2 + 0.5 per level at +2");
+		assertEquals(4f, hero.buff(RunicBlade.RunicSlashTracker.class).boost, 0.0001f, "3 + 0.5 per level at +2");
 	}
 
 	@Test

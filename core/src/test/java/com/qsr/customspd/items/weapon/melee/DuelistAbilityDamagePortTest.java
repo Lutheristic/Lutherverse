@@ -29,8 +29,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Pins upstream 998cc211c, dafbb6f85 and 729a86295 (v2.4.0): damage-dealing weapon abilities
  * state their damage range, and the boost is a flat amount that grows with the weapon's level
  * instead of a damage multiplier. The numbers are 11a410f07's (v2.4.0) retune, which raised the
- * boosts and turned harvest into pure bleeding. The expected numbers are written out by hand so
- * that a wrong boost formula cannot agree with itself.
+ * boosts and turned harvest into pure bleeding, with 753b340f0's (v2.4.2) spin and harvest buffs.
+ * The expected numbers are written out by hand so that a wrong boost formula cannot agree with
+ * itself.
  */
 class DuelistAbilityDamagePortTest {
 
@@ -399,9 +400,9 @@ class DuelistAbilityDamagePortTest {
 	void flailDescribesItsBoostPerSpin() {
 		heroOnFixture();
 		String typical = new Flail().abilityInfo();
-		assertTrue(typical.contains("typically deal _+6 damage_"), typical);
+		assertTrue(typical.contains("typically deal _+8 damage_"), typical);
 		String known = identifiedAt(new Flail(), 3).abilityInfo();
-		assertTrue(known.contains("deal _+12 damage_"), known);
+		assertTrue(known.contains("deal _+14 damage_"), known);
 	}
 
 	@Test
@@ -432,8 +433,8 @@ class DuelistAbilityDamagePortTest {
 		assertEquals(2, hero.buff(Flail.SpinAbilityTracker.class).spins, "fixture: two spins");
 		hero.attack(rat);
 
-		// 10 plus 6 per spin at +0; the earlier 6.5+1.5*lvl rounded made it 24
-		assertEquals(22, rat.HT - rat.HP);
+		// 10 plus 8 per spin at +0; 11a410f07's 6+2*lvl made it 22
+		assertEquals(26, rat.HT - rat.HP);
 	}
 
 	@Test
@@ -456,15 +457,16 @@ class DuelistAbilityDamagePortTest {
 		heroOnFixture();
 		Sickle sickle = new Sickle();
 		sickle.level(3);
-		assertTrue(sickle.abilityInfo().contains("typically deals _12 damage,_"), sickle.abilityInfo());
+		assertTrue(sickle.abilityInfo().contains("typically deals _15 damage._"), sickle.abilityInfo());
 		WarScythe scythe = new WarScythe();
 		scythe.level(3);
-		assertTrue(scythe.abilityInfo().contains("typically deals _23 damage,_"), scythe.abilityInfo());
+		assertTrue(scythe.abilityInfo().contains("typically deals _30 damage._"), scythe.abilityInfo());
 
+		// 15+2.5*3 and 30+4.5*3, rounded
 		String sickleKnown = identifiedAt(new Sickle(), 3).abilityInfo();
-		assertTrue(sickleKnown.contains("deals _18 damage,_"), sickleKnown);
+		assertTrue(sickleKnown.contains("deals _23 damage._"), sickleKnown);
 		String scytheKnown = identifiedAt(new WarScythe(), 3).abilityInfo();
-		assertTrue(scytheKnown.contains("deals _33 damage,_"), scytheKnown);
+		assertTrue(scytheKnown.contains("deals _44 damage._"), scytheKnown);
 	}
 
 	@Test
@@ -502,12 +504,12 @@ class DuelistAbilityDamagePortTest {
 		sickle.duelistAbility(hero, cell);
 
 		assertEquals(rat.HT, rat.HP, "fixture: the harvest deals its damage as bleeding");
-		// 12+2*3 at +3 in place of the roll of 5; the earlier roll plus 1.1+lvl/5 made it 7
-		assertEquals(18f, rat.buff(Bleeding.class).level(), 0.0001f);
+		// 15+2.5*3 rounded at +3 in place of the roll of 5; 11a410f07's 12+2*lvl made it 18
+		assertEquals(23f, rat.buff(Bleeding.class).level(), 0.0001f);
 	}
 
 	@Test
-	void warScytheHarvestBleedsItsNormalDamage() {
+	void warScytheHarvestBleedTakesAFlatAmount() {
 		Hero hero = heroOnFixture();
 		FixedRollWarScythe scythe = new FixedRollWarScythe();
 		hero.belongings.weapon = scythe;
@@ -516,8 +518,8 @@ class DuelistAbilityDamagePortTest {
 
 		scythe.duelistAbility(hero, cell);
 
-		// 22.5 rounded at +0 in place of the roll of 10, which the earlier harvest bled
-		assertEquals(23f, rat.buff(Bleeding.class).level(), 0.0001f);
+		// 30 at +0 in place of the roll of 10; 11a410f07's 22.5+3.5*lvl rounded made it 23
+		assertEquals(30f, rat.buff(Bleeding.class).level(), 0.0001f);
 	}
 
 	@Test
@@ -627,10 +629,10 @@ class DuelistAbilityDamagePortTest {
 			dealt[i] = rat.HT - rat.HP;
 		}
 
-		// 10 plus 12 per spin at +3
-		assertEquals(10 + 2 * 12, dealt[0], "no augment");
-		// the roll and the boost both take the 1.5x damage augment: 15 plus 18 per spin
-		assertEquals(15 + 2 * 18, dealt[1], "damage augment");
+		// 10 plus 14 per spin at +3
+		assertEquals(10 + 2 * 14, dealt[0], "no augment");
+		// the roll and the boost both take the 1.5x damage augment: 15 plus 21 per spin
+		assertEquals(15 + 2 * 21, dealt[1], "damage augment");
 	}
 
 	@Test

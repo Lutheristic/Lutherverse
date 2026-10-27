@@ -29,6 +29,7 @@ import com.qsr.customspd.actors.buffs.AllyBuff;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.Invisibility;
 import com.qsr.customspd.actors.hero.Hero;
+import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.actors.hero.abilities.huntress.SpiritHawk;
 import com.qsr.customspd.actors.mobs.Elemental;
 import com.qsr.customspd.effects.MagicMissile;
@@ -63,6 +64,8 @@ public class SummonElemental extends Spell {
 
 	{
 		image = GeneralAsset.SUMMON_ELE;
+
+		talentChance = 1/(float)Recipe.OUT_QUANTITY;
 	}
 
 	private Class<? extends Elemental> summonClass = Elemental.AllyNewBornElemental.class;
@@ -117,6 +120,9 @@ public class SummonElemental extends Spell {
 			curUser.spendAndNext(Actor.TICK);
 
 			detach(Dungeon.hero.belongings.backpack);
+			if (Random.Float() < talentChance){
+				Talent.onScrollUsed(curUser, curUser.pos, talentFactor);
+			}
 
 		} else {
 			GLog.w(Messages.get(SpiritHawk.class, "no_space"));

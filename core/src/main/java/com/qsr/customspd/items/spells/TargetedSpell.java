@@ -25,6 +25,7 @@ import com.qsr.customspd.Assets;
 import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.buffs.Invisibility;
 import com.qsr.customspd.actors.hero.Hero;
+import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.effects.MagicMissile;
 import com.qsr.customspd.mechanics.Ballistica;
 import com.qsr.customspd.messages.Messages;
@@ -33,6 +34,7 @@ import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.ui.QuickSlotButton;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
+import com.watabou.utils.Random;
 
 public abstract class TargetedSpell extends Spell {
 	
@@ -90,6 +92,9 @@ public abstract class TargetedSpell extends Spell {
 						Invisibility.dispel();
 						curSpell.updateQuickslot();
 						curUser.spendAndNext( 1f );
+						if (Random.Float() < curSpell.talentChance){
+							Talent.onScrollUsed(curUser, curUser.pos, curSpell.talentFactor);
+						}
 					}
 				});
 				

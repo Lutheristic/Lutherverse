@@ -57,6 +57,7 @@ import com.qsr.customspd.items.artifacts.DriedRose;
 import com.qsr.customspd.items.journal.Guidebook;
 import com.qsr.customspd.items.potions.Potion;
 import com.qsr.customspd.items.scrolls.ScrollOfTeleportation;
+import com.qsr.customspd.items.weapon.melee.MeleeWeapon;
 import com.qsr.customspd.journal.Document;
 import com.qsr.customspd.journal.Journal;
 import com.qsr.customspd.levels.Level;
@@ -687,6 +688,10 @@ public class GameScene extends PixelScene {
 			updateItemDisplays = false;
 			QuickSlotButton.refresh();
 			InventoryPane.refresh();
+			if (ActionIndicator.action instanceof MeleeWeapon.Charger) {
+				//Champion weapon swap uses items, needs refreshing whenever item displays are updated
+				ActionIndicator.refresh();
+			}
 		}
 
 		if (Dungeon.hero == null || scene == null) {

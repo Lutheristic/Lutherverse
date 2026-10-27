@@ -55,6 +55,7 @@ import com.qsr.customspd.sprites.HeroSprite;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.utils.GLog;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
@@ -91,7 +92,9 @@ public abstract class Scroll extends Item {
 
 	//affects how strongly on-scroll talents trigger from this scroll
 	protected float talentFactor = 1;
-	
+	//the chance (0-1) of whether on-scroll talents trigger from this potion
+	protected float talentChance = 1;
+
 	{
 		stackable = true;
 		defaultAction = AC_READ;
@@ -188,7 +191,7 @@ public abstract class Scroll extends Item {
 		curUser.busy();
 		((HeroSprite)curUser.sprite).read();
 
-		if (!anonymous) {
+		if (!anonymous && Random.Float() < talentChance) {
 			Talent.onScrollUsed(curUser, curUser.pos, talentFactor);
 		}
 

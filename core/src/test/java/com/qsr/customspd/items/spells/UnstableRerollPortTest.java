@@ -54,20 +54,25 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * Upstream bf0b95aa9 (v2.4.0): the unstable brew and spell reroll their random effect once when the
- * first roll does not suit how they are used. A drunk brew rerolls a potion meant for throwing, a
- * thrown brew rerolls a potion that does nothing useful when shattered, and the spell rerolls a
- * non-combat scroll while the hero sees an enemy, or a combat scroll while it sees none.
+ * Upstream 7aa596a7c (v2.5.0): the unstable brew and spell reroll their random effect until it
+ * suits how they are used, where bf0b95aa9 rerolled only once. A drunk brew never uses a potion
+ * meant for throwing, a thrown brew only uses one that does something when shattered, and the
+ * spell only reads combat scrolls while the hero sees an enemy and only non-combat scrolls while
+ * it sees none (recharging, lullaby and teleportation count as both, so they are rerolled either
+ * way).
  *
- * Each case runs seeded inside Random.pushGenerator. The first two draws a seed gives are read
- * from the item's own effect table with Random.chances, the same call the item makes, so the test
- * knows which effect a single roll would have picked and which one a reroll picks, and checks the
- * item used the right one. Only seeds whose expected effect can run without a game scene are used,
- * and for the spell only seeds whose two rolls both can.
+ * Each case runs 500 seeds inside Random.pushGenerator. The draws a seed gives are replayed from
+ * the item's own effect table with Random.chances, the same call the item makes, until one suits,
+ * so the test knows which effect the item must end on and checks it used that one. Only seeds
+ * whose expected effect can run without a game scene are run. Each case also checks that some of
+ * its seeds needed three or more rolls, which a single reroll gets wrong.
  */
 class UnstableRerollPortTest {
+
+	private static final int SEEDS = 500;
 
 	private static final Set<Class<?>> MUST_THROW = new HashSet<Class<?>>(Arrays.asList(
 			PotionOfToxicGas.class, PotionOfLiquidFlame.class, PotionOfParalyticGas.class, PotionOfFrost.class));
@@ -82,9 +87,8 @@ class UnstableRerollPortTest {
 			ScrollOfRage.class, ScrollOfTeleportation.class, ScrollOfTerror.class));
 
 	/**
-	 * Scrolls whose reading this fixture can run. Identify is the one that is only non-combat: with
-	 * no scene its item selector opens nothing, and the idle cell selector lets it cancel the
-	 * hero's action headless.
+	 * Scrolls whose reading this fixture can run. With no scene identify's item selector opens
+	 * nothing, and the idle cell selector lets it cancel the hero's action headless.
 	 */
 	private static final Set<Class<?>> READABLE = new HashSet<Class<?>>(Arrays.asList(
 			ScrollOfIdentify.class, ScrollOfRecharging.class, ScrollOfLullaby.class, ScrollOfRage.class));
@@ -129,14 +133,33 @@ class UnstableRerollPortTest {
 		return (HashMap<Class<?>, Float>) f.get(null);
 	}
 
-	/** The first two effects Random.chances picks from the table under this seed. */
-	private static Class<?>[] firstTwoRolls(long seed, HashMap<Class<?>, Float> table) {
+	private interface Suits {
+		boolean test(Class<?> effect);
+	}
+
+	/** The effects Random.chances picks from the table under this seed, up to the first that suits. */
+	private static List<Class<?>> rollsUntil(long seed, HashMap<Class<?>, Float> table, Suits suits) {
+		List<Class<?>> rolls = new ArrayList<>();
 		Random.pushGenerator(seed);
 		try {
-			return new Class<?>[]{Random.chances(table), Random.chances(table)};
+			do {
+				rolls.add(Random.chances(table));
+				assertTrue(rolls.size() < 100, "seed " + seed + " never rolled a suitable effect");
+			} while (!suits.test(rolls.get(rolls.size() - 1)));
 		} finally {
 			Random.popGenerator();
 		}
+		return rolls;
+	}
+
+	private static Class<?> last(List<Class<?>> rolls) {
+		return rolls.get(rolls.size() - 1);
+	}
+
+	private static String describe(long seed, List<Class<?>> rolls) {
+		StringBuilder b = new StringBuilder("seed " + seed + " rolled");
+		for (Class<?> c : rolls) b.append(' ').append(c.getSimpleName());
+		return b.toString();
 	}
 
 	private static Hero heroInFreshLevel() throws Exception {
@@ -170,18 +193,26 @@ class UnstableRerollPortTest {
 		hero.sprite = sprite;
 	}
 
-	private static String rolls(long seed, Class<?>[] two) {
-		return "seed " + seed + " rolled " + two[0].getSimpleName() + " then " + two[1].getSimpleName();
+	/** Counts of seeds run that settled on the first, second, and third or later roll. */
+	private static void assertCoverage(int[] byRolls) {
+		assertTrue(byRolls[0] > 0 && byRolls[1] > 0 && byRolls[2] > 0,
+				"the seeds must settle on the first, second and a later roll: "
+						+ byRolls[0] + ", " + byRolls[1] + ", " + byRolls[2]);
+	}
+
+	private static void count(int[] byRolls, List<Class<?>> rolls) {
+		byRolls[Math.min(rolls.size(), 3) - 1]++;
 	}
 
 	@Test
-	void aThrownBrewRerollsOnceUnlessTheFirstPotionIsMeantForThrowing() throws Exception {
+	void aThrownBrewRerollsUntilThePotionIsMeantForThrowing() throws Exception {
 		HashMap<Class<?>, Float> table = table(UnstableBrew.class, "potionChances");
-		int rerolled = 0, kept = 0;
+		int[] byRolls = new int[3];
 
-		for (long seed = 1; seed <= 120; seed++) {
-			Class<?>[] two = firstTwoRolls(seed, table);
-			boolean throwable = MUST_THROW.contains(two[0]) || CAN_THROW.contains(two[0]);
+		for (long seed = 1; seed <= SEEDS; seed++) {
+			List<Class<?>> rolls = rollsUntil(seed, table, new Suits() {
+				@Override public boolean test(Class<?> p) { return MUST_THROW.contains(p) || CAN_THROW.contains(p); }
+			});
 
 			heroInFreshLevel();
 			Random.pushGenerator(seed);
@@ -191,23 +222,23 @@ class UnstableRerollPortTest {
 				Random.popGenerator();
 			}
 
-			assertEquals(throwable ? two[0] : two[1], staticField("curItem").get(null).getClass(), rolls(seed, two));
-			if (throwable) kept++; else rerolled++;
+			assertEquals(last(rolls), staticField("curItem").get(null).getClass(), describe(seed, rolls));
+			count(byRolls, rolls);
 		}
 
-		assertTrue(rerolled > 0 && kept > 0, "the seeds must cover both cases: rerolled " + rerolled + ", kept " + kept);
+		assertCoverage(byRolls);
 	}
 
 	@Test
-	void aDrunkBrewRerollsOnceOutOfAPotionMeantForThrowing() throws Exception {
+	void aDrunkBrewRerollsUntilThePotionIsNotMeantForThrowing() throws Exception {
 		HashMap<Class<?>, Float> table = table(UnstableBrew.class, "potionChances");
-		int rerolled = 0, kept = 0;
+		int[] byRolls = new int[3];
 
-		for (long seed = 1; seed <= 400; seed++) {
-			Class<?>[] two = firstTwoRolls(seed, table);
-			boolean reroll = MUST_THROW.contains(two[0]);
-			Class<?> expected = reroll ? two[1] : two[0];
-			if (!BUFF_OF.containsKey(expected)) continue;
+		for (long seed = 1; seed <= SEEDS; seed++) {
+			List<Class<?>> rolls = rollsUntil(seed, table, new Suits() {
+				@Override public boolean test(Class<?> p) { return !MUST_THROW.contains(p); }
+			});
+			if (!BUFF_OF.containsKey(last(rolls))) continue;
 
 			Hero hero = heroInFreshLevel();
 			Random.pushGenerator(seed);
@@ -217,23 +248,24 @@ class UnstableRerollPortTest {
 				Random.popGenerator();
 			}
 
-			assertNotNull(hero.buff(BUFF_OF.get(expected)), rolls(seed, two));
-			if (reroll) rerolled++; else kept++;
+			assertNotNull(hero.buff(BUFF_OF.get(last(rolls))), describe(seed, rolls));
+			count(byRolls, rolls);
 		}
 
-		assertTrue(rerolled > 0 && kept > 0, "the seeds must cover both cases: rerolled " + rerolled + ", kept " + kept);
+		assertCoverage(byRolls);
 	}
 
-	private int[] castSpells(boolean enemyInView) throws Exception {
+	private int[] castSpells(final boolean enemyInView) throws Exception {
 		HashMap<Class<?>, Float> table = table(UnstableSpell.class, "scrollChances");
-		int rerolled = 0, kept = 0;
+		int[] byRolls = new int[3];
 
-		for (long seed = 1; seed <= 400; seed++) {
-			Class<?>[] two = firstTwoRolls(seed, table);
-			boolean reroll = enemyInView ? NON_COMBAT.contains(two[0]) : COMBAT.contains(two[0]);
-			Class<?> expected = reroll ? two[1] : two[0];
-			//both rolls readable here, so reading the wrong one fails an assertion rather than the fixture
-			if (!READABLE.contains(two[0]) || !READABLE.contains(two[1])) continue;
+		for (long seed = 1; seed <= SEEDS; seed++) {
+			List<Class<?>> rolls = rollsUntil(seed, table, new Suits() {
+				@Override public boolean test(Class<?> s) {
+					return enemyInView ? !NON_COMBAT.contains(s) : !COMBAT.contains(s);
+				}
+			});
+			if (!READABLE.contains(last(rolls))) continue;
 
 			Hero hero = heroInFreshLevel();
 			giveHeadlessHeroSprite(hero);
@@ -249,29 +281,27 @@ class UnstableRerollPortTest {
 			Random.pushGenerator(seed);
 			try {
 				new UnstableSpell().onCast(hero);
+			} catch (RuntimeException e) {
+				//only the expected scroll is known to read headless, so this means another one was read
+				fail(describe(seed, rolls) + " but the spell read a scroll other than "
+						+ last(rolls).getSimpleName() + ": " + e);
 			} finally {
 				Random.popGenerator();
 			}
 
-			assertEquals(expected, staticField("curItem").get(null).getClass(), rolls(seed, two));
-			if (reroll) rerolled++; else kept++;
+			assertEquals(last(rolls), staticField("curItem").get(null).getClass(), describe(seed, rolls));
+			count(byRolls, rolls);
 		}
-		return new int[]{rerolled, kept};
+		return byRolls;
 	}
 
 	@Test
-	void withAnEnemyInViewTheSpellRerollsANonCombatScrollOnce() throws Exception {
-		int[] counts = castSpells(true);
-
-		assertTrue(counts[0] > 0 && counts[1] > 0,
-				"the seeds must cover both cases: rerolled " + counts[0] + ", kept " + counts[1]);
+	void withAnEnemyInViewTheSpellRerollsUntilItHasACombatOnlyScroll() throws Exception {
+		assertCoverage(castSpells(true));
 	}
 
 	@Test
-	void withNoEnemyInViewTheSpellRerollsACombatScrollOnce() throws Exception {
-		int[] counts = castSpells(false);
-
-		assertTrue(counts[0] > 0 && counts[1] > 0,
-				"the seeds must cover both cases: rerolled " + counts[0] + ", kept " + counts[1]);
+	void withNoEnemyInViewTheSpellRerollsUntilItHasANonCombatOnlyScroll() throws Exception {
+		assertCoverage(castSpells(false));
 	}
 }

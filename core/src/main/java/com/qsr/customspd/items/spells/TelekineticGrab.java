@@ -43,6 +43,8 @@ public class TelekineticGrab extends TargetedSpell {
 
 	{
 		image = GeneralAsset.TELE_GRAB;
+
+		talentChance = 1/(float)Recipe.OUT_QUANTITY;
 	}
 
 	@Override

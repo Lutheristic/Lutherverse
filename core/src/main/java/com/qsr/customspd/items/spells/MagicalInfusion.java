@@ -40,6 +40,8 @@ public class MagicalInfusion extends InventorySpell {
 		image = GeneralAsset.MAGIC_INFUSE;
 
 		unique = true;
+
+		talentFactor = 2;
 	}
 
 	@Override

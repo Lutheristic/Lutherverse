@@ -148,33 +148,6 @@ public class MeleeWeapon extends Weapon {
 		}
 	}
 
-	@Override
-	public boolean doEquip(Hero hero) {
-		if (super.doEquip(hero)){
-			ActionIndicator.refresh();
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public boolean equipSecondary(Hero hero) {
-		if (super.equipSecondary(hero)){
-			ActionIndicator.refresh();
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public boolean doUnequip(Hero hero, boolean collect, boolean single) {
-		if (super.doUnequip(hero, collect, single)){
-			ActionIndicator.refresh();
-			return true;
-		}
-		return false;
-	}
-
 	//leave null for no targeting
 	public String targetingPrompt(){
 		return null;
@@ -205,9 +178,10 @@ public class MeleeWeapon extends Weapon {
 
 		if (hero.heroClass == HeroClass.DUELIST
 				&& hero.hasTalent(Talent.AGGRESSIVE_BARRIER)
-				&& (hero.HP / (float)hero.HT) < 0.20f*(1+hero.pointsInTalent(Talent.AGGRESSIVE_BARRIER))){
-			Buff.affect(hero, Barrier.class).setShield(3);
-			hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, "3", FloatingText.SHIELDING);
+				&& (hero.HP / (float)hero.HT) <= 0.5f){
+			int shieldAmt = 1 + 2*hero.pointsInTalent(Talent.AGGRESSIVE_BARRIER);
+			Buff.affect(hero, Barrier.class).setShield(shieldAmt);
+			hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shieldAmt), FloatingText.SHIELDING);
 		}
 
 		updateQuickslot();
@@ -483,10 +457,11 @@ public class MeleeWeapon extends Weapon {
 		}
 
 		public int chargeCap(){
+			//caps at level 19 with 8 or 10 charges
 			if (Dungeon.hero.subClass == HeroSubClass.CHAMPION){
-				return Math.min(10, 4 + (Dungeon.hero.lvl - 1) / 4);
+				return Math.min(10, 4 + (Dungeon.hero.lvl - 1) / 3);
 			} else {
-				return Math.min(8, 2 + (Dungeon.hero.lvl - 1) / 4);
+				return Math.min(8, 2 + (Dungeon.hero.lvl - 1) / 3);
 			}
 		}
 

@@ -32,8 +32,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Upstream 11a410f07 (v2.4.0, "Big Duelist charge speed changes"). A Champion's two weapons share
  * one charge pool instead of the second weapon keeping its own smaller one. The pool starts at 2,
- * caps at min(8, 2 + (lvl-1)/4) (Champion: min(10, 4 + (lvl-1)/4)) and regains a charge every 60
- * to 45 turns, 1.5x as fast for the Champion. Every ability costs 1 charge: a heavy blow that does
+ * caps at min(8, 2 + (lvl-1)/3) (Champion: min(10, 4 + (lvl-1)/3)), so both reach their cap at
+ * level 19 since 753b340f0 (v2.4.2) where they used to at 25, and regains a charge every 60 to 45
+ * turns, 1.5x as fast for the Champion. Every ability costs 1 charge: a heavy blow that does
  * not surprise its target now deals regular damage instead of costing 2.
  */
 class ChargerSharedPoolPortTest {
@@ -103,10 +104,10 @@ class ChargerSharedPoolPortTest {
 	}
 
 	@Test
-	void theCapGainsAChargeEveryFourLevels() {
+	void theCapGainsAChargeEveryThreeLevels() {
 		Hero hero = duelist(1, HeroSubClass.NONE);
 		MeleeWeapon.Charger charger = pool(hero, 0);
-		int[][] levelToCap = {{1, 2}, {4, 2}, {5, 3}, {9, 4}, {21, 7}, {25, 8}, {30, 8}};
+		int[][] levelToCap = {{1, 2}, {3, 2}, {4, 3}, {7, 4}, {16, 7}, {18, 7}, {19, 8}, {25, 8}, {30, 8}};
 		for (int[] row : levelToCap) {
 			hero.lvl = row[0];
 			assertEquals(row[1], charger.chargeCap(), "level " + row[0]);
@@ -117,7 +118,7 @@ class ChargerSharedPoolPortTest {
 	void theChampionsCapIsTwoHigher() {
 		Hero hero = duelist(1, HeroSubClass.CHAMPION);
 		MeleeWeapon.Charger charger = pool(hero, 0);
-		int[][] levelToCap = {{1, 4}, {5, 5}, {21, 9}, {25, 10}, {30, 10}};
+		int[][] levelToCap = {{1, 4}, {3, 4}, {4, 5}, {16, 9}, {18, 9}, {19, 10}, {25, 10}, {30, 10}};
 		for (int[] row : levelToCap) {
 			hero.lvl = row[0];
 			assertEquals(row[1], charger.chargeCap(), "level " + row[0]);

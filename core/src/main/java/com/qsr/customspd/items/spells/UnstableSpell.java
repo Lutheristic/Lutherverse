@@ -22,6 +22,7 @@
 package com.qsr.customspd.items.spells;
 
 import com.qsr.customspd.actors.hero.Hero;
+import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.scrolls.Scroll;
@@ -100,19 +101,24 @@ public class UnstableSpell extends Spell {
 
 		Scroll s = Reflection.newInstance(Random.chances(scrollChances));
 
-		boolean enemy = hero.visibleEnemies() != 0;
-
-		//reroll the scroll once if there is an enemy and it is a non-combat scroll
-		// or if there is no enemy and it is a combat scroll
-		if (enemy && nonCombatScrolls.contains(s.getClass())){
-			s = Reflection.newInstance(Random.chances(scrollChances));
-		} else if (!enemy && combatScrolls.contains(s.getClass())){
-			s = Reflection.newInstance(Random.chances(scrollChances));
+		//reroll the scroll until it is relevant for the situation (whether there are visible enemies)
+		if (hero.visibleEnemies() == 0){
+			while (combatScrolls.contains(s.getClass())){
+				s = Reflection.newInstance(Random.chances(scrollChances));
+			}
+		} else {
+			while (nonCombatScrolls.contains(s.getClass())){
+				s = Reflection.newInstance(Random.chances(scrollChances));
+			}
 		}
 
 		s.anonymize();
 		curItem = s;
 		s.doRead();
+
+		if (Random.Float() < talentChance){
+			Talent.onScrollUsed(curUser, curUser.pos, talentFactor);
+		}
 	}
 
 	//lower values, as it's cheaper to make

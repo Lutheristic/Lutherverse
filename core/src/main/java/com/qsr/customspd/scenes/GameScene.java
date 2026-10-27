@@ -512,13 +512,9 @@ public class GameScene extends PixelScene {
 					if (r instanceof SecretRoom) reqSecrets--;
 				}
 
-				//60%/90% chance, use level's seed so that we get the same result for the same level
-				//offset seed slightly to avoid output patterns
-				Random.pushGenerator(Dungeon.seedCurDepth()+1);
-					if (reqSecrets <= 0 && Random.Int(10) < 3+3*Dungeon.hero.pointsInTalent(Talent.ROGUES_FORESIGHT)){
-						GLog.p(Messages.get(this, "secret_hint"));
-					}
-				Random.popGenerator();
+				if (reqSecrets <= 0 && rogueNoticesSecret(Dungeon.hero.pointsInTalent(Talent.ROGUES_FORESIGHT))){
+					GLog.p(Messages.get(this, "secret_hint"));
+				}
 			}
 
 			boolean unspentTalents = false;
@@ -610,7 +606,16 @@ public class GameScene extends PixelScene {
 		}
 
 	}
-	
+
+	//75%/100% chance, use level's seed so that we get the same result for the same level
+	//offset seed slightly to avoid output patterns
+	static boolean rogueNoticesSecret(int points){
+		Random.pushGenerator(Dungeon.seedCurDepth()+1);
+			boolean noticed = Random.Int(4) < 2+points;
+		Random.popGenerator();
+		return noticed;
+	}
+
 	public void destroy() {
 		
 		//tell the actor thread to finish, then wait for it to complete any actions it may be doing.

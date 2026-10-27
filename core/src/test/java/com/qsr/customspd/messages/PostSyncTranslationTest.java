@@ -335,6 +335,13 @@ class PostSyncTranslationTest {
 				assertEquals(english, Messages.get(key), lang + " " + key);
 			}
 		}
+		// v2.5.4's Greek line for this well is its English with a typo, so Greek shows the English.
+		String well = "actors.blobs.waterofawareness.desc";
+		Messages.setup(Languages.ENGLISH);
+		String english = Messages.get(well);
+		assertNull(files.get(Languages.GREEK).get(well), "GREEK file must not carry " + well);
+		Messages.setup(Languages.GREEK);
+		assertEquals(english, Messages.get(well), "GREEK " + well);
 	}
 
 	@Test

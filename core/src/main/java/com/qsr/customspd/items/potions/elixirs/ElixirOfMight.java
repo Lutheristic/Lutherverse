@@ -44,6 +44,8 @@ public class ElixirOfMight extends Elixir {
 		image = GeneralAsset.ELIXIR_MIGHT;
 
 		unique = true;
+
+		talentFactor = 2f;
 	}
 	
 	@Override

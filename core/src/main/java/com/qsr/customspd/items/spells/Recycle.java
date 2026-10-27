@@ -46,6 +46,9 @@ public class Recycle extends InventorySpell {
 	
 	{
 		image = GeneralAsset.RECYCLE;
+
+		talentFactor = 2;
+		talentChance = 1/(float)Recipe.OUT_QUANTITY;
 	}
 
 	@Override

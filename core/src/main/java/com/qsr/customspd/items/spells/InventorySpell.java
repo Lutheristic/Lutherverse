@@ -24,12 +24,14 @@ package com.qsr.customspd.items.spells;
 import com.qsr.customspd.Assets;
 import com.qsr.customspd.actors.buffs.Invisibility;
 import com.qsr.customspd.actors.hero.Hero;
+import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.bags.Bag;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.windows.WndBag;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Random;
 
 public abstract class InventorySpell extends Spell {
 	
@@ -87,6 +89,10 @@ public abstract class InventorySpell extends Spell {
 				
 				Sample.INSTANCE.play( Assets.Sounds.READ );
 				Invisibility.dispel();
+
+				if (Random.Float() < ((Spell)curItem).talentChance){
+					Talent.onScrollUsed(curUser, curUser.pos, ((Spell)curItem).talentFactor);
+				}
 				
 			}
 		}

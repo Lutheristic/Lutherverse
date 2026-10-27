@@ -22,6 +22,7 @@
 package com.qsr.customspd.items.spells;
 
 import com.qsr.customspd.actors.hero.Hero;
+import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.scrolls.Scroll;
@@ -113,6 +114,10 @@ public class UnstableSpell extends Spell {
 		s.anonymize();
 		curItem = s;
 		s.doRead();
+
+		if (Random.Float() < talentChance){
+			Talent.onScrollUsed(curUser, curUser.pos, talentFactor);
+		}
 	}
 
 	//lower values, as it's cheaper to make

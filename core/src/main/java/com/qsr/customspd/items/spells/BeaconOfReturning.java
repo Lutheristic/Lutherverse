@@ -27,6 +27,7 @@ import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.buffs.Invisibility;
 import com.qsr.customspd.actors.hero.Hero;
+import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.effects.Pushing;
 import com.qsr.customspd.items.scrolls.ScrollOfTeleportation;
@@ -51,6 +52,8 @@ public class BeaconOfReturning extends Spell {
 	
 	{
 		image = GeneralAsset.RETURN_BEACON;
+
+		talentChance = 1/(float)Recipe.OUT_QUANTITY;
 	}
 	
 	public String returnLevel	= "surface";
@@ -162,6 +165,9 @@ public class BeaconOfReturning extends Spell {
 			Game.switchScene( InterlevelScene.class );
 		}
 		detach(hero.belongings.backpack);
+		if (Random.Float() < talentChance){
+			Talent.onScrollUsed(curUser, curUser.pos, talentFactor);
+		}
 	}
 	
 	@Override

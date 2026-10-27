@@ -24,6 +24,7 @@ package com.qsr.customspd.items.spells;
 import com.qsr.customspd.Assets;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.hero.Hero;
+import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.actors.mobs.npcs.Shopkeeper;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.Item;
@@ -39,6 +40,7 @@ import com.qsr.customspd.windows.WndEnergizeItem;
 import com.qsr.customspd.windows.WndInfoItem;
 import com.qsr.customspd.windows.WndTradeItem;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 
@@ -46,6 +48,8 @@ public class Alchemize extends Spell {
 	
 	{
 		image = GeneralAsset.ALCHEMIZE;
+
+		talentChance = 1/(float)Recipe.OUT_QUANTITY;
 	}
 
 	private static WndBag parentWnd;
@@ -254,6 +258,9 @@ public class Alchemize extends Spell {
 					owner.hide();
 				}
 				GameScene.selectItem(itemSelector);
+			}
+			if (curItem instanceof Alchemize && Random.Float() < ((Alchemize)curItem).talentChance){
+				Talent.onScrollUsed(curUser, curUser.pos, ((Alchemize) curItem).talentFactor);
 			}
 		}
 

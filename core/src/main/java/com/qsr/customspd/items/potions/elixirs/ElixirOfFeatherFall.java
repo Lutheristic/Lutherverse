@@ -39,6 +39,8 @@ public class ElixirOfFeatherFall extends Elixir {
 
 	{
 		image = GeneralAsset.ELIXIR_FEATHER;
+
+		talentChance = 1/(float)Recipe.OUT_QUANTITY;
 	}
 
 	@Override

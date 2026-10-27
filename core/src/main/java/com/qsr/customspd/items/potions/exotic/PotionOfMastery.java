@@ -36,6 +36,7 @@ import com.qsr.customspd.utils.GLog;
 import com.qsr.customspd.windows.WndBag;
 import com.qsr.customspd.windows.WndOptions;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Random;
 
 public class PotionOfMastery extends ExoticPotion {
 	
@@ -119,7 +120,7 @@ public class PotionOfMastery extends ExoticPotion {
 					curItem.detach(curUser.belongings.backpack);
 				}
 				identifiedByUse = false;
-				if (!anonymous){
+				if (!anonymous && Random.Float() < talentChance){
 					Talent.onPotionUsed(curUser, curUser.pos, talentFactor);
 				}
 

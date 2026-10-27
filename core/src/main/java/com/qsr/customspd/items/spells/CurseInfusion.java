@@ -45,6 +45,8 @@ public class CurseInfusion extends InventorySpell {
 	
 	{
 		image = GeneralAsset.CURSE_INFUSE;
+
+		talentChance = 1/(float)Recipe.OUT_QUANTITY;
 	}
 
 	@Override

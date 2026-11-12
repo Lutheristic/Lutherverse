@@ -44,6 +44,7 @@ import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
 
 public class Ring extends KindofMisc {
@@ -239,7 +240,7 @@ public class Ring extends KindofMisc {
 		return handler.known();
 	}
 	
-	public static HashSet<Class<? extends Ring>> getUnknown() {
+	public static LinkedHashSet<Class<? extends Ring>> getUnknown() {
 		return handler.unknown();
 	}
 	

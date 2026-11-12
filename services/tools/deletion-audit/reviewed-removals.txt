@@ -116,9 +116,9 @@ Terrain#convertTilesFrom0_6_0b(int[])
 WndTextInput#update()
 
 # --- Extract-method refactor (1 entry) ---
-# Wraith#spawnAt(int, boolean) shrank 24 -> 2 statements because its body moved to
-# a new private spawnAt(int, boolean, boolean) overload; the 2-arg form delegates.
-# Verified at Wraith.java:106-110. Behavior preserved.
+# Wraith#spawnAt(int, boolean) first shrank 24 -> 2 statements when its body moved to a
+# private spawnAt(int, boolean, boolean) overload. upstream cdec9a68b (v2.5.0) then replaced
+# both with spawnAt(int) and spawnAt(int, Class), as in v2.5.4; reviewed again 2026-11-12.
 Wraith#spawnAt(int, boolean)
 
 # --- Foresight extract-method (1 entry) ---
@@ -434,7 +434,7 @@ MagesStaff#onSelect(Item)
 EnergyCrystal#random()
 SecretRoom#createRoom()
 
-# --- Retreating AI overhaul (3 entries), reviewed 2026-11-12 ---
+# --- Retreating mob overhaul (3 entries), reviewed 2026-11-12 ---
 # upstream 8abc3699d (v2.5.0): a fleeing mob that gets away now runs Fleeing.escaped(), so the
 # thief and crystal mimic escape code moves there out of nowhereToRun, and Spinner drops its
 # override. v2.5.4 has no nowhereToRun in Thief or Spinner.
@@ -446,3 +446,17 @@ CrystalMimic.Fleeing#nowhereToRun()
 # upstream 47fd533ca (v2.5.0): the energize body moves into a private energize(Item) that also
 # identifies potions and scrolls, so energizeOne only splits the stack.
 WndEnergizeItem#energizeOne(Item)
+
+# --- Corpse dust wraith class (1 entry), reviewed 2026-11-12 ---
+# upstream cdec9a68b (v2.5.0): spawnAround takes the wraith class to summon, so corpse dust can
+# raise its own DustWraith. v2.5.4 has spawnAround(int) and spawnAround(int, Class) only.
+Wraith#spawnAround(int, boolean)
+
+# --- Bomb renames (4 entries), reviewed 2026-11-12 ---
+# upstream a2a39d92a (v2.5.3): Flashbang becomes SmokeBomb and ShockBomb becomes FlashBangBomb,
+# with save aliases. The value() bodies move unchanged; the explode bodies are the new bombs'.
+# v2.5.4 has no Flashbang.java or ShockBomb.java.
+Flashbang#explode(int)
+Flashbang#value()
+ShockBomb#explode(int)
+ShockBomb#value()

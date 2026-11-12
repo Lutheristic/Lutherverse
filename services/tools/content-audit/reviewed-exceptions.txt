@@ -263,22 +263,26 @@ Item StewedMeat#I3
 Item MeatPie#I3
 #
 # Bombs: Bomb is placed by rooms/shops; the variants are Bomb.EnhanceBomb outputs
+# ArcaneBomb: Bomb.EnhanceBomb alchemy output
+Item ArcaneBomb#I3
 # Bomb: placed by ArmoryRoom, SecretHoneypotRoom and shops; dropped by Tengu
 Item Bomb#I3
 # Firebomb: Bomb.EnhanceBomb alchemy output
 Item Firebomb#I3
-# Flashbang: Bomb.EnhanceBomb alchemy output
-Item Flashbang#I3
+# FlashBangBomb: Bomb.EnhanceBomb alchemy output (was ShockBomb)
+Item FlashBangBomb#I3
 # FrostBomb: Bomb.EnhanceBomb alchemy output
 Item FrostBomb#I3
+# HolyBomb: Bomb.EnhanceBomb alchemy output
+Item HolyBomb#I3
 # Noisemaker: Bomb.EnhanceBomb alchemy output
 Item Noisemaker#I3
 # RegrowthBomb: Bomb.EnhanceBomb alchemy output
 Item RegrowthBomb#I3
-# ShockBomb: Bomb.EnhanceBomb alchemy output
-Item ShockBomb#I3
 # ShrapnelBomb: Bomb.EnhanceBomb alchemy output
 Item ShrapnelBomb#I3
+# SmokeBomb: Bomb.EnhanceBomb alchemy output (was Flashbang)
+Item SmokeBomb#I3
 # WoollyBomb: Bomb.EnhanceBomb alchemy output
 Item WoollyBomb#I3
 #

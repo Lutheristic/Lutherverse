@@ -1,0 +1,57 @@
+{
+  "start": "m1",
+  "dungeon": {
+    "m1": {
+      "depth": 1,
+      "type": "custom",
+      "entrances": ["surface"],
+      "exits": ["m2"],
+      "chasm": "m2",
+      "passage": "m1",
+      "custom_layout": {
+        "width": 9,
+        "height": 7,
+        "region": 1,
+        "music": { "tracks": [], "probs": [] },
+        "map": [
+          4, 4, 4, 4, 4, 4, 4, 4, 4,
+          4, 7, 1, 1, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 1, 1, 1, 8, 4,
+          4, 4, 4, 4, 4, 4, 4, 4, 4
+        ],
+        "entrances": [ { "x": 1, "y": 1 } ],
+        "exits": [ { "x": 7, "y": 5 } ],
+        "mobs": [
+          { "x": 5, "y": 3, "type": "Mimic", "hp": 5 },
+          { "x": 3, "y": 3, "type": "Mimic" }
+        ]
+      }
+    },
+    "m2": {
+      "depth": 2,
+      "type": "custom",
+      "entrances": ["m1"],
+      "exits": ["m3"],
+      "chasm": "m3",
+      "passage": "m1",
+      "custom_layout": {
+        "width": 7,
+        "height": 5,
+        "region": 1,
+        "music": { "tracks": [], "probs": [] },
+        "map": [
+          4, 4, 4, 4, 4, 4, 4,
+          4, 7, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 1, 8, 4,
+          4, 4, 4, 4, 4, 4, 4
+        ],
+        "entrances": [ { "x": 1, "y": 1 } ],
+        "exits": [ { "x": 5, "y": 3 } ]
+      }
+    }
+  }
+}

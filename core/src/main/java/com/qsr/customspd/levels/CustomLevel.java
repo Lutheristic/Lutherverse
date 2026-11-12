@@ -292,6 +292,9 @@ public class CustomLevel extends Level {
 			mob.pos = pos;
 			if (mobSpawn.getAlignment() != null)
 				mob.alignment = Char.Alignment.valueOf(mobSpawn.getAlignment().toUpperCase(Locale.ENGLISH));
+			if (mob instanceof Mimic) {
+				((Mimic) mob).setLevel( Dungeon.scalingDepth() );
+			}
 			if (mobSpawn.getHp() != null) {
 				mob.HP = mobSpawn.getHp();
 			}
@@ -316,9 +319,6 @@ public class CustomLevel extends Level {
 						mob.state = mob.PASSIVE;
 						break;
 				}
-			}
-			if (mob instanceof Mimic) {
-				((Mimic) mob).setLevel( Dungeon.scalingDepth() );
 			}
 			mobs.add(mob);
 		}

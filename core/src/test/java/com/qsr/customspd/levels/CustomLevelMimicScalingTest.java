@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class CustomLevelMimicScalingTest {
 
 	private static final String LAYOUT = "custom-level-mimic-layout.json";
+	private static final String HP_LAYOUT = "custom-level-mimic-hp-layout.json";
 	private static final long SEED = 424242L;
 
 	private static int mimicHtWhenGenerated(boolean ascending) {
@@ -55,6 +56,33 @@ class CustomLevelMimicScalingTest {
 	@Test
 	void aLayoutMimicGeneratedOnTheWayDownUsesTheFloorDepth() {
 		assertEquals((1 + 1) * 6, mimicHtWhenGenerated(false));
+	}
+
+	@Test
+	void aLayoutsHpForAMimicSurvivesTheScaling() {
+		DungeonLayout layout = Json.Default.decodeFromString(DungeonLayout.Companion.serializer(), resource(HP_LAYOUT));
+		try (HeadlessRun run = HeadlessRun.start(SEED)) {
+			Dungeon.layout = layout;
+			Dungeon.levelName = layout.getStart();
+			Dungeon.depth = layout.getDungeon().get(layout.getStart()).getDepth();
+
+			Level level = run.enterFirstLevel();
+			int width = level.width();
+
+			Mimic withHp = null, withoutHp = null;
+			for (Mob m : level.mobs) {
+				if (!(m instanceof Mimic)) continue;
+				if (m.pos == 5 + 3 * width) withHp = (Mimic) m;
+				if (m.pos == 3 + 3 * width) withoutHp = (Mimic) m;
+			}
+			assertNotNull(withHp, "the layout's mimic with an hp");
+			assertNotNull(withoutHp, "the layout's mimic without an hp");
+
+			assertEquals((1 + 1) * 6, withHp.HT, "the mimic is still scaled");
+			assertEquals(5, withHp.HP, "the layout's hp");
+			assertEquals((1 + 1) * 6, withoutHp.HT);
+			assertEquals(withoutHp.HT, withoutHp.HP, "with no hp given the mimic starts at full health");
+		}
 	}
 
 	private static String resource(String name) {

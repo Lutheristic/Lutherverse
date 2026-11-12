@@ -392,17 +392,26 @@ public abstract class Mob extends Char {
 				//go after the closest potential enemy, preferring enemies that can be reached/attacked, and the hero if two are equidistant
 				PathFinder.buildDistanceMap(pos, Dungeon.findPassable(this, Dungeon.level.passable, fieldOfView, true));
 				Char closest = null;
+				int closestDist = Integer.MAX_VALUE;
 
 				for (Char curr : enemies){
+					int currDist = Integer.MAX_VALUE;
+					//we aren't trying to move into the target, just toward them
+					for (int i : PathFinder.NEIGHBOURS8){
+						if (PathFinder.distance[curr.pos+i] < currDist){
+							currDist = PathFinder.distance[curr.pos+i];
+						}
+					}
 					if (closest == null){
 						closest = curr;
+						closestDist = currDist;
 					} else if (canAttack(closest) && !canAttack(curr)){
 						continue;
 					} else if ((canAttack(curr) && !canAttack(closest))
-							|| (PathFinder.distance[curr.pos] < PathFinder.distance[closest.pos])){
+							|| (currDist < closestDist)){
 						closest = curr;
 					} else if ( curr == Dungeon.hero &&
-							(PathFinder.distance[curr.pos] == PathFinder.distance[closest.pos]) || (canAttack(curr) && canAttack(closest))){
+							(currDist == closestDist) || (canAttack(curr) && canAttack(closest))){
 						closest = curr;
 					}
 				}
@@ -1291,9 +1300,7 @@ public abstract class Mob extends Char {
 
 		//enemies will turn and fight if they have nowhere to run and aren't affect by terror
 		protected void nowhereToRun() {
-			if (buff( Terror.class ) == null
-					&& buffs( AllyBuff.class ).isEmpty()
-					&& buff( Dread.class ) == null) {
+			if (buff( Terror.class ) == null && buff( Dread.class ) == null) {
 				if (enemySeen) {
 					sprite.showStatus(CharSprite.NEGATIVE, Messages.get(Mob.class, "rage"));
 					state = HUNTING;

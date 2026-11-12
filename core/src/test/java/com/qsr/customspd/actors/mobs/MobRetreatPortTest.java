@@ -4,6 +4,7 @@ import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.buffs.Buff;
+import com.qsr.customspd.actors.buffs.Corruption;
 import com.qsr.customspd.actors.buffs.Terror;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.items.Gold;
@@ -123,6 +124,25 @@ class MobRetreatPortTest {
 		assertEquals(cell(1, 2), rat.pos, "precondition: the rat had nowhere to run");
 		assertSame(rat.FLEEING, rat.state, "terror keeps a cornered mob from turning: " + stateName(rat));
 		assertTrue(!showedRage(rat), "no rage while terrified");
+	}
+
+	// From upstream 74eb63739: allies are no longer exempt from turning to fight.
+	@Test
+	void aCorneredAllyTurnsToFightTheEnemyItFledFrom() {
+		deadEnd();
+		placeHero(18, 2);
+		Rat ally = placeMob(new Rat(), 1, 2);
+		Buff.affect(ally, Corruption.class);
+		Rat enemy = placeMob(new Rat(), 2, 2);
+		enemy.state = enemy.HUNTING;
+		ally.state = ally.FLEEING;
+		ally.enemy = enemy;
+
+		act(ally);
+
+		assertEquals(cell(1, 2), ally.pos, "precondition: the ally had nowhere to run");
+		assertSame(ally.HUNTING, ally.state, stateName(ally));
+		assertTrue(ally.isTargeting(enemy), "it turns on the enemy that cornered it");
 	}
 
 	@Test

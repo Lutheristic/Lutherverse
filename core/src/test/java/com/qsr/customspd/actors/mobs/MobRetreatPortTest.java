@@ -221,6 +221,22 @@ class MobRetreatPortTest {
 		assertSame(thief.WANDERING, thief.state, stateName(thief));
 	}
 
+	// From upstream f2d0a821f: a mob whose escape logic ends its fleeing still spends the turn.
+	@Test
+	void aThiefThatGetsAwaySpendsItsTurn() {
+		openRoom();
+		placeHero(2, 4);
+		Thief thief = placeMob(new Thief(), 20, 4);
+		thief.item = new Gold(10);
+		thief.state = thief.FLEEING;
+		thief.target = cell(19, 4);
+
+		act(thief);
+
+		assertNull(thief.item, "precondition: the thief got away");
+		assertEquals(1f, thief.cooldown(), "getting away takes the thief's turn");
+	}
+
 	// ------------------------------------------------------------------------------ helpers
 
 	/** An open 30x9 room. */

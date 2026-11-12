@@ -318,7 +318,7 @@ public class CustomLevel extends Level {
 				}
 			}
 			if (mob instanceof Mimic) {
-				((Mimic) mob).setLevel( Dungeon.depth );
+				((Mimic) mob).setLevel( Dungeon.scalingDepth() );
 			}
 			mobs.add(mob);
 		}

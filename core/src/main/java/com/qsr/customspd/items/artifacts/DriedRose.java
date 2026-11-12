@@ -27,7 +27,6 @@ import com.qsr.customspd.ShatteredPixelDungeon;
 import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.blobs.CorrosiveGas;
-import com.qsr.customspd.actors.blobs.ToxicGas;
 import com.qsr.customspd.actors.buffs.AllyBuff;
 import com.qsr.customspd.actors.buffs.Regeneration;
 import com.qsr.customspd.actors.buffs.AscensionChallenge;
@@ -666,6 +665,7 @@ public class DriedRose extends Artifact {
 			if (rose != null && rose.armor != null && rose.armor.hasGlyph(AntiMagic.class, this)
 					&& AntiMagic.RESISTS.contains(src.getClass())){
 				dmg -= AntiMagic.drRoll(this, rose.armor.buffedLvl());
+				dmg = Math.max(dmg, 0);
 			}
 			
 			super.damage( dmg, src );
@@ -860,7 +860,6 @@ public class DriedRose extends Artifact {
 		}
 		
 		{
-			immunities.add( ToxicGas.class );
 			immunities.add( CorrosiveGas.class );
 			immunities.add( Burning.class );
 			immunities.add( ScrollOfRetribution.class );

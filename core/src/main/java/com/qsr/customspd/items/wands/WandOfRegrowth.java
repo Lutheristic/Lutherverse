@@ -26,16 +26,9 @@ import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.Statistics;
 import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.Char;
-import com.qsr.customspd.actors.buffs.AllyBuff;
-import com.qsr.customspd.actors.buffs.Amok;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.Doom;
-import com.qsr.customspd.actors.buffs.Dread;
-import com.qsr.customspd.actors.buffs.Paralysis;
 import com.qsr.customspd.actors.buffs.Roots;
-import com.qsr.customspd.actors.buffs.Sleep;
-import com.qsr.customspd.actors.buffs.Terror;
-import com.qsr.customspd.actors.buffs.Vertigo;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.abilities.mage.WildMagic;
 import com.qsr.customspd.actors.mobs.DwarfKing;
@@ -409,6 +402,7 @@ public class WandOfRegrowth extends Wand {
 		{
 			alignment = Alignment.NEUTRAL;
 			properties.add(Property.IMMOVABLE);
+			properties.add(Property.STATIC);
 
 			spriteClass = LotusSprite.class;
 
@@ -470,13 +464,6 @@ public class WandOfRegrowth extends Wand {
 		}
 
 		{
-			immunities.add( Paralysis.class );
-			immunities.add( Amok.class );
-			immunities.add( Sleep.class );
-			immunities.add( Terror.class );
-			immunities.add( Dread.class );
-			immunities.add( Vertigo.class );
-			immunities.add( AllyBuff.class );
 			immunities.add( Doom.class );
 		}
 

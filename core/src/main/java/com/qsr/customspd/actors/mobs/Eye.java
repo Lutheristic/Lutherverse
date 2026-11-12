@@ -33,6 +33,7 @@ import com.qsr.customspd.effects.particles.PurpleParticle;
 import com.qsr.customspd.items.Dewdrop;
 import com.qsr.customspd.items.Generator;
 import com.qsr.customspd.items.Item;
+import com.qsr.customspd.items.stones.StoneOfAggression;
 import com.qsr.customspd.items.wands.WandOfDisintegration;
 import com.qsr.customspd.levels.traps.DisintegrationTrap;
 import com.qsr.customspd.mechanics.Ballistica;
@@ -154,6 +155,12 @@ public class Eye extends Mob {
 		if (beamCharged) dmg /= 4;
 		super.damage(dmg, src);
 	}
+
+	@Override
+	public void die(Object cause) {
+		flying = false;
+		super.die(cause);
+	}
 	
 	//used so resistances can differentiate between melee and magical attacks
 	public static class DeathGaze{}
@@ -186,6 +193,17 @@ public class Eye extends Mob {
 			if (hit( this, ch, true )) {
 				int dmg = Random.NormalIntRange( 30, 50 );
 				dmg = Math.round(dmg * AscensionChallenge.statModifier(this));
+
+				//logic for fists or Yog-Dzewa taking 1/2 or 1/4 damage from aggression stoned minions
+				if ( ch.buff(StoneOfAggression.Aggression.class) != null
+						&& ch.alignment == alignment
+						&& (Char.hasProp(ch, Property.BOSS) || Char.hasProp(ch, Property.MINIBOSS))){
+					dmg *= 0.5f;
+					if (ch instanceof YogDzewa){
+						dmg *= 0.5f;
+					}
+				}
+
 				ch.damage( dmg, new DeathGaze() );
 
 				if (Dungeon.level.heroFOV[pos]) {

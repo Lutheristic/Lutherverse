@@ -29,7 +29,9 @@ import com.qsr.customspd.actors.blobs.Electricity;
 import com.qsr.customspd.actors.blobs.Freezing;
 import com.qsr.customspd.actors.buffs.BlobImmunity;
 import com.qsr.customspd.actors.buffs.Burning;
+import com.qsr.customspd.actors.buffs.Levitation;
 import com.qsr.customspd.actors.hero.Hero;
+import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.items.food.MysteryMeat;
 import com.qsr.customspd.sprites.PiranhaSprite;
 import com.watabou.utils.PathFinder;
@@ -65,7 +67,10 @@ public class Piranha extends Mob {
 	@Override
 	protected boolean act() {
 		
-		if (!Dungeon.level.water[pos]) {
+		if (!Dungeon.level.water[pos] || flying) {
+			if (sprite != null && buff(Levitation.class) != null){
+				sprite.emitter().burst(Speck.factory( Speck.JET ), 10);
+			}
 			dieOnLand();
 			return true;
 		} else {

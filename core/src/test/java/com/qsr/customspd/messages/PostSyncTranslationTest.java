@@ -412,4 +412,34 @@ class PostSyncTranslationTest {
 		assertEveryTranslation(Assets.Messages.SCENES, "scenes.gamescene.tutorial_ui_desktop",
 				t -> t.split("%[0-9]*\\$?s", -1).length == 3, "does not name both keys");
 	}
+
+	@Test
+	void stealWarningShipsInEveryLanguage() throws IOException {
+		assertTranslatedEverywhere(Assets.Messages.WINDOWS, "windows.wndtradeitem.steal_warn");
+		assertTranslatedEverywhere(Assets.Messages.WINDOWS, "windows.wndtradeitem.steal_warn_yes");
+		assertTranslatedEverywhere(Assets.Messages.WINDOWS, "windows.wndtradeitem.steal_warn_no");
+	}
+
+	// Both English texts changed. Greek and Turkish v2.5.4 lines for the stone, and the Turkish
+	// alchemize line, are only the English, so those show English; French and Italian are spot
+	// checks that the new lines arrived.
+	@Test
+	void aggressionStoneAndAlchemizeTranslationsAreTheNewTexts() throws IOException {
+		String stone = "items.stones.stoneofaggression.desc";
+		String alchemize = "items.spells.alchemize.desc";
+		Map<Languages, ObjectMap<String, String>> files = translatedBundles(Assets.Messages.ITEMS);
+		for (Object[] drop : new Object[][]{{stone, Languages.GREEK}, {stone, Languages.TURKISH}, {alchemize, Languages.TURKISH}}) {
+			String key = (String) drop[0];
+			Languages lang = (Languages) drop[1];
+			Messages.setup(Languages.ENGLISH);
+			String english = Messages.get(key);
+			assertNull(files.get(lang).get(key), lang + " file must not carry " + key);
+			Messages.setup(lang);
+			assertEquals(english, Messages.get(key), lang + " " + key);
+		}
+		for (Languages lang : new Languages[]{Languages.FRENCH, Languages.ITALIAN}) {
+			assertTrue(files.get(lang).get(stone).contains("oss"), lang + " " + stone + " does not mention bosses");
+			assertTrue(files.get(lang).get(alchemize).contains("dentif"), lang + " " + alchemize + " does not mention identifying");
+		}
+	}
 }

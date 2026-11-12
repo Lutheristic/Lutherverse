@@ -147,4 +147,25 @@ class WandOfWardingPortTest {
 		assertTrue(ward.HP > 10, "the wand must heal a ward even though it stands in a wall; HP=" + ward.HP);
 		assertTrue(StubSprite.of(ward).statuses.size() > 0, "the heal is shown on the ward");
 	}
+
+	/** upstream f0c4e6be0 (v2.3.0): a cursed wand of warding aims like every other cursed wand. */
+	@Test
+	void aCursedWandOfWardingAimsLikeEveryOtherCursedWand() {
+		HeadlessLevel level = HeadlessLevel.install(8, 8);
+		int target = 3 * level.width() + 5;
+		level.heroFOV[target] = true;
+
+		WandOfWarding wand = new WandOfWarding();
+		wand.cursed = true;
+		WandOfMagicMissile other = new WandOfMagicMissile();
+		other.cursed = true;
+		assertEquals(other.collisionProperties(target), wand.collisionProperties(target),
+				"cursed, it aims the way any cursed wand does");
+		assertEquals(Ballistica.MAGIC_BOLT, wand.collisionProperties(target));
+
+		wand.cursed = false;
+		assertEquals(Ballistica.STOP_TARGET, wand.collisionProperties(target), "uncursed, it stops on a cell in view");
+		level.heroFOV[target] = false;
+		assertEquals(Ballistica.PROJECTILE, wand.collisionProperties(target), "and flies on past one out of view");
+	}
 }

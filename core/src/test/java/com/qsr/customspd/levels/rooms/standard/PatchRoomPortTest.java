@@ -2,6 +2,7 @@ package com.qsr.customspd.levels.rooms.standard;
 
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.levels.Level;
+import com.qsr.customspd.levels.Patch;
 import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.levels.rooms.Room;
 import com.qsr.customspd.test.HeadlessGdx;
@@ -141,6 +142,37 @@ class PatchRoomPortTest {
 		});
 		assertTrue(splitWithoutDoor[0] > 0, "no seed left a room without doors in more than one piece,"
 				+ " so a path is still being forced through it");
+	}
+
+	@Test
+	void thePathCheckStartsFromTheRoomCentre() {
+		// center() flips a coin on each even axis, so a 16x16 room with a door draws two more
+		// values per attempt than Patch.generate alone, even though the door then sets the start.
+		HeadlessLevel level = HeadlessLevel.install(16 + 2 * ORIGIN, 16 + 2 * ORIGIN);
+		RuinsRoom room = new RuinsRoom();
+		room.set(ORIGIN, ORIGIN, ORIGIN + 15, ORIGIN + 15);
+		room.connected.put(new EmptyRoom(), new Room.Door(room.left, room.top + 8));
+
+		long expected;
+		Random.pushGenerator(5L);
+		try {
+			Patch.generate(room.width() - 2, room.height() - 2, 0.1f, 0, true);
+			room.center();
+			expected = Random.Long();
+		} finally {
+			Random.popGenerator();
+		}
+
+		long actual;
+		Random.pushGenerator(5L);
+		try {
+			room.setupPatch(level, 0.1f, 0, true);
+			actual = Random.Long();
+		} finally {
+			Random.popGenerator();
+			PathFinder.setMapSize(level.width(), level.height());
+		}
+		assertEquals(expected, actual, "one Patch.generate attempt plus center() before the door start point");
 	}
 
 	@Test

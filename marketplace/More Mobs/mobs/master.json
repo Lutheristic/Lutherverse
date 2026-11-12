@@ -40,7 +40,7 @@
   "min_armor": 0,
   "max_armor": 4,
   "loot": {
-	"type": "bombs.Flashbang"
+	"type": "bombs.SmokeBomb"
   },
   "loot_chance": 0.16
   "alignment": "enemy",

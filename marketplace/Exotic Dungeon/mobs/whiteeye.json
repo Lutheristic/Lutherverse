@@ -43,7 +43,7 @@
   "min_armor": 5,
   "max_armor": 15,
   "loot": {
-    "type": "bombs.Flashbang"
+    "type": "bombs.SmokeBomb"
   },
   "loot_chance": 0.075,
   "enchantments": [

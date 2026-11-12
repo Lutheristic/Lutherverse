@@ -22,37 +22,40 @@
 package com.qsr.customspd.items.bombs;
 
 import com.qsr.customspd.Dungeon;
-import com.qsr.customspd.actors.Actor;
-import com.qsr.customspd.actors.Char;
-import com.qsr.customspd.actors.buffs.Blindness;
-import com.qsr.customspd.actors.buffs.Buff;
-import com.qsr.customspd.actors.buffs.Cripple;
-import com.qsr.customspd.levels.Level;
+import com.qsr.customspd.actors.blobs.Blob;
+import com.qsr.customspd.actors.blobs.SmokeScreen;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.utils.BArray;
+import com.watabou.utils.PathFinder;
 
-public class Flashbang extends Bomb {
+public class SmokeBomb extends Bomb {
 	
 	{
-		image = GeneralAsset.FLASHBANG;
+		image = GeneralAsset.SMOKE_BOMB;
+	}
+
+	@Override
+	protected int explosionRange() {
+		return 2;
 	}
 
 	@Override
 	public void explode(int cell) {
 		super.explode(cell);
 
-		Level l = Dungeon.level;
-		for (Char ch : Actor.chars()){
-			if (ch.fieldOfView != null && ch.fieldOfView[cell]){
-				int power = 16 - 4*l.distance(ch.pos, cell);
-				if (power > 0){
-					Buff.prolong(ch, Blindness.class, power);
-					Buff.prolong(ch, Cripple.class, power);
-					if (ch == Dungeon.hero){
-						GameScene.flash(0x80FFFFFF);
-					}
-				}
+		int centerVolume = 1000; //40*25
+		PathFinder.buildDistanceMap( cell, BArray.not( Dungeon.level.solid, null ), explosionRange() );
+		for (int i = 0; i < PathFinder.distance.length; i++) {
+			if (PathFinder.distance[i] < Integer.MAX_VALUE) {
+				GameScene.add( Blob.seed( i, 40, SmokeScreen.class ) );
+				centerVolume -= 40;
 			}
+		}
+
+		//excess volume if some cells were blocked
+		if (centerVolume > 0){
+			GameScene.add( Blob.seed( cell, centerVolume, SmokeScreen.class ) );
 		}
 		
 	}

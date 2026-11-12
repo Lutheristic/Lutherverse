@@ -44,12 +44,12 @@ import com.qsr.customspd.items.bags.VelvetPouch;
 import com.qsr.customspd.items.bombs.ArcaneBomb;
 import com.qsr.customspd.items.bombs.Bomb;
 import com.qsr.customspd.items.bombs.Firebomb;
-import com.qsr.customspd.items.bombs.Flashbang;
+import com.qsr.customspd.items.bombs.SmokeBomb;
 import com.qsr.customspd.items.bombs.FrostBomb;
 import com.qsr.customspd.items.bombs.HolyBomb;
 import com.qsr.customspd.items.bombs.Noisemaker;
 import com.qsr.customspd.items.bombs.RegrowthBomb;
-import com.qsr.customspd.items.bombs.ShockBomb;
+import com.qsr.customspd.items.bombs.FlashBangBomb;
 import com.qsr.customspd.items.bombs.ShrapnelBomb;
 import com.qsr.customspd.items.bombs.WoollyBomb;
 import com.qsr.customspd.items.food.Berry;
@@ -210,8 +210,8 @@ public enum Catalog {
 
 		EXOTIC_SCROLLS.addItems(ExoticScroll.exoToReg.keySet().toArray(new Class[0]));
 
-		BOMBS.addItems( Bomb.class, FrostBomb.class, Firebomb.class, Flashbang.class, RegrowthBomb.class,
-				WoollyBomb.class, Noisemaker.class, ShockBomb.class, HolyBomb.class, ArcaneBomb.class, ShrapnelBomb.class);
+		BOMBS.addItems( Bomb.class, FrostBomb.class, Firebomb.class, SmokeBomb.class, RegrowthBomb.class,
+				WoollyBomb.class, Noisemaker.class, FlashBangBomb.class, HolyBomb.class, ArcaneBomb.class, ShrapnelBomb.class);
 
 		TIPPED_DARTS.addItems(TippedDart.types.values().toArray(new Class[0]));
 

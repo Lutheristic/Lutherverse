@@ -33,6 +33,7 @@ import com.qsr.customspd.items.Heap;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.artifacts.MasterThievesArmband;
 import com.qsr.customspd.messages.Messages;
+import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.sprites.ItemSprite;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.ui.RedButton;
@@ -147,7 +148,8 @@ public class WndTradeItem extends WndInfoItem {
 			RedButton btnSteal = new RedButton(Messages.get(this, "steal", Math.min(100, (int) (chance * 100)), chargesToUse), 6) {
 				@Override
 				protected void onClick() {
-					if (thievery.steal(item)) {
+					if (chance >= 1){
+						thievery.steal(item);
 						Hero hero = Dungeon.hero;
 						Item item = heap.pickUp();
 						hide();
@@ -156,14 +158,36 @@ public class WndTradeItem extends WndInfoItem {
 							Dungeon.level.drop(item, heap.pos).sprite.drop();
 						}
 					} else {
-						for (Mob mob : Dungeon.level.mobs) {
-							if (mob instanceof Shopkeeper) {
-								mob.yell(Messages.get(mob, "thief"));
-								((Shopkeeper) mob).flee();
-								break;
+						GameScene.show(new WndOptions(new ItemSprite(GeneralAsset.ARTIFACT_ARMBAND),
+								Messages.titleCase(Messages.get(MasterThievesArmband.class, "name")),
+								Messages.get(WndTradeItem.class, "steal_warn"),
+								Messages.get(WndTradeItem.class, "steal_warn_yes"),
+								Messages.get(WndTradeItem.class, "steal_warn_no")){
+							@Override
+							protected void onSelect(int index) {
+								super.onSelect(index);
+								if (index == 0){
+									if (thievery.steal(item)) {
+										Hero hero = Dungeon.hero;
+										Item item = heap.pickUp();
+										WndTradeItem.this.hide();
+
+										if (!item.doPickUp(hero)) {
+											Dungeon.level.drop(item, heap.pos).sprite.drop();
+										}
+									} else {
+										for (Mob mob : Dungeon.level.mobs) {
+											if (mob instanceof Shopkeeper) {
+												mob.yell(Messages.get(mob, "thief"));
+												((Shopkeeper) mob).flee();
+												break;
+											}
+										}
+										WndTradeItem.this.hide();
+									}
+								}
 							}
-						}
-						hide();
+						});
 					}
 				}
 			};

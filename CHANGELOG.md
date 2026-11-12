@@ -10,6 +10,30 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 Everything on `main` since the fork base (`cpd-sync-base-2025-08-15`, CPD commit `c97fb83`).
 
+### 2026-11-12: missed upstream fixes for levels, the Warrior, bosses, input and settings
+
+A check of every Slice 1 commit against v2.5.4 found upstream code that earlier batches had missed. This entry covers the most serious of it.
+
+**Fixed**
+- Level generation no longer loops forever when a floor's branch rooms can't be placed. After more than 100 failed tries the builder gives up and the floor is built again, as upstream has done since v2.2.0, so a seed that used to need that many tries now lays out differently. The line and branches builders also place their main path rooms now, though no floor in the shipped dungeons uses them.
+- The Warrior can pick Endure again as their third armor ability. A leftover of upstream debug code had put Ratmogrify in its place. A save that already picked Ratmogrify keeps it.
+- Using Endure again starts a fresh 12-turn buff, and its icon is tinted red.
+- The Warrior's seal shield no longer regrows while regeneration is switched off, for example when a boss fight goes on too long without the boss taking damage.
+- A huge hit that takes DM-300 to zero health or below while pylons remain no longer leaves it stuck alive. Its health stops at the threshold and the next pylon fires.
+- Loading a save in Yog's last phase no longer drops the view distance to zero and blinds the hero.
+- Toolbar keys no longer crash when pressed while there is no hero, and a necromancer finishing a summon no longer crashes when its summoning effect never started.
+- Rebinding a key no longer lets the action's old default key creep back in as an extra binding, on keyboard or controller.
+- The betas checkbox saves the beta channel choice. It used to switch the update check instead.
+- A new run can no longer start stuck in the tutorial with the toolbar hidden: floor 1 now removes the intro guide page when it drops the guidebook.
+
+**Ported**
+- DM-300's pylon sparks move faster and are denser close to the charging pylon, and the fight no longer logs a warning every time it vents gas or drops rocks.
+- Pressing the hero info or journal key again closes that window.
+- Players who already have finished runs skip the intro, and on desktop the tutorial lines name the keys for hero info, the inventory and the journal.
+- The game options panel always shows the seed, daily and challenge buttons, and before a first win it explains that a win unlocks them. The earliest playable daily moves to January 30, 2024.
+- The settings window has a Vibration checkbox that buzzes once when ticked, and long presses only vibrate when it is on. The power saver option only shows when it is already on or the device can't go fullscreen.
+- The new lines take v2.5.4's translations wherever upstream has one, and the removed DM-300 and guidebook lines lose theirs.
+
 ### 2026-10-26: tier-2 talent buffs, text catch-up and translations
 
 **Ported**

@@ -25,6 +25,7 @@ import com.qsr.customspd.Badges;
 import com.qsr.customspd.Chrome;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.GamesInProgress;
+import com.qsr.customspd.Rankings;
 import com.qsr.customspd.SPDSettings;
 import com.qsr.customspd.ShatteredPixelDungeon;
 import com.qsr.customspd.actors.hero.HeroClass;
@@ -462,6 +463,9 @@ public class HeroSelectScene extends PixelScene {
 	@Override
 	public void update() {
 		super.update();
+		if (SPDSettings.intro() && Rankings.INSTANCE.totalNumber > 0){
+			SPDSettings.intro(false);
+		}
 		btnExit.visible = btnExit.active = !SPDSettings.intro();
 		//do not fade when a window is open
 		for (Object v : members){

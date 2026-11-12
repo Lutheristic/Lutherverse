@@ -420,6 +420,28 @@ class PostSyncTranslationTest {
 		assertTranslatedEverywhere(Assets.Messages.WINDOWS, "windows.wndtradeitem.steal_warn_no");
 	}
 
+	// Greek writes its question mark as a semicolon.
+	private static boolean asksAQuestion(String text) {
+		return text.contains("?") || text.contains("\uFF1F") || text.contains(";") || text.contains("\u037E");
+	}
+
+	/**
+	 * Upstream 00b4300f0 (v2.5.0) moved the imp's "are you an adventurer?" opening out of the golem
+	 * and monk requests into an intro shown before them. A language still on the old combined
+	 * request asks the question twice. v2.5.4's tr golems_1 is only the English.
+	 */
+	@Test
+	void impQuestRequestsNoLongerRepeatTheIntro() throws IOException {
+		String intro = "actors.mobs.npcs.imp.intro";
+		assertTranslatedEverywhere(Assets.Messages.ACTORS, intro);
+		assertEveryTranslation(Assets.Messages.ACTORS, intro, PostSyncTranslationTest::asksAQuestion,
+				"must ask whether the hero is an adventurer");
+		assertEveryTranslation(Assets.Messages.ACTORS, "actors.mobs.npcs.imp.golems_1", t -> !asksAQuestion(t),
+				"must leave the question to the intro", Languages.TURKISH);
+		assertEveryTranslation(Assets.Messages.ACTORS, "actors.mobs.npcs.imp.monks_1", t -> !asksAQuestion(t),
+				"must leave the question to the intro");
+	}
+
 	// Both English texts changed. Greek and Turkish v2.5.4 lines for the stone, and the Turkish
 	// alchemize line, are only the English, so those show English; French and Italian are spot
 	// checks that the new lines arrived.

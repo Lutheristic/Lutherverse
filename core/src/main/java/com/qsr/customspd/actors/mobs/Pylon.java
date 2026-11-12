@@ -28,14 +28,8 @@ import com.qsr.customspd.Statistics;
 import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.blobs.Electricity;
-import com.qsr.customspd.actors.buffs.Amok;
 import com.qsr.customspd.actors.buffs.Buff;
-import com.qsr.customspd.actors.buffs.Dread;
 import com.qsr.customspd.actors.buffs.LockedFloor;
-import com.qsr.customspd.actors.buffs.Paralysis;
-import com.qsr.customspd.actors.buffs.Sleep;
-import com.qsr.customspd.actors.buffs.Terror;
-import com.qsr.customspd.actors.buffs.Vertigo;
 import com.qsr.customspd.effects.CellEmitter;
 import com.qsr.customspd.effects.Lightning;
 import com.qsr.customspd.effects.particles.SparkParticle;
@@ -66,6 +60,7 @@ public class Pylon extends Mob {
 		properties.add(Property.INORGANIC);
 		properties.add(Property.ELECTRIC);
 		properties.add(Property.IMMOVABLE);
+		properties.add(Property.STATIC);
 
 		state = PASSIVE;
 		alignment = Alignment.NEUTRAL;
@@ -236,15 +231,6 @@ public class Pylon extends Mob {
 		alignment = bundle.getEnum(ALIGNMENT, Alignment.class);
 		super.restoreFromBundle(bundle);
 		targetNeighbor = bundle.getInt(TARGET_NEIGHBOUR);
-	}
-
-	{
-		immunities.add( Paralysis.class );
-		immunities.add( Amok.class );
-		immunities.add( Sleep.class );
-		immunities.add( Terror.class );
-		immunities.add( Dread.class );
-		immunities.add( Vertigo.class );
 	}
 
 }

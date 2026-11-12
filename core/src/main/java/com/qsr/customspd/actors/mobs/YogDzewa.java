@@ -28,17 +28,9 @@ import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.Statistics;
 import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.Char;
-import com.qsr.customspd.actors.buffs.Amok;
-import com.qsr.customspd.actors.buffs.Charm;
-import com.qsr.customspd.actors.buffs.Dread;
-import com.qsr.customspd.actors.buffs.Frost;
 import com.qsr.customspd.actors.buffs.Invisibility;
 import com.qsr.customspd.actors.buffs.Light;
 import com.qsr.customspd.actors.buffs.LockedFloor;
-import com.qsr.customspd.actors.buffs.Paralysis;
-import com.qsr.customspd.actors.buffs.Sleep;
-import com.qsr.customspd.actors.buffs.Terror;
-import com.qsr.customspd.actors.buffs.Vertigo;
 import com.qsr.customspd.actors.mobs.npcs.Sheep;
 import com.qsr.customspd.effects.Beam;
 import com.qsr.customspd.effects.CellEmitter;
@@ -88,6 +80,7 @@ public class YogDzewa extends Mob {
 		properties.add(Property.BOSS);
 		properties.add(Property.IMMOVABLE);
 		properties.add(Property.DEMONIC);
+		properties.add(Property.STATIC);
 	}
 
 	private int phase = 0;
@@ -567,17 +560,6 @@ public class YogDzewa extends Mob {
 		}
 
 		return desc;
-	}
-
-	{
-		immunities.add( Dread.class );
-		immunities.add( Terror.class );
-		immunities.add( Amok.class );
-		immunities.add( Charm.class );
-		immunities.add( Sleep.class );
-		immunities.add( Vertigo.class );
-		immunities.add( Frost.class );
-		immunities.add( Paralysis.class );
 	}
 
 	private static final String PHASE = "phase";

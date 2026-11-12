@@ -24,13 +24,7 @@ package com.qsr.customspd.actors.mobs;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.Statistics;
 import com.qsr.customspd.actors.Actor;
-import com.qsr.customspd.actors.buffs.Amok;
 import com.qsr.customspd.actors.buffs.AscensionChallenge;
-import com.qsr.customspd.actors.buffs.Dread;
-import com.qsr.customspd.actors.buffs.Paralysis;
-import com.qsr.customspd.actors.buffs.Sleep;
-import com.qsr.customspd.actors.buffs.Terror;
-import com.qsr.customspd.actors.buffs.Vertigo;
 import com.qsr.customspd.effects.Pushing;
 import com.qsr.customspd.items.potions.PotionOfHealing;
 import com.qsr.customspd.journal.Notes;
@@ -63,6 +57,7 @@ public class DemonSpawner extends Mob {
 		properties.add(Property.IMMOVABLE);
 		properties.add(Property.MINIBOSS);
 		properties.add(Property.DEMONIC);
+		properties.add(Property.STATIC);
 	}
 
 	@Override
@@ -172,12 +167,4 @@ public class DemonSpawner extends Mob {
 		spawnRecorded = bundle.getBoolean(SPAWN_RECORDED);
 	}
 
-	{
-		immunities.add( Paralysis.class );
-		immunities.add( Amok.class );
-		immunities.add( Sleep.class );
-		immunities.add( Dread.class );
-		immunities.add( Terror.class );
-		immunities.add( Vertigo.class );
-	}
 }

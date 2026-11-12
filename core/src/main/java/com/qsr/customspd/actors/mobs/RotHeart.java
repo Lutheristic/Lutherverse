@@ -26,13 +26,7 @@ import com.qsr.customspd.Statistics;
 import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.blobs.Blob;
 import com.qsr.customspd.actors.blobs.ToxicGas;
-import com.qsr.customspd.actors.buffs.Amok;
 import com.qsr.customspd.actors.buffs.Burning;
-import com.qsr.customspd.actors.buffs.Dread;
-import com.qsr.customspd.actors.buffs.Paralysis;
-import com.qsr.customspd.actors.buffs.Sleep;
-import com.qsr.customspd.actors.buffs.Terror;
-import com.qsr.customspd.actors.buffs.Vertigo;
 import com.qsr.customspd.plants.Rotberry;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.sprites.RotHeartSprite;
@@ -52,6 +46,7 @@ public class RotHeart extends Mob {
 
 		properties.add(Property.IMMOVABLE);
 		properties.add(Property.MINIBOSS);
+		properties.add(Property.STATIC);
 	}
 
 	@Override
@@ -126,13 +121,7 @@ public class RotHeart extends Mob {
 	}
 	
 	{
-		immunities.add( Paralysis.class );
-		immunities.add( Amok.class );
-		immunities.add( Sleep.class );
 		immunities.add( ToxicGas.class );
-		immunities.add( Terror.class );
-		immunities.add( Dread.class );
-		immunities.add( Vertigo.class );
 	}
 
 }

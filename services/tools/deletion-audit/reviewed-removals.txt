@@ -426,3 +426,23 @@ MeleeWeapon#doUnequip(Hero, boolean, boolean)
 # can reach it; the condition is v2.5.4's.
 MagesStaff#imbueWand(Wand, Char)
 MagesStaff#onSelect(Item)
+
+# --- Missed room and prize fixes (2 entries), reviewed 2026-11-12 ---
+# upstream 21804614e (v2.5.0): energy crystals always keep their quantity, so EnergyCrystal no
+# longer overrides random(). upstream 82eacce54 (v2.5.0): secret rooms pick from the front three
+# of the queue the same way special rooms do, which shortens createRoom.
+EnergyCrystal#random()
+SecretRoom#createRoom()
+
+# --- Retreating AI overhaul (3 entries), reviewed 2026-11-12 ---
+# upstream 8abc3699d (v2.5.0): a fleeing mob that gets away now runs Fleeing.escaped(), so the
+# thief and crystal mimic escape code moves there out of nowhereToRun, and Spinner drops its
+# override. v2.5.4 has no nowhereToRun in Thief or Spinner.
+Thief.Fleeing#nowhereToRun()
+Spinner.Fleeing#nowhereToRun()
+CrystalMimic.Fleeing#nowhereToRun()
+
+# --- Identify on energize (1 entry), reviewed 2026-11-12 ---
+# upstream 47fd533ca (v2.5.0): the energize body moves into a private energize(Item) that also
+# identifies potions and scrolls, so energizeOne only splits the stack.
+WndEnergizeItem#energizeOne(Item)

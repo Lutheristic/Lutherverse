@@ -22,6 +22,7 @@
 package com.qsr.customspd.windows;
 
 import com.qsr.customspd.Dungeon;
+import com.qsr.customspd.SPDAction;
 import com.qsr.customspd.ShatteredPixelDungeon;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
@@ -44,6 +45,8 @@ import com.qsr.customspd.ui.RedButton;
 import com.qsr.customspd.ui.RenderedTextBlock;
 import com.qsr.customspd.ui.ScrollPane;
 import com.qsr.customspd.ui.ScrollingListPane;
+import com.watabou.input.KeyBindings;
+import com.watabou.input.KeyEvent;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
@@ -148,6 +151,16 @@ public class WndJournal extends WndTabbed {
 		layoutTabs();
 
 		select(last_index);
+	}
+
+	@Override
+	public boolean onSignal(KeyEvent event) {
+		if (event.pressed && KeyBindings.getActionForKey( event ) == SPDAction.JOURNAL) {
+			onBackPressed();
+			return true;
+		} else {
+			return super.onSignal(event);
+		}
 	}
 
 	@Override

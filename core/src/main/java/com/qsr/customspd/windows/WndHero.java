@@ -22,6 +22,7 @@
 package com.qsr.customspd.windows;
 
 import com.qsr.customspd.Dungeon;
+import com.qsr.customspd.SPDAction;
 import com.qsr.customspd.ShatteredPixelDungeon;
 import com.qsr.customspd.Statistics;
 import com.qsr.customspd.actors.buffs.Buff;
@@ -42,6 +43,8 @@ import com.qsr.customspd.ui.TalentButton;
 import com.qsr.customspd.ui.TalentsPane;
 import com.qsr.customspd.ui.Window;
 import com.qsr.customspd.utils.DungeonSeed;
+import com.watabou.input.KeyBindings;
+import com.watabou.input.KeyEvent;
 import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
@@ -127,6 +130,16 @@ public class WndHero extends WndTabbed {
 		select( lastIdx );
 
 		built = true;
+	}
+
+	@Override
+	public boolean onSignal(KeyEvent event) {
+		if (event.pressed && KeyBindings.getActionForKey( event ) == SPDAction.HERO_INFO) {
+			onBackPressed();
+			return true;
+		} else {
+			return super.onSignal(event);
+		}
 	}
 
 	@Override

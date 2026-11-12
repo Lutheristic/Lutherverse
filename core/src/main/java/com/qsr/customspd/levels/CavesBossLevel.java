@@ -50,7 +50,6 @@ import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.sprites.PylonSprite;
 import com.qsr.customspd.tiles.CustomTilemap;
-import com.qsr.customspd.tiles.DungeonTilemap;
 import com.qsr.customspd.utils.GLog;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
@@ -62,6 +61,7 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
+import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
@@ -882,15 +882,14 @@ public class CavesBossLevel extends Level {
 					}
 				}
 
-				SparkParticle s = ((SparkParticle) emitter.recycle(SparkParticle.class));
-				s.resetStatic(x, y);
-				s.speed.set((energySourceSprite.x + energySourceSprite.width/2f) - x,
-						(energySourceSprite.y + energySourceSprite.height/2f) - y);
-				s.speed.normalize().scale(DungeonTilemap.SIZE*2f);
+				float dist = (float)Math.max( Math.abs(energySourceSprite.x - x), Math.abs(energySourceSprite.y - y) );
+				dist = GameMath.gate(0, dist-40, 320);
+				//more sparks closer up
+				if (Random.Float(360) > dist) {
 
-				//offset the particles slightly so they don't go too far outside of the cell
-				s.x -= s.speed.x/8f;
-				s.y -= s.speed.y/8f;
+					SparkParticle s = ((SparkParticle) emitter.recycle(SparkParticle.class));
+					s.resetAttracting(x, y, energySourceSprite);
+				}
 			}
 
 			@Override

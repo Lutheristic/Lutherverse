@@ -401,8 +401,10 @@ public class MagesStaff extends MeleeWeapon {
 
 	//what the imbue window says happens to the wand already in the staff
 	static String oldWandText(){
+		//an old save can hold a counter left at 0, which imbueWand still treats as unspent
+		Talent.WandPreservationCounter counter = Dungeon.hero.buff(Talent.WandPreservationCounter.class);
 		if (Dungeon.hero.hasTalent(Talent.WAND_PRESERVATION)
-			&& Dungeon.hero.buff(Talent.WandPreservationCounter.class) == null){
+			&& (counter == null || counter.count() == 0)){
 			return Messages.get(MagesStaff.class, "imbue_talent");
 		} else {
 			return Messages.get(MagesStaff.class, "imbue_lost");

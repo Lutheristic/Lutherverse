@@ -189,6 +189,27 @@ class WandPreservationPortTest {
 		assertEquals(returned, MagesStaff.oldWandText(), "+2, after a level up");
 	}
 
+	/**
+	 * Before upstream b7051a219 a failed preservation roll left the counter at 0, and imbuing
+	 * still gives the wand back for such a save. CPDU's imbue window says so too; upstream's
+	 * window checks only whether the counter exists and promises the wand is lost.
+	 */
+	@Test
+	void anOldSavesUnspentCounterShowsTheWandWillComeBack() throws Exception {
+		Talent.WandPreservationCounter restored = SaveRoundtrip.of(new Talent.WandPreservationCounter());
+		assertEquals(0f, restored.count(), 0.0001f, "fixture: an unspent counter round-trips at 0");
+
+		Hero hero = mage(1);
+		restored.attachTo(hero);
+		assertEquals(Messages.get(MagesStaff.class, "imbue_talent"), MagesStaff.oldWandText(),
+				"the window promises the old wand back");
+
+		staffWithMagicMissile().imbueWand(new WandOfFrost(), hero);
+		assertNotNull(hero.belongings.getItem(WandOfMagicMissile.class), "and imbuing gives it back");
+		assertEquals(Messages.get(MagesStaff.class, "imbue_lost"), MagesStaff.oldWandText(),
+				"after which the use is spent");
+	}
+
 	@Test
 	void theTalentAndImbueTextMatch() {
 		String desc = Talent.WAND_PRESERVATION.desc();

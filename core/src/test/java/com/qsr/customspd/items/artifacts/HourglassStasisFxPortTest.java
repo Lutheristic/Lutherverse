@@ -1,6 +1,8 @@
 package com.qsr.customspd.items.artifacts;
 
 import com.qsr.customspd.Dungeon;
+import com.qsr.customspd.actors.buffs.Buff;
+import com.qsr.customspd.actors.buffs.Paralysis;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.test.HeadlessGdx;
@@ -76,5 +78,23 @@ class HourglassStasisFxPortTest {
 
 		stasis.detach();
 		assertFalse(sprite.states.contains(CharSprite.State.PARALYSED), "free again once stasis ends");
+	}
+
+	/**
+	 * upstream 7c66d1058 (v2.5.3): ending stasis clears each look on its own, so a hero still
+	 * paralysed by something else keeps that look, and a leftover invisible look goes.
+	 */
+	@Test
+	void endingStasisClearsEachLookOnItsOwn() throws Exception {
+		TimekeepersHourglass.timeStasis stasis = stasis();
+		Buff.affect(hero, Paralysis.class, 10f);
+		sprite.states.add(CharSprite.State.INVISIBLE);
+
+		stasis.attachTo(hero);
+		stasis.detach();
+
+		assertTrue(hero.paralysed > 0, "fixture: the paralysis outlasts the stasis");
+		assertTrue(sprite.states.contains(CharSprite.State.PARALYSED), "still drawn paralysed");
+		assertFalse(sprite.states.contains(CharSprite.State.INVISIBLE), "nothing keeps the hero invisible");
 	}
 }

@@ -1299,7 +1299,7 @@ public abstract class Mob extends Char {
 		protected void nowhereToRun() {
 			if (buff( Terror.class ) == null && buff( Dread.class ) == null) {
 				if (enemySeen) {
-					sprite.showStatus(CharSprite.NEGATIVE, Messages.get(Mob.class, "rage"));
+					sprite.showStatus(CharSprite.WARNING, Messages.get(Mob.class, "rage"));
 					state = HUNTING;
 				} else {
 					state = WANDERING;

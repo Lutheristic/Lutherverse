@@ -10,6 +10,7 @@ import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.items.Gold;
 import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.messages.Messages;
+import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.test.HeadlessGdx;
 import com.qsr.customspd.test.HeadlessLevel;
 import com.qsr.customspd.test.StubSprite;
@@ -303,10 +304,14 @@ class MobRetreatPortTest {
 		}
 	}
 
+	/** Whether the mob showed the rage text, which must be orange (upstream 7cb955ff0). */
 	private static boolean showedRage(Mob mob) {
 		String rage = Messages.get(Mob.class, "rage");
 		for (StubSprite.Status s : StubSprite.of(mob).statuses) {
-			if (s.text.equals(rage)) return true;
+			if (s.text.equals(rage)) {
+				assertEquals(CharSprite.WARNING, s.color, "the rage text is a warning: " + s);
+				return true;
+			}
 		}
 		return false;
 	}

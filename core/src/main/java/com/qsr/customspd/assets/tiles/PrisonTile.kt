@@ -17,6 +17,7 @@ enum class PrisonTile(override val path: String, override val pos: Int) : TileAs
     WELL("environment/prison/well.png", 18),
     EMPTY_WELL("environment/prison/empty_well.png", 19),
     PEDESTAL("environment/prison/pedestal.png", 20),
+    ENTRANCE_SP("environment/prison/entrance_sp.png", 22),
     WATER_0("environment/prison/water_0.png", 32),
     WATER_1("environment/prison/water_1.png", 33),
     WATER_2("environment/prison/water_2.png", 34),

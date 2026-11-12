@@ -17,6 +17,7 @@ enum class CavesTile(override val path: String, override val pos: Int) : TileAss
     WELL("environment/caves/well.png", 18),
     EMPTY_WELL("environment/caves/empty_well.png", 19),
     PEDESTAL("environment/caves/pedestal.png", 20),
+    ENTRANCE_SP("environment/caves/entrance_sp.png", 22),
     WATER_0("environment/caves/water_0.png", 32),
     WATER_1("environment/caves/water_1.png", 33),
     WATER_2("environment/caves/water_2.png", 34),

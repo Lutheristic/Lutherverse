@@ -17,6 +17,7 @@ enum class HallsTile(override val path: String, override val pos: Int) : TileAss
     WELL("environment/halls/well.png", 18),
     EMPTY_WELL("environment/halls/empty_well.png", 19),
     PEDESTAL("environment/halls/pedestal.png", 20),
+    ENTRANCE_SP("environment/halls/entrance_sp.png", 22),
     WATER_0("environment/halls/water_0.png", 32),
     WATER_1("environment/halls/water_1.png", 33),
     WATER_2("environment/halls/water_2.png", 34),

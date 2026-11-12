@@ -299,7 +299,7 @@ public class Mimic extends Mob {
 		}
 
 		m.items = new ArrayList<>( items );
-		m.setLevel( Dungeon.depth );
+		m.setLevel( Dungeon.scalingDepth() );
 		m.pos = pos;
 
 		//generate an extra reward for killing the mimic

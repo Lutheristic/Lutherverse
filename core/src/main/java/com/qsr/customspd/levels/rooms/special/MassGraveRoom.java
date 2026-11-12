@@ -33,6 +33,7 @@ import com.qsr.customspd.items.quest.CorpseDust;
 import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.levels.painters.Painter;
+import com.qsr.customspd.levels.rooms.Room;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.tiles.CustomTilemap;
 import com.watabou.noosa.Image;
@@ -94,6 +95,32 @@ public class MassGraveRoom extends SpecialRoom {
 			h.setHauntedIfCursed();
 			h.type = Heap.Type.SKELETON;
 		}
+	}
+
+	@Override
+	public boolean canConnect(Room r) {
+		if (r.isEntrance()){
+			return false;
+		}
+
+		//must have at least 3 rooms between it and the entrance room
+		for (Room r1 : r.connected.keySet()) {
+			if (r1.isEntrance()){
+				return false;
+			}
+			for (Room r2 : r1.connected.keySet()) {
+				if (r2.isEntrance()){
+					return false;
+				}
+				for (Room r3 : r2.connected.keySet()) {
+					if (r3.isEntrance()){
+						return false;
+					}
+				}
+			}
+		}
+
+		return super.canConnect(r);
 	}
 
 	public static class Bones extends CustomTilemap {

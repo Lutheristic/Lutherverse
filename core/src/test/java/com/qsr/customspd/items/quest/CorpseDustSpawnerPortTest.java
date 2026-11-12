@@ -25,6 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Upstream 123e20b66: the corpse dust spawner picks its wraith from every visible open cell more
  * than 3 tiles from the hero, never beside them; the summon cost caps at 49 turns instead of 25;
  * and power is only spent when a wraith actually spawns.
+ * Upstream ba116c62f: that minimum distance is a third of the hero's view distance, so a hero
+ * with a short view still gets wraiths.
  */
 class CorpseDustSpawnerPortTest {
 
@@ -134,5 +136,29 @@ class CorpseDustSpawnerPortTest {
 
 		seeWithin(SIZE);
 		assertNotNull(tick(), "with room to spawn the kept power summons right away");
+	}
+
+	@Test
+	void aShortViewDistanceShrinksTheMinimumDistance() {
+		for (int view = 1; view <= 7; view++) {
+			hero.viewDistance = view;
+			int minDist = Math.round(view / 3f);
+			seeWithin(3); // nothing more than 3 tiles away is visible
+			for (long seed = 1; seed <= 10; seed++) {
+				spawner.spawnPower = 0;
+				Mob w;
+				Random.pushGenerator(seed);
+				try {
+					w = tick();
+				} finally {
+					Random.popGenerator();
+				}
+				String where = "view " + view + ", seed " + seed;
+				assertNotNull(w, where + ": no wraith spawned with visible cells 2 and 3 tiles away");
+				assertTrue(level.distance(w.pos, hero.pos) > minDist,
+						where + ": a wraith spawned " + level.distance(w.pos, hero.pos) + " tiles away, minimum " + minDist);
+				level.mobs.remove(w);
+			}
+		}
 	}
 }

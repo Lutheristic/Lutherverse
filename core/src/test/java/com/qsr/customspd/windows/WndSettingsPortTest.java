@@ -18,7 +18,10 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -31,6 +34,8 @@ class WndSettingsPortTest {
 
 	private HeadlessRun run;
 	private Component tab;
+	private boolean canVibrate = false;
+	private final List<Integer> buzzes = new ArrayList<>();
 
 	@BeforeEach
 	void start() {
@@ -39,7 +44,8 @@ class WndSettingsPortTest {
 			@Override public void updateDisplaySize() {}
 			@Override public void updateSystemUI() {}
 			@Override public boolean connectedToUnmeteredNetwork() { return false; }
-			@Override public boolean supportsVibration() { return false; }
+			@Override public boolean supportsVibration() { return canVibrate; }
+			@Override public void vibrate(int millis) { buzzes.add(millis); }
 			@Override public void setupFontGenerators(int pageSize, boolean systemFont) {}
 			@Override protected FreeTypeFontGenerator getGeneratorForString(String input) { return null; }
 			@Override public String[] splitforTextBlock(String text, boolean multiline) { return text.split(" "); }
@@ -104,5 +110,37 @@ class WndSettingsPortTest {
 		assertTrue(betas.checked(), "test setup: the click ticks it");
 		assertTrue(SPDSettings.betas(), "ticking betas must save the beta channel choice");
 		assertFalse(SPDSettings.updates(), "ticking betas must leave the update check alone");
+	}
+
+	// upstream f36dda306 and 5f735ffe6
+	@Test
+	void theVibrationCheckboxSavesTheSettingAndBuzzesWhenTicked() throws Exception {
+		canVibrate = true;
+		SPDSettings.vibration(true);
+		createTab("UITab");
+		CheckBox vibration = (CheckBox) read(tab, "chkVibrate");
+		assertTrue(vibration.active, "a device that can vibrate may change the setting");
+		assertTrue(vibration.checked(), "the box shows the saved setting");
+
+		click(vibration);
+		assertFalse(SPDSettings.vibration(), "unticking turns vibration off");
+		assertTrue(buzzes.isEmpty(), "unticking does not buzz");
+
+		click(vibration);
+		assertTrue(SPDSettings.vibration(), "ticking turns vibration back on");
+		assertEquals(1, buzzes.size(), "ticking gives one test buzz");
+		assertEquals(250, (int) buzzes.get(0));
+	}
+
+	// upstream f36dda306 and 5f735ffe6
+	@Test
+	void withoutVibrationSupportTheCheckboxIsDisabledAndUnticked() throws Exception {
+		canVibrate = false;
+		SPDSettings.vibration(true);
+		createTab("UITab");
+		CheckBox vibration = (CheckBox) read(tab, "chkVibrate");
+
+		assertFalse(vibration.active, "a device that cannot vibrate cannot change the setting");
+		assertFalse(vibration.checked(), "the saved setting is not shown where it does nothing");
 	}
 }

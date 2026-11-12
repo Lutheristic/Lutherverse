@@ -60,14 +60,19 @@ public final class RenderThreadCalls implements AutoCloseable {
 		return result;
 	}
 
-	/** The value of local {@code name} that an anonymous callback captured. */
+	/**
+	 * The value of local {@code name} that an anonymous callback captured. This reads javac's
+	 * {@code val$name} capture field, so renaming that local in game code breaks the test using it.
+	 */
 	public static Object captured(Callback callback, String name) {
 		try {
 			Field f = callback.getClass().getDeclaredField("val$" + name);
 			f.setAccessible(true);
 			return f.get(callback);
 		} catch (ReflectiveOperationException e) {
-			throw new AssertionError(callback.getClass().getName() + " captured no local named " + name, e);
+			throw new AssertionError(callback.getClass().getName() + " captured no local named " + name
+					+ ". If the game code still passes this value, the local was most likely renamed, or the"
+					+ " compiler no longer names capture fields val$<local>.", e);
 		}
 	}
 
@@ -76,7 +81,11 @@ public final class RenderThreadCalls implements AutoCloseable {
 		Gdx.app = realApp;
 	}
 
-	/** Game.runOnRenderThread posts {@code c::call}; this is that c. */
+	/**
+	 * Game.runOnRenderThread posts {@code c::call}; this is that c, read from the field the JDK's
+	 * method reference class keeps it in. If the JDK stops keeping it in a field, callbacks() comes
+	 * back empty.
+	 */
 	private static Callback wrapped(Runnable r) {
 		for (Field f : r.getClass().getDeclaredFields()) {
 			if (Callback.class.isAssignableFrom(f.getType())) {

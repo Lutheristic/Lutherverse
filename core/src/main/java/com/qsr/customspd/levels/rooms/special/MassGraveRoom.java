@@ -57,7 +57,7 @@ public class MassGraveRoom extends SpecialRoom {
 		level.addItemToSpawn(new PotionOfLiquidFlame());
 
 		Painter.fill(level, this, Terrain.WALL);
-		Painter.fill(level, this, 1, Terrain.EMPTY_SP);
+		Painter.fill(level, this, 1, Terrain.CUSTOM_DECO_EMPTY);
 
 		Bones b = new Bones();
 
@@ -71,7 +71,7 @@ public class MassGraveRoom extends SpecialRoom {
 			int pos;
 			do {
 				pos = level.pointToCell(random());
-			} while (level.map[pos] != Terrain.EMPTY_SP || level.findMob(pos) != null);
+			} while (level.map[pos] != Terrain.CUSTOM_DECO_EMPTY || level.findMob(pos) != null);
 			skele.pos = pos;
 			level.mobs.add( skele );
 		}
@@ -90,7 +90,7 @@ public class MassGraveRoom extends SpecialRoom {
 			int pos;
 			do {
 				pos = level.pointToCell(random());
-			} while (level.map[pos] != Terrain.EMPTY_SP || level.heaps.get(pos) != null);
+			} while (level.map[pos] != Terrain.CUSTOM_DECO_EMPTY || level.heaps.get(pos) != null);
 			Heap h = level.drop(item, pos);
 			h.setHauntedIfCursed();
 			h.type = Heap.Type.SKELETON;

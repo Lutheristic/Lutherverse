@@ -1,18 +1,30 @@
 package com.qsr.customspd.levels.rooms.special;
 
+import com.qsr.customspd.Dungeon;
+import com.qsr.customspd.actors.mobs.Mob;
+import com.qsr.customspd.items.Heap;
+import com.qsr.customspd.items.Item;
+import com.qsr.customspd.items.quest.CorpseDust;
+import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.levels.rooms.Room;
 import com.qsr.customspd.levels.rooms.standard.EmptyRoom;
 import com.qsr.customspd.levels.rooms.standard.entrance.EntranceRoom;
 import com.qsr.customspd.test.HeadlessGdx;
+import com.qsr.customspd.test.HeadlessLevel;
+import com.qsr.customspd.test.HeadlessRun;
+import com.watabou.utils.Random;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Upstream 123e20b66: the mass grave keeps at least 3 rooms between itself and the entrance
  * room, so the corpse dust is never picked up right at the start of the floor.
+ * Upstream e45206016: its floor under the bones overlay is the unmodifiable empty tile, and the
+ * skeletons and remains are placed on it.
  */
 class MassGraveRoomPortTest {
 
@@ -55,6 +67,43 @@ class MassGraveRoomPortTest {
 	void aMassGraveKeepsThreeRoomsFromTheEntrance() {
 		for (int hops = 0; hops <= 3; hops++) {
 			assertFalse(canConnectAt(hops), "a room " + hops + " connections from the entrance");
+		}
+	}
+
+	@Test
+	void aMassGraveFloorIsTheUnmodifiableEmptyTile() {
+		for (long seed = 1; seed <= 5; seed++) {
+			try (HeadlessRun run = HeadlessRun.start(seed)) {
+				HeadlessLevel level = HeadlessLevel.install(11, 11);
+				MassGraveRoom grave = new MassGraveRoom();
+				grave.set(1, 1, 9, 9);
+				grave.connected.put(new EmptyRoom(), new Room.Door(grave.left, grave.top + 4));
+				Dungeon.level = null; // as during levelgen (Dungeon.newLevel)
+				Random.pushGenerator(seed);
+				try {
+					grave.paint(level);
+				} finally {
+					Random.popGenerator();
+				}
+
+				for (int x = grave.left + 1; x < grave.right; x++) {
+					for (int y = grave.top + 1; y < grave.bottom; y++) {
+						assertEquals(Terrain.CUSTOM_DECO_EMPTY, level.map[x + y * level.width()],
+								"seed " + seed + " at " + x + "," + y);
+					}
+				}
+				boolean dust = false;
+				for (Heap h : level.heaps.valueList()) {
+					assertEquals(Terrain.CUSTOM_DECO_EMPTY, level.map[h.pos], "seed " + seed + ": remains off the grave floor");
+					for (Item item : h.items) dust |= item instanceof CorpseDust;
+				}
+				assertTrue(dust, "seed " + seed + ": the corpse dust was placed");
+				assertFalse(level.mobs.isEmpty(), "seed " + seed + ": skeletons were placed");
+				for (Mob m : level.mobs) {
+					assertEquals(Terrain.CUSTOM_DECO_EMPTY, level.map[m.pos], "seed " + seed + ": a skeleton off the grave floor");
+				}
+				HeadlessLevel.uninstall();
+			}
 		}
 	}
 }

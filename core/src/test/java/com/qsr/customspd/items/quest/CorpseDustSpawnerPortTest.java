@@ -124,8 +124,10 @@ class CorpseDustSpawnerPortTest {
 
 	@Test
 	void theSummonCostCapsAt49Turns() {
-		// six wraiths already out: the seventh would cost 7*7 = 49 turns
-		int[] cells = {SIZE + 1, 2 * SIZE - 2, SIZE * (SIZE - 2) + 1, SIZE * (SIZE - 1) - 2, SIZE + 3, 2 * SIZE - 4};
+		// seven wraiths already out: the eighth would cost 8*8 = 64 turns without the cap,
+		// and 25 under the pre-v2.2.0 cap
+		int[] cells = {SIZE + 1, 2 * SIZE - 2, SIZE * (SIZE - 2) + 1, SIZE * (SIZE - 1) - 2, SIZE + 3, 2 * SIZE - 4,
+				SIZE * (SIZE - 2) + 3};
 		for (int cell : cells) existingDustWraith(cell);
 
 		int turn = 0;
@@ -134,8 +136,8 @@ class CorpseDustSpawnerPortTest {
 			turn++;
 			w = tick();
 		}
-		assertNotNull(w, "no wraith in 100 turns with six already out");
-		assertEquals(49, turn, "turns of power the seventh wraith took");
+		assertNotNull(w, "no wraith in 100 turns with seven already out");
+		assertEquals(49, turn, "turns of power the eighth wraith took");
 	}
 
 	@Test

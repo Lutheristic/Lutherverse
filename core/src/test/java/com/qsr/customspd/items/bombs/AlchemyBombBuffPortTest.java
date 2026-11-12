@@ -182,6 +182,22 @@ class AlchemyBombBuffPortTest {
 		assertEquals(Terrain.EMBERS, Dungeon.level.map[CENTER - 2 * W], "and grass two tiles off burns");
 	}
 
+	/** upstream 2fef96f21 (v2.5.3): a blast still reaches solid flammable terrain. */
+	@Test
+	void aBlastStillBurnsBookshelvesAndBarricades() {
+		Dungeon.level.map[CENTER + 1] = Terrain.BOOKSHELF;
+		Dungeon.level.map[CENTER - 2 * W] = Terrain.BARRICADE;
+		Dungeon.level.buildFlagMaps();
+		assertTrue(Dungeon.level.solid[CENTER + 1] && Dungeon.level.solid[CENTER - 2 * W], "fixture: both are solid");
+
+		new Bomb().explode(CENTER);
+		assertEquals(Terrain.EMBERS, Dungeon.level.map[CENTER + 1], "a bomb burns the bookshelf next to it");
+		assertEquals(Terrain.BARRICADE, Dungeon.level.map[CENTER - 2 * W], "but not a barricade two tiles off");
+
+		new Noisemaker().explode(CENTER);
+		assertEquals(Terrain.EMBERS, Dungeon.level.map[CENTER - 2 * W], "a noisemaker's wider blast burns it");
+	}
+
 	@Test
 	void theArcaneBombDealsFullDamageThroughoutItsRange() {
 		RecordingRat rat = ratAt(new RecordingRat(), CENTER + 2);

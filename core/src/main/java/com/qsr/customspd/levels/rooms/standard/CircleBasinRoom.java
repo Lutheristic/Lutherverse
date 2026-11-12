@@ -80,7 +80,7 @@ public class CircleBasinRoom extends PatchRoom {
 			Painter.set( level, center, Terrain.WALL );
 		}
 
-		setupPatch(level, 0.5f, 5, true);
+		setupPatch(level, 0.5f, 5, false);
 		for (int i = top + 1; i < bottom; i++) {
 			for (int j = left + 1; j < right; j++) {
 				int cell = i * level.width() + j;

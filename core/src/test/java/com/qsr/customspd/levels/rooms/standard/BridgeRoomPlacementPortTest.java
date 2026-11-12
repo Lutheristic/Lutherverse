@@ -51,7 +51,7 @@ class BridgeRoomPlacementPortTest {
 	}
 
 	/** Only plain floor takes items and characters; the gap and the bridge take neither. */
-	private static void assertOnlyFloorIsPlaceable(BridgeRoom room, int gapTile) {
+	private static void assertOnlyFloorIsPlaceable(StandardBridgeRoom room, int gapTile) {
 		int gap = 0, bridge = 0, floor = 0;
 		for (long seed = 1; seed <= 10; seed++) {
 			HeadlessLevel level = paint(room, 9, seed);

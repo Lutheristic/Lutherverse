@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public abstract class BridgeRoom extends StandardRoom {
+public abstract class StandardBridgeRoom extends StandardRoom {
 
 	@Override
 	public int minWidth() {

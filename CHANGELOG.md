@@ -10,6 +10,38 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 Everything on `main` since the fork base (`cpd-sync-base-2025-08-15`, CPD commit `c97fb83`).
 
+### 2026-11-12: missed upstream fixes for rooms, combat, mob behaviour, the shop and the desktop launcher
+
+The second batch from the same check of Slice 1 commits against v2.5.4.
+
+**Fixed**
+- Magical fire no longer burns items lying on water next to it, and frost or a blizzard next to the fire puts it out.
+- Toxic gas rooms no longer get extra random traps inside them.
+- Traps rooms can no longer be so large that their chest can't be reached. They are 6 to 8 cells each way.
+- When anti-magic on an ally, a prismatic image or an armored statue absorbs a whole magic hit, the hit now lands as 0 damage instead of being skipped. The hero already worked this way.
+- Rock armor and earthroot armor now reduce a skeleton's bone explosion. Before, it ignored them.
+- Yog-Dzewa no longer turns its minions on each other when a stone of aggression hits one, and minions that changed sides are no longer pulled into its aggro.
+- Mimics that spawn mid-run, and mimics a custom level places, now use the scaling depth like other enemies, so they keep up on the ascent.
+- On desktop the game always starts in a window and switches to fullscreen afterwards, since going fullscreen at launch could pick the wrong size and monitor. The crash handler spots a failure to create the window again.
+
+**Ported**
+- Cave, chasm and ruins rooms stop growing their fill once a room passes 18x18, and only force a path through when they have a door. Cave rooms are at least 5x5.
+- A laboratory always drops exactly 5 alchemy energy instead of 4 to 6. A secret laboratory's two piles are 3 to 5 each instead of 4 to 6, so it gives less. The only queued item a laboratory takes as its prize is a potion of strength.
+- Secret rooms are chosen the way special rooms are: the front of the queue 60% of the time, the next 30% and the one after 10%.
+- Pool, sentry, traps and secret maze rooms strip the curse from their weapon or armor prize instead of rolling a new one.
+- DM-300's pylons, the rot heart, demon spawners, Yog-Dzewa and the regrowth lotus share one set of immunities for things that never move, so all of them ignore charm, slowing and freezing.
+- The Rogue's shadow clone is inorganic.
+- A ripper demon's leap wind-up follows its own attack speed, so it lasts half a turn to one and a half instead of one to three.
+- Levitation kills a piranha, even over water, and a flying phantom piranha no longer teleports away.
+- Bats, bees, evil eyes, swarms, elementals and the spirit hawk stop flying as they die, so they fall into chasms.
+- A stone of aggression lasts its full duration on regular enemies. Bosses and minibosses keep the short duration, and while one carries the aggression its own allies deal it half damage with melee, an evil eye's beam or a warlock's bolt. Yog-Dzewa takes a quarter.
+- Enemies pick the target they can reach soonest, by walking distance to a cell next to it, instead of the nearest in a straight line.
+- A fleeing enemy that loses its pursuer keeps running, and one that is cornered turns to fight. A cornered thief or crystal mimic out of the hero's sight wanders off instead of getting away. Hunting enemies that lose their target pick a wander target, and sleeping enemies keep the one they had.
+- A shop steal with the master thieves' armband that could fail now asks first, since a failed steal closes the shop.
+- Energizing a potion or scroll identifies it. At the alchemy pot the old name fades into the new one, also when a scroll becomes runestones.
+- The crash dialog for a window that can't be created has new wording and shows the error.
+- The new and changed lines take v2.5.4's translations, and where upstream's line is only the English, the English shows.
+
 ### 2026-11-12: missed upstream fixes for levels, the Warrior, bosses, input and settings
 
 A check of every Slice 1 commit against v2.5.4 found upstream code that earlier batches had missed. This entry covers the most serious of it.

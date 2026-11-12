@@ -1,6 +1,7 @@
 package com.qsr.customspd.ui;
 
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.QuickSlot;
 import com.qsr.customspd.SPDAction;
@@ -11,6 +12,8 @@ import com.qsr.customspd.test.StaticSnapshot;
 import com.watabou.input.GameAction;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
+import com.watabou.noosa.Game;
+import com.watabou.utils.PlatformSupport;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +27,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -66,17 +71,41 @@ class NoHeroInputGuardPortTest {
 		saved.restore();
 	}
 
-	private static void pressAndRelease(GameAction action) {
+	private static int keyFor(GameAction action) {
 		int key = KeyBindings.getFirstKeyForAction(action, false);
 		if (key == 0) key = KeyBindings.getFirstKeyForAction(action, true);
 		assertTrue(key != 0, "precondition: a key is bound to " + action.name());
-		KeyEvent.addKeyEvent(new KeyEvent(key, true));
-		KeyEvent.addKeyEvent(new KeyEvent(key, false));
+		return key;
+	}
+
+	private static void send(KeyEvent... events) {
+		for (KeyEvent event : events) KeyEvent.addKeyEvent(event);
 		try {
 			KeyEvent.processKeyEvents();
 		} finally {
 			// a throwing listener leaves the queue full; drop it so the next key starts clean
 			clearPendingKeyEvents();
+		}
+	}
+
+	private static void pressAndRelease(GameAction action) {
+		int key = keyFor(action);
+		send(new KeyEvent(key, true), new KeyEvent(key, false));
+	}
+
+	/** Holds the action's key down long enough for its button's long press to fire, then lets go. */
+	private static void holdAndRelease(GameAction action) {
+		int key = keyFor(action);
+		Button.pressedButton = null;
+		send(new KeyEvent(key, true));
+		Button held = Button.pressedButton;
+		try {
+			assertNotNull(held, "precondition: a toolbar button took the " + action.name() + " key");
+			assertSame(action, held.keyAction(), "precondition: the held button is the " + action.name() + " button");
+			Game.elapsed = Button.longClick;
+			held.update();
+		} finally {
+			send(new KeyEvent(key, false));
 		}
 	}
 
@@ -106,6 +135,30 @@ class NoHeroInputGuardPortTest {
 			presses.add(() -> assertDoesNotThrow(() -> pressAndRelease(action), action.name() + " with no hero"));
 		}
 		assertAll(presses);
+		assertNull(Dungeon.hero);
+	}
+
+	@Test
+	void holdingTheWaitKeysDoesNothingWithoutAHero() {
+		// a finished long press vibrates, which asks the platform
+		Game.platform = new PlatformSupport() {
+			@Override public void updateDisplaySize() {}
+			@Override public void updateSystemUI() {}
+			@Override public boolean connectedToUnmeteredNetwork() { return false; }
+			@Override public boolean supportsVibration() { return false; }
+			@Override public void setupFontGenerators(int pageSize, boolean systemFont) {}
+			@Override protected FreeTypeFontGenerator getGeneratorForString(String input) { return null; }
+			@Override public String[] splitforTextBlock(String text, boolean multiline) { return text.split(" "); }
+		};
+		GameAction[] actions = {
+				SPDAction.WAIT,
+				SPDAction.WAIT_OR_PICKUP
+		};
+		List<Executable> holds = new ArrayList<>();
+		for (GameAction action : actions) {
+			holds.add(() -> assertDoesNotThrow(() -> holdAndRelease(action), "holding " + action.name() + " with no hero"));
+		}
+		assertAll(holds);
 		assertNull(Dungeon.hero);
 	}
 

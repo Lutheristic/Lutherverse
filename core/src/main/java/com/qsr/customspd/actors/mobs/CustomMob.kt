@@ -31,6 +31,7 @@ import com.qsr.customspd.messages.Messages
 import com.qsr.customspd.modding.CustomMobEnchantment
 import com.qsr.customspd.modding.CustomMobScheme
 import com.qsr.customspd.modding.JsonConfigRetriever
+import com.qsr.customspd.modding.PackClasses
 import com.qsr.customspd.scenes.GameScene
 import com.qsr.customspd.sprites.CharSprite
 import com.qsr.customspd.sprites.CustomMobSprite
@@ -108,7 +109,7 @@ class CustomMob : Mob {
             }
         }
         enchantment?.let {
-            dmg = (Reflection.newInstance(Reflection.forName("com.qsr.customspd.items.weapon." + enchantment.type)) as Enchantment)
+            dmg = (Reflection.newInstance(PackClasses.forName("com.qsr.customspd.items.weapon." + enchantment.type)) as Enchantment)
                 .proc(enchantment.strength, this, enemy, damage)
         }
         if (!enemy.isAlive && enemy === Dungeon.hero) {

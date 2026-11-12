@@ -65,6 +65,7 @@ import com.qsr.customspd.modding.HeroConfig;
 import com.qsr.customspd.modding.ItemDescription;
 import com.qsr.customspd.actors.hero.spheregrid.SphereGrid;
 import com.qsr.customspd.modding.JsonConfigRetriever;
+import com.qsr.customspd.modding.PackClasses;
 import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.Reflection;
 
@@ -155,28 +156,28 @@ public enum HeroClass {
 		return null;
 	}
 
-	private static void setUp(HeroConfig config, Hero hero) {
+	static void setUp(HeroConfig config, Hero hero) {
 		if (config.getArmor() != null) {
-			Armor armor = (Armor) Reflection.newInstance(Reflection.forName("com.qsr.customspd.items." + config.getArmor().getType()));
+			Armor armor = (Armor) Reflection.newInstance(PackClasses.forName("com.qsr.customspd.items." + config.getArmor().getType()));
 			if (config.getArmor().getSeal()) armor.affixSeal(new BrokenSeal());
 			armor.level(config.getArmor().getLevel());
 			if (config.getArmor().getIdentified()) armor.identify();
 			if (config.getArmor().getCursed()) armor.cursed = true;
 			if (config.getArmor().getEnchantment() != null) {
-				armor.inscribe((Armor.Glyph) Reflection.newInstance(Reflection.forName("com.qsr.customspd.items.armor." + config.getArmor().getEnchantment())));
+				armor.inscribe((Armor.Glyph) Reflection.newInstance(PackClasses.forName("com.qsr.customspd.items.armor." + config.getArmor().getEnchantment())));
 			}
 			hero.belongings.armor = armor;
 			if (config.getArmor().getQuickslot()) Dungeon.quickslot.setSlot(curQuickslot++, armor);
 		}
 
 		if (config.getWeapon() != null) {
-			MeleeWeapon weapon = (MeleeWeapon) Reflection.newInstance(Reflection.forName("com.qsr.customspd.items." + config.getWeapon().getType()));
-			if (config.getWeapon().getCoreWand() != null && weapon instanceof MagesStaff) weapon = new MagesStaff((Wand) Reflection.newInstance(Reflection.forName("com.qsr.customspd.items." + config.getWeapon().getCoreWand())));
+			MeleeWeapon weapon = (MeleeWeapon) Reflection.newInstance(PackClasses.forName("com.qsr.customspd.items." + config.getWeapon().getType()));
+			if (config.getWeapon().getCoreWand() != null && weapon instanceof MagesStaff) weapon = new MagesStaff((Wand) Reflection.newInstance(PackClasses.forName("com.qsr.customspd.items." + config.getWeapon().getCoreWand())));
 			weapon.level(config.getWeapon().getLevel());
 			if (config.getWeapon().getIdentified()) weapon.identify();
 			if (config.getWeapon().getCursed()) weapon.cursed = true;
 			if (config.getWeapon().getEnchantment() != null) {
-				weapon.enchant((Weapon.Enchantment) Reflection.newInstance(Reflection.forName("com.qsr.customspd.items.weapon." + config.getWeapon().getEnchantment())));
+				weapon.enchant((Weapon.Enchantment) Reflection.newInstance(PackClasses.forName("com.qsr.customspd.items.weapon." + config.getWeapon().getEnchantment())));
 			}
 			hero.belongings.weapon = weapon;
 			hero.belongings.weapon.activate(hero);
@@ -184,7 +185,7 @@ public enum HeroClass {
 		}
 
 		if (config.getArtifact() != null) {
-			Artifact artifact = (Artifact) Reflection.newInstance(Reflection.forName("com.qsr.customspd.items." + config.getArtifact().getType()));
+			Artifact artifact = (Artifact) Reflection.newInstance(PackClasses.forName("com.qsr.customspd.items." + config.getArtifact().getType()));
 			artifact.level(config.getArtifact().getLevel());
 			if (config.getArtifact().getIdentified()) artifact.identify();
 			if (config.getArtifact().getCursed()) artifact.cursed = true;
@@ -194,7 +195,7 @@ public enum HeroClass {
 		}
 
 		if (config.getMisc() != null) {
-			KindofMisc misc = (KindofMisc) Reflection.newInstance(Reflection.forName("com.qsr.customspd.items." + config.getMisc().getType()));
+			KindofMisc misc = (KindofMisc) Reflection.newInstance(PackClasses.forName("com.qsr.customspd.items." + config.getMisc().getType()));
 			misc.level(config.getMisc().getLevel());
 			if (config.getMisc().getIdentified()) misc.identify();
 			if (config.getMisc().getCursed()) misc.cursed = true;
@@ -204,7 +205,7 @@ public enum HeroClass {
 		}
 
 		if (config.getRing() != null) {
-			Ring ring = (Ring) Reflection.newInstance(Reflection.forName("com.qsr.customspd.items." + config.getRing().getType()));
+			Ring ring = (Ring) Reflection.newInstance(PackClasses.forName("com.qsr.customspd.items." + config.getRing().getType()));
 			ring.level(config.getRing().getLevel());
 			if (config.getRing().getIdentified()) ring.identify();
 			if (config.getRing().getCursed()) ring.cursed = true;
@@ -217,10 +218,10 @@ public enum HeroClass {
 			if (itemDesc.getType().equals("weapon.missiles.darts.TippedDart")) {
 				item = TippedDart.randomTipped(1);
 			} else {
-				item = (Item) Reflection.newInstance(Reflection.forName("com.qsr.customspd.items." + itemDesc.getType()));
+				item = (Item) Reflection.newInstance(PackClasses.forName("com.qsr.customspd.items." + itemDesc.getType()));
 			}
 			if (itemDesc.getSeal() && item instanceof Armor) ((Armor)item).affixSeal(new BrokenSeal());
-			if (itemDesc.getCoreWand() != null && item instanceof MagesStaff) item = new MagesStaff((Wand) Reflection.newInstance(Reflection.forName("com.qsr.customspd.items." + itemDesc.getCoreWand())));
+			if (itemDesc.getCoreWand() != null && item instanceof MagesStaff) item = new MagesStaff((Wand) Reflection.newInstance(PackClasses.forName("com.qsr.customspd.items." + itemDesc.getCoreWand())));
 			item.quantity(itemDesc.getQuantity());
 			item.level(itemDesc.getLevel());
 			if (itemDesc.getIdentified()) item.identify();
@@ -230,13 +231,13 @@ public enum HeroClass {
 					if (itemDesc.getEnchantment().equals("none")) {
 						((Armor) item).inscribe(null);
 					} else {
-						((Armor) item).inscribe((Armor.Glyph) Reflection.newInstance(Reflection.forName("com.qsr.customspd.items.armor." + itemDesc.getEnchantment())));
+						((Armor) item).inscribe((Armor.Glyph) Reflection.newInstance(PackClasses.forName("com.qsr.customspd.items.armor." + itemDesc.getEnchantment())));
 					}
 				} else if (item instanceof Weapon) {
 					if (itemDesc.getEnchantment().equals("none")) {
 						((Weapon) item).enchant(null);
 					} else {
-						((Weapon) item).enchant((Weapon.Enchantment) Reflection.newInstance(Reflection.forName("com.qsr.customspd.items.weapon." + itemDesc.getEnchantment())));
+						((Weapon) item).enchant((Weapon.Enchantment) Reflection.newInstance(PackClasses.forName("com.qsr.customspd.items.weapon." + itemDesc.getEnchantment())));
 					}
 				}
 			}
@@ -259,7 +260,7 @@ public enum HeroClass {
 		}
 
 		for (String itemType : config.getIdentified()) {
-			((Item) Reflection.newInstance(Reflection.forName("com.qsr.customspd.items." + itemType))).identify();
+			((Item) Reflection.newInstance(PackClasses.forName("com.qsr.customspd.items." + itemType))).identify();
 		}
 	}
 

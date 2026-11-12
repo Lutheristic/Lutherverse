@@ -24,6 +24,7 @@ import com.qsr.customspd.Dungeon
 import com.qsr.customspd.items.Item
 import com.qsr.customspd.modding.MobAnimationScheme
 import com.qsr.customspd.modding.ModManager
+import com.qsr.customspd.modding.PackClasses
 import com.watabou.noosa.TextureFilm
 import com.watabou.utils.Reflection
 
@@ -66,7 +67,7 @@ class CustomMobSprite(private val scheme: MobAnimationScheme) : MobSprite() {
                 (parent.recycle(MissileSprite::class.java) as MissileSprite).reset(
                     this,
                     cellToAttack,
-                    Reflection.newInstance(Reflection.forName("com.qsr.customspd.items." + scheme.missile)) as Item,
+                    Reflection.newInstance(PackClasses.forName("com.qsr.customspd.items." + scheme.missile)) as Item,
                 ) { ch.onAttackComplete() }
             } else {
                 ch.onAttackComplete()

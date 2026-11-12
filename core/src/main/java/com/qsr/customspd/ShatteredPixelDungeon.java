@@ -91,6 +91,11 @@ public class ShatteredPixelDungeon extends Game {
 		com.watabou.utils.Bundle.addAlias(
 				com.qsr.customspd.items.potions.brews.AquaBrew.class,
 				"com.qsr.customspd.items.spells.AquaBlast" );
+
+		//pre-v2.3.0
+		com.watabou.utils.Bundle.addAlias(
+				com.qsr.customspd.items.bombs.Bomb.ConjuredBomb.class,
+				"com.qsr.customspd.items.bombs.Bomb$MagicalBomb" );
 	}
 	
 	@Override

@@ -519,7 +519,7 @@ public class ElementalStrike extends ArmorAbility {
 		} else if (ench instanceof Explosive){
 			if (Random.Float() < 0.5f*powerMulti){
 				Char exploding = Random.element(affected);
-				if (exploding != null) new Bomb.MagicalBomb().explode(exploding.pos);
+				if (exploding != null) new Bomb.ConjuredBomb().explode(exploding.pos);
 			}
 
 		//*** Sacrificial ***

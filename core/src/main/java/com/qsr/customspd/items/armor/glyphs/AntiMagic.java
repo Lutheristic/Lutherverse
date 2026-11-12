@@ -37,7 +37,8 @@ import com.qsr.customspd.actors.mobs.Shaman;
 import com.qsr.customspd.actors.mobs.Warlock;
 import com.qsr.customspd.actors.mobs.YogFist;
 import com.qsr.customspd.items.armor.Armor;
-import com.qsr.customspd.items.bombs.Bomb;
+import com.qsr.customspd.items.bombs.ArcaneBomb;
+import com.qsr.customspd.items.bombs.HolyBomb;
 import com.qsr.customspd.items.scrolls.ScrollOfRetribution;
 import com.qsr.customspd.items.scrolls.ScrollOfTeleportation;
 import com.qsr.customspd.items.scrolls.exotic.ScrollOfPsionicBlast;
@@ -79,7 +80,8 @@ public class AntiMagic extends Armor.Glyph {
 		RESISTS.add( DisintegrationTrap.class );
 		RESISTS.add( GrimTrap.class );
 
-		RESISTS.add( Bomb.MagicalBomb.class );
+		RESISTS.add( ArcaneBomb.class );
+		RESISTS.add( HolyBomb.HolyDamage.class );
 		RESISTS.add( ScrollOfRetribution.class );
 		RESISTS.add( ScrollOfPsionicBlast.class );
 		RESISTS.add( ScrollOfTeleportation.class );

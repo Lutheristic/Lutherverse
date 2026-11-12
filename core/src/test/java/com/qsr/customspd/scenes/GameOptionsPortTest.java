@@ -2,11 +2,17 @@ package com.qsr.customspd.scenes;
 
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.qsr.customspd.Badges;
+import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.SPDSettings;
+import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.test.HeadlessRun;
 import com.qsr.customspd.ui.Button;
+import com.qsr.customspd.ui.IconButton;
+import com.qsr.customspd.ui.RenderedTextBlock;
 import com.qsr.customspd.ui.StyledButton;
+import com.qsr.customspd.ui.Window;
 import com.qsr.customspd.windows.WndOptions;
+import com.qsr.customspd.windows.WndTitledMessage;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Group;
@@ -23,7 +29,11 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Hero select's game options panel, built for real with no display. Each test names the
@@ -33,7 +43,7 @@ class GameOptionsPortTest {
 
 	private static final long DAY = 24 * 60 * 60 * 1000L;
 
-	private static final int DAILY = 1;
+	private static final int SEED = 0, DAILY = 1, CHALLENGES = 2;
 
 	private HeadlessRun run;
 	private Game priorInstance;
@@ -114,6 +124,36 @@ class GameOptionsPortTest {
 		return found.get(0);
 	}
 
+	private static int windowsOpen(Scene scene) throws Exception {
+		@SuppressWarnings("unchecked")
+		List<Gizmo> members = (List<Gizmo>) read(scene, Group.class, "members");
+		int open = 0;
+		for (Gizmo g : members) {
+			if (g instanceof Window) open++;
+		}
+		return open;
+	}
+
+	private static String body(WndTitledMessage window) throws Exception {
+		@SuppressWarnings("unchecked")
+		List<Gizmo> members = (List<Gizmo>) read(window, Group.class, "members");
+		for (Gizmo g : members) {
+			if (g instanceof RenderedTextBlock) return ((RenderedTextBlock) g).text();
+		}
+		throw new AssertionError("the window has no message text");
+	}
+
+	/** Clicks a locked option and returns the text of the one window it opens. */
+	private String lockedMessage(int option) throws Exception {
+		assertEquals(0, windowsOpen(scene), "test setup: no window open yet");
+		click(optionButtons().get(option));
+		assertEquals(1, windowsOpen(scene), "exactly one window opens");
+		WndTitledMessage window = frontWindow(scene, WndTitledMessage.class);
+		String text = body(window);
+		window.hide();
+		return text;
+	}
+
 	// upstream 425c90135
 	@Test
 	void aClockSetBeforeTheEarliestDailyStartsTheEarliestDaily() throws Exception {
@@ -132,5 +172,73 @@ class GameOptionsPortTest {
 
 		assertEquals(19_752 * DAY, SPDSettings.lastDaily(), "the daily is dated no earlier than Jan 30 2024");
 		assertSame(InterlevelScene.class, read(null, Game.class, "sceneClass"), "test setup: the daily starts");
+	}
+
+	// upstream aedd3d04b
+	@Test
+	void aPlayerWithNoWinStillSeesTheSeedDailyAndChallengeButtons() throws Exception {
+		setVictory(false);
+		createScene();
+
+		assertEquals(3, optionButtons().size(), "the options panel must not open empty before a first win");
+	}
+
+	// upstream aedd3d04b
+	@Test
+	void eachLockedOptionExplainsThatAWinUnlocksIt() throws Exception {
+		setVictory(false);
+		createScene();
+		assertEquals(3, optionButtons().size(), "test setup: the three options are there");
+
+		assertEquals(Messages.get(HeroSelectScene.class, "custom_seed_nowin"), lockedMessage(SEED));
+		assertEquals(Messages.get(HeroSelectScene.class, "daily_nowin"), lockedMessage(DAILY));
+		assertEquals(Messages.get(HeroSelectScene.class, "challenges_nowin"), lockedMessage(CHALLENGES));
+		assertTrue(Messages.get(HeroSelectScene.class, "daily_nowin").contains("win at least one game"),
+				"test setup: the English text exists");
+		assertFalse(Dungeon.daily, "a locked daily button must not start a daily");
+	}
+
+	// upstream aedd3d04b
+	@Test
+	void aPlayerWithNoWinStartsWithNoChallengesOrCustomSeed() throws Exception {
+		setVictory(false);
+		SPDSettings.challenges(3);
+		SPDSettings.customSeed("ABC-DEF-GHI");
+		Dungeon.challenges = 3;
+
+		createScene();
+
+		assertEquals(0, SPDSettings.challenges(), "challenges set before a win are cleared");
+		assertEquals(0, Dungeon.challenges);
+		assertEquals("", SPDSettings.customSeed(), "a custom seed set before a win is cleared");
+	}
+
+	// upstream aedd3d04b
+	@Test
+	void aWinnerKeepsTheirChallengesAndCustomSeed() throws Exception {
+		setVictory(true);
+		SPDSettings.challenges(3);
+		SPDSettings.customSeed("ABC-DEF-GHI");
+
+		createScene();
+
+		assertEquals(3, SPDSettings.challenges(), "control: a winner's challenges stay");
+		assertEquals("ABC-DEF-GHI", SPDSettings.customSeed(), "control: a winner's seed stays");
+	}
+
+	// upstream aedd3d04b
+	@Test
+	void theOptionsButtonIsLeftOutDuringTheIntro() throws Exception {
+		setVictory(false);
+		SPDSettings.intro(true);
+		createScene();
+		IconButton options = (IconButton) read(scene, HeroSelectScene.class, "btnOptions");
+		assertNull(options.parent, "the intro hero select has no options button");
+
+		scene.destroy();
+		SPDSettings.intro(false);
+		createScene();
+		options = (IconButton) read(scene, HeroSelectScene.class, "btnOptions");
+		assertNotNull(options.parent, "control: after the intro the options button is there");
 	}
 }

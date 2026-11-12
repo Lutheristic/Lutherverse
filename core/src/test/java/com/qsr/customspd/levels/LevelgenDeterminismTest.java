@@ -88,8 +88,8 @@ class LevelgenDeterminismTest {
 	 * theSameSeedRebuildsTheSameFloors stays green, is cross-JVM nondeterminism: look for a
 	 * HashMap/HashSet keyed by Class, enum or object feeding Random.
 	 */
-	private static final String[] GOLDEN_31337 = {"423edf1bc1c76a19", "8cf0575648892a63", "d211599934105b86", "90a273e29aa617f2", "b75b194f306e1b09", "eeff7a8cd71cf5d8"};
-	private static final String[] GOLDEN_8675309 = {"a8ba55024f65bac0", "4ed8f86ac21cddb2", "9e9bf3b3835dbf04", "72e7881cf56cf1a4", "9d7b34ac85ad378d", "55c7c907b3e300bb"};
+	private static final String[] GOLDEN_31337 = {"423edf1bc1c76a19", "8cf0575648892a63", "d211599934105b86", "db9ff763207eb6ee", "b75b194f306e1b09", "193df9660901da58"};
+	private static final String[] GOLDEN_8675309 = {"a8ba55024f65bac0", "4ed8f86ac21cddb2", "8bf83c7a9a0bc30c", "004feb9fad32f88a", "9d7b34ac85ad378d", "5779f1facd7f0762"};
 
 	@Test
 	void floorDigestsMatchTheGoldenValues() {

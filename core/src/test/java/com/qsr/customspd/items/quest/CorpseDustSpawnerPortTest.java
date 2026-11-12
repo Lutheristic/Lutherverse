@@ -4,9 +4,11 @@ import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.mobs.Mob;
+import com.qsr.customspd.actors.mobs.TormentedSpirit;
 import com.qsr.customspd.actors.mobs.Wraith;
 import com.qsr.customspd.test.HeadlessLevel;
 import com.qsr.customspd.test.HeadlessRun;
+import com.qsr.customspd.test.SaveRoundtrip;
 import com.qsr.customspd.test.StubSprite;
 import com.watabou.utils.Random;
 import org.junit.jupiter.api.AfterEach;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -27,6 +30,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * and power is only spent when a wraith actually spawns.
  * Upstream ba116c62f: that minimum distance is a third of the hero's view distance, so a hero
  * with a short view still gets wraiths.
+ * Upstream cdec9a68b: the spawner summons its own CorpseDust.DustWraith, counts only those
+ * toward the summon cost, and dispelling the curse kills only those, not the wraiths of soul
+ * marks, haunted heaps, tombs, traps or necromancers.
  */
 class CorpseDustSpawnerPortTest {
 
@@ -64,9 +70,16 @@ class CorpseDustSpawnerPortTest {
 	}
 
 	/** A wraith the spawner already summoned, standing on the cell. */
-	private void existingDustWraith(int cell) {
-		Wraith w = HeadlessLevel.at(new Wraith(), cell);
-		level.mobs.add(w);
+	private CorpseDust.DustWraith existingDustWraith(int cell) {
+		return existing(new CorpseDust.DustWraith(), cell);
+	}
+
+	/** Any mob already on the level, standing on the cell, with a stub sprite so it can die. */
+	private <T extends Mob> T existing(T mob, int cell) {
+		HeadlessLevel.at(mob, cell);
+		StubSprite.attach(mob);
+		level.mobs.add(mob);
+		return mob;
 	}
 
 	/** One spawner turn; the wraith it summoned, or null. */
@@ -160,5 +173,55 @@ class CorpseDustSpawnerPortTest {
 				level.mobs.remove(w);
 			}
 		}
+	}
+
+	@Test
+	void theSpawnerSummonsDustWraiths() {
+		Mob w = tick();
+		assertNotNull(w);
+		assertEquals(CorpseDust.DustWraith.class, w.getClass());
+	}
+
+	@Test
+	void otherWraithsDoNotRaiseTheSummonCost() {
+		// six wraiths from other sources: the spawner's own first wraith still costs one turn
+		int[] cells = {SIZE + 1, 2 * SIZE - 2, SIZE * (SIZE - 2) + 1, SIZE * (SIZE - 1) - 2, SIZE + 3};
+		for (int cell : cells) existing(new Wraith(), cell);
+		existing(new TormentedSpirit(), 2 * SIZE - 4);
+
+		assertNotNull(tick(), "the first dust wraith costs one turn whatever other wraiths are out");
+	}
+
+	@Test
+	void dispellingTheCurseKillsOnlyDustWraiths() {
+		CorpseDust.DustWraith dust = existingDustWraith(SIZE + 1);
+		Wraith other = existing(new Wraith(), 2 * SIZE - 2);
+		TormentedSpirit spirit = existing(new TormentedSpirit(), SIZE * (SIZE - 2) + 1);
+
+		spawner.dispel();
+
+		assertFalse(dust.isAlive(), "the curse's own wraith dies with it");
+		assertTrue(other.isAlive(), "a wraith from elsewhere survives the dispel");
+		assertTrue(spirit.isAlive(), "a tormented spirit survives the dispel");
+		assertTrue(level.mobs.contains(other) && level.mobs.contains(spirit));
+	}
+
+	@Test
+	void aDustWraithLoadsBackAsADustWraith() throws Exception {
+		CorpseDust.DustWraith dust = new CorpseDust.DustWraith();
+		dust.adjustStats(7);
+		Wraith loaded = SaveRoundtrip.of(dust);
+		assertEquals(CorpseDust.DustWraith.class, loaded.getClass());
+		assertEquals(17, loaded.attackSkill(null), "its level survives the save");
+	}
+
+	@Test
+	void anOlderSavesPlainWraithStillLoads() throws Exception {
+		// saves from before the dust wraith class hold the corpse dust's wraiths as plain wraiths
+		Wraith old = new Wraith();
+		old.adjustStats(7);
+		Wraith loaded = SaveRoundtrip.of(old);
+		assertEquals(Wraith.class, loaded.getClass());
+		assertEquals(17, loaded.attackSkill(null));
 	}
 }

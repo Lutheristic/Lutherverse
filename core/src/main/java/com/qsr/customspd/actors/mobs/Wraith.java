@@ -32,6 +32,7 @@ import com.watabou.noosa.tweeners.AlphaTweener;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 
@@ -97,17 +98,25 @@ public class Wraith extends Mob {
 		return true;
 	}
 	
-	public static void spawnAround( int pos, boolean allowExotic ) {
-		for (int n : PathFinder.NEIGHBOURS4) {
-			spawnAt( pos + n, allowExotic, false );
-		}
+	public static void spawnAround( int pos ) {
+		spawnAround( pos, null );
 	}
 	
-	public static Wraith spawnAt( int pos, boolean allowExotic ) {
-		return spawnAt( pos, allowExotic, true );
+	public static void spawnAround( int pos, Class<? extends Wraith> wraithClass ) {
+		for (int n : PathFinder.NEIGHBOURS4) {
+			spawnAt( pos + n, wraithClass, false );
+		}
 	}
 
-	private static Wraith spawnAt( int pos, boolean allowExotic, boolean allowAdjacent ) {
+	public static Wraith spawnAt( int pos ) {
+		return spawnAt( pos, null );
+	}
+
+	public static Wraith spawnAt( int pos, Class<? extends Wraith> wraithClass ) {
+		return spawnAt( pos, wraithClass, true );
+	}
+
+	private static Wraith spawnAt( int pos, Class<? extends Wraith> wraithClass, boolean allowAdjacent ) {
 
 		//if the position itself is blocked, try to place in an adjacent cell if allowed
 		if (Dungeon.level.solid[pos] || Actor.findChar( pos ) != null){
@@ -130,10 +139,15 @@ public class Wraith extends Mob {
 		if (pos != -1 && ((!Dungeon.level.solid[pos] || Dungeon.level.passable[pos]) && Actor.findChar( pos ) == null)) {
 
 			Wraith w;
-			if (allowExotic && Random.Int(100) == 0){
-				w = new TormentedSpirit();
+			//if no wraith type is specified, 1/100 chance for exotic, otherwise normal
+			if (wraithClass == null){
+				if (Random.Int(100) == 0){
+					w = new TormentedSpirit();
+				} else {
+					w = new Wraith();
+				}
 			} else {
-				w = new Wraith();
+				w = Reflection.newInstance(wraithClass);
 			}
 			w.adjustStats( Dungeon.scalingDepth() );
 			w.pos = pos;

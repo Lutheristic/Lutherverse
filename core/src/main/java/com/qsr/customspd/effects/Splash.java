@@ -28,6 +28,8 @@ import com.watabou.noosa.particles.PixelParticle;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
 
+import java.util.HashMap;
+
 public class Splash {
 	
 	public static void at( int cell, final int color, int n ) {
@@ -43,11 +45,15 @@ public class Splash {
 		Emitter emitter = GameScene.emitter();
 		if (emitter == null) return;
 		emitter.pos( p );
-		
-		FACTORY.color = color;
-		FACTORY.dir = -3.1415926f / 2;
-		FACTORY.cone = 3.1415926f;
-		emitter.burst( FACTORY, n );
+
+		if (!FACTORIES.containsKey(color)){
+			FACTORIES.put(color, new SplashFactory());
+		}
+		SplashFactory fact = FACTORIES.get(color);
+		fact.color = color;
+		fact.dir = -3.1415926f / 2;
+		fact.cone = 3.1415926f;
+		emitter.burst( fact, n );
 	}
 	
 	public static void at( PointF p, final float dir, final float cone, final int color, int n ) {
@@ -59,11 +65,14 @@ public class Splash {
 		Emitter emitter = GameScene.emitter();
 		if (emitter == null) return;
 		emitter.pos( p );
-		
-		FACTORY.color = color;
-		FACTORY.dir = dir;
-		FACTORY.cone = cone;
-		emitter.burst( FACTORY, n );
+
+		if (!FACTORIES.containsKey(color)){
+			FACTORIES.put(color, new SplashFactory());
+		}
+		SplashFactory fact = FACTORIES.get(color);fact.color = color;
+		fact.dir = dir;
+		fact.cone = cone;
+		emitter.burst( fact, n );
 	}
 
 	public static void at( PointF p, final float dir, final float cone, final int color, int n, float interval ) {
@@ -76,14 +85,19 @@ public class Splash {
 		if (emitter == null) return;
 		emitter.pos( p );
 
-		FACTORY.color = color;
-		FACTORY.dir = dir;
-		FACTORY.cone = cone;
-		emitter.start( FACTORY, interval, n );
+		if (!FACTORIES.containsKey(color)){
+			FACTORIES.put(color, new SplashFactory());
+		}
+		SplashFactory fact = FACTORIES.get(color);
+		fact.color = color;
+		fact.dir = dir;
+		fact.cone = cone;
+		emitter.start( fact, interval, n );
 	}
-	
-	private static final SplashFactory FACTORY = new SplashFactory();
-			
+
+	//each color has its own factory, let's multiple splash effects occur at once
+	private static final HashMap<Integer, SplashFactory> FACTORIES = new HashMap<>();
+
 	private static class SplashFactory extends Emitter.Factory {
 
 		public int color;

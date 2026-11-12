@@ -23,9 +23,6 @@ package com.qsr.customspd.actors.mobs;
 
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.Char;
-import com.qsr.customspd.actors.buffs.AllyBuff;
-import com.qsr.customspd.actors.buffs.Dread;
-import com.qsr.customspd.actors.buffs.Terror;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.effects.CellEmitter;
 import com.qsr.customspd.effects.Speck;
@@ -34,7 +31,6 @@ import com.qsr.customspd.items.Gold;
 import com.qsr.customspd.items.Honeypot;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.messages.Messages;
-import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.sprites.ThiefSprite;
 import com.qsr.customspd.utils.GLog;
 import com.watabou.utils.Bundle;
@@ -200,44 +196,34 @@ public class Thief extends Mob {
 
 	private class Fleeing extends Mob.Fleeing {
 		@Override
-		protected void nowhereToRun() {
-			if (buff( Terror.class ) == null
-					&& buff( Dread.class ) == null
-					&& buffs( AllyBuff.class ).isEmpty() ) {
-				if (enemySeen) {
-					sprite.showStatus(CharSprite.NEGATIVE, Messages.get(Mob.class, "rage"));
-					state = HUNTING;
-				} else if (item != null
-						&& !Dungeon.level.heroFOV[pos]
-						&& Dungeon.level.distance(Dungeon.hero.pos, pos) >= 6) {
+		protected void escaped() {
+			if (item != null
+					&& !Dungeon.level.heroFOV[pos]
+					&& Dungeon.level.distance(Dungeon.hero.pos, pos) >= 6) {
 
-					int count = 32;
-					int newPos;
-					do {
-						newPos = Dungeon.level.randomRespawnCell( Thief.this );
-						if (count-- <= 0) {
-							break;
-						}
-					} while (newPos == -1 || Dungeon.level.heroFOV[newPos] || Dungeon.level.distance(newPos, pos) < (count/3));
-
-					if (newPos != -1) {
-
-						if (Dungeon.level.heroFOV[pos]) CellEmitter.get(pos).burst(Speck.factory(Speck.WOOL), 6);
-						pos = newPos;
-						sprite.place( pos );
-						sprite.visible = Dungeon.level.heroFOV[pos];
-						if (Dungeon.level.heroFOV[pos]) CellEmitter.get(pos).burst(Speck.factory(Speck.WOOL), 6);
-
+				int count = 32;
+				int newPos;
+				do {
+					newPos = Dungeon.level.randomRespawnCell( Thief.this );
+					if (count-- <= 0) {
+						break;
 					}
+				} while (newPos == -1 || Dungeon.level.heroFOV[newPos] || Dungeon.level.distance(newPos, pos) < (count/3));
 
-					if (item != null) GLog.n( Messages.get(Thief.class, "escapes", item.name()));
-					item = null;
-					state = WANDERING;
-				} else {
-					state = WANDERING;
+				if (newPos != -1) {
+
+					pos = newPos;
+					sprite.place( pos );
+					sprite.visible = Dungeon.level.heroFOV[pos];
+					if (Dungeon.level.heroFOV[pos]) CellEmitter.get(pos).burst(Speck.factory(Speck.WOOL), 6);
+
 				}
+
+				if (item != null) GLog.n( Messages.get(Thief.class, "escapes", item.name()));
+				item = null;
+				state = WANDERING;
 			} else {
-				super.nowhereToRun();
+				state = WANDERING;
 			}
 		}
 	}

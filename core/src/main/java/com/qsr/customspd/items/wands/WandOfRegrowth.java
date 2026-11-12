@@ -26,7 +26,6 @@ import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.Statistics;
 import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.Char;
-import com.qsr.customspd.actors.buffs.AllyBuff;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.Doom;
 import com.qsr.customspd.actors.buffs.Roots;
@@ -465,7 +464,6 @@ public class WandOfRegrowth extends Wand {
 		}
 
 		{
-			immunities.add( AllyBuff.class );
 			immunities.add( Doom.class );
 		}
 

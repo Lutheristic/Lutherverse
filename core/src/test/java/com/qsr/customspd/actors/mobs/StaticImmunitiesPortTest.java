@@ -6,6 +6,7 @@ import com.qsr.customspd.actors.buffs.Amok;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.Charm;
 import com.qsr.customspd.actors.buffs.Chill;
+import com.qsr.customspd.actors.buffs.Corruption;
 import com.qsr.customspd.actors.buffs.Dread;
 import com.qsr.customspd.actors.buffs.Frost;
 import com.qsr.customspd.actors.buffs.Paralysis;
@@ -124,5 +125,6 @@ class StaticImmunitiesPortTest {
 		}
 		assertEquals("[]", notImmune.toString());
 		assertTrue(Char.hasProp(lotus, Char.Property.STATIC));
+		assertTrue(lotus.isImmune(Corruption.class), "static covers the ally buffs the lotus listed itself");
 	}
 }

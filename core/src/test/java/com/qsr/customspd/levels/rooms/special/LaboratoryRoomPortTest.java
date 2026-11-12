@@ -5,6 +5,8 @@ import com.qsr.customspd.items.EnergyCrystal;
 import com.qsr.customspd.items.Generator;
 import com.qsr.customspd.items.Heap;
 import com.qsr.customspd.items.Item;
+import com.qsr.customspd.items.potions.PotionOfHealing;
+import com.qsr.customspd.items.potions.PotionOfStrength;
 import com.qsr.customspd.levels.rooms.Room;
 import com.qsr.customspd.levels.rooms.secret.SecretLaboratoryRoom;
 import com.qsr.customspd.levels.rooms.standard.EmptyRoom;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -30,6 +33,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * Upstream 21804614e cut the free alchemy energy: a laboratory room drops a flat 5 energy, a
  * secret laboratory two piles of 3-5, and an energy crystal no longer rolls its own 4-6 quantity.
+ *
+ * Upstream 2b6d21be5: of the items queued to spawn on the floor, a laboratory only takes a potion
+ * of strength as its prize, not any potion.
  */
 class LaboratoryRoomPortTest {
 
@@ -61,8 +67,9 @@ class LaboratoryRoomPortTest {
 		SpecialRoom make();
 	}
 
-	private static HeadlessLevel paint(RoomMaker maker, long seed) {
+	private static HeadlessLevel paint(RoomMaker maker, long seed, Item... queued) {
 		HeadlessLevel level = HeadlessLevel.install(11, 11);
+		for (Item item : queued) level.addItemToSpawn(item);
 		Random.pushGenerator(seed);
 		try {
 			Generator.fullReset();
@@ -74,6 +81,15 @@ class LaboratoryRoomPortTest {
 			Random.popGenerator();
 		}
 		return level;
+	}
+
+	private static boolean dropped(HeadlessLevel level, Item item) {
+		for (Heap h : level.heaps.valueList()) {
+			for (Item i : h.items) {
+				if (i == item) return true;
+			}
+		}
+		return false;
 	}
 
 	private static List<Integer> energyPiles(HeadlessLevel level) {
@@ -117,6 +133,19 @@ class LaboratoryRoomPortTest {
 			assertEquals(7, new EnergyCrystal(7).random().quantity());
 		} finally {
 			Random.popGenerator();
+		}
+	}
+
+	@Test
+	void aLaboratoryOnlyTakesAStrengthPotionFromTheSpawnQueue() {
+		for (long seed = 1; seed <= 10; seed++) {
+			PotionOfHealing healing = new PotionOfHealing();
+			assertFalse(dropped(paint(LaboratoryRoom::new, seed, healing), healing),
+					"seed " + seed + ": a queued potion of healing became the laboratory's prize");
+
+			PotionOfStrength strength = new PotionOfStrength();
+			assertTrue(dropped(paint(LaboratoryRoom::new, seed, strength), strength),
+					"seed " + seed + ": a queued potion of strength is still taken");
 		}
 	}
 }

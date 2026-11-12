@@ -29,7 +29,7 @@ import com.qsr.customspd.items.Generator;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.journal.AlchemyPage;
 import com.qsr.customspd.items.keys.IronKey;
-import com.qsr.customspd.items.potions.Potion;
+import com.qsr.customspd.items.potions.PotionOfStrength;
 import com.qsr.customspd.journal.Document;
 import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.levels.Terrain;
@@ -123,7 +123,7 @@ public class LaboratoryRoom extends SpecialRoom {
 	
 	private static Item prize( Level level ) {
 
-		Item prize = level.findPrizeItem( Potion.class );
+		Item prize = level.findPrizeItem( PotionOfStrength.class );
 		if (prize == null)
 			prize = Generator.random( Random.oneOf( Generator.Category.POTION, Generator.Category.STONE ));
 

@@ -304,9 +304,6 @@ public abstract class Mob extends Char {
 		//We are charmed and current enemy is what charmed us
 		} else if (buff(Charm.class) != null && buff(Charm.class).object == enemy.id()) {
 			newEnemy = true;
-		//We are sleeping (rather than preferring existing target, we want to see if anything is closer
-		} else if (state == SLEEPING){
-			newEnemy = true;
 		}
 
 		//additionally, if we are an ally, find a new enemy if...

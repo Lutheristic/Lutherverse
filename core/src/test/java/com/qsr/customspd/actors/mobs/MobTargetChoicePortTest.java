@@ -13,13 +13,14 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Port regression for Mob.chooseEnemy's target ranking, upstream a49215ccc (v2.1.1) as refined
- * by 74eb63739 (v2.5.0): a mob ranks the enemies it can see by path distance to a cell next to
- * each one, not by straight-line distance, so it goes for a target it can reach over one it
- * can only see.
+ * Port regression for Mob.chooseEnemy. Upstream a49215ccc (v2.1.1), as refined by 74eb63739
+ * (v2.5.0): a mob ranks the enemies it can see by path distance to a cell next to each one, not
+ * by straight-line distance, so it goes for a target it can reach over one it can only see.
+ * Upstream 49af7826e (v2.5.0): a sleeping mob keeps its current enemy.
  */
 class MobTargetChoicePortTest {
 
@@ -63,6 +64,26 @@ class MobTargetChoicePortTest {
 
 		assertTrue(rat.isTargeting(ally), "the ally four cells away in the open is nearer by path than the hero behind the statues");
 		assertTrue(!rat.isTargeting(hero));
+	}
+
+	// From upstream 49af7826e: sleeping no longer counts as a reason to pick a new enemy. Waking
+	// up already weighs every hostile in view, so a sleeper keeps the enemy it has.
+	@Test
+	void aSleepingMobKeepsTheEnemyItAlreadyHas() {
+		HeadlessLevel.install(30, 9);
+		Hero hero = placeHero(4, 4);
+		Rat rat = placeMob(new Rat(), 3, 4);
+		Rat ally = placeMob(new Rat(), 20, 4);
+		ally.alignment = Char.Alignment.ALLY;
+		ally.state = ally.PASSIVE;
+		rat.state = rat.SLEEPING;
+		rat.enemy = ally;
+		rat.fieldOfView = new boolean[Dungeon.level.length()];
+		Dungeon.level.updateFieldOfView(rat, rat.fieldOfView);
+		assertTrue(rat.fieldOfView[hero.pos] && !rat.fieldOfView[ally.pos],
+				"precondition: the hero is in view and the ally is not");
+
+		assertSame(ally, rat.chooseEnemy(), "a sleeping rat must not swap its enemy for the hero next to it");
 	}
 
 	// ------------------------------------------------------------------------------ helpers

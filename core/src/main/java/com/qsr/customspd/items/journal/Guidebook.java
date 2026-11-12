@@ -22,6 +22,8 @@
 package com.qsr.customspd.items.journal;
 
 import com.qsr.customspd.Assets;
+import com.qsr.customspd.SPDAction;
+import com.qsr.customspd.SPDSettings;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.journal.Document;
@@ -30,6 +32,8 @@ import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.ui.GameLog;
 import com.qsr.customspd.utils.GLog;
+import com.watabou.input.ControllerHandler;
+import com.watabou.input.KeyBindings;
 import com.watabou.noosa.audio.Sample;
 
 public class Guidebook extends Item {
@@ -51,7 +55,11 @@ public class Guidebook extends Item {
 		//we do this here so the pickup message appears before the tutorial text
 		GameLog.wipe();
 		GLog.i( Messages.capitalize(Messages.get(Hero.class, "you_now_have", name())) );
-		GLog.p(Messages.get(GameScene.class, "tutorial_guidebook"));
+		if (SPDSettings.interfaceSize() == 0){
+			GLog.p(Messages.get(GameScene.class, "tutorial_guidebook_mobile"));
+		} else {
+			GLog.p(Messages.get(GameScene.class, "tutorial_guidebook_desktop", KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(SPDAction.JOURNAL, ControllerHandler.isControllerConnected()))));
+		}
 		GameScene.flashForDocument(Document.ADVENTURERS_GUIDE, Document.GUIDE_INTRO);
 		Sample.INSTANCE.play( Assets.Sounds.ITEM );
 		hero.spendAndNext( TIME_TO_PICK_UP );

@@ -192,7 +192,9 @@ class TranslationPlaceholderTest {
 
 	// Keys whose English changed its arguments ahead of the translations, which the next
 	// translation sync replaces. Remove an entry once no translation of it mismatches.
-	private static final List<String> KNOWN_TRANSLATION_MISMATCHES = Arrays.<String>asList();
+	private static final List<String> KNOWN_TRANSLATION_MISMATCHES = Arrays.<String>asList(
+			"scenes.gamescene.tutorial_ui_desktop"
+	);
 
 	@Test
 	void everyTranslatedFormatStringTakesTheSameArgumentsAsTheEnglishOne() throws IOException {

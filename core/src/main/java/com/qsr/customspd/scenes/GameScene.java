@@ -28,6 +28,7 @@ import com.qsr.customspd.Chrome;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.GamesInProgress;
 import com.qsr.customspd.Rankings;
+import com.qsr.customspd.SPDAction;
 import com.qsr.customspd.SPDSettings;
 import com.qsr.customspd.ShatteredPixelDungeon;
 import com.qsr.customspd.Statistics;
@@ -118,6 +119,7 @@ import com.qsr.customspd.windows.WndResurrect;
 import com.qsr.customspd.windows.WndStory;
 import com.watabou.glwrap.Blending;
 import com.watabou.input.ControllerHandler;
+import com.watabou.input.KeyBindings;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
@@ -560,7 +562,6 @@ public class GameScene extends PixelScene {
 		if (SPDSettings.intro()){
 
 			if (Document.ADVENTURERS_GUIDE.isPageFound(Document.GUIDE_INTRO)){
-				GLog.p(Messages.get(GameScene.class, "tutorial_guidebook"));
 				flashForDocument(Document.ADVENTURERS_GUIDE, Document.GUIDE_INTRO);
 			} else {
 				if (ControllerHandler.isControllerConnected()) {
@@ -1133,7 +1134,9 @@ public class GameScene extends PixelScene {
 			if (SPDSettings.interfaceSize() == 0){
 				GLog.p(Messages.get(GameScene.class, "tutorial_ui_mobile"));
 			} else {
-				GLog.p(Messages.get(GameScene.class, "tutorial_ui_desktop"));
+				GLog.p(Messages.get(GameScene.class, "tutorial_ui_desktop",
+						KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(SPDAction.HERO_INFO, ControllerHandler.isControllerConnected())),
+						KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(SPDAction.INVENTORY, ControllerHandler.isControllerConnected()))));
 			}
 
 			//clear hidden doors, it's floor 1 so there are only the entrance ones

@@ -55,6 +55,7 @@ public class PitfallTrap extends Trap {
 
 		DelayedPit p = Buff.append(Dungeon.hero, DelayedPit.class, 1);
 		p.depth = Dungeon.depth;
+		p.levelName = Dungeon.levelName;
 		p.pos = pos;
 
 		for (int i : PathFinder.NEIGHBOURS9){
@@ -79,12 +80,14 @@ public class PitfallTrap extends Trap {
 
 		int pos;
 		int depth;
+		//null for a pit saved before pits kept their level, which then goes by depth alone
+		String levelName;
 
 		@Override
 		public boolean act() {
 
 			boolean herofell = false;
-			if (depth == Dungeon.depth) {
+			if (depth == Dungeon.depth && (levelName == null || levelName.equals(Dungeon.levelName))) {
 				for (int i : PathFinder.NEIGHBOURS9) {
 
 					int cell = pos + i;
@@ -131,12 +134,14 @@ public class PitfallTrap extends Trap {
 
 		private static final String POS = "pos";
 		private static final String DEPTH = "depth";
+		private static final String LEVEL = "level";
 
 		@Override
 		public void storeInBundle(Bundle bundle) {
 			super.storeInBundle(bundle);
 			bundle.put(POS, pos);
 			bundle.put(DEPTH, depth);
+			bundle.put(LEVEL, levelName);
 		}
 
 		@Override
@@ -144,6 +149,7 @@ public class PitfallTrap extends Trap {
 			super.restoreFromBundle(bundle);
 			pos = bundle.getInt(POS);
 			depth = bundle.getInt(DEPTH);
+			levelName = bundle.contains(LEVEL) ? bundle.getString(LEVEL) : null;
 		}
 
 	}

@@ -205,7 +205,7 @@ public class ItemStatusHandler<T extends Item> {
 		return known;
 	}
 	
-	public HashSet<Class<? extends T>> unknown() {
+	public LinkedHashSet<Class<? extends T>> unknown() {
 		LinkedHashSet<Class<? extends T>> result = new LinkedHashSet<>();
 		for (Class<? extends T> i : items) {
 			if (!known.contains( i )) {

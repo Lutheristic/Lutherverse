@@ -41,7 +41,7 @@ import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 public class ScrollOfDivination extends ExoticScroll {
 	
@@ -57,9 +57,10 @@ public class ScrollOfDivination extends ExoticScroll {
 		
 		Sample.INSTANCE.play( Assets.Sounds.READ );
 		
-		HashSet<Class<? extends Potion>> potions = Potion.getUnknown();
-		HashSet<Class<? extends Scroll>> scrolls = Scroll.getUnknown();
-		HashSet<Class<? extends Ring>> rings = Ring.getUnknown();
+		//ordered sets, so a seeded run picks the same types every time
+		LinkedHashSet<Class<? extends Potion>> potions = Potion.getUnknown();
+		LinkedHashSet<Class<? extends Scroll>> scrolls = Scroll.getUnknown();
+		LinkedHashSet<Class<? extends Ring>> rings = Ring.getUnknown();
 		
 		int total = potions.size() + scrolls.size() + rings.size();
 		

@@ -77,6 +77,7 @@ import com.watabou.utils.Reflection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
 
 public class Potion extends Item {
@@ -384,7 +385,7 @@ public class Potion extends Item {
 		return handler.known();
 	}
 	
-	public static HashSet<Class<? extends Potion>> getUnknown() {
+	public static LinkedHashSet<Class<? extends Potion>> getUnknown() {
 		return handler.unknown();
 	}
 	

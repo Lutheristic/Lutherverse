@@ -63,6 +63,7 @@ import com.watabou.utils.Reflection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
 
 public abstract class Scroll extends Item {
@@ -252,7 +253,7 @@ public abstract class Scroll extends Item {
 		return handler.known();
 	}
 	
-	public static HashSet<Class<? extends Scroll>> getUnknown() {
+	public static LinkedHashSet<Class<? extends Scroll>> getUnknown() {
 		return handler.unknown();
 	}
 	

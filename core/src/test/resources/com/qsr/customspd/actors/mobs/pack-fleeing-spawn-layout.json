@@ -1,0 +1,54 @@
+{
+  "start": "f1",
+  "dungeon": {
+    "f1": {
+      "depth": 1,
+      "type": "custom",
+      "entrances": ["surface"],
+      "exits": ["f2"],
+      "chasm": "f2",
+      "passage": "f1",
+      "custom_layout": {
+        "width": 11,
+        "height": 7,
+        "region": 1,
+        "music": { "tracks": [], "probs": [] },
+        "map": [
+          4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+          4, 7, 1, 1, 4, 1, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 4, 1, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 4, 1, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 4, 1, 1, 1, 1, 1, 4,
+          4, 1, 1, 8, 4, 1, 1, 1, 1, 1, 4,
+          4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
+        ],
+        "entrances": [ { "x": 1, "y": 1 } ],
+        "exits": [ { "x": 3, "y": 5 } ],
+        "mobs": [ { "x": 7, "y": 3, "type": "Rat", "ai_state": "FLEEING" } ]
+      }
+    },
+    "f2": {
+      "depth": 2,
+      "type": "custom",
+      "entrances": ["f1"],
+      "exits": ["f3"],
+      "chasm": "f3",
+      "passage": "f1",
+      "custom_layout": {
+        "width": 7,
+        "height": 5,
+        "region": 1,
+        "music": { "tracks": [], "probs": [] },
+        "map": [
+          4, 4, 4, 4, 4, 4, 4,
+          4, 7, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 1, 8, 4,
+          4, 4, 4, 4, 4, 4, 4
+        ],
+        "entrances": [ { "x": 1, "y": 1 } ],
+        "exits": [ { "x": 5, "y": 3 } ]
+      }
+    }
+  }
+}

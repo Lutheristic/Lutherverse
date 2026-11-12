@@ -84,7 +84,7 @@ class PostSyncTranslationTest {
 			}
 			out.put(lang, props);
 		}
-		assertEquals(18, out.size(), "translated " + base + " bundles found");
+		assertEquals(19, out.size(), "translated " + base + " bundles found");
 		return out;
 	}
 
@@ -119,26 +119,35 @@ class PostSyncTranslationTest {
 	 * A key the code reads must exist: Messages.get walks the class's superclasses and, finding
 	 * nothing, returns the last key it tried, ending at java.lang.Object. Checks the English and
 	 * that each shipped translation of the bundle has its own line (v2.5.4's, imported by the
-	 * sync rule), and that nothing renders as a key path in any language.
+	 * sync rule), and that nothing renders as a key path in any language. The files of showEnglish
+	 * must lack the key and those languages show the English, as v2.5.4's line there is only English.
 	 */
-	private static void assertKeyShipsEverywhere(Class<?> cls, String key, String englishText) throws IOException {
-		assertKeyShipsEverywhere(Assets.Messages.ACTORS, cls, key, englishText);
+	private static void assertKeyShipsEverywhere(Class<?> cls, String key, String englishText,
+	                                             Languages... showEnglish) throws IOException {
+		assertKeyShipsEverywhere(Assets.Messages.ACTORS, cls, key, englishText, showEnglish);
 	}
 
-	private static void assertKeyShipsEverywhere(String base, Class<?> cls, String key, String englishText) throws IOException {
+	private static void assertKeyShipsEverywhere(String base, Class<?> cls, String key, String englishText,
+	                                             Languages... showEnglish) throws IOException {
 		Messages.setup(Languages.ENGLISH);
 		String english = Messages.get(cls, key);
 		assertEquals(englishText, english, "English " + cls.getSimpleName() + "." + key);
 		String fullKey = fullKey(cls, key);
+		List<Languages> englishOnly = Arrays.asList(showEnglish);
 
 		for (Languages lang : Languages.values()) {
 			Messages.setup(lang);
 			String text = Messages.get(cls, key);
 			assertFalse(text.startsWith("java.lang.object.") || text.equals(fullKey),
 					lang + " renders a missing key: " + text);
+			if (englishOnly.contains(lang)) assertEquals(english, text, lang + " " + fullKey);
 		}
 		for (Map.Entry<Languages, ObjectMap<String, String>> e : translatedBundles(base).entrySet()) {
 			String value = e.getValue().get(fullKey);
+			if (englishOnly.contains(e.getKey())) {
+				assertNull(value, e.getKey() + " file must not carry " + fullKey);
+				continue;
+			}
 			assertNotNull(value, e.getKey() + " lacks " + fullKey);
 			assertNotEquals(english, value, e.getKey() + " has only the English text of " + fullKey);
 		}
@@ -169,14 +178,14 @@ class PostSyncTranslationTest {
 
 	/**
 	 * Upstream 6d2aa45a2 (v2.5.0) logs an on-death line when a dart trap kills the hero, as the
-	 * other killing traps already did.
+	 * other killing traps already did. v2.5.4's be lines are only English.
 	 */
 	@Test
 	void dartTrapDeathMessagesShipInEveryLanguage() throws IOException {
 		assertKeyShipsEverywhere(Assets.Messages.LEVELS, PoisonDartTrap.class, "ondeath",
-				"You were killed by the poison dart trap...");
+				"You were killed by the poison dart trap...", Languages.BELARUSIAN);
 		assertKeyShipsEverywhere(Assets.Messages.LEVELS, WornDartTrap.class, "ondeath",
-				"You were killed by the worn dart trap...");
+				"You were killed by the worn dart trap...", Languages.BELARUSIAN);
 	}
 
 	private static void assertEveryLanguage(Class<?> cls, String key, Predicate<String> holds, String what) {
@@ -190,12 +199,13 @@ class PostSyncTranslationTest {
 	/**
 	 * Upstream bf56446d0 (v2.5.0) reworked the monk. These keys only matched v2.5.4's English once
 	 * that port landed, so every translation was still describing the old abilities and talents,
-	 * and none had the empowered ability lines at all.
+	 * and none had the empowered ability lines at all. v2.5.4's be lines for them are only English.
 	 */
 	@Test
 	void empoweredFlurryShipsInEveryLanguage() throws IOException {
 		assertKeyShipsEverywhere(MonkEnergy.MonkAbility.Flurry.class, "empower_desc",
-				"Two instant strikes that deal %1$d-%2$d damage, ignore armor, _and use your weapon's enchantment._ This ability cannot be used repeatedly.");
+				"Two instant strikes that deal %1$d-%2$d damage, ignore armor, _and use your weapon's enchantment._ This ability cannot be used repeatedly.",
+				Languages.BELARUSIAN);
 	}
 
 	@Test
@@ -203,7 +213,7 @@ class PostSyncTranslationTest {
 		assertEveryLanguage(MonkEnergy.MonkAbility.Focus.class, "desc", t -> !t.contains("30"), "must not run out after 30 turns");
 		assertEveryLanguage(MonkEnergy.MonkAbility.Focus.class, "empower_desc", t -> !t.contains("30"), "must not run out after 30 turns");
 		assertKeyShipsEverywhere(MonkEnergy.MonkAbility.Focus.class, "empower_desc",
-				"The Monk _instantly focuses,_ letting her parry the next attack made against her.");
+				"The Monk _instantly focuses,_ letting her parry the next attack made against her.", Languages.BELARUSIAN);
 	}
 
 	@Test
@@ -211,7 +221,8 @@ class PostSyncTranslationTest {
 		assertEveryLanguage(MonkEnergy.MonkAbility.Dash.class, "desc", t -> t.contains("4") && !t.contains("3"), "must reach 4 tiles");
 		assertEveryLanguage(MonkEnergy.MonkAbility.Dash.class, "empower_desc", t -> t.contains("8") && !t.contains("6"), "must reach 8 tiles");
 		assertKeyShipsEverywhere(MonkEnergy.MonkAbility.Dash.class, "empower_desc",
-				"An instant dash up to _8 tiles_ away. This ability can go over hazards, but not through enemies or solid terrain.");
+				"An instant dash up to _8 tiles_ away. This ability can go over hazards, but not through enemies or solid terrain.",
+				Languages.BELARUSIAN);
 	}
 
 	@Test
@@ -247,18 +258,25 @@ class PostSyncTranslationTest {
 	/**
 	 * Keys our English only reached v2.5.4's text for with the tier-2 talent, shared charge pool,
 	 * flat boost and alchemy ports, after the first sync. The second sync imported v2.5.4's line
-	 * for each, so every translated bundle must carry its own text.
+	 * for each, so every translated bundle must carry its own text, except the files of showEnglish,
+	 * where v2.5.4's line is only English: those lack the key and show the English.
 	 */
-	private static void assertTranslatedEverywhere(String base, String fullKey) throws IOException {
+	private static void assertTranslatedEverywhere(String base, String fullKey, Languages... showEnglish) throws IOException {
 		Messages.setup(Languages.ENGLISH);
 		String english = Messages.get(fullKey);
 		assertNotEquals(fullKey, english, "English lacks " + fullKey);
+		List<Languages> englishOnly = Arrays.asList(showEnglish);
 		for (Languages lang : Languages.values()) {
 			Messages.setup(lang);
 			assertNotEquals(fullKey, Messages.get(fullKey), lang + " renders a missing key");
+			if (englishOnly.contains(lang)) assertEquals(english, Messages.get(fullKey), lang + " " + fullKey);
 		}
 		for (Map.Entry<Languages, ObjectMap<String, String>> e : translatedBundles(base).entrySet()) {
 			String value = e.getValue().get(fullKey);
+			if (englishOnly.contains(e.getKey())) {
+				assertNull(value, e.getKey() + " file must not carry " + fullKey);
+				continue;
+			}
 			assertNotNull(value, e.getKey() + " lacks " + fullKey);
 			assertNotEquals(english, value, e.getKey() + " has only the English text of " + fullKey);
 		}
@@ -322,14 +340,14 @@ class PostSyncTranslationTest {
 				"must give 3/5 shielding at or below 50% health");
 	}
 
-	/** v2.5.4's el and tr lines for these are only English, so ours went and the English shows. */
+	/** v2.5.4's el, tr and be lines for these are only English, so ours went and the English shows. */
 	@Test
 	void duelistTalentsShowEnglishWhereUpstreamHasNoTranslation() throws IOException {
 		Map<Languages, ObjectMap<String, String>> files = translatedActorBundles();
 		for (String key : new String[]{"actors.hero.talent.lethal_haste.desc", "actors.hero.talent.precise_assault.desc"}) {
 			Messages.setup(Languages.ENGLISH);
 			String english = Messages.get(key);
-			for (Languages lang : new Languages[]{Languages.GREEK, Languages.TURKISH}) {
+			for (Languages lang : new Languages[]{Languages.GREEK, Languages.TURKISH, Languages.BELARUSIAN}) {
 				assertNull(files.get(lang).get(key), lang + " file must not carry " + key);
 				Messages.setup(lang);
 				assertEquals(english, Messages.get(key), lang + " " + key);
@@ -348,7 +366,8 @@ class PostSyncTranslationTest {
 	void alchemyItemsShipInEveryLanguage() throws IOException {
 		assertTranslatedEverywhere(Assets.Messages.ITEMS, "items.potions.brews.aquabrew.name");
 		assertTranslatedEverywhere(Assets.Messages.ITEMS, "items.potions.brews.aquabrew.desc");
-		assertTranslatedEverywhere(Assets.Messages.ITEMS, "items.potions.elixirs.elixiroffeatherfall.desc");
+		// v2.5.4's be line is only English
+		assertTranslatedEverywhere(Assets.Messages.ITEMS, "items.potions.elixirs.elixiroffeatherfall.desc", Languages.BELARUSIAN);
 	}
 
 	/**
@@ -385,29 +404,32 @@ class PostSyncTranslationTest {
 
 	@Test
 	void journalCatalogTitlesShipInEveryLanguage() throws IOException {
-		assertTranslatedEverywhere(Assets.Messages.JOURNAL, "journal.catalog.brews_elixirs.title");
-		assertTranslatedEverywhere(Assets.Messages.WINDOWS, "windows.wndjournal$catalogtab.title_equipment");
+		// v2.5.4's be lines are only English
+		assertTranslatedEverywhere(Assets.Messages.JOURNAL, "journal.catalog.brews_elixirs.title", Languages.BELARUSIAN);
+		assertTranslatedEverywhere(Assets.Messages.WINDOWS, "windows.wndjournal$catalogtab.title_equipment", Languages.BELARUSIAN);
 	}
 
 	// The loading screen adds its own dots, so a v2.1.0 line ending in "..." would show six.
-	// v2.5.4's Turkish return line keeps its ellipsis, so return is left out.
+	// v2.5.4's Turkish return line keeps its ellipsis, so return is left out. v2.5.4's be lines are
+	// only English.
 	@Test
 	void loadingScreenTranslationsLeaveTheDotsToTheScene() throws IOException {
 		for (String mode : new String[]{"descend", "ascend", "continue", "resurrect", "reset", "fall"}) {
 			assertEveryTranslation(Assets.Messages.SCENES, "scenes.interlevelscene$mode." + mode,
-					t -> !t.endsWith("...") && !t.endsWith("\u2026"), "ends in its own dots");
+					t -> !t.endsWith("...") && !t.endsWith("\u2026"), "ends in its own dots", Languages.BELARUSIAN);
 		}
 	}
 
 	@Test
 	void imbueWindowTranslationsNoLongerQuoteAChance() throws IOException {
 		assertEveryTranslation(Assets.Messages.ITEMS, "items.weapon.melee.magesstaff.imbue_talent",
-				t -> !t.contains("%"), "still carries the old chance and uses", Languages.TURKISH);
+				t -> !t.contains("%"), "still carries the old chance and uses", Languages.TURKISH, Languages.BELARUSIAN);
 	}
 
 	@Test
 	void tutorialAndGameOptionTranslationsShipInEveryLanguage() throws IOException {
-		assertTranslatedEverywhere(Assets.Messages.SCENES, "scenes.heroselectscene.challenges_nowin");
+		// v2.5.4's be line is only English
+		assertTranslatedEverywhere(Assets.Messages.SCENES, "scenes.heroselectscene.challenges_nowin", Languages.BELARUSIAN);
 		assertTranslatedEverywhere(Assets.Messages.SCENES, "scenes.gamescene.tutorial_guidebook_desktop");
 		assertEveryTranslation(Assets.Messages.SCENES, "scenes.gamescene.tutorial_ui_desktop",
 				t -> t.split("%[0-9]*\\$?s", -1).length == 3, "does not name both keys");
@@ -420,15 +442,16 @@ class PostSyncTranslationTest {
 		assertTranslatedEverywhere(Assets.Messages.WINDOWS, "windows.wndtradeitem.steal_warn_no");
 	}
 
-	// Both English texts changed. Greek and Turkish v2.5.4 lines for the stone, and the Turkish
-	// alchemize line, are only the English, so those show English; French and Italian are spot
-	// checks that the new lines arrived.
+	// Both English texts changed. Greek and Turkish v2.5.4 lines for the stone, the Turkish
+	// alchemize line and both Belarusian lines are only the English, so those show English; French
+	// and Italian are spot checks that the new lines arrived.
 	@Test
 	void aggressionStoneAndAlchemizeTranslationsAreTheNewTexts() throws IOException {
 		String stone = "items.stones.stoneofaggression.desc";
 		String alchemize = "items.spells.alchemize.desc";
 		Map<Languages, ObjectMap<String, String>> files = translatedBundles(Assets.Messages.ITEMS);
-		for (Object[] drop : new Object[][]{{stone, Languages.GREEK}, {stone, Languages.TURKISH}, {alchemize, Languages.TURKISH}}) {
+		for (Object[] drop : new Object[][]{{stone, Languages.GREEK}, {stone, Languages.TURKISH}, {alchemize, Languages.TURKISH},
+				{stone, Languages.BELARUSIAN}, {alchemize, Languages.BELARUSIAN}}) {
 			String key = (String) drop[0];
 			Languages lang = (Languages) drop[1];
 			Messages.setup(Languages.ENGLISH);

@@ -259,7 +259,6 @@ class TranslationPlaceholderTest {
 	// Pack overrides already stale before the pack check existed. Anything else that fails it is new;
 	// remove an entry here once its pack string is fixed.
 	private static final List<String> KNOWN_PACK_MISMATCHES = Arrays.asList(
-			"Jowiro's Class Reskins/messages.properties items.weapon.melee.runicblade.ability_desc",
 			"Slugcat skins/messages.properties items.weapon.spiritbow.stats"
 	);
 

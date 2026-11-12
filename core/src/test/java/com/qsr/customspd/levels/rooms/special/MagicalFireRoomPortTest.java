@@ -1,6 +1,8 @@
 package com.qsr.customspd.levels.rooms.special;
 
+import com.qsr.customspd.actors.blobs.Blizzard;
 import com.qsr.customspd.actors.blobs.Blob;
+import com.qsr.customspd.actors.blobs.Freezing;
 import com.qsr.customspd.items.Heap;
 import com.qsr.customspd.items.scrolls.ScrollOfIdentify;
 import com.qsr.customspd.levels.Terrain;
@@ -91,5 +93,41 @@ class MagicalFireRoomPortTest {
 
 		assertSame(heap, level.heaps.get(heapCell));
 		assertEquals(1, heap.items.size());
+	}
+
+	@Test
+	void frostNextToTheFirePutsItOut() {
+		for (int offset : new int[]{1, -SIZE, SIZE + 1, -SIZE - 1}) {
+			HeadlessLevel level = HeadlessLevel.install(SIZE, SIZE);
+			MagicalFireRoom.EternalFire fire = fireAt(level, FIRE);
+			Blob.seed(FIRE + offset, 10, Freezing.class, level);
+
+			fire.act();
+
+			assertEquals(0, fire.volume, "frost at offset " + offset + " from the fire puts it out");
+			HeadlessLevel.uninstall();
+		}
+	}
+
+	@Test
+	void aBlizzardNextToTheFirePutsItOut() {
+		HeadlessLevel level = HeadlessLevel.install(SIZE, SIZE);
+		MagicalFireRoom.EternalFire fire = fireAt(level, FIRE);
+		Blob.seed(FIRE - SIZE + 1, 10, Blizzard.class, level);
+
+		fire.act();
+
+		assertEquals(0, fire.volume);
+	}
+
+	@Test
+	void frostTwoCellsAwayLeavesTheFireBurning() {
+		HeadlessLevel level = HeadlessLevel.install(SIZE, SIZE);
+		MagicalFireRoom.EternalFire fire = fireAt(level, FIRE);
+		Blob.seed(FIRE + 2, 10, Freezing.class, level);
+
+		fire.act();
+
+		assertTrue(fire.volume > 0, "frost out of reach does not touch the fire");
 	}
 }

@@ -29,7 +29,7 @@ import com.qsr.customspd.items.Generator;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.journal.AlchemyPage;
 import com.qsr.customspd.items.keys.IronKey;
-import com.qsr.customspd.items.potions.Potion;
+import com.qsr.customspd.items.potions.PotionOfStrength;
 import com.qsr.customspd.journal.Document;
 import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.levels.Terrain;
@@ -70,7 +70,7 @@ public class LaboratoryRoom extends SpecialRoom {
 		} while (
 				level.map[pos] != Terrain.EMPTY_SP ||
 						level.heaps.get( pos ) != null);
-		level.drop( new EnergyCrystal().random(), pos );
+		level.drop( new EnergyCrystal().quantity(5), pos );
 
 		int n = Random.NormalIntRange( 1, 2 );
 		for (int i=0; i < n; i++) {
@@ -123,7 +123,7 @@ public class LaboratoryRoom extends SpecialRoom {
 	
 	private static Item prize( Level level ) {
 
-		Item prize = level.findPrizeItem( Potion.class );
+		Item prize = level.findPrizeItem( PotionOfStrength.class );
 		if (prize == null)
 			prize = Generator.random( Random.oneOf( Generator.Category.POTION, Generator.Category.STONE ));
 

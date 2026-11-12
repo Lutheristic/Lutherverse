@@ -31,7 +31,17 @@ public class CaveRoom extends PatchRoom {
 	public float[] sizeCatProbs() {
 		return new float[]{4, 2, 1};
 	}
-	
+
+	@Override
+	public int minHeight() {
+		return Math.max(5, super.minHeight());
+	}
+
+	@Override
+	public int minWidth() {
+		return Math.max(5, super.minWidth());
+	}
+
 	@Override
 	public void paint(Level level) {
 		Painter.fill( level, this, Terrain.WALL );
@@ -44,9 +54,10 @@ public class CaveRoom extends PatchRoom {
 		// normal   ~30% to ~40%
 		// large    ~40% to ~50%
 		// giant    ~50% to ~60%
-		float fill = 0.30f + (width()*height())/1024f;
+		int scale = Math.min(width()*height(), 18*18);
+		float fill = 0.30f + scale/1024f;
 		
-		setupPatch(level, fill, 3, true);
+		setupPatch(level, fill, 3, connected.size() > 0);
 		cleanDiagonalEdges();
 		
 		for (int i = top + 1; i < bottom; i++) {

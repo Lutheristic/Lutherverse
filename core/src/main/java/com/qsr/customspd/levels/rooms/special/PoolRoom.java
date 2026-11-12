@@ -21,13 +21,14 @@
 
 package com.qsr.customspd.levels.rooms.special;
 
-import com.qsr.customspd.Challenges;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.mobs.Piranha;
 import com.qsr.customspd.items.Generator;
 import com.qsr.customspd.items.Heap;
 import com.qsr.customspd.items.Item;
+import com.qsr.customspd.items.armor.Armor;
 import com.qsr.customspd.items.potions.PotionOfInvisibility;
+import com.qsr.customspd.items.weapon.Weapon;
 import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.levels.painters.Painter;
@@ -110,13 +111,18 @@ public class PoolRoom extends SpecialRoom {
 		}
 
 		//1 floor set higher in probability, never cursed
-		do {
-			if (Random.Int(2) == 0) {
-				prize = Generator.randomWeapon((Dungeon.depth / 5) + 1);
-			} else {
-				prize = Generator.randomArmor((Dungeon.depth / 5) + 1);
+		if (Random.Int(2) == 0) {
+			prize = Generator.randomWeapon((Dungeon.depth / 5) + 1);
+			if (((Weapon)prize).hasCurseEnchant()){
+				((Weapon) prize).enchant(null);
 			}
-		} while (prize.cursed || Challenges.isItemBlocked(prize));
+		} else {
+			prize = Generator.randomArmor((Dungeon.depth / 5) + 1);
+			if (((Armor)prize).hasCurseGlyph()){
+				((Armor) prize).inscribe(null);
+			}
+		}
+		prize.cursed = false;
 		prize.cursedKnown = true;
 		
 		//33% chance for an extra update.

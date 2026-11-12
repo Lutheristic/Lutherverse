@@ -22,6 +22,7 @@
 package com.qsr.customspd.items.scrolls;
 
 import com.qsr.customspd.Dungeon;
+import com.qsr.customspd.ShatteredPixelDungeon;
 import com.qsr.customspd.actors.buffs.Blindness;
 import com.qsr.customspd.actors.buffs.Invisibility;
 import com.qsr.customspd.actors.buffs.MagicImmune;
@@ -51,6 +52,7 @@ import com.qsr.customspd.items.stones.StoneOfIntuition;
 import com.qsr.customspd.items.stones.StoneOfShock;
 import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
+import com.qsr.customspd.scenes.AlchemyScene;
 import com.qsr.customspd.sprites.HeroSprite;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.utils.GLog;
@@ -330,7 +332,13 @@ public abstract class Scroll extends Item {
 			Scroll s = (Scroll) ingredients.get(0);
 			
 			s.quantity(s.quantity() - 1);
-			s.identify();
+			if (ShatteredPixelDungeon.scene() instanceof AlchemyScene){
+				if (!s.isIdentified()){
+					((AlchemyScene) ShatteredPixelDungeon.scene()).showIdentify(s);
+				}
+			} else {
+				s.identify();
+			}
 			
 			return Reflection.newInstance(stones.get(s.getClass())).quantity(2);
 		}

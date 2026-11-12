@@ -227,7 +227,7 @@ public class Imp extends NPC {
 			spawned = true;
 
 				//imp always spawns on an empty tile, for better visibility
-				level.map[ npc.pos ] = Terrain.EMPTY;
+				Level.set( npc.pos, Terrain.EMPTY, level);
 
 				//always assigns monks on floor 17, golems on floor 19, and 50/50 between either on 18
 				switch ((Dungeon.depth + 2) % 3){

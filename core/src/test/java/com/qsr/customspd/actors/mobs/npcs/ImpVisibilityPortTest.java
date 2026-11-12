@@ -28,9 +28,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Port regression for upstream 00b4300f0 (v2.5.0): the imp is easier to see. Its spawn tile
- * becomes plain floor and its sprite is drawn at half alpha instead of 0.4. Its quest opens with a
- * shared intro before the golem or monk request.
+ * Port regression for upstream 00b4300f0 (v2.5.0) and 7215fc999 (v2.5.4): the imp is easier to
+ * see. Its spawn tile becomes plain floor, flag maps included, and its sprite is drawn at half
+ * alpha instead of 0.4. Its quest opens with a shared intro before the golem or monk request.
  */
 class ImpVisibilityPortTest {
 
@@ -82,6 +82,9 @@ class ImpVisibilityPortTest {
 		}
 		assertNotNull(imp, "precondition: the imp spawned");
 		assertEquals(Terrain.EMPTY, level.map[imp.pos], "the imp's tile is cleared to plain floor");
+		// upstream 7215fc999: the flag maps follow the new terrain
+		assertFalse(level.losBlocking[imp.pos], "the cleared tile no longer blocks sight");
+		assertFalse(level.flamable[imp.pos], "the cleared tile is no longer flammable");
 	}
 
 	@Test

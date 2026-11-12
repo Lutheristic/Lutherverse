@@ -173,7 +173,6 @@ import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 
 public class Hero extends Char {
@@ -2032,7 +2031,7 @@ public class Hero extends Char {
 				passable.add( cell );
 			}
 		}
-		Collections.shuffle( passable );
+		Random.shuffle( passable );
 
 		ArrayList<Item> items = new ArrayList<>(Dungeon.hero.belongings.backpack.items);
 		for (Integer cell : passable) {

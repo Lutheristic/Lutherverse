@@ -26,6 +26,7 @@ import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.blobs.Fire;
+import com.qsr.customspd.actors.buffs.Burning;
 import com.qsr.customspd.effects.Splash;
 import com.qsr.customspd.items.wands.WandOfBlastWave;
 import com.qsr.customspd.mechanics.Ballistica;
@@ -83,6 +84,10 @@ public class GeyserTrap extends Trap {
 				}
 
 				if (ch.isAlive()) {
+					if (ch.buff(Burning.class) != null){
+						ch.buff(Burning.class).detach();
+					}
+
 					//trace a ballistica to our target (which will also extend past them)
 					Ballistica trajectory = new Ballistica(pos, ch.pos, Ballistica.STOP_TARGET);
 					//trim it to just be the part that goes past them
@@ -124,6 +129,9 @@ public class GeyserTrap extends Trap {
 			}
 
 			if (ch.isAlive() && targetpos != -1){
+				if (ch.buff(Burning.class) != null){
+					ch.buff(Burning.class).detach();
+				}
 				//trace a ballistica in the direction of our target
 				Ballistica trajectory = new Ballistica(pos, targetpos, Ballistica.MAGIC_BOLT);
 				//knock them back along that ballistica

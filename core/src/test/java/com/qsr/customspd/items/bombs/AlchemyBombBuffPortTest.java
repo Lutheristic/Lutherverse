@@ -4,6 +4,7 @@ import com.qsr.customspd.Badges;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.ShatteredPixelDungeon;
 import com.qsr.customspd.actors.blobs.Blob;
+import com.qsr.customspd.actors.blobs.Electricity;
 import com.qsr.customspd.actors.blobs.SmokeScreen;
 import com.qsr.customspd.actors.buffs.Healing;
 import com.qsr.customspd.actors.buffs.Paralysis;
@@ -95,6 +96,12 @@ class AlchemyBombBuffPortTest {
 	public static class UndeadRecordingRat extends RecordingRat {
 		{
 			properties.add(Property.UNDEAD);
+		}
+	}
+
+	public static class ShockproofRecordingRat extends RecordingRat {
+		{
+			immunities.add(Electricity.class);
 		}
 	}
 
@@ -303,6 +310,19 @@ class AlchemyBombBuffPortTest {
 		Paralysis stun = rat.buff(Paralysis.class);
 		assertNotNull(stun, "and stuns");
 		assertEquals(Paralysis.DURATION, stun.cooldown(), 0.001f, "for 10 turns");
+	}
+
+	/** upstream e92ed1276 (v2.5.4): the flashbang's shock is electricity damage, so resistances apply. */
+	@Test
+	void theFlashbangsShockIsElectricityDamage() throws Exception {
+		RecordingRat rat = ratAt(new ShockproofRecordingRat(), CENTER + 2);
+
+		explodeUpToTheScene(bomb("FlashBangBomb"), CENTER);
+
+		assertEquals(2, rat.hits.size(), "the blast, then the electricity");
+		assertTrue(rat.hits.get(1).src instanceof Electricity, "the shock comes from electricity: " + rat.hits.get(1).src);
+		assertTrue(rat.hits.get(0).taken > 0, "the blast still hurts");
+		assertEquals(0, rat.hits.get(1).taken, "a rat immune to electricity shrugs off the shock");
 	}
 
 	@Test

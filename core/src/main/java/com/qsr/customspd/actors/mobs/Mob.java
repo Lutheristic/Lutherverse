@@ -1242,7 +1242,7 @@ public abstract class Mob extends Char {
 					if (!enemyInFOV) {
 						sprite.showLost();
 						state = WANDERING;
-						target = Dungeon.level.randomDestination( Mob.this );
+						target = ((Mob.Wandering)WANDERING).randomDestination();
 					}
 					return true;
 				}

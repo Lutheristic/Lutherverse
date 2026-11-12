@@ -2,6 +2,7 @@ package com.qsr.customspd.actors.mobs;
 
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.hero.Hero;
+import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.test.HeadlessGdx;
 import com.qsr.customspd.test.HeadlessLevel;
 import com.qsr.customspd.test.StubSprite;
@@ -16,10 +17,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
- * Port regression for upstream 649d89bd3 and ab8ca6b6f (v2.3.0): a hunting mob that gives up on
- * its enemy picks its next destination through its own Wandering state's randomDestination(),
- * not straight from the level. That is what lets FetidRat, GnollTrickster and GreatCrab wander
- * toward the hero: of two random cells they keep the one nearer the hero.
+ * Port regression for upstream 649d89bd3 and ab8ca6b6f (v2.3.0): a hunting mob that has no
+ * enemy left, or has lost sight of it and cannot reach its target, picks its next destination
+ * through its own Wandering state's randomDestination(), not straight from the level. That is
+ * what lets FetidRat, GnollTrickster and GreatCrab wander toward the hero: of two random cells
+ * they keep the one nearer the hero.
  *
  * The seed is chosen so the second of the two draws is the nearer one; the level's own pick
  * would be the first.
@@ -52,6 +54,31 @@ class HuntingLostTargetPortTest {
 		Hero hero = placeHero(2, 4);
 		FetidRat rat = placeMob(new FetidRat(), 20, 4);
 		rat.state = rat.HUNTING;
+
+		long seed = seedWhereTheSecondDrawIsNearer(rat, hero);
+		int[] draws = draws(seed, rat);
+
+		act(rat, seed);
+
+		assertSame(rat.WANDERING, rat.state, stateName(rat));
+		assertEquals(draws[1], rat.target, "the rat must wander toward the hero, not to the level's first random cell " + draws[0]);
+	}
+
+	@Test
+	void aHuntingMobThatCannotReachItsTargetWandersByItsOwnRules() {
+		HeadlessLevel level = HeadlessLevel.install(30, 9);
+		// A floor cell walled in on all sides: there is no path to it.
+		for (int x = 24; x <= 26; x++) {
+			for (int y = 3; y <= 5; y++) {
+				if (x != 25 || y != 4) level.map[cell(x, y)] = Terrain.WALL;
+			}
+		}
+		level.buildFlagMaps();
+		Hero hero = placeHero(2, 4);
+		FetidRat rat = placeMob(new FetidRat(), 20, 4);
+		rat.state = rat.HUNTING;
+		rat.enemy = hero;
+		rat.target = cell(25, 4);
 
 		long seed = seedWhereTheSecondDrawIsNearer(rat, hero);
 		int[] draws = draws(seed, rat);

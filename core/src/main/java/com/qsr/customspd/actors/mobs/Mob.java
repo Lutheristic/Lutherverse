@@ -81,6 +81,7 @@ import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.levels.features.Chasm;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.modding.ExtraItemSpawn;
+import com.qsr.customspd.modding.PackClasses;
 import com.qsr.customspd.plants.Swiftthistle;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.sprites.CharSprite;
@@ -960,11 +961,11 @@ public abstract class Mob extends Char {
 				if (lootConfig.getType().equals("weapon.missiles.darts.TippedDart")) {
 					item = TippedDart.randomTipped(1);
 				} else {
-					item = (Item) Reflection.newInstance(Reflection.forName("com.qsr.customspd.items." + lootConfig.getType()));
+					item = (Item) Reflection.newInstance(PackClasses.forName("com.qsr.customspd.items." + lootConfig.getType()));
 				}
 			}
 			if (lootConfig.getSeal() && item instanceof Armor) ((Armor)item).affixSeal(new BrokenSeal());
-			if (lootConfig.getCoreWand() != null && item instanceof MagesStaff) item = new MagesStaff((Wand) Reflection.newInstance(Reflection.forName("com.qsr.customspd.items." + lootConfig.getCoreWand())));
+			if (lootConfig.getCoreWand() != null && item instanceof MagesStaff) item = new MagesStaff((Wand) Reflection.newInstance(PackClasses.forName("com.qsr.customspd.items." + lootConfig.getCoreWand())));
 			item.quantity(lootConfig.getQuantity());
 			if (lootConfig.getQuantityMin() != null && lootConfig.getQuantityMax() != null) {
 				item.quantity(Random.IntRange(lootConfig.getQuantityMin(), lootConfig.getQuantityMax()));
@@ -980,13 +981,13 @@ public abstract class Mob extends Char {
 					if (lootConfig.getEnchantment().equals("none")) {
 						((Armor) item).inscribe(null);
 					} else {
-						((Armor) item).inscribe((Armor.Glyph) Reflection.newInstance(Reflection.forName("com.qsr.customspd.items.armor." + lootConfig.getEnchantment())));
+						((Armor) item).inscribe((Armor.Glyph) Reflection.newInstance(PackClasses.forName("com.qsr.customspd.items.armor." + lootConfig.getEnchantment())));
 					}
 				} else if (item instanceof Weapon) {
 					if (lootConfig.getEnchantment().equals("none")) {
 						((Weapon) item).enchant(null);
 					} else {
-						((Weapon) item).enchant((Weapon.Enchantment) Reflection.newInstance(Reflection.forName("com.qsr.customspd.items.weapon." + lootConfig.getEnchantment())));
+						((Weapon) item).enchant((Weapon.Enchantment) Reflection.newInstance(PackClasses.forName("com.qsr.customspd.items.weapon." + lootConfig.getEnchantment())));
 					}
 				}
 			}

@@ -38,6 +38,7 @@ import com.qsr.customspd.modding.CustomLevelLayout;
 import com.qsr.customspd.modding.ItemSpawn;
 import com.qsr.customspd.modding.JsonConfigRetriever;
 import com.qsr.customspd.modding.MobSpawn;
+import com.qsr.customspd.modding.PackClasses;
 import com.qsr.customspd.modding.PlantSpawn;
 import com.qsr.customspd.modding.TrapSpawn;
 import com.qsr.customspd.items.Generator;
@@ -349,13 +350,13 @@ public class CustomLevel extends Level {
 				if (itemSpawn.getType().equals("weapon.missiles.darts.TippedDart")) {
 					item = TippedDart.randomTipped(1);
 				} else if (itemSpawn.getType().startsWith("plants.")) {
-					item = (Item) Reflection.newInstance(Reflection.forName("com.qsr.customspd." + itemSpawn.getType()));
+					item = (Item) Reflection.newInstance(PackClasses.forName("com.qsr.customspd." + itemSpawn.getType()));
 				} else {
-					item = (Item) Reflection.newInstance(Reflection.forName("com.qsr.customspd.items." + itemSpawn.getType()));
+					item = (Item) Reflection.newInstance(PackClasses.forName("com.qsr.customspd.items." + itemSpawn.getType()));
 				}
 			}
 			if (itemSpawn.getSeal() && item instanceof Armor) ((Armor)item).affixSeal(new BrokenSeal());
-			if (itemSpawn.getCoreWand() != null && item instanceof MagesStaff) item = new MagesStaff((Wand) Reflection.newInstance(Reflection.forName("com.qsr.customspd.items." + itemSpawn.getCoreWand())));
+			if (itemSpawn.getCoreWand() != null && item instanceof MagesStaff) item = new MagesStaff((Wand) Reflection.newInstance(PackClasses.forName("com.qsr.customspd.items." + itemSpawn.getCoreWand())));
 			item.quantity(itemSpawn.getQuantity());
 			if (itemSpawn.getQuantityMin() != null && itemSpawn.getQuantityMax() != null) {
 				item.quantity(Random.IntRange(itemSpawn.getQuantityMin(), itemSpawn.getQuantityMax()));
@@ -371,13 +372,13 @@ public class CustomLevel extends Level {
 					if (itemSpawn.getEnchantment().equals("none")) {
 						((Armor) item).inscribe(null);
 					} else {
-						((Armor) item).inscribe((Armor.Glyph) Reflection.newInstance(Reflection.forName("com.qsr.customspd.items.armor." + itemSpawn.getEnchantment())));
+						((Armor) item).inscribe((Armor.Glyph) Reflection.newInstance(PackClasses.forName("com.qsr.customspd.items.armor." + itemSpawn.getEnchantment())));
 					}
 				} else if (item instanceof Weapon) {
 					if (itemSpawn.getEnchantment().equals("none")) {
 						((Weapon) item).enchant(null);
 					} else {
-						((Weapon) item).enchant((Weapon.Enchantment) Reflection.newInstance(Reflection.forName("com.qsr.customspd.items.weapon." + itemSpawn.getEnchantment())));
+						((Weapon) item).enchant((Weapon.Enchantment) Reflection.newInstance(PackClasses.forName("com.qsr.customspd.items.weapon." + itemSpawn.getEnchantment())));
 					}
 				}
 			}

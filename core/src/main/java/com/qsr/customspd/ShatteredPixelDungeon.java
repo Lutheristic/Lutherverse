@@ -75,6 +75,14 @@ public class ShatteredPixelDungeon extends Game {
 				com.qsr.customspd.actors.buffs.FlavourBuff.class,
 				"com.qsr.customspd.actors.buffs.MonkEnergy$MonkAbility$Focus$FocusActivation" );
 
+		//pre-v2.5.2
+		com.watabou.utils.Bundle.addAlias(
+				com.qsr.customspd.items.bombs.FlashBangBomb.class,
+				"com.qsr.customspd.items.bombs.ShockBomb" );
+		com.watabou.utils.Bundle.addAlias(
+				com.qsr.customspd.items.bombs.SmokeBomb.class,
+				"com.qsr.customspd.items.bombs.Flashbang" );
+
 		//pre-v2.4.0
 		com.watabou.utils.Bundle.addAlias(
 				com.qsr.customspd.items.potions.brews.UnstableBrew.class,
@@ -91,6 +99,11 @@ public class ShatteredPixelDungeon extends Game {
 		com.watabou.utils.Bundle.addAlias(
 				com.qsr.customspd.items.potions.brews.AquaBrew.class,
 				"com.qsr.customspd.items.spells.AquaBlast" );
+
+		//pre-v2.3.0
+		com.watabou.utils.Bundle.addAlias(
+				com.qsr.customspd.items.bombs.Bomb.ConjuredBomb.class,
+				"com.qsr.customspd.items.bombs.Bomb$MagicalBomb" );
 	}
 	
 	@Override

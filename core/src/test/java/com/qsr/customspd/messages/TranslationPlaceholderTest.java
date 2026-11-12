@@ -192,7 +192,16 @@ class TranslationPlaceholderTest {
 
 	// Keys whose English changed its arguments ahead of the translations, which the next
 	// translation sync replaces. Remove an entry once no translation of it mismatches.
-	private static final List<String> KNOWN_TRANSLATION_MISMATCHES = Arrays.<String>asList();
+	private static final List<String> KNOWN_TRANSLATION_MISMATCHES = Arrays.<String>asList(
+			// v2.5.3 bomb descriptions now show their damage
+			"items.bombs.arcanebomb.desc",
+			"items.bombs.firebomb.desc",
+			"items.bombs.frostbomb.desc",
+			"items.bombs.holybomb.desc",
+			"items.bombs.noisemaker.desc",
+			"items.bombs.shrapnelbomb.desc",
+			"items.bombs.woollybomb.desc"
+	);
 
 	@Test
 	void everyTranslatedFormatStringTakesTheSameArgumentsAsTheEnglishOne() throws IOException {

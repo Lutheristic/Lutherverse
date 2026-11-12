@@ -18,7 +18,7 @@
       "type": "potions.PotionOfInvisibility"
     },
     {
-      "type": "bombs.ShockBomb",
+      "type": "bombs.FlashBangBomb",
       "quantity": "3"
     },
     {

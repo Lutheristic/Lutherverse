@@ -586,4 +586,10 @@ public class Bundle {
 		aliases.put( alias, cl.getName() );
 	}
 	
+	//the class name an alias now points to, or the name itself
+	public static String resolveAlias( String clName ) {
+		String target = aliases.get( clName );
+		return target != null ? target : clName;
+	}
+	
 }

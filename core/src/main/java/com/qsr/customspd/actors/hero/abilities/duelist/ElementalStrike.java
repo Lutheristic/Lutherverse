@@ -156,7 +156,7 @@ public class ElementalStrike extends ArmorAbility {
 
 		Ballistica aim = new Ballistica(hero.pos, target, Ballistica.WONT_STOP);
 
-		int maxDist = 3 + hero.pointsInTalent(Talent.ELEMENTAL_REACH);
+		int maxDist = 4 + hero.pointsInTalent(Talent.ELEMENTAL_REACH);
 		int dist = Math.min(aim.dist, maxDist);
 
 		ConeAOE cone = new ConeAOE(aim,
@@ -519,7 +519,7 @@ public class ElementalStrike extends ArmorAbility {
 		} else if (ench instanceof Explosive){
 			if (Random.Float() < 0.5f*powerMulti){
 				Char exploding = Random.element(affected);
-				if (exploding != null) new Bomb.MagicalBomb().explode(exploding.pos);
+				if (exploding != null) new Bomb.ConjuredBomb().explode(exploding.pos);
 			}
 
 		//*** Sacrificial ***

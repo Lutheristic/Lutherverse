@@ -22,59 +22,67 @@
 package com.qsr.customspd.items.bombs;
 
 import com.qsr.customspd.Assets;
+import com.qsr.customspd.Badges;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.Char;
+import com.qsr.customspd.actors.blobs.Electricity;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.Paralysis;
 import com.qsr.customspd.effects.CellEmitter;
 import com.qsr.customspd.effects.Lightning;
 import com.qsr.customspd.effects.particles.SparkParticle;
-import com.qsr.customspd.mechanics.Ballistica;
+import com.qsr.customspd.messages.Messages;
+import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.tiles.DungeonTilemap;
 import com.qsr.customspd.utils.BArray;
+import com.qsr.customspd.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 
-public class ShockBomb extends Bomb {
+public class FlashBangBomb extends Bomb {
 	
 	{
-		image = GeneralAsset.SHOCK_BOMB;
+		image = GeneralAsset.FLASHBANG;
 	}
-	
+
+	@Override
+	protected int explosionRange() {
+		return 2;
+	}
+
 	@Override
 	public void explode(int cell) {
 		super.explode(cell);
 
 		ArrayList<Char> affected = new ArrayList<>();
-		PathFinder.buildDistanceMap( cell, BArray.not( Dungeon.level.solid, null ), 3 );
+		PathFinder.buildDistanceMap( cell, BArray.not( Dungeon.level.solid, null ), explosionRange() );
 		for (int i = 0; i < PathFinder.distance.length; i++) {
-			if (PathFinder.distance[i] < Integer.MAX_VALUE
-				&& Actor.findChar(i) != null) {
+			if (PathFinder.distance[i] < Integer.MAX_VALUE && Actor.findChar(i) != null) {
 				affected.add(Actor.findChar(i));
-			}
-		}
-
-		for (Char ch : affected.toArray(new Char[0])){
-			Ballistica LOS = new Ballistica(cell, ch.pos, Ballistica.PROJECTILE);
-			if (LOS.collisionPos != ch.pos){
-				affected.remove(ch);
 			}
 		}
 
 		ArrayList<Lightning.Arc> arcs = new ArrayList<>();
 		for (Char ch : affected){
-			int power = 16 - 4*Dungeon.level.distance(ch.pos, cell);
-			if (power > 0){
-				//32% to 8% regular bomb damage
-				int damage = Math.round(Random.NormalIntRange(5 + Dungeon.scalingDepth(), 10 + 2*Dungeon.scalingDepth()) * (power/50f));
-				ch.damage(damage, this);
-				if (ch.isAlive()) Buff.prolong(ch, Paralysis.class, power);
-				arcs.add(new Lightning.Arc(DungeonTilemap.tileCenterToWorld(cell), ch.sprite.center()));
+			//25% bonus damage and 10 turns of stun
+			int damage = Math.round(Random.NormalIntRange(4 + Dungeon.scalingDepth(), 12 + 3*Dungeon.scalingDepth()) / 4f);
+			ch.damage(damage, new Electricity());
+			if (ch.isAlive()) Buff.prolong(ch, Paralysis.class, Paralysis.DURATION);
+			arcs.add(new Lightning.Arc(DungeonTilemap.tileCenterToWorld(cell), ch.sprite.center()));
+
+			if (ch == Dungeon.hero){
+				GameScene.flash(0x80FFFFFF);
+			}
+
+			if (ch == Dungeon.hero && !ch.isAlive()) {
+				Badges.validateDeathFromFriendlyMagic();
+				GLog.n(Messages.get(this, "ondeath"));
+				Dungeon.fail(this);
 			}
 		}
 

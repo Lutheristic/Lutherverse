@@ -27,8 +27,10 @@ import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.buffs.AscensionChallenge;
 import com.qsr.customspd.items.Generator;
 import com.qsr.customspd.items.Item;
+import com.qsr.customspd.items.wands.WandOfLivingEarth;
 import com.qsr.customspd.levels.features.Chasm;
 import com.qsr.customspd.messages.Messages;
+import com.qsr.customspd.plants.Earthroot;
 import com.qsr.customspd.sprites.SkeletonSprite;
 import com.qsr.customspd.utils.GLog;
 import com.watabou.noosa.audio.Sample;
@@ -71,7 +73,25 @@ public class Skeleton extends Mob {
 			if (ch != null && ch.isAlive()) {
 				int damage = Math.round(Random.NormalIntRange(6, 12));
 				damage = Math.round( damage * AscensionChallenge.statModifier(this));
-				//armor is 2x effective against bone explosion
+
+				//all sources of DR are 2x effective vs. bone explosion
+				//this does not consume extra uses of rock armor and earthroot armor
+
+				WandOfLivingEarth.RockArmor rockArmor = ch.buff(WandOfLivingEarth.RockArmor.class);
+				if (rockArmor != null) {
+					int preDmg = damage;
+					damage = rockArmor.absorb(damage);
+					damage *= Math.round(damage/(float)preDmg); //apply the % reduction twice
+				}
+
+				Earthroot.Armor armor = ch.buff( Earthroot.Armor.class );
+				if (damage > 0 && armor != null) {
+					int preDmg = damage;
+					damage = armor.absorb( damage );
+					damage -= (preDmg - damage); //apply the flat reduction twice
+				}
+
+				//apply DR twice (with 2 rolls for more consistency)
 				damage = Math.max( 0,  damage - (ch.drRoll() + ch.drRoll()) );
 				ch.damage( damage, this );
 				if (ch == Dungeon.hero && !ch.isAlive()) {

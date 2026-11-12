@@ -465,6 +465,19 @@ class PostSyncTranslationTest {
 				"must leave the question to the intro", Languages.BELARUSIAN);
 	}
 
+	// v2.5.3 renamed the flashbang to smoke bomb and the shock bomb to flashbang. A file still
+	// carrying the old keys would keep text no item reads.
+	@Test
+	void renamedBombsShipUnderTheirNewKeysOnly() throws IOException {
+		assertTranslatedEverywhere(Assets.Messages.ITEMS, "items.bombs.smokebomb.name");
+		for (Map.Entry<Languages, ObjectMap<String, String>> e : translatedBundles(Assets.Messages.ITEMS).entrySet()) {
+			for (String old : new String[]{"items.bombs.flashbang.name", "items.bombs.flashbang.desc",
+					"items.bombs.shockbomb.name", "items.bombs.shockbomb.desc"}) {
+				assertNull(e.getValue().get(old), e.getKey() + " still carries " + old);
+			}
+		}
+	}
+
 	// Both English texts changed. Greek and Turkish v2.5.4 lines for the stone, the Turkish
 	// alchemize line and both Belarusian lines are only the English, so those show English; French
 	// and Italian are spot checks that the new lines arrived.

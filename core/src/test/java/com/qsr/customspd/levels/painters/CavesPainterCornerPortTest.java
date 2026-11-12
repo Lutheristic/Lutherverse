@@ -19,6 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 /**
  * Upstream e0f7f2d62: the caves painter's corner wall fill skips a corner when either wall
  * beside it holds a door connection, so the fill cannot wall off a door's approach.
+ * Upstream d76667a0e: it also skips a corner with a visible trap beside it, which the new
+ * wall would otherwise leave sitting in a one-tile hall.
  */
 class CavesPainterCornerPortTest {
 
@@ -119,6 +121,30 @@ class CavesPainterCornerPortTest {
 					room.connected.put(new EmptyRoom(), new Room.Door(level.cellToPoint(door)));
 				});
 				assertArrayEquals(allButOne(corner), filled, "seed " + seed + ", door above or below corner " + corner);
+			}
+		}
+	}
+
+	@Test
+	void aVisibleTrapBesideACornerKeepsItOpen() {
+		for (long seed : seedsThatFillEveryCorner()) {
+			for (int i = 0; i < 4; i++) {
+				final int corner = i;
+				boolean[] beside = filledCorners(seed, (level, room, c) -> level.map[c[corner] - SIDE_WALL[corner]] = Terrain.TRAP);
+				assertArrayEquals(allButOne(corner), beside, "seed " + seed + ", trap beside corner " + corner);
+				boolean[] aboveOrBelow = filledCorners(seed, (level, room, c) -> level.map[c[corner] - END_WALL[corner]] = Terrain.TRAP);
+				assertArrayEquals(allButOne(corner), aboveOrBelow, "seed " + seed + ", trap above or below corner " + corner);
+			}
+		}
+	}
+
+	@Test
+	void aHiddenTrapBesideACornerDoesNotKeepItOpen() {
+		for (long seed : seedsThatFillEveryCorner()) {
+			for (int i = 0; i < 4; i++) {
+				final int corner = i;
+				boolean[] filled = filledCorners(seed, (level, room, c) -> level.map[c[corner] - SIDE_WALL[corner]] = Terrain.SECRET_TRAP);
+				assertArrayEquals(new boolean[]{true, true, true, true}, filled, "seed " + seed + ", hidden trap beside corner " + corner);
 			}
 		}
 	}

@@ -395,7 +395,7 @@ class PostSyncTranslationTest {
 	void loadingScreenTranslationsLeaveTheDotsToTheScene() throws IOException {
 		for (String mode : new String[]{"descend", "ascend", "continue", "resurrect", "reset", "fall"}) {
 			assertEveryTranslation(Assets.Messages.SCENES, "scenes.interlevelscene$mode." + mode,
-					t -> !t.endsWith("...") && !t.endsWith("…"), "ends in its own dots");
+					t -> !t.endsWith("...") && !t.endsWith("\u2026"), "ends in its own dots");
 		}
 	}
 
@@ -403,5 +403,13 @@ class PostSyncTranslationTest {
 	void imbueWindowTranslationsNoLongerQuoteAChance() throws IOException {
 		assertEveryTranslation(Assets.Messages.ITEMS, "items.weapon.melee.magesstaff.imbue_talent",
 				t -> !t.contains("%"), "still carries the old chance and uses", Languages.TURKISH);
+	}
+
+	@Test
+	void tutorialAndGameOptionTranslationsShipInEveryLanguage() throws IOException {
+		assertTranslatedEverywhere(Assets.Messages.SCENES, "scenes.heroselectscene.challenges_nowin");
+		assertTranslatedEverywhere(Assets.Messages.SCENES, "scenes.gamescene.tutorial_guidebook_desktop");
+		assertEveryTranslation(Assets.Messages.SCENES, "scenes.gamescene.tutorial_ui_desktop",
+				t -> t.split("%[0-9]*\\$?s", -1).length == 3, "does not name both keys");
 	}
 }

@@ -37,9 +37,9 @@ import com.qsr.customspd.items.weapon.missiles.MissileWeapon;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.utils.GLog;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Random;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class CursingTrap extends Trap {
 
@@ -90,8 +90,8 @@ public class CursingTrap extends Trap {
 				canCurse.add(armor);
 		}
 
-		Collections.shuffle(priorityCurse);
-		Collections.shuffle(canCurse);
+		Random.shuffle(priorityCurse);
+		Random.shuffle(canCurse);
 
 		if (!priorityCurse.isEmpty()){
 			curse(priorityCurse.remove(0));

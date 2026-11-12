@@ -23,9 +23,13 @@ The second batch from the same check of Slice 1 commits against v2.5.4.
 - Yog-Dzewa no longer turns its minions on each other when a stone of aggression hits one, and minions that changed sides are no longer pulled into its aggro.
 - Mimics that spawn mid-run, and mimics a custom level places, now use the scaling depth like other enemies, so they keep up on the ascent.
 - On desktop the game always starts in a window and switches to fullscreen afterwards, since going fullscreen at launch could pick the wrong size and monitor. The crash handler spots a failure to create the window again.
+- The crash messages on desktop and Android no longer ask players to email upstream's developer. They ask for a report with the error message.
+- Sentries no longer turn to face what they shoot at.
+- A pack layout's hp for a mimic is kept. It used to be reset when the mimic was scaled to the floor.
 
 **Ported**
 - Cave, chasm and ruins rooms stop growing their fill once a room passes 18x18, and only force a path through when they have a door. Cave rooms are at least 5x5.
+- Circle basin rooms keep their water as rolled instead of forcing a clear path through it, so seeded sewer floors with one lay out differently.
 - A laboratory always drops exactly 5 alchemy energy instead of 4 to 6. A secret laboratory's two piles are 3 to 5 each instead of 4 to 6, so it gives less. The only queued item a laboratory takes as its prize is a potion of strength.
 - Secret rooms are chosen the way special rooms are: the front of the queue 60% of the time, the next 30% and the one after 10%.
 - Pool, sentry, traps and secret maze rooms strip the curse from their weapon or armor prize instead of rolling a new one.
@@ -36,7 +40,7 @@ The second batch from the same check of Slice 1 commits against v2.5.4.
 - Bats, bees, evil eyes, swarms, elementals and the spirit hawk stop flying as they die, so they fall into chasms.
 - A stone of aggression lasts its full duration on regular enemies. Bosses and minibosses keep the short duration, and while one carries the aggression its own allies deal it half damage with melee, an evil eye's beam or a warlock's bolt. Yog-Dzewa takes a quarter.
 - Enemies pick the target they can reach soonest, by walking distance to a cell next to it, instead of the nearest in a straight line.
-- A fleeing enemy that loses its pursuer keeps running, and one that is cornered turns to fight. A cornered thief or crystal mimic out of the hero's sight wanders off instead of getting away. Hunting enemies that lose their target pick a wander target, and sleeping enemies keep the one they had.
+- A fleeing enemy that loses its pursuer keeps running, and one that is cornered turns to fight. A cornered thief or crystal mimic out of the hero's sight wanders off instead of getting away. Hunting enemies that lose their target pick a wander target, and sleeping enemies keep the one they had. A mob a pack spawns as fleeing now behaves the same way and stops fleeing once it has nothing to run from.
 - A shop steal with the master thieves' armband that could fail now asks first, since a failed steal closes the shop.
 - Energizing a potion or scroll identifies it. At the alchemy pot the old name fades into the new one, also when a scroll becomes runestones.
 - The crash dialog for a window that can't be created has new wording and shows the error.

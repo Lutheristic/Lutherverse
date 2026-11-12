@@ -26,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * bigger room is not simply filled solid, and a path through the room is only forced when the
  * room has a door to reach. Without the cap, any of these rooms past about 27x27 asked Patch for
  * a fill above 100%, which it can never reach, and levelgen hung.
+ *
+ * Upstream 7d595da27: cave rooms are at least 5x5, so a small one no longer looks like a tunnel.
  */
 class PatchRoomPortTest {
 
@@ -139,5 +141,17 @@ class PatchRoomPortTest {
 		});
 		assertTrue(splitWithoutDoor[0] > 0, "no seed left a room without doors in more than one piece,"
 				+ " so a path is still being forced through it");
+	}
+
+	@Test
+	void caveRoomsAreAtLeastFiveByFive() {
+		CaveRoom cave = new CaveRoom();
+		for (StandardRoom.SizeCategory cat : StandardRoom.SizeCategory.values()) {
+			cave.sizeCat = cat;
+			assertTrue(cave.minWidth() >= 5, cat + " cave min width " + cave.minWidth());
+			assertTrue(cave.minHeight() >= 5, cat + " cave min height " + cave.minHeight());
+			assertEquals(Math.max(5, cat.minDim), cave.minWidth());
+			assertEquals(cat.maxDim, cave.maxWidth(), "the maximum size is unchanged");
+		}
 	}
 }

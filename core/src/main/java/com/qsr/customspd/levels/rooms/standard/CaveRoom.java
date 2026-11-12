@@ -31,7 +31,17 @@ public class CaveRoom extends PatchRoom {
 	public float[] sizeCatProbs() {
 		return new float[]{4, 2, 1};
 	}
-	
+
+	@Override
+	public int minHeight() {
+		return Math.max(5, super.minHeight());
+	}
+
+	@Override
+	public int minWidth() {
+		return Math.max(5, super.minWidth());
+	}
+
 	@Override
 	public void paint(Level level) {
 		Painter.fill( level, this, Terrain.WALL );

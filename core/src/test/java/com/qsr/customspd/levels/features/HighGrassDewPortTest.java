@@ -6,6 +6,7 @@ import com.qsr.customspd.items.Dewdrop;
 import com.qsr.customspd.items.Heap;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.artifacts.SandalsOfNature;
+import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.sprites.ItemSprite;
 import com.qsr.customspd.test.HeadlessGdx;
@@ -31,6 +32,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * is the sandals' naturalism level, instead of the integer Random.Int(6 - n/2), which rounded
  * the odd levels down to the next whole die. The petrified seed half of that commit is a trinket
  * and not ported.
+ *
+ * Upstream e93d5da65 (v2.5.0): grassy floors drop half as much dew. The mossy clump half of that
+ * commit is a trinket and not ported either.
  *
  * Every roll here comes from one fixed uniform value u: a float roll returns u and an integer
  * roll below k returns floor(u * k), so the two forms of the same chance can be compared on
@@ -147,5 +151,39 @@ class HighGrassDewPortTest {
 	@Test
 	void withoutSandalsARollAboveOneInSixDropsNoDew() throws Exception {
 		assertFalse(trampleDropsDew(0.17f));
+	}
+
+	@Test
+	void grassyFloorsHalveTheDewChance() throws Exception {
+		level.feeling = Level.Feeling.GRASS;
+
+		// 1/12 < 0.1 < 1/6
+		assertFalse(trampleDropsDew(0.1f), "on a grassy floor the dew chance is 1/12");
+	}
+
+	@Test
+	void otherFloorsKeepTheFullDewChance() throws Exception {
+		level.feeling = Level.Feeling.NONE;
+
+		assertTrue(trampleDropsDew(0.1f));
+	}
+
+	@Test
+	void grassyFloorsHalveTheSandalsChance() throws Exception {
+		level.feeling = Level.Feeling.GRASS;
+		wearSandals();
+
+		// 1/11 < 0.1 < 1/5.5
+		assertFalse(trampleDropsDew(0.1f), "with naturalism 1 a grassy floor's dew chance is 1/11, not 1/5.5");
+	}
+
+	@Test
+	void grassyFloorsHalveTheSandalsChanceFromOneInFiveAndAHalf() throws Exception {
+		level.feeling = Level.Feeling.GRASS;
+		wearSandals();
+
+		// 1/12 < 0.09 < 1/11: unhalved code drops dew here too, so this only catches halving
+		// the rounded 1/6 instead of the float 1/5.5
+		assertTrue(trampleDropsDew(0.09f), "with naturalism 1 a grassy floor's dew chance is 1/11");
 	}
 }

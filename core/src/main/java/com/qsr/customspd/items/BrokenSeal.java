@@ -23,6 +23,7 @@ package com.qsr.customspd.items;
 
 import com.qsr.customspd.Assets;
 import com.qsr.customspd.Dungeon;
+import com.qsr.customspd.actors.buffs.Regeneration;
 import com.qsr.customspd.actors.buffs.ShieldBuff;
 import com.qsr.customspd.actors.hero.Belongings;
 import com.qsr.customspd.actors.hero.Hero;
@@ -217,7 +218,7 @@ public class BrokenSeal extends Item {
 
 		@Override
 		public synchronized boolean act() {
-			if (shielding() < maxShield()) {
+			if (Regeneration.regenOn() && shielding() < maxShield()) {
 				partialShield += 1/30f;
 			}
 			

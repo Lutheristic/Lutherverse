@@ -83,6 +83,75 @@ class EntityGraphTest {
                 amb);
     }
 
+    private static ContentClass nested(String name, String pkg, String outer, String sup, boolean abs,
+                                       String sprite, String image) {
+        String simple = sup.substring(sup.lastIndexOf('.') + 1);
+        return new ContentClass(name, pkg, simple, abs, sprite, image, outer, sup);
+    }
+
+    private static ContentClass top(String name, String pkg, String sup, String image) {
+        String simple = sup.substring(sup.lastIndexOf('.') + 1);
+        return new ContentClass(name, pkg, simple, false, null, image, null, sup);
+    }
+
+    private static final String MOBS = "com.qsr.customspd.actors.mobs";
+
+    @Test
+    void followsParentsThatAreNestedClasses() {
+        List<ContentClass> all = List.of(
+                cc("Mob", MOBS, "Char", true, null, null),
+                cc("Elemental", MOBS, "Mob", true, null, null),
+                nested("FireElemental", MOBS, "Elemental", "Elemental", false, "FireSprite", null),
+                // a sibling named without its outer class, as Java allows inside Elemental
+                nested("Newborn", MOBS, "Elemental", "FireElemental", false, null, null),
+                top("Spark", MOBS, "Elemental.Newborn", null),
+                top("Ember", MOBS, MOBS + ".Elemental.FireElemental", null));
+        List<EntityGraph.Entity> es = EntityGraph.build(all);
+
+        for (String name : List.of("Spark", "Ember")) {
+            EntityGraph.Entity e = es.stream().filter(x -> x.cls().simpleName().equals(name))
+                    .findFirst().orElseThrow(() -> new AssertionError(name + " was not scanned: " + es));
+            assertEquals("Mob", e.kind());
+            assertEquals("FireSprite", e.resolvedSpriteClass(), name);
+        }
+        assertTrue(es.stream().noneMatch(e -> e.cls().isNested()),
+                () -> "nested classes are followed, not audited themselves: " + es);
+    }
+
+    @Test
+    void aMemberClassWinsOverATopLevelClassOfTheSameName() {
+        List<ContentClass> all = List.of(
+                cc("Mob", MOBS, "Char", true, null, null),
+                cc("Item", "com.qsr.customspd.items", "Object", true, null, null),
+                cc("Seed", "com.qsr.customspd.items", "Item", false, null, "SEED"),
+                cc("Lasher", MOBS, "Mob", false, "LasherSprite", null),
+                nested("Seed", MOBS, "Lasher", "Mob", false, "SeedlingSprite", null),
+                nested("Sprout", MOBS, "Lasher", "Seed", false, null, null),
+                top("Weed", MOBS, "Lasher.Sprout", null));
+        EntityGraph.Entity weed = EntityGraph.build(all).stream()
+                .filter(e -> e.cls().simpleName().equals("Weed")).findFirst().orElseThrow();
+        assertEquals("Mob", weed.kind(), "Sprout's Seed is Lasher.Seed, not the top-level item");
+        assertEquals("SeedlingSprite", weed.resolvedSpriteClass());
+    }
+
+    @Test
+    void anAmbiguousNestedPathIsNotGuessed() {
+        List<ContentClass> all = List.of(
+                cc("Mob", MOBS, "Char", true, null, null),
+                cc("Outer", MOBS + ".a", "Mob", true, null, null),
+                cc("Outer", MOBS + ".b", "Mob", true, null, null),
+                nested("Inner", MOBS + ".a", "Outer", "Mob", false, "ASprite", null),
+                nested("Inner", MOBS + ".b", "Outer", "Mob", false, "BSprite", null),
+                top("Child", MOBS, "Outer.Inner", null),
+                top("ChildOfA", MOBS + ".a", "Outer.Inner", null));
+        List<EntityGraph.Entity> es = EntityGraph.build(all);
+        assertTrue(es.stream().noneMatch(e -> e.cls().simpleName().equals("Child")),
+                () -> "Outer.Inner from a third package could be either class: " + es);
+        EntityGraph.Entity a = es.stream().filter(e -> e.cls().simpleName().equals("ChildOfA"))
+                .findFirst().orElseThrow();
+        assertEquals("ASprite", a.resolvedSpriteClass(), "the same package's Outer.Inner is the one meant");
+    }
+
     @Test
     void reportsNoAmbiguityWhenSimpleNamesAreUnique() {
         List<ContentClass> all = List.of(

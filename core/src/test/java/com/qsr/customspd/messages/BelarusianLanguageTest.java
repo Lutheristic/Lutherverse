@@ -1,5 +1,6 @@
 package com.qsr.customspd.messages;
 
+import com.qsr.customspd.actors.buffs.Berserk;
 import com.qsr.customspd.actors.hero.HeroClass;
 import com.qsr.customspd.test.HeadlessGdx;
 import org.junit.jupiter.api.AfterEach;
@@ -11,6 +12,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -79,6 +81,21 @@ class BelarusianLanguageTest {
 		assertEquals("ваяр", Messages.get(HeroClass.class, "warrior"));
 		assertEquals("узровень 2", Messages.get("ui.talentspane.tier", 2));
 		assertEquals("Прысвоены медаль: Qz7.", Messages.get((Class<?>) null, "badges.endorsed", "Qz7"));
+	}
+
+	@Test
+	void theBerserkRageTextIsBelarusianAndFormats() {
+		// v2.5.4's be line had "100% %%", which String.format rejects, so the key was left out;
+		// upstream e9739dcc2 fixed it to "100%%". Same arguments as Berserk.desc: rage, then damage.
+		Messages.setup(Languages.ENGLISH);
+		String english = Messages.get(Berserk.class, "angered_desc", Math.floor(0.5f * 100f), 25f);
+
+		Messages.setup(belarusian());
+		String shown = Messages.get(Berserk.class, "angered_desc", Math.floor(0.5f * 100f), 25f);
+		assertNotEquals(english, shown, "the rage text shows in Belarusian");
+		assertTrue(shown.contains("Пры 100% лютасці"), shown);
+		assertTrue(shown.contains("Бягучая лютасць: _50%_\n_+25%_ страт"), shown);
+		assertFalse(shown.contains("%%") || shown.contains("%.0f"), "the text was formatted: " + shown);
 	}
 
 	@Test

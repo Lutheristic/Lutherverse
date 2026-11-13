@@ -9,9 +9,12 @@ import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.journal.Document;
 import com.qsr.customspd.levels.features.LevelTransition;
+import com.qsr.customspd.messages.Languages;
+import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.test.HeadlessRun;
 import com.qsr.customspd.ui.Button;
 import com.qsr.customspd.ui.RenderedTextBlock;
+import com.qsr.customspd.ui.StyledButton;
 import com.badlogic.gdx.Input;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.input.KeyEvent;
@@ -332,5 +335,16 @@ class LoadingScreenPortTest {
 		KeyEvent.processKeyEvents();
 
 		assertTrue(Document.INTROS.isPageRead(1));
+	}
+
+	// upstream 6fe93bda2
+	@Test
+	void theContinueButtonTextComesFromTheMessages() throws Exception {
+		Messages.setup(Languages.ENGLISH);
+		Dungeon.hero = null;
+		load(InterlevelScene.Mode.DESCEND);
+
+		assertEquals("Continue", Messages.get(InterlevelScene.class, "continue"), "the English text exists");
+		assertEquals(Messages.get(InterlevelScene.class, "continue"), ((StyledButton) continueButton(scene)).text());
 	}
 }

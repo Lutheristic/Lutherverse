@@ -557,6 +557,7 @@ enum class GeneralAsset(override val path: String) : Asset {
     ICON_CHAL_COUNT("interfaces/icons/chal_count.png"),
     ICON_CHANGES("interfaces/icons/changes.png"),
     ICON_CHECKED("interfaces/icons/checked.png"),
+    ICON_CHEVRON("interfaces/icons/chevron.png"),
     ICON_CLOSE("interfaces/icons/close.png"),
     ICON_COIN_SML("interfaces/icons/coin_sml.png"),
     ICON_COMPASS("interfaces/icons/compass.png"),

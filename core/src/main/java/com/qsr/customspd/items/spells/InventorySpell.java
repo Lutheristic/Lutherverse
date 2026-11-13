@@ -27,6 +27,7 @@ import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.bags.Bag;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.windows.WndBag;
@@ -90,6 +91,7 @@ public abstract class InventorySpell extends Spell {
 				Sample.INSTANCE.play( Assets.Sounds.READ );
 				Invisibility.dispel();
 
+				Catalog.countUse(curItem.getClass());
 				if (Random.Float() < ((Spell)curItem).talentChance){
 					Talent.onScrollUsed(curUser, curUser.pos, ((Spell)curItem).talentFactor);
 				}

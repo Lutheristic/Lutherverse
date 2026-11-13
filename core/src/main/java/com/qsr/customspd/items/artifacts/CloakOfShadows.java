@@ -37,6 +37,7 @@ import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.bags.Bag;
 import com.qsr.customspd.items.rings.RingOfEnergy;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.assets.GeneralAsset;
@@ -351,6 +352,7 @@ public class CloakOfShadows extends Artifact {
 					
 					if (exp >= (level() + 1) * 50 && level() < levelCap) {
 						upgrade();
+						Catalog.countUse(CloakOfShadows.class);
 						exp -= level() * 50;
 						GLog.p(Messages.get(this, "levelup"));
 						

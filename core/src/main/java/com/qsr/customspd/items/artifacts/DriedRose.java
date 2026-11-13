@@ -54,6 +54,7 @@ import com.qsr.customspd.items.scrolls.ScrollOfRetribution;
 import com.qsr.customspd.items.scrolls.exotic.ScrollOfPsionicBlast;
 import com.qsr.customspd.items.weapon.Weapon;
 import com.qsr.customspd.items.weapon.melee.MeleeWeapon;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.AlchemyScene;
 import com.qsr.customspd.scenes.CellSelector;
@@ -490,6 +491,7 @@ public class DriedRose extends Artifact {
 
 		@Override
 		public boolean doPickUp(Hero hero, int pos) {
+			Catalog.setSeen(getClass());
 			DriedRose rose = hero.belongings.getItem( DriedRose.class );
 
 			if (rose == null){
@@ -502,6 +504,7 @@ public class DriedRose extends Artifact {
 			} else {
 
 				rose.upgrade();
+				Catalog.countUse(rose.getClass());
 				if (rose.level() == rose.levelCap) {
 					GLog.p( Messages.get(this, "maxlevel") );
 				} else

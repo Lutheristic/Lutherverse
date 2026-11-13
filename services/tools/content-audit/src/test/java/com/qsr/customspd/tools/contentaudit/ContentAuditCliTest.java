@@ -85,6 +85,118 @@ class ContentAuditCliTest {
         assertTrue(g1.message().contains("com.qsr.customspd.actors.mobs.Elf"), g1::message);
     }
 
+    /** Bomb carries a nested parent class; one bomb names it Outer.Inner, one fully qualified. */
+    private static void nestedParentFixture(Path root) throws Exception {
+        String items = "core/src/main/java/com/qsr/customspd/items/";
+        write(root.resolve("core/src/main/java/com/qsr/customspd/assets/GeneralAsset.kt"),
+                "enum class GeneralAsset(val path: String) {\n"
+                        + "    RAT(\"sprites/mobs/rat.png\"),\n"
+                        + "    MAGIC_BOMB(\"sprites/items/magic_bomb.png\"),\n}");
+        write(root.resolve("core/src/main/assets/sprites/items/magic_bomb.png"), "png");
+        write(root.resolve(items + "Item.java"),
+                "package com.qsr.customspd.items; public abstract class Item {}");
+        write(root.resolve(items + "bombs/Bomb.java"),
+                "package com.qsr.customspd.items.bombs;\n"
+                        + "import com.qsr.customspd.items.Item;\n"
+                        + "public class Bomb extends Item {\n"
+                        + "  public static abstract class MagicalBomb extends Bomb {\n"
+                        + "    { image = GeneralAsset.MAGIC_BOMB; }\n"
+                        + "  }\n"
+                        + "}\n");
+        write(root.resolve(items + "bombs/ArcaneBomb.java"),
+                "package com.qsr.customspd.items.bombs; public class ArcaneBomb extends Bomb.MagicalBomb {}");
+        write(root.resolve(items + "bombs/HolyBomb.java"),
+                "package com.qsr.customspd.items.bombs;\n"
+                        + "public class HolyBomb extends com.qsr.customspd.items.bombs.Bomb.MagicalBomb {}");
+    }
+
+    @Test
+    void classesWhoseParentIsANestedClassAreScanned(@TempDir Path root) throws Exception {
+        File repo = fixture(root);
+        nestedParentFixture(root);
+        ContentAuditCli.Result r = ContentAuditCli.run(repo, Allowlist.load(null));
+
+        // Rat, Ghost, Bomb, ArcaneBomb and HolyBomb; the nested MagicalBomb is abstract
+        assertEquals(5, r.entitiesScanned(), () -> "findings: " + r.findings());
+        for (String bomb : new String[]{ "ArcaneBomb", "HolyBomb" }) {
+            assertTrue(r.findings().stream().anyMatch(f -> f.key().equals("Item " + bomb + "#I2")),
+                    () -> bomb + " has no strings and must be flagged: " + r.findings());
+            // the image comes from the nested parent, so the sprite check passes through it
+            assertFalse(r.findings().stream().anyMatch(f -> f.key().equals("Item " + bomb + "#I1")),
+                    () -> bomb + " inherits MagicalBomb's image: " + r.findings());
+        }
+    }
+
+    @Test
+    void nestedClassesThatShareANameAreNotAmbiguous(@TempDir Path root) throws Exception {
+        File repo = fixture(root);
+        nestedParentFixture(root);
+        String items = "core/src/main/java/com/qsr/customspd/items/";
+        write(root.resolve(items + "potions/Potion.java"),
+                "package com.qsr.customspd.items.potions; import com.qsr.customspd.items.Item;\n"
+                        + "public class Potion extends Item { public static class PlaceHolder extends Potion {} }");
+        write(root.resolve(items + "scrolls/Scroll.java"),
+                "package com.qsr.customspd.items.scrolls; import com.qsr.customspd.items.Item;\n"
+                        + "public class Scroll extends Item { public static class PlaceHolder extends Scroll {} }");
+        ContentAuditCli.Result r = ContentAuditCli.run(repo, Allowlist.load(null));
+        assertFalse(r.findings().stream().anyMatch(f -> f.key().endsWith("#G1")),
+                () -> "nested classes are named through their outer class: " + r.findings());
+    }
+
+    private static void assertScannedWithInheritedImage(ContentAuditCli.Result r, String... items) {
+        for (String item : items) {
+            assertTrue(r.findings().stream().anyMatch(f -> f.key().equals("Item " + item + "#I2")),
+                    () -> item + " has no strings and must be flagged: " + r.findings());
+            assertFalse(r.findings().stream().anyMatch(f -> f.key().equals("Item " + item + "#I1")),
+                    () -> item + " inherits its parent's image: " + r.findings());
+        }
+    }
+
+    @Test
+    void aNestedParentNamedThroughAnImportIsFollowed(@TempDir Path root) throws Exception {
+        File repo = fixture(root);
+        nestedParentFixture(root);
+        String items = "core/src/main/java/com/qsr/customspd/items/";
+        write(root.resolve(items + "stones/FizzBomb.java"),
+                "package com.qsr.customspd.items.stones;\n"
+                        + "import com.qsr.customspd.items.bombs.Bomb.MagicalBomb;\n"
+                        + "public class FizzBomb extends MagicalBomb {}");
+        write(root.resolve(items + "stones/PopBomb.java"),
+                "package com.qsr.customspd.items.stones;\n"
+                        + "import com.qsr.customspd.items.bombs.Bomb.*;\n"
+                        + "public class PopBomb extends MagicalBomb {}");
+        ContentAuditCli.Result r = ContentAuditCli.run(repo, Allowlist.load(null));
+
+        assertEquals(7, r.entitiesScanned(), () -> "findings: " + r.findings());
+        assertScannedWithInheritedImage(r, "FizzBomb", "PopBomb");
+    }
+
+    @Test
+    void classesNestedInATopLevelEnumOrInterfaceAreFollowed(@TempDir Path root) throws Exception {
+        File repo = fixture(root);
+        nestedParentFixture(root);
+        String items = "core/src/main/java/com/qsr/customspd/items/";
+        write(root.resolve(items + "Kinds.java"),
+                "package com.qsr.customspd.items;\n"
+                        + "public interface Kinds {\n"
+                        + "  abstract class Shiny extends Item { { image = GeneralAsset.MAGIC_BOMB; } }\n"
+                        + "}\n");
+        write(root.resolve(items + "Flavour.java"),
+                "package com.qsr.customspd.items;\n"
+                        + "public enum Flavour {\n"
+                        + "  SOUR;\n"
+                        + "  public static abstract class Tart extends Item { { image = GeneralAsset.MAGIC_BOMB; } }\n"
+                        + "}\n");
+        write(root.resolve(items + "Gem.java"),
+                "package com.qsr.customspd.items; public class Gem extends Kinds.Shiny {}");
+        write(root.resolve(items + "Lemon.java"),
+                "package com.qsr.customspd.items; public class Lemon extends Flavour.Tart {}");
+        ContentAuditCli.Result r = ContentAuditCli.run(repo, Allowlist.load(null));
+
+        assertEquals(7, r.entitiesScanned(), () -> "findings: " + r.findings());
+        assertScannedWithInheritedImage(r, "Gem", "Lemon");
+    }
+
     @Test
     void canaryCatchesTheDeliberatelyBrokenEntity() {
         // Standing negative control: if this ever returns non-zero, the checks have

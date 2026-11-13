@@ -28,6 +28,7 @@ import com.qsr.customspd.effects.Enchanting;
 import com.qsr.customspd.effects.particles.PurpleParticle;
 import com.qsr.customspd.items.armor.Armor;
 import com.qsr.customspd.items.bags.Bag;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.assets.GeneralAsset;
@@ -94,6 +95,7 @@ public class Stylus extends Item {
 		}
 		
 		detach(curUser.belongings.backpack);
+		Catalog.countUse(getClass());
 
 		GLog.w( Messages.get(this, "inscribed"));
 

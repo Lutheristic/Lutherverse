@@ -27,6 +27,7 @@ import com.qsr.customspd.actors.buffs.Invisibility;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.journal.Catalog;
 
 public abstract class Runestone extends Item {
 	
@@ -42,6 +43,7 @@ public abstract class Runestone extends Item {
 				(Dungeon.level.pit[cell] && Actor.findChar(cell) == null)){
 			super.onThrow( cell );
 		} else {
+			Catalog.countUse(getClass());
 			activate(cell);
 			if (Actor.findChar(cell) == null) Dungeon.level.pressCell( cell );
 			Invisibility.dispel();

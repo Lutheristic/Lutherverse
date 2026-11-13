@@ -36,6 +36,7 @@ import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.bags.Bag;
 import com.qsr.customspd.items.bags.VelvetPouch;
 import com.qsr.customspd.items.rings.RingOfEnergy;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.mechanics.Ballistica;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.plants.Blindweed;
@@ -309,7 +310,7 @@ public class SandalsOfNature extends Artifact {
 				if (seeds.size() >= 3+(level()*3)){
 					seeds.clear();
 					upgrade();
-
+					Catalog.countUses(SandalsOfNature.class, level() == 3 ? 4 : 3);
 					if (level() >= 1 && level() <= 3) {
 						GLog.p( Messages.get(SandalsOfNature.class, "levelup") );
 					}

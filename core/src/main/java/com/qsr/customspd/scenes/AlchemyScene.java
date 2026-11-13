@@ -34,11 +34,13 @@ import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.effects.particles.SparkParticle;
+import com.qsr.customspd.items.EnergyCrystal;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.LiquidMetal;
 import com.qsr.customspd.items.Recipe;
 import com.qsr.customspd.items.artifacts.AlchemistsToolkit;
 import com.qsr.customspd.items.bags.Bag;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.journal.Document;
 import com.qsr.customspd.journal.Journal;
 import com.qsr.customspd.messages.Messages;
@@ -645,6 +647,7 @@ public class AlchemyScene extends PixelScene {
 			if (toolkit != null){
 				cost = toolkit.consumeEnergy(cost);
 			}
+			Catalog.countUses(EnergyCrystal.class, cost);
 			Dungeon.energy -= cost;
 
 			String energyText = Messages.get(AlchemyScene.class, "energy") + " " + Dungeon.energy;

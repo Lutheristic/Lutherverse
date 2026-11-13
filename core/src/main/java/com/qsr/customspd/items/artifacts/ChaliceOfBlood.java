@@ -31,6 +31,7 @@ import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.particles.ShadowParticle;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.wands.WandOfLivingEarth;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.plants.Earthroot;
 import com.qsr.customspd.scenes.GameScene;
@@ -131,6 +132,7 @@ public class ChaliceOfBlood extends Artifact {
 			GLog.n( Messages.get(this, "ondeath") );
 		} else {
 			upgrade();
+			Catalog.countUse(getClass());
 		}
 	}
 

@@ -36,6 +36,7 @@ import com.qsr.customspd.effects.CellEmitter;
 import com.qsr.customspd.effects.particles.LeafParticle;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.wands.WandOfRegrowth;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.messages.Messages;
@@ -153,6 +154,7 @@ public abstract class Plant implements Bundlable {
 					|| Dungeon.isChallenged(Challenges.NO_HERBALISM)) {
 				super.onThrow( cell );
 			} else {
+				Catalog.countUse(getClass());
 				Dungeon.level.plant( this, cell );
 				if (Dungeon.hero.subClass == HeroSubClass.WARDEN) {
 					for (int i : PathFinder.NEIGHBOURS8) {

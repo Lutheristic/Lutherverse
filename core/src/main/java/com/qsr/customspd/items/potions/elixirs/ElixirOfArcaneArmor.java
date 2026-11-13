@@ -24,9 +24,13 @@ package com.qsr.customspd.items.potions.elixirs;
 import com.qsr.customspd.actors.buffs.ArcaneArmor;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.hero.Hero;
+import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.potions.exotic.PotionOfEarthenArmor;
 import com.qsr.customspd.items.quest.GooBlob;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.journal.Catalog;
+
+import java.util.ArrayList;
 
 public class ElixirOfArcaneArmor extends Elixir {
 	
@@ -50,6 +54,11 @@ public class ElixirOfArcaneArmor extends Elixir {
 			output = ElixirOfArcaneArmor.class;
 			outQuantity = 1;
 		}
-		
+
+		@Override
+		public Item brew(ArrayList<Item> ingredients) {
+			Catalog.countUse(GooBlob.class);
+			return super.brew(ingredients);
+		}
 	}
 }

@@ -25,6 +25,7 @@ import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.HeroClass;
 import com.qsr.customspd.items.Item;
+import com.qsr.customspd.journal.Catalog;
 
 import java.util.ArrayList;
 
@@ -52,6 +53,7 @@ public abstract class RemainsItem extends Item {
 		if (action.equals(AC_USE)){
 			hero.sprite.operate(hero.pos);
 
+			Catalog.countUse(getClass());
 			doEffect(hero);
 
 			hero.spendAndNext(Actor.TICK);

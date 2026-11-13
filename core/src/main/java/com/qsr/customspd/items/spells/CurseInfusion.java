@@ -39,7 +39,10 @@ import com.qsr.customspd.items.weapon.melee.MagesStaff;
 import com.qsr.customspd.items.weapon.melee.MeleeWeapon;
 import com.qsr.customspd.items.weapon.missiles.MissileWeapon;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.journal.Catalog;
 import com.watabou.noosa.audio.Sample;
+
+import java.util.ArrayList;
 
 public class CurseInfusion extends InventorySpell {
 	
@@ -119,6 +122,11 @@ public class CurseInfusion extends InventorySpell {
 			output = CurseInfusion.class;
 			outQuantity = OUT_QUANTITY;
 		}
-		
+
+		@Override
+		public Item brew(ArrayList<Item> ingredients) {
+			Catalog.countUse(MetalShard.class);
+			return super.brew(ingredients);
+		}
 	}
 }

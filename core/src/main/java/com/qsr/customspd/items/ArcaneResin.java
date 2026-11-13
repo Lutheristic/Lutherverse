@@ -32,6 +32,7 @@ import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.items.bags.Bag;
 import com.qsr.customspd.items.bags.MagicalHolster;
 import com.qsr.customspd.items.wands.Wand;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.assets.GeneralAsset;
@@ -124,6 +125,7 @@ public class ArcaneResin extends Item {
 
 				} else {
 
+					Catalog.countUses(ArcaneResin.class, resinToUse);
 					if (resinToUse < quantity()){
 						quantity(quantity()-resinToUse);
 					} else {

@@ -32,6 +32,7 @@ import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.actors.hero.abilities.duelist.ElementalStrike;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.KindOfWeapon;
+import com.qsr.customspd.items.bags.Bag;
 import com.qsr.customspd.items.rings.RingOfArcana;
 import com.qsr.customspd.items.rings.RingOfForce;
 import com.qsr.customspd.items.rings.RingOfFuror;
@@ -58,6 +59,7 @@ import com.qsr.customspd.items.weapon.enchantments.Unstable;
 import com.qsr.customspd.items.weapon.enchantments.Vampiric;
 import com.qsr.customspd.items.weapon.melee.RunicBlade;
 import com.qsr.customspd.items.weapon.melee.Scimitar;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.sprites.ItemSprite;
 import com.qsr.customspd.utils.GLog;
@@ -171,6 +173,26 @@ abstract public class Weapon extends KindOfWeapon {
 		super.reset();
 		usesLeftToID = USES_TO_ID;
 		availableUsesToID = USES_TO_ID/2f;
+	}
+
+	@Override
+	public boolean collect(Bag container) {
+		if(super.collect(container)){
+			if (isIdentified() && enchantment != null){
+				Catalog.setSeen(enchantment.getClass());
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public Item identify(boolean byHero) {
+		if (enchantment != null && byHero && Dungeon.hero != null && Dungeon.hero.isAlive()){
+			Catalog.setSeen(enchantment.getClass());
+		}
+		return super.identify(byHero);
 	}
 	
 	@Override
@@ -324,6 +346,10 @@ abstract public class Weapon extends KindOfWeapon {
 		if (ench == null || !ench.curse()) curseInfusionBonus = false;
 		enchantment = ench;
 		updateQuickslot();
+		if (ench != null && isIdentified() && Dungeon.hero != null
+				&& Dungeon.hero.isAlive() && Dungeon.hero.belongings.contains(this)){
+			Catalog.setSeen(ench.getClass());
+		}
 		return this;
 	}
 
@@ -370,8 +396,8 @@ abstract public class Weapon extends KindOfWeapon {
 				40, //6.67% each
 				10  //3.33% each
 		};
-		
-		private static final Class<?>[] curses = new Class<?>[]{
+
+		public static final Class<?>[] curses = new Class<?>[]{
 				Annoying.class, Displacing.class, Dazzling.class, Explosive.class,
 				Sacrificial.class, Wayward.class, Polarized.class, Friendly.class
 		};

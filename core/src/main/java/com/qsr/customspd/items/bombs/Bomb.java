@@ -44,6 +44,7 @@ import com.qsr.customspd.items.scrolls.ScrollOfMirrorImage;
 import com.qsr.customspd.items.scrolls.ScrollOfRage;
 import com.qsr.customspd.items.scrolls.ScrollOfRecharging;
 import com.qsr.customspd.items.scrolls.ScrollOfRemoveCurse;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Languages;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
@@ -304,6 +305,7 @@ public class Bomb extends Item {
 
 		protected void trigger(Heap heap){
 			heap.remove(bomb);
+			Catalog.countUse(bomb.getClass());
 			bomb.explode(heap.pos);
 			Actor.remove(this);
 		}
@@ -412,7 +414,13 @@ public class Bomb extends Item {
 					result = Reflection.newInstance(validIngredients.get(i.getClass()));
 				}
 			}
-			
+
+			if (result instanceof ArcaneBomb){
+				Catalog.countUse(GooBlob.class);
+			} else if (result instanceof ShrapnelBomb){
+				Catalog.countUse(MetalShard.class);
+			}
+
 			return result;
 		}
 		

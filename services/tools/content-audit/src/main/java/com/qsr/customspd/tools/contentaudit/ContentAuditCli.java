@@ -111,8 +111,7 @@ public final class ContentAuditCli {
         try (Stream<Path> walk = Files.walk(dir)) {
             for (Path p : (Iterable<Path>) walk::iterator) {
                 if (!p.toString().endsWith(".java")) continue;
-                ContentClass c = ContentClassParser.parse(Files.readString(p));
-                if (c != null) out.add(c);
+                out.addAll(ContentClassParser.parseAll(Files.readString(p)));
             }
         }
         return out;

@@ -31,6 +31,7 @@ import com.qsr.customspd.items.bags.MagicalHolster;
 import com.qsr.customspd.items.potions.Potion;
 import com.qsr.customspd.items.weapon.missiles.MissileWeapon;
 import com.qsr.customspd.items.weapon.missiles.darts.Dart;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
@@ -146,11 +147,13 @@ public class LiquidMetal extends Item {
 					GLog.w(Messages.get(LiquidMetal.class, "already_fixed"));
 					return;
 				} else if (maxToUse < quantity()) {
+					Catalog.countUses(LiquidMetal.class, maxToUse);
 					m.repair(maxToUse*durabilityPerMetal);
 					quantity(quantity()-maxToUse);
 					GLog.i(Messages.get(LiquidMetal.class, "apply", maxToUse));
 
 				} else {
+					Catalog.countUses(LiquidMetal.class, quantity());
 					m.repair(quantity()*durabilityPerMetal);
 					GLog.i(Messages.get(LiquidMetal.class, "apply", quantity()));
 					detachAll(Dungeon.hero.belongings.backpack);

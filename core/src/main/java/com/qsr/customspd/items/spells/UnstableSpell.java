@@ -39,6 +39,7 @@ import com.qsr.customspd.items.scrolls.ScrollOfTerror;
 import com.qsr.customspd.items.scrolls.ScrollOfTransmutation;
 import com.qsr.customspd.items.scrolls.exotic.ExoticScroll;
 import com.qsr.customspd.items.stones.Runestone;
+import com.qsr.customspd.journal.Catalog;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
@@ -116,6 +117,7 @@ public class UnstableSpell extends Spell {
 		curItem = s;
 		s.doRead();
 
+		Catalog.countUse(getClass());
 		if (Random.Float() < talentChance){
 			Talent.onScrollUsed(curUser, curUser.pos, talentFactor);
 		}

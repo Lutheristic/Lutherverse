@@ -29,6 +29,7 @@ import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.armor.Armor;
 import com.qsr.customspd.items.weapon.Weapon;
 import com.qsr.customspd.items.weapon.melee.MeleeWeapon;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.sprites.ItemSprite;
@@ -120,8 +121,12 @@ public class PotionOfMastery extends ExoticPotion {
 					curItem.detach(curUser.belongings.backpack);
 				}
 				identifiedByUse = false;
-				if (!anonymous && Random.Float() < talentChance){
-					Talent.onPotionUsed(curUser, curUser.pos, talentFactor);
+
+				if (!anonymous) {
+					Catalog.countUse(PotionOfMastery.class);
+					if (Random.Float() < talentChance) {
+						Talent.onPotionUsed(curUser, curUser.pos, talentFactor);
+					}
 				}
 
 			}

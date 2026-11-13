@@ -28,6 +28,7 @@ import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.Ankh;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.bags.Bag;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.scenes.InterlevelScene;
@@ -127,6 +128,7 @@ public class WndResurrect extends Window {
 		hide();
 
 		Statistics.ankhsUsed++;
+		Catalog.countUse(Ankh.class);
 
 		ankh.detach(Dungeon.hero.belongings.backpack);
 

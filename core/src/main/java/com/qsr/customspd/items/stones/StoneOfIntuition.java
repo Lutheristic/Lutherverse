@@ -31,6 +31,7 @@ import com.qsr.customspd.items.potions.exotic.ExoticPotion;
 import com.qsr.customspd.items.rings.Ring;
 import com.qsr.customspd.items.scrolls.Scroll;
 import com.qsr.customspd.items.scrolls.exotic.ExoticScroll;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.scenes.PixelScene;
@@ -113,6 +114,7 @@ public class StoneOfIntuition extends InventoryStone {
 				protected void onClick() {
 					super.onClick();
 					useAnimation();
+					Catalog.countUse(StoneOfIntuition.class);
 					if (item.getClass() == curGuess){
 						if (item instanceof Ring){
 							((Ring) item).setKnown();

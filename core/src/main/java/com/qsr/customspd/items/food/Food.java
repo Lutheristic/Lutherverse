@@ -34,6 +34,7 @@ import com.qsr.customspd.effects.SpellSprite;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.artifacts.Artifact;
 import com.qsr.customspd.items.artifacts.HornOfPlenty;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.assets.GeneralAsset;
@@ -74,6 +75,7 @@ public class Food extends Item {
 		if (action.equals( AC_EAT )) {
 			
 			detach( hero.belongings.backpack );
+			Catalog.countUse(getClass());
 			
 			satisfy(hero);
 			GLog.i( Messages.get(this, "eat_msg") );

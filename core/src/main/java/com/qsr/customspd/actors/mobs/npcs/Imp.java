@@ -230,7 +230,7 @@ public class Imp extends NPC {
 				Level.set( npc.pos, Terrain.EMPTY, level);
 
 				//always assigns monks on floor 17, golems on floor 19, and 50/50 between either on 18
-				switch ((Dungeon.depth + 2) % 3){
+				switch ((Dungeon.depth + 1) % 3){
 					case 0: default:
 						alternative = true;
 						break;

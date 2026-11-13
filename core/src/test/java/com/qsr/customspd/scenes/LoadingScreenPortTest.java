@@ -1,0 +1,184 @@
+package com.qsr.customspd.scenes;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.qsr.customspd.Dungeon;
+import com.qsr.customspd.assets.Asset;
+import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.levels.features.LevelTransition;
+import com.qsr.customspd.test.HeadlessRun;
+import com.watabou.gltextures.TextureCache;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.Gizmo;
+import com.watabou.noosa.Group;
+import com.watabou.noosa.Image;
+import com.watabou.utils.PlatformSupport;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Proxy;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
+/**
+ * The loading screen, built for real with no display. GL calls go to a stub that does nothing,
+ * and the loading thread is never started: a thread that has not run counts as finished loading.
+ */
+class LoadingScreenPortTest {
+
+	private HeadlessRun run;
+	private Game priorInstance;
+	private GL20 priorGl;
+	private GL20 priorGl20;
+	private InterlevelScene scene;
+
+	@BeforeEach
+	void start() {
+		run = HeadlessRun.start(20261112L);
+		run.enterFirstLevel();
+		run.saveAll();
+		priorInstance = Game.instance;
+		priorGl = Gdx.gl;
+		priorGl20 = Gdx.gl20;
+		new Game(null, null);
+		Game.platform = new PlatformSupport() {
+			@Override public void updateDisplaySize() {}
+			@Override public void updateSystemUI() {}
+			@Override public boolean connectedToUnmeteredNetwork() { return false; }
+			@Override public boolean supportsVibration() { return false; }
+			@Override public void setupFontGenerators(int pageSize, boolean systemFont) {}
+			@Override protected FreeTypeFontGenerator getGeneratorForString(String input) { return null; }
+			@Override public String[] splitforTextBlock(String text, boolean multiline) { return text.split(" "); }
+		};
+		Game.width = Game.dispWidth = 1500;
+		Game.height = Game.dispHeight = 1000;
+		Gdx.gl = Gdx.gl20 = (GL20) Proxy.newProxyInstance(GL20.class.getClassLoader(),
+				new Class<?>[]{GL20.class}, (proxy, method, args) -> {
+					Class<?> r = method.getReturnType();
+					if (r == int.class) return 0;
+					if (r == boolean.class) return false;
+					if (r == float.class) return 0f;
+					if (r == long.class) return 0L;
+					if (r == String.class) return "";
+					return null;
+				});
+		InterlevelScene.lastRegion = -1;
+		InterlevelScene.curTransition = null;
+	}
+
+	@AfterEach
+	void tearDown() {
+		try {
+			if (scene != null) scene.destroy();
+		} finally {
+			Gdx.gl = priorGl;
+			Gdx.gl20 = priorGl20;
+			Game.instance = priorInstance;
+			run.close();
+		}
+	}
+
+	private static Field field(Class<?> type, String name) throws Exception {
+		Field f = type.getDeclaredField(name);
+		f.setAccessible(true);
+		return f;
+	}
+
+	/** Builds the loading screen for a mode without starting its loading thread. */
+	private InterlevelScene load(InterlevelScene.Mode mode) throws Exception {
+		InterlevelScene.mode = mode;
+		field(InterlevelScene.class, "thread").set(null, new Thread());
+		scene = new InterlevelScene();
+		scene.create();
+		return scene;
+	}
+
+	/** The first image the scene adds, which is its backdrop. */
+	private static Image backdrop(Group scene) throws Exception {
+		@SuppressWarnings("unchecked")
+		List<Gizmo> members = (List<Gizmo>) field(Group.class, "members").get(scene);
+		for (Gizmo g : members) {
+			if (g instanceof Image) return (Image) g;
+		}
+		throw new AssertionError("the loading screen has no backdrop");
+	}
+
+	private static void assertSplash(GeneralAsset splash, Group scene) throws Exception {
+		assertSame(TextureCache.get(Asset.getAssetFilePath(splash)), backdrop(scene).texture,
+				"the backdrop is " + splash);
+	}
+
+	private static LevelTransition toFloor(String levelName) {
+		LevelTransition t = new LevelTransition();
+		t.departLevel = Dungeon.levelName;
+		t.destLevel = levelName;
+		t.destType = LevelTransition.Type.REGULAR_ENTRANCE;
+		return t;
+	}
+
+	private static void onFloor(String levelName) {
+		Dungeon.levelName = levelName;
+		Dungeon.depth = Dungeon.layout.getDungeon().get(levelName).getDepth();
+	}
+
+	// upstream afe3f71cb, with the region taken from the level being loaded
+	@Test
+	void aNewGameShowsTheSewers() throws Exception {
+		Dungeon.hero = null;
+		load(InterlevelScene.Mode.DESCEND);
+
+		assertEquals(1, InterlevelScene.lastRegion);
+		assertSplash(GeneralAsset.SEWERS_SPLASH, scene);
+	}
+
+	@Test
+	void continuingOnFloorOneShowsTheSewers() throws Exception {
+		load(InterlevelScene.Mode.CONTINUE);
+
+		assertEquals(1, InterlevelScene.lastRegion);
+		assertSplash(GeneralAsset.SEWERS_SPLASH, scene);
+	}
+
+	@Test
+	void fallingFromTheSewerBossShowsThePrison() throws Exception {
+		onFloor("5");
+		load(InterlevelScene.Mode.FALL);
+
+		assertEquals(2, InterlevelScene.lastRegion, "the chasm under floor 5 leads to floor 6");
+		assertSplash(GeneralAsset.PRISON_SPLASH, scene);
+	}
+
+	@Test
+	void returningShowsTheRegionOfTheReturnFloor() throws Exception {
+		onFloor("3");
+		InterlevelScene.returnLevel = "12";
+		load(InterlevelScene.Mode.RETURN);
+
+		assertEquals(3, InterlevelScene.lastRegion);
+		assertSplash(GeneralAsset.CAVES_SPLASH, scene);
+	}
+
+	@Test
+	void resurrectingShowsTheCurrentRegion() throws Exception {
+		onFloor("17");
+		load(InterlevelScene.Mode.RESURRECT);
+
+		assertEquals(4, InterlevelScene.lastRegion);
+		assertSplash(GeneralAsset.CITY_SPLASH, scene);
+	}
+
+	@Test
+	void descendingStillTakesTheRegionFromTheTransition() throws Exception {
+		onFloor("20");
+		InterlevelScene.curTransition = toFloor("21");
+		load(InterlevelScene.Mode.DESCEND);
+
+		assertEquals(5, InterlevelScene.lastRegion);
+		assertSplash(GeneralAsset.HALLS_SPLASH, scene);
+	}
+}

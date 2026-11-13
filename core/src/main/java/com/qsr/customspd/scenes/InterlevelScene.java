@@ -40,6 +40,7 @@ import com.qsr.customspd.levels.features.Chasm;
 import com.qsr.customspd.levels.features.LevelTransition;
 import com.qsr.customspd.levels.rooms.special.SpecialRoom;
 import com.qsr.customspd.messages.Messages;
+import com.qsr.customspd.modding.LevelScheme;
 import com.qsr.customspd.services.updates.Updates;
 import com.qsr.customspd.ui.GameLog;
 import com.qsr.customspd.ui.RenderedTextBlock;
@@ -48,14 +49,11 @@ import com.qsr.customspd.ui.Window;
 import com.qsr.customspd.utils.BArray;
 import com.qsr.customspd.windows.WndError;
 import com.watabou.gltextures.TextureCache;
-import com.watabou.glwrap.Blending;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
-import com.watabou.noosa.NoosaScript;
-import com.watabou.noosa.NoosaScriptNoLighting;
-import com.watabou.noosa.SkinnedBlock;
 import com.watabou.utils.DeviceCompat;
+import com.watabou.utils.Random;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -116,72 +114,60 @@ public class InterlevelScene extends PixelScene {
 
 		String loadingAsset;
 		int loadingDepth;
-		final float scrollSpeed;
+		//the level being loaded, null where it is not known yet (a new game reads its layout when it starts)
+		String loadingLevel = null;
 		fadeTime = NORM_FADE;
 		switch (mode){
 			default:
-				scrollSpeed = 0;
+				loadingDepth = Dungeon.depth;
+				loadingLevel = Dungeon.levelName;
 				break;
 			case CONTINUE:
-				scrollSpeed = 5;
+				loadingDepth = GamesInProgress.check(GamesInProgress.curSlot).depth;
+				loadingLevel = GamesInProgress.check(GamesInProgress.curSlot).levelName;
 				break;
 			case DESCEND:
 				if (Dungeon.hero == null){
+					loadingDepth = 1;
 					fadeTime = SLOW_FADE;
 				} else {
-					loadingDepth = Dungeon.layout.getDungeon().get(curTransition.destLevel).getDepth();
+					if (curTransition != null){
+						loadingLevel = curTransition.destLevel;
+						loadingDepth = Dungeon.layout.getDungeon().get(loadingLevel).getDepth();
+					} else {
+						loadingDepth = Dungeon.depth+1;
+					}
 					if (Statistics.deepestFloor >= loadingDepth) {
 						fadeTime = FAST_FADE;
 					} else if (Dungeon.layout.getDungeon().get(Dungeon.levelName).getBoss()) {
 						fadeTime = SLOW_FADE;
 					}
 				}
-				scrollSpeed = 5;
 				break;
 			case FALL:
-				scrollSpeed = 50;
+				loadingLevel = Dungeon.layout.getDungeon().get(Dungeon.levelName).getChasm();
+				loadingDepth = Dungeon.layout.getDungeon().get(loadingLevel).getDepth();
 				break;
 			case ASCEND:
 				fadeTime = FAST_FADE;
-				scrollSpeed = -5;
+				if (curTransition != null){
+					loadingLevel = curTransition.destLevel;
+					loadingDepth = Dungeon.layout.getDungeon().get(loadingLevel).getDepth();
+				} else {
+					loadingDepth = Dungeon.depth-1;
+				}
 				break;
 			case RETURN:
-				scrollSpeed = Dungeon.layout.getDungeon().get(returnLevel).getDepth() > Dungeon.depth ? 15 : -15;
+				loadingLevel = returnLevel;
+				loadingDepth = Dungeon.layout.getDungeon().get(returnLevel).getDepth();
 				break;
 		}
 
 		//flush the texture cache whenever moving between regions, helps reduce memory load
-		int region;
-		if (curTransition == null) {
-			region = -1;
-		} else if (Dungeon.layout.getDungeon().get(curTransition.destLevel).getCustomLayout() != null) {
-			region = Dungeon.layout.getDungeon().get(curTransition.destLevel).getCustomLayout().getRegion();
-		} else {
-			switch (Dungeon.layout.getDungeon().get(curTransition.destLevel).getLayout()) {
-				case "SewerLevel":
-				case "SewerBossLevel":
-					region = 1;
-					break;
-				case "PrisonLevel":
-				case "PrisonBossLevel":
-					region = 2;
-					break;
-				case "CavesLevel":
-				case "CavesBossLevel":
-					region = 3;
-					break;
-				case "CityLevel":
-				case "CityBossLevel":
-					region = 4;
-					break;
-				case "HallsLevel":
-				case "HallsBossLevel":
-				case "LastLevel":
-					region = 5;
-					break;
-				default:
-					region = -1;
-			}
+		//the layout names the region where it can, otherwise the depth decides it
+		int region = layoutRegion(loadingLevel);
+		if (region == -1) {
+			region = (int)Math.ceil(loadingDepth / 5f);
 		}
 
 		if (region != lastRegion) {
@@ -189,13 +175,11 @@ public class InterlevelScene extends PixelScene {
 			lastRegion = region;
 		}
 
-		if      (lastRegion == 1)    loadingAsset = Asset.getAssetFilePath(GeneralAsset.LOADING_SEWERS);
-        else if (lastRegion == 2)    loadingAsset = Asset.getAssetFilePath(GeneralAsset.LOADING_PRISON);
-		else if (lastRegion == 3)    loadingAsset = Asset.getAssetFilePath(GeneralAsset.LOADING_CAVES);
-		else if (lastRegion == 4)    loadingAsset = Asset.getAssetFilePath(GeneralAsset.LOADING_CITY);
-		else if (lastRegion >= 5)    loadingAsset = Asset.getAssetFilePath(GeneralAsset.LOADING_HALLS);
-		//region -1 (no transition: new game, continue, restart, fall, return, resurrect) has no art of its own
-		else                         loadingAsset = Asset.getAssetFilePath(GeneralAsset.SHADOW);
+		if      (lastRegion == 1)    loadingAsset = Asset.getAssetFilePath(GeneralAsset.SEWERS_SPLASH);
+		else if (lastRegion == 2)    loadingAsset = Asset.getAssetFilePath(GeneralAsset.PRISON_SPLASH);
+		else if (lastRegion == 3)    loadingAsset = Asset.getAssetFilePath(GeneralAsset.CAVES_SPLASH);
+		else if (lastRegion == 4)    loadingAsset = Asset.getAssetFilePath(GeneralAsset.CITY_SPLASH);
+		else                         loadingAsset = Asset.getAssetFilePath(GeneralAsset.HALLS_SPLASH);
 
 		//slow down transition when displaying an install prompt
 		if (Updates.isInstallable()){
@@ -205,28 +189,27 @@ public class InterlevelScene extends PixelScene {
 			fadeTime = 0f;
 		}
 
-		SkinnedBlock bg = new SkinnedBlock(Camera.main.width, Camera.main.height, loadingAsset ){
-			@Override
-			protected NoosaScript script() {
-				return NoosaScriptNoLighting.get();
-			}
+		Image background = new Image(loadingAsset);
+		background.scale.set(Camera.main.height/background.height);
 
-			@Override
-			public void draw() {
-				Blending.disable();
-				super.draw();
-				Blending.enable();
-			}
+		background.x = (Camera.main.width - background.width())/2f;
+		background.y = (Camera.main.height - background.height())/2f;
+		PixelScene.align(background);
+		add(background);
 
-			@Override
-			public void update() {
-				super.update();
-				offset(0, Game.elapsed * scrollSpeed);
-			}
-		};
-		bg.scale(4, 4);
-		bg.autoAdjust = true;
-		add(bg);
+		Image fadeLeft, fadeRight;
+		fadeLeft = new Image(TextureCache.createGradient(0xFF000000, 0xFF000000, 0x00000000));
+		fadeLeft.x = background.x-2;
+		fadeLeft.scale.set(3, background.height());
+		fadeLeft.visible = background.x > 0;
+		add(fadeLeft);
+
+		fadeRight = new Image(fadeLeft);
+		fadeRight.x = background.x + background.width() + 2;
+		fadeRight.y = background.y + background.height();
+		fadeRight.angle = 180;
+		fadeRight.visible = background.x + background.width() < Camera.main.width;
+		add(fadeRight);
 
 		Image im = new Image(TextureCache.createGradient(0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xFF000000)){
 			@Override
@@ -248,8 +231,8 @@ public class InterlevelScene extends PixelScene {
 
 		message = PixelScene.renderTextBlock( text, 9 );
 		message.setPos(
-			(Camera.main.width - message.width()) / 2,
-			(Camera.main.height - message.height()) / 2
+			(Camera.main.width - message.width() - 6),
+			(Camera.main.height - message.height() - 6)
 		);
 		align(message);
 		add( message );
@@ -360,12 +343,10 @@ public class InterlevelScene extends PixelScene {
 			}
 		}
 
-		float p = timeLeft / fadeTime;
-
 		switch (phase) {
 
 			case FADE_IN:
-				message.alpha( 1 - p );
+				message.alpha( Math.max(0, fadeTime - (timeLeft-0.333f)));
 				if ((timeLeft -= Game.elapsed) <= 0) {
 					synchronized (thread) {
 						if (!thread.isAlive() && error == null) {
@@ -379,7 +360,7 @@ public class InterlevelScene extends PixelScene {
 				break;
 
 			case FADE_OUT:
-				message.alpha( p );
+				message.alpha( Math.min(1, timeLeft+0.333f) );
 
 				if ((timeLeft -= Game.elapsed) <= 0) {
 					Game.switchScene( GameScene.class );
@@ -424,6 +405,43 @@ public class InterlevelScene extends PixelScene {
 					}
 				}
 				break;
+		}
+
+		if (mode == Mode.FALL) {
+			message.setPos(
+					(Camera.main.width - message.width() - 6) + Random.NormalFloat(-1, 1),
+					(Camera.main.height - message.height() - 6) + Random.NormalFloat(-1, 1)
+			);
+			align(message);
+		}
+	}
+
+	//the region a level's layout belongs to, or -1 if the layout does not name one
+	private static int layoutRegion(String levelName) {
+		if (levelName == null || Dungeon.layout == null) return -1;
+		LevelScheme scheme = Dungeon.layout.getDungeon().get(levelName);
+		if (scheme == null) return -1;
+		if (scheme.getCustomLayout() != null) return scheme.getCustomLayout().getRegion();
+		if (scheme.getLayout() == null) return -1;
+		switch (scheme.getLayout()) {
+			case "SewerLevel":
+			case "SewerBossLevel":
+				return 1;
+			case "PrisonLevel":
+			case "PrisonBossLevel":
+				return 2;
+			case "CavesLevel":
+			case "CavesBossLevel":
+				return 3;
+			case "CityLevel":
+			case "CityBossLevel":
+				return 4;
+			case "HallsLevel":
+			case "HallsBossLevel":
+			case "LastLevel":
+				return 5;
+			default:
+				return -1;
 		}
 	}
 

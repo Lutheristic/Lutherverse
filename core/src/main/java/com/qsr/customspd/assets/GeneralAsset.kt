@@ -697,6 +697,12 @@ enum class GeneralAsset(override val path: String) : Asset {
     DUELIST_SPLASH("splashes/duelist.jpg"),
     KEYBEARER_SPLASH("splashes/keybearer.jpg"),
 
+    SEWERS_SPLASH("splashes/sewers.jpg"),
+    PRISON_SPLASH("splashes/prison.jpg"),
+    CAVES_SPLASH("splashes/caves.jpg"),
+    CITY_SPLASH("splashes/city.jpg"),
+    HALLS_SPLASH("splashes/halls.jpg"),
+
     SOMETHING("sprites/items/something.png"),
     WEAPON_HOLDER("sprites/items/weapon_holder.png"),
     ARMOR_HOLDER("sprites/items/armor_holder.png"),

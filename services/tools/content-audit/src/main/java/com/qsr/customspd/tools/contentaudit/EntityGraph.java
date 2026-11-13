@@ -13,8 +13,9 @@ import java.util.TreeMap;
  *  and resolves sprite/image touchpoints through inheritance.
  *
  *  Only top-level classes are audited as entities. Nested classes are followed as
- *  parents: {@code extends Bomb.MagicalBomb}, a fully qualified parent, or a simple
- *  name that a nested class uses for a sibling all resolve to the nested class. */
+ *  parents: {@code extends Bomb.MagicalBomb}, a fully qualified parent, a simple name
+ *  the file imports, or a simple name that a nested class uses for a sibling all
+ *  resolve to the nested class. */
 public final class EntityGraph {
     private static final Set<String> BASE_TYPES = Set.of(
             "Mob", "Item", "MeleeWeapon", "MissileWeapon", "Armor", "Wand",
@@ -25,16 +26,16 @@ public final class EntityGraph {
     public record Entity(String kind, ContentClass cls,
                          String resolvedSpriteClass, String resolvedImageAsset) {}
 
-    /** A simple name declared by more than one parsed class, with the package-qualified
-     *  declarations and the concrete classes {@link #build} drops because their ancestry
-     *  passes through it. */
+    /** A simple name (or Outer.Inner path) declared by more than one parsed class, with the
+     *  package-qualified declarations and the concrete classes {@link #build} drops because
+     *  their ancestry passes through it. */
     public record Ambiguity(String simpleName, List<String> declarations, List<String> excluded) {}
 
     public static List<Ambiguity> ambiguities(List<ContentClass> all) {
+        // keyed by the name other classes write: the simple name, or Outer.Inner for a nested class
         Map<String, List<String>> decls = new TreeMap<>();
         for (ContentClass c : all) {
-            if (c.isNested()) continue; // named through their outer class, never by simple name alone
-            decls.computeIfAbsent(c.simpleName(), k -> new ArrayList<>()).add(qualified(c));
+            decls.computeIfAbsent(c.path(), k -> new ArrayList<>()).add(c.qualifiedName());
         }
         decls.values().removeIf(d -> d.size() < 2);
         if (decls.isEmpty()) return List.of();
@@ -125,6 +126,26 @@ public final class EntityGraph {
                     ContentClass member = byQualified.get(qualify(c.packageName(), outer + "." + written));
                     if (member != null) return member;
                 }
+                for (String imp : c.imports()) {
+                    boolean isStatic = imp.startsWith("static ");
+                    String name = isStatic ? imp.substring("static ".length()) : imp;
+                    if (!name.endsWith("." + written)) continue;
+                    ContentClass imported = byQualified.get(name);
+                    // a type import names the class even when it lies outside the scan
+                    if (imported != null || !isStatic) return imported;
+                }
+                ContentClass samePackage = byQualified.get(qualify(c.packageName(), written));
+                if (samePackage != null) return samePackage;
+                ContentClass onDemand = null;
+                for (String imp : c.imports()) {
+                    if (!imp.endsWith(".*")) continue;
+                    String scope = imp.startsWith("static ") ? imp.substring("static ".length()) : imp;
+                    ContentClass hit = byQualified.get(scope.substring(0, scope.length() - 1) + written);
+                    if (hit == null) continue;
+                    if (onDemand != null) return null; // two on-demand imports supply it: ambiguous
+                    onDemand = hit;
+                }
+                if (onDemand != null) return onDemand;
                 return byName.get(written);
             }
             ContentClass exact = byQualified.get(written);

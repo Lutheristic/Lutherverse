@@ -2,6 +2,7 @@ package com.qsr.customspd.tools.contentaudit;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
@@ -26,20 +27,22 @@ public final class ContentClassParser {
         return type == null ? null : toContentClass(cu, type, null);
     }
 
-    /** The file's top-level class followed by every class nested in it, at any depth.
-     *  Local classes inside methods are left out: nothing outside the method can extend them. */
+    /** The file's top-level class followed by every class nested in any of its top-level
+     *  types (enums and interfaces too), at any depth. Local classes inside methods are left
+     *  out: nothing outside the method can extend them. */
     public static List<ContentClass> parseAll(String source) {
         List<ContentClass> out = new ArrayList<>();
         CompilationUnit cu = compile(source);
         if (cu == null) return out;
         ClassOrInterfaceDeclaration top = topLevel(cu);
-        if (top == null) return out;
-        out.add(toContentClass(cu, top, null));
-        for (ClassOrInterfaceDeclaration type : top.findAll(ClassOrInterfaceDeclaration.class)) {
-            if (type == top || type.isInterface() || type.isLocalClassDeclaration()) continue;
-            String outer = outerPath(type);
-            if (outer == null) continue; // nested in something other than a type
-            out.add(toContentClass(cu, type, outer));
+        if (top != null) out.add(toContentClass(cu, top, null));
+        for (TypeDeclaration<?> declared : cu.getTypes()) {
+            for (ClassOrInterfaceDeclaration type : declared.findAll(ClassOrInterfaceDeclaration.class)) {
+                if (type == declared || type.isInterface() || type.isLocalClassDeclaration()) continue;
+                String outer = outerPath(type);
+                if (outer == null) continue; // nested in something other than a type
+                out.add(toContentClass(cu, type, outer));
+            }
         }
         return out;
     }
@@ -73,7 +76,15 @@ public final class ContentClassParser {
         String imageAsset = assignedSimpleName(type, "image", /*classExpr=*/false);
 
         return new ContentClass(type.getNameAsString(), pkg, sup, type.isAbstract(),
-                spriteClass, imageAsset, outer, supWritten);
+                spriteClass, imageAsset, outer, supWritten, imports(cu));
+    }
+
+    private static List<String> imports(CompilationUnit cu) {
+        List<String> out = new ArrayList<>();
+        for (ImportDeclaration i : cu.getImports()) {
+            out.add((i.isStatic() ? "static " : "") + i.getNameAsString() + (i.isAsterisk() ? ".*" : ""));
+        }
+        return List.copyOf(out);
     }
 
     /** "Outer" or "Outer.Mid" for a nested class; null if an enclosing node is not a type. */

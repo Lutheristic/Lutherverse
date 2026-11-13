@@ -96,6 +96,33 @@ class ContentClassParserTest {
     }
 
     @Test
+    void parseAllReadsClassesNestedInATopLevelEnumOrInterface() {
+        String src = "package com.qsr.customspd.items;\n"
+                + "public enum Flavour {\n"
+                + "  SOUR { void taste() {} };\n"
+                + "  public static class Tart extends Item {}\n"
+                + "}\n"
+                + "interface Kinds { class Shiny extends Item {} }\n";
+        List<ContentClass> all = ContentClassParser.parseAll(src);
+        assertEquals(List.of("com.qsr.customspd.items.Flavour.Tart", "com.qsr.customspd.items.Kinds.Shiny"),
+                all.stream().map(ContentClass::qualifiedName).toList());
+    }
+
+    @Test
+    void parseAllKeepsTheFilesImports() {
+        String src = "package com.qsr.customspd.items.stones;\n"
+                + "import com.qsr.customspd.items.bombs.Bomb.MagicalBomb;\n"
+                + "import com.qsr.customspd.items.wands.*;\n"
+                + "import static com.qsr.customspd.items.Generator.Category;\n"
+                + "public class Fizz extends MagicalBomb { static class Inner extends Fizz {} }\n";
+        List<ContentClass> all = ContentClassParser.parseAll(src);
+        List<String> expected = List.of("com.qsr.customspd.items.bombs.Bomb.MagicalBomb",
+                "com.qsr.customspd.items.wands.*", "static com.qsr.customspd.items.Generator.Category");
+        assertEquals(expected, all.get(0).imports());
+        assertEquals(expected, all.get(1).imports());
+    }
+
+    @Test
     void aParentNamedThroughItsOuterClassKeepsTheOuterName() {
         ContentClass c = ContentClassParser.parse("public class ArcaneBomb extends Bomb.MagicalBomb {}");
         assertEquals("MagicalBomb", c.superSimpleName());

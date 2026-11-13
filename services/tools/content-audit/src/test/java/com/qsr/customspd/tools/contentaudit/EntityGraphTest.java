@@ -150,6 +150,51 @@ class EntityGraphTest {
         EntityGraph.Entity a = es.stream().filter(e -> e.cls().simpleName().equals("ChildOfA"))
                 .findFirst().orElseThrow();
         assertEquals("ASprite", a.resolvedSpriteClass(), "the same package's Outer.Inner is the one meant");
+
+        EntityGraph.Ambiguity inner = EntityGraph.ambiguities(all).stream()
+                .filter(x -> x.simpleName().equals("Outer.Inner")).findFirst()
+                .orElseThrow(() -> new AssertionError("the dropped child must be reported: "
+                        + EntityGraph.ambiguities(all)));
+        assertEquals(List.of(MOBS + ".a.Outer.Inner", MOBS + ".b.Outer.Inner"), inner.declarations());
+        assertEquals(List.of(MOBS + ".Child"), inner.excluded());
+    }
+
+    private static ContentClass importing(String name, String pkg, String sup, List<String> imports) {
+        return new ContentClass(name, pkg, sup, false, null, null, null, sup, imports);
+    }
+
+    @Test
+    void aSimpleNameResolvesThroughTheFilesImports() {
+        String bombs = "com.qsr.customspd.items.bombs";
+        List<ContentClass> all = List.of(
+                cc("Item", "com.qsr.customspd.items", "Object", true, null, null),
+                cc("Bomb", bombs, "Item", false, null, "BOMB"),
+                nested("MagicalBomb", bombs, "Bomb", "Bomb", true, null, "MAGIC_BOMB"),
+                // a top-level class of the same simple name must not be taken for the import
+                cc("MagicalBomb", "com.qsr.customspd.items.spells", "Item", false, null, "SPELL"),
+                importing("Fizz", "com.qsr.customspd.items.stones", "MagicalBomb",
+                        List.of(bombs + ".Bomb.MagicalBomb")),
+                importing("Pop", "com.qsr.customspd.items.stones", "MagicalBomb",
+                        List.of("com.qsr.customspd.items.Item", bombs + ".Bomb.*")),
+                // the same package's class wins over an on-demand import
+                importing("Pip", "com.qsr.customspd.items.spells", "MagicalBomb",
+                        List.of(bombs + ".Bomb.*")),
+                // imported from outside the scan, so it is not the scanned MagicalBomb either
+                importing("Wisp", "com.qsr.customspd.items.stones", "MagicalBomb",
+                        List.of("com.watabou.noosa.MagicalBomb")));
+        List<EntityGraph.Entity> es = EntityGraph.build(all);
+
+        assertEquals("MAGIC_BOMB", image(es, "Fizz"));
+        assertEquals("MAGIC_BOMB", image(es, "Pop"));
+        assertEquals("SPELL", image(es, "Pip"));
+        assertTrue(es.stream().noneMatch(e -> e.cls().simpleName().equals("Wisp")),
+                () -> "Wisp's parent is outside the scan: " + es);
+    }
+
+    private static String image(List<EntityGraph.Entity> es, String name) {
+        return es.stream().filter(e -> e.cls().simpleName().equals(name)).findFirst()
+                .orElseThrow(() -> new AssertionError(name + " was not scanned: " + es))
+                .resolvedImageAsset();
     }
 
     @Test

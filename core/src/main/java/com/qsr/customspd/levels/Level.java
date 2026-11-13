@@ -542,7 +542,7 @@ public abstract class Level implements Bundlable {
 	}
 
 	protected void createMobs() {
-		if (Dungeon.levelName.equals(Dungeon.ghostLevel)) Ghost.Quest.spawn( this );
+		if (Dungeon.levelName.equals(Dungeon.ghostLevel)) Ghost.Quest.spawn( this, this instanceof RegularLevel ? ((RegularLevel) this).roomExit : null );
 		if (Dungeon.levelName.equals(Dungeon.impLevel)) Imp.Quest.spawn( this );
 	}
 

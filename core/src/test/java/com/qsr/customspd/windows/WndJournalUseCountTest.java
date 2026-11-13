@@ -41,6 +41,22 @@ class WndJournalUseCountTest {
 	}
 
 	@Test
+	void artifactCountsReadAsUpgrades() throws Exception {
+		try (HeadlessRun run = HeadlessRun.start(20240611L)) {
+			run.enterFirstLevel();
+			Class<?> artifact = Catalog.ARTIFACTS.items().iterator().next();
+			int before = Catalog.useCount(artifact);
+			try {
+				setUses(artifact, 4);
+				assertEquals(plainDesc(artifact) + "\n\nYou have upgraded this item a total of _4_ times.",
+						desc(artifact));
+			} finally {
+				setUses(artifact, before);
+			}
+		}
+	}
+
+	@Test
 	void theItemPopupEndsWithTheUseCount() throws Exception {
 		try (HeadlessRun run = HeadlessRun.start(20240611L)) {
 			run.enterFirstLevel();

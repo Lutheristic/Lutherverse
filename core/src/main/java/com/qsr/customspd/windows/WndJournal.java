@@ -31,6 +31,7 @@ import com.qsr.customspd.items.Gold;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.armor.Armor;
 import com.qsr.customspd.items.armor.ClassArmor;
+import com.qsr.customspd.items.artifacts.Artifact;
 import com.qsr.customspd.items.potions.Potion;
 import com.qsr.customspd.items.potions.exotic.ExoticPotion;
 import com.qsr.customspd.items.rings.Ring;
@@ -667,7 +668,7 @@ public class WndJournal extends WndTabbed {
 			String desc = "";
 
 			if (Catalog.useCount(itemClass) > 1) {
-				if (item.isUpgradable()) {
+				if (item.isUpgradable() || item instanceof Artifact) {
 					desc += "\n\n" + Messages.get(CatalogTab.class, "upgrade_count", Catalog.useCount(itemClass));
 				} else if (item instanceof Gold) {
 					desc += "\n\n" + Messages.get(CatalogTab.class, "gold_count", Catalog.useCount(itemClass));

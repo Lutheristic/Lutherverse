@@ -97,6 +97,8 @@ public class InterlevelScene extends PixelScene {
 	private Phase phase;
 	private float timeLeft;
 
+	public Image background;
+
 	private RenderedTextBlock loadingText;
 
 	private RenderedTextBlock storyMessage;
@@ -248,7 +250,7 @@ public class InterlevelScene extends PixelScene {
 			fadeTime = 0f;
 		}
 
-		Image background = new Image(loadingAsset);
+		background = new Image(loadingAsset);
 		background.scale.set(Camera.main.height/background.height);
 
 		if (Camera.main.width >= background.width()){
@@ -310,7 +312,7 @@ public class InterlevelScene extends PixelScene {
 
 					storyBG = new ShadowBox();
 					storyBG.boxRect(storyMessage.left()-10, storyMessage.top()-10, storyMessage.width()+20, storyMessage.height()+20);
-					storyBG.alpha(0.75f);
+					storyBG.alpha(0.8f);
 					add(storyBG);
 					add(storyMessage);
 
@@ -340,7 +342,7 @@ public class InterlevelScene extends PixelScene {
 										protected void updateValues(float progress) {
 											float uiAlpha = progress;
 											btnContinue.alpha(uiAlpha);
-											storyBG.alpha(uiAlpha*0.75f);
+											storyBG.alpha(uiAlpha*0.8f);
 											storyMessage.alpha(uiAlpha);
 											btnHideStory.icon().alpha(uiAlpha);
 											loadingText.alpha(uiAlpha);
@@ -372,7 +374,7 @@ public class InterlevelScene extends PixelScene {
 									protected void updateValues(float progress) {
 										float uiAlpha = 1 - progress;
 										btnContinue.alpha(uiAlpha);
-										storyBG.alpha(uiAlpha * 0.75f);
+										storyBG.alpha(uiAlpha * 0.8f);
 										storyMessage.alpha(uiAlpha);
 										icon.alpha(uiAlpha);
 										loadingText.alpha(uiAlpha);
@@ -396,7 +398,7 @@ public class InterlevelScene extends PixelScene {
 									protected void updateValues(float progress) {
 										float uiAlpha = progress;
 										btnContinue.alpha(uiAlpha);
-										storyBG.alpha(uiAlpha*0.75f);
+										storyBG.alpha(uiAlpha*0.8f);
 										storyMessage.alpha(uiAlpha);
 										icon.alpha(uiAlpha);
 										loadingText.alpha(uiAlpha);
@@ -550,12 +552,15 @@ public class InterlevelScene extends PixelScene {
 				break;
 
 			case FADE_OUT:
+				background.acc.set(0);
+				background.speed.set(0);
+
 				loadingText.alpha( Math.min(1, timeLeft+0.333f) );
 
 				if (btnContinue != null){
 					btnContinue.alpha((timeLeft/fadeTime));
 					storyMessage.alpha(btnContinue.alpha());
-					storyBG.alpha(btnContinue.alpha()*0.75f);
+					storyBG.alpha(btnContinue.alpha()*0.8f);
 					btnHideStory.icon().alpha(btnContinue.alpha());
 				}
 
@@ -572,7 +577,7 @@ public class InterlevelScene extends PixelScene {
 				if (btnContinue != null && textFadingIn) {
 					btnContinue.alpha(Math.min(1, btnContinue.alpha() + Game.elapsed));
 					storyMessage.alpha(btnContinue.alpha());
-					storyBG.alpha(btnContinue.alpha()*0.75f);
+					storyBG.alpha(btnContinue.alpha()*0.8f);
 					btnHideStory.icon().alpha(btnContinue.alpha());
 
 					if (btnContinue.alpha() == 1){
@@ -585,6 +590,21 @@ public class InterlevelScene extends PixelScene {
 						}
 
 					}
+				}
+
+				//slowly pan the background side to side in portait mode, if story text is displayed
+				if (btnContinue != null && !textFadingIn && !landscape()){
+					if (background.speed.isZero() && background.acc.isZero()){
+						background.acc.x = background.center().x > Camera.main.width ? -1f : 1f;
+					} else {
+						background.speed.x = GameMath.gate(-10, background.speed.x, 10);
+						if (background.acc.x > 0 && background.x >= -25){
+							background.acc.x = -2.5f;
+						} else if (background.acc.x < 0 && background.x + background.width() <= Camera.main.width+25){
+							background.acc.x = 2.5f;
+						}
+					}
+
 				}
 
 				if (error != null) {

@@ -10,8 +10,11 @@ import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.journal.Document;
 import com.qsr.customspd.levels.features.LevelTransition;
 import com.qsr.customspd.test.HeadlessRun;
+import com.qsr.customspd.ui.Button;
 import com.qsr.customspd.ui.RenderedTextBlock;
+import com.badlogic.gdx.Input;
 import com.watabou.gltextures.TextureCache;
+import com.watabou.input.KeyEvent;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Group;
@@ -23,13 +26,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * The loading screen, built for real with no display. GL calls go to a stub that does nothing,
@@ -139,6 +145,19 @@ class LoadingScreenPortTest {
 		Statistics.deepestFloor = deepest;
 		InterlevelScene.curTransition = toFloor(to);
 		return load(InterlevelScene.Mode.DESCEND);
+	}
+
+	/** Lets the fade in run out; the loading thread was never started, so loading counts as done. */
+	private static void finishLoading(InterlevelScene scene) {
+		Game.elapsed = 5f;
+		scene.update();
+		Game.elapsed = 0f;
+	}
+
+	private static Button continueButton(InterlevelScene scene) throws Exception {
+		Button button = (Button) field(InterlevelScene.class, "btnContinue").get(scene);
+		assertNotNull(button, "test setup: the story is up");
+		return button;
 	}
 
 	private static void onFloor(String levelName) {
@@ -280,5 +299,38 @@ class LoadingScreenPortTest {
 
 		assertEquals(6, InterlevelScene.lastRegion, "floor 26 is region 6, as upstream counts it");
 		assertNull(story(scene));
+	}
+
+	// upstream 0368b61d8: going on past the story marks the intro read, and nothing else does
+	@Test
+	void continuingPastTheStoryMarksTheIntroRead() throws Exception {
+		assertFalse(Document.INTROS.isPageRead(2), "test setup: the prison intro is unread");
+		walkDown("5", "6", 5);
+		assertFalse(Document.INTROS.isPageRead(2), "showing the story does not mark it read");
+
+		finishLoading(scene);
+		assertTrue(continueButton(scene).active, "test setup: loading is done");
+		assertFalse(Document.INTROS.isPageRead(2), "showing the story does not mark it read");
+
+		Method onClick = Button.class.getDeclaredMethod("onClick");
+		onClick.setAccessible(true);
+		onClick.invoke(continueButton(scene));
+
+		assertTrue(Document.INTROS.isPageRead(2));
+	}
+
+	@Test
+	void aKeyPastTheStoryAlsoMarksTheIntroRead() throws Exception {
+		Dungeon.hero = null;
+		load(InterlevelScene.Mode.DESCEND);
+		finishLoading(scene);
+		assertTrue(continueButton(scene).active, "test setup: loading is done");
+		assertFalse(Document.INTROS.isPageRead(1), "showing the story does not mark it read");
+
+		KeyEvent.addKeyEvent(new KeyEvent(Input.Keys.SPACE, true));
+		KeyEvent.addKeyEvent(new KeyEvent(Input.Keys.SPACE, false));
+		KeyEvent.processKeyEvents();
+
+		assertTrue(Document.INTROS.isPageRead(1));
 	}
 }

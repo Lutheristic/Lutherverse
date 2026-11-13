@@ -182,11 +182,7 @@ public class InterlevelScene extends PixelScene {
 		}
 
 		//flush the texture cache whenever moving between regions, helps reduce memory load
-		//the layout names the region where it can, otherwise the depth decides it
-		int region = layoutRegion(loadingLevel);
-		if (region == -1) {
-			region = (int)Math.ceil(loadingDepth / 5f);
-		}
+		int region = region(loadingLevel, loadingDepth);
 
 		if (region != lastRegion) {
 			TextureCache.clear();
@@ -317,6 +313,7 @@ public class InterlevelScene extends PixelScene {
 							timeLeft = fadeTime;
 
 							btnContinue.enable(false);
+							Document.INTROS.readPage(region);
 						}
 					};
 					btnContinue.icon(new Image(Asset.getAssetFilePath(GeneralAsset.ICON_STAIRS)));
@@ -348,6 +345,7 @@ public class InterlevelScene extends PixelScene {
 									phase = Phase.FADE_OUT;
 									timeLeft = fadeTime;
 									btnContinue.enable(false);
+									Document.INTROS.readPage(region);
 								}
 								return true;
 							}
@@ -659,7 +657,12 @@ public class InterlevelScene extends PixelScene {
 
 	}
 
-	//the region a level's layout belongs to, or -1 if the layout does not name one
+	//the layout names the region where it can, otherwise the depth decides it
+	private static int region(String levelName, int depth) {
+		int region = layoutRegion(levelName);
+		return region != -1 ? region : (int)Math.ceil(depth / 5f);
+	}
+
 	private static int layoutRegion(String levelName) {
 		if (levelName == null || Dungeon.layout == null) return -1;
 		LevelScheme scheme = Dungeon.layout.getDungeon().get(levelName);

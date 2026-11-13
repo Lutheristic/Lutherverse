@@ -13,6 +13,7 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Group;
 import com.watabou.utils.PlatformSupport;
+import com.watabou.utils.Random;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -161,14 +162,25 @@ class RunStartSeedPortTest {
 	}
 
 	@Test
-	void aDailyFixesItsSeedBeforeAnythingDraws() throws Exception {
+	void aDailyFixesItsSeedAtTheConfirmWithoutDrawing() throws Exception {
 		setVictory(true);
 		SPDSettings.lastDaily(0);
 		Game.realTime = 20_000 * DAY + 5 * 60 * 60 * 1000L;
 		createScene();
 
-		startDaily();
+		Random.pushGenerator(4242L);
+		long control = Random.Long();
+		Random.popGenerator();
 
+		Random.pushGenerator(4242L);
+		try {
+			startDaily();
+			assertEquals(control, Random.Long(), "the daily drew from the generator before its seed was fixed");
+		} finally {
+			Random.popGenerator();
+		}
+
+		assertSame(scene, read(Game.instance, Game.class, "scene"), "test setup: the loading screen is not built yet");
 		assertEquals(20_000 * DAY, SPDSettings.lastDaily(), "test setup: today's daily");
 		assertFalse(Dungeon.dailyReplay);
 		assertEquals(20_000 * DAY + DungeonSeed.TOTAL_SEEDS, Dungeon.seed);

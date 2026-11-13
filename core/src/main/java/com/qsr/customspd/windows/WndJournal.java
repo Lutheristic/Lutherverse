@@ -661,26 +661,35 @@ public class WndJournal extends WndTabbed {
 			}
 		}
 
-		private void addEffectItem(ItemSprite sprite, final boolean seen, String name, final String desc){
+		private void addEffectItem(ItemSprite sprite, boolean seen, String name, String desc){
 			if (!seen) sprite.lightness(0);
-			final String title = Messages.titleCase(name);
-			ScrollingListPane.ListItem listItem = new ScrollingListPane.ListItem(
-					sprite,
-					null,
-					seen ? title : "???"
-			){
-				@Override
-				public boolean onClick(float x, float y) {
-					if (inside( x, y ) && seen) {
-						GameScene.show(new WndTitledMessage(new Image(icon), title, desc));
-						return true;
-					} else {
-						return false;
-					}
-				}
-			};
+			EffectListItem listItem = new EffectListItem(sprite, seen, Messages.titleCase(name), desc);
 			if (!seen) listItem.hardlight( 0x999999 );
 			list.addItem(listItem);
+		}
+
+		private static class EffectListItem extends ScrollingListPane.ListItem {
+
+			private final boolean seen;
+			private final String title;
+			private final String desc;
+
+			EffectListItem(ItemSprite sprite, boolean seen, String title, String desc){
+				super(sprite, null, seen ? title : "???");
+				this.seen = seen;
+				this.title = title;
+				this.desc = desc;
+			}
+
+			@Override
+			public boolean onClick(float x, float y) {
+				if (inside( x, y ) && seen) {
+					GameScene.show(new WndTitledMessage(new Image(icon), title, desc));
+					return true;
+				} else {
+					return false;
+				}
+			}
 		}
 
 	}

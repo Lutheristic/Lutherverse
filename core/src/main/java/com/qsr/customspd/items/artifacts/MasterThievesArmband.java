@@ -41,6 +41,7 @@ import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.effects.Surprise;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.rings.RingOfEnergy;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.CellSelector;
 import com.qsr.customspd.scenes.GameScene;
@@ -186,6 +187,7 @@ public class MasterThievesArmband extends Artifact {
 							Talent.onArtifactUsed(Dungeon.hero);
 							while (exp >= (10 + Math.round(3.33f * level())) && level() < levelCap) {
 								exp -= 10 + Math.round(3.33f * level());
+								Catalog.countUse(MasterThievesArmband.class);
 								GLog.p(Messages.get(MasterThievesArmband.class, "level_up"));
 								upgrade();
 							}
@@ -305,6 +307,7 @@ public class MasterThievesArmband extends Artifact {
 				Talent.onArtifactUsed(Dungeon.hero);
 				while (exp >= (10 + Math.round(3.33f * level())) && level() < levelCap) {
 					exp -= 10 + Math.round(3.33f * level());
+					Catalog.countUse(MasterThievesArmband.class);
 					GLog.p(Messages.get(MasterThievesArmband.class, "level_up"));
 					upgrade();
 				}

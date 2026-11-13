@@ -28,6 +28,7 @@ import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.rings.RingOfEnergy;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.AlchemyScene;
 import com.qsr.customspd.scenes.GameScene;
@@ -116,12 +117,14 @@ public class AlchemistsToolkit extends Artifact {
 							Sample.INSTANCE.playDelayed(Assets.Sounds.PUFF, 0.5f);
 							Dungeon.hero.sprite.operate(Dungeon.hero.pos);
 							upgrade();
+							Catalog.countUse(AlchemistsToolkit.class);
 						} else if (index == 1){
 							Dungeon.energy -= 6*maxLevels;
 							Sample.INSTANCE.play(Assets.Sounds.DRINK);
 							Sample.INSTANCE.playDelayed(Assets.Sounds.PUFF, 0.5f);
 							Dungeon.hero.sprite.operate(Dungeon.hero.pos);
 							upgrade(maxLevels);
+							Catalog.countUses(AlchemistsToolkit.class, maxLevels);
 						}
 
 					}

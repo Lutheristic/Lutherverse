@@ -27,15 +27,19 @@ import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.Recharging;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.effects.SpellSprite;
+import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.artifacts.Artifact;
 import com.qsr.customspd.items.quest.MetalShard;
 import com.qsr.customspd.items.scrolls.ScrollOfRecharging;
 import com.qsr.customspd.items.wands.CursedWand;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.mechanics.Ballistica;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
+
+import java.util.ArrayList;
 
 public class WildEnergy extends TargetedSpell {
 	
@@ -94,6 +98,11 @@ public class WildEnergy extends TargetedSpell {
 			output = WildEnergy.class;
 			outQuantity = OUT_QUANTITY;
 		}
-		
+
+		@Override
+		public Item brew(ArrayList<Item> ingredients) {
+			Catalog.countUse(MetalShard.class);
+			return super.brew(ingredients);
+		}
 	}
 }

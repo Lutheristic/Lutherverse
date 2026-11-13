@@ -36,6 +36,7 @@ import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.effects.Chains;
 import com.qsr.customspd.effects.Pushing;
 import com.qsr.customspd.items.rings.RingOfEnergy;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.mechanics.Ballistica;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.assets.GeneralAsset;
@@ -347,6 +348,7 @@ public class EtherealChains extends Artifact {
 			if (exp > 100+level()*100 && level() < levelCap){
 				exp -= 100+level()*100;
 				GLog.p( Messages.get(this, "levelup") );
+				Catalog.countUses(EtherealChains.class, 2);
 				upgrade();
 			}
 

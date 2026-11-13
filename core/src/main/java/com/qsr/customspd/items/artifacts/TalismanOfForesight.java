@@ -38,6 +38,7 @@ import com.qsr.customspd.effects.CheckedCell;
 import com.qsr.customspd.items.Heap;
 import com.qsr.customspd.items.rings.RingOfEnergy;
 import com.qsr.customspd.items.scrolls.ScrollOfMagicMapping;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.mechanics.Ballistica;
 import com.qsr.customspd.mechanics.ConeAOE;
@@ -212,6 +213,7 @@ public class TalismanOfForesight extends Artifact {
 				if (exp >= 100 + 50*level() && level() < levelCap) {
 					exp -= 100 + 50*level();
 					upgrade();
+					Catalog.countUse(TalismanOfForesight.class);
 					GLog.p( Messages.get(TalismanOfForesight.class, "levelup") );
 				}
 				updateQuickslot();

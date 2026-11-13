@@ -32,6 +32,7 @@ import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.effects.Pushing;
 import com.qsr.customspd.items.scrolls.ScrollOfTeleportation;
 import com.qsr.customspd.items.scrolls.exotic.ScrollOfPassage;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
@@ -165,6 +166,7 @@ public class BeaconOfReturning extends Spell {
 			Game.switchScene( InterlevelScene.class );
 		}
 		detach(hero.belongings.backpack);
+		Catalog.countUse(getClass());
 		if (Random.Float() < talentChance){
 			Talent.onScrollUsed(curUser, curUser.pos, talentFactor);
 		}

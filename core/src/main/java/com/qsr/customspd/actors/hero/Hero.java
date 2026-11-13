@@ -134,6 +134,7 @@ import com.qsr.customspd.items.weapon.melee.RoundShield;
 import com.qsr.customspd.items.weapon.melee.Sai;
 import com.qsr.customspd.items.weapon.melee.Scimitar;
 import com.qsr.customspd.items.weapon.missiles.MissileWeapon;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.journal.Document;
 import com.qsr.customspd.journal.Notes;
 import com.qsr.customspd.levels.Level;
@@ -1953,6 +1954,7 @@ public class Hero extends Char {
 				Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 				GLog.w(Messages.get(this, "revive"));
 				Statistics.ankhsUsed++;
+				Catalog.countUse(Ankh.class);
 
 				ankh.detach(belongings.backpack);
 

@@ -42,6 +42,7 @@ import com.qsr.customspd.items.food.MeatPie;
 import com.qsr.customspd.items.food.Pasty;
 import com.qsr.customspd.items.food.PhantomMeat;
 import com.qsr.customspd.items.rings.RingOfEnergy;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.scenes.GameScene;
@@ -228,6 +229,7 @@ public class HornOfPlenty extends Artifact {
 			int upgrades = storedFoodEnergy / (int)Hunger.HUNGRY;
 			upgrades = Math.min(upgrades, 10 - level());
 			upgrade(upgrades);
+			Catalog.countUse(HornOfPlenty.class);
 			storedFoodEnergy -= upgrades * Hunger.HUNGRY;
 			if (level() == 10){
 				storedFoodEnergy = 0;

@@ -28,6 +28,7 @@ import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.effects.Flare;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.sprites.ItemSprite;
@@ -134,8 +135,11 @@ public class PotionOfDivineInspiration extends ExoticPotion {
 					new Flare( 6, 32 ).color(0xFFFF00, true).show( curUser.sprite, 2f );
 					GLog.p(Messages.get(PotionOfDivineInspiration.class, "bonus"));
 
-					if (!anonymous && Random.Float() < talentChance){
-						Talent.onPotionUsed(curUser, curUser.pos, talentFactor);
+					if (!anonymous) {
+						Catalog.countUse(PotionOfDivineInspiration.class);
+						if (Random.Float() < talentChance) {
+							Talent.onPotionUsed(curUser, curUser.pos, talentFactor);
+						}
 					}
 
 				}

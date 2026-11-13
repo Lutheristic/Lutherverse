@@ -39,6 +39,7 @@ import com.qsr.customspd.items.potions.PotionOfParalyticGas;
 import com.qsr.customspd.items.potions.PotionOfPurity;
 import com.qsr.customspd.items.potions.PotionOfStrength;
 import com.qsr.customspd.items.potions.PotionOfToxicGas;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.plants.Plant.Seed;
@@ -199,6 +200,7 @@ public class Blandfruit extends Food {
 				potionAttrib instanceof PotionOfLevitation ||
 				potionAttrib instanceof PotionOfPurity) {
 
+			Catalog.countUse(getClass());
 			potionAttrib.shatter( cell );
 			Dungeon.level.drop(new Chunks(), cell).sprite.drop();
 			

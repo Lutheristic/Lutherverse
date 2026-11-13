@@ -27,6 +27,7 @@ import com.qsr.customspd.actors.buffs.Light;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.effects.particles.FlameParticle;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.journal.Catalog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 
@@ -66,6 +67,7 @@ public class Torch extends Item {
 			hero.sprite.operate( hero.pos );
 			
 			detach( hero.belongings.backpack );
+			Catalog.countUse(getClass());
 			
 			Buff.affect(hero, Light.class, Light.DURATION);
 			Sample.INSTANCE.play(Assets.Sounds.BURNING);

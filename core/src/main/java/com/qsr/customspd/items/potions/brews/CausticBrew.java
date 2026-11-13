@@ -28,12 +28,16 @@ import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.Ooze;
 import com.qsr.customspd.effects.Splash;
+import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.potions.PotionOfToxicGas;
 import com.qsr.customspd.items.quest.GooBlob;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.utils.BArray;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PathFinder;
+
+import java.util.ArrayList;
 
 public class CausticBrew extends Brew {
 	
@@ -73,6 +77,11 @@ public class CausticBrew extends Brew {
 			output = CausticBrew.class;
 			outQuantity = 1;
 		}
-		
+
+		@Override
+		public Item brew(ArrayList<Item> ingredients) {
+			Catalog.countUse(GooBlob.class);
+			return super.brew(ingredients);
+		}
 	}
 }

@@ -32,6 +32,7 @@ import com.qsr.customspd.items.Generator;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.wands.WandOfRegrowth;
 import com.qsr.customspd.items.weapon.melee.Crossbow;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.plants.Blindweed;
 import com.qsr.customspd.plants.Mageroyal;
@@ -132,6 +133,7 @@ public abstract class TippedDart extends Dart {
 		if (durability <= 0){
 			//attempt to stick the dart to the enemy, just drop it if we can't.
 			Dart d = new Dart();
+			Catalog.countUse(getClass());
 			if (sticky && enemy != null && enemy.isAlive() && enemy.alignment != Char.Alignment.ALLY){
 				PinCushion p = Buff.affect(enemy, PinCushion.class);
 				if (p.target == enemy){

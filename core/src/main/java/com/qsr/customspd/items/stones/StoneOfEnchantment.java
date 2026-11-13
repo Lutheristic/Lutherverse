@@ -28,6 +28,7 @@ import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.armor.Armor;
 import com.qsr.customspd.items.scrolls.exotic.ScrollOfEnchantment;
 import com.qsr.customspd.items.weapon.Weapon;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.utils.GLog;
@@ -49,6 +50,7 @@ public class StoneOfEnchantment extends InventoryStone {
 	@Override
 	protected void onItemSelected(Item item) {
 		curItem.detach( curUser.belongings.backpack );
+		Catalog.countUse(getClass());
 		
 		if (item instanceof Weapon) {
 			

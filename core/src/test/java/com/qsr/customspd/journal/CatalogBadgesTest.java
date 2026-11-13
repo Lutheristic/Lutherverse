@@ -106,7 +106,7 @@ class CatalogBadgesTest {
 		// from now on the file itself holds them, so the badge is no longer needed for them
 		Bundle stored = new Bundle();
 		Catalog.store(stored);
-		List<Class> written = Arrays.asList(SaveRoundtrip.writeRead(stored).getClassArray("catalog_items"));
+		List<Class> written = Arrays.asList(SaveRoundtrip.writeRead(stored).getClassArray("catalog_classes"));
 		for (Class<?> weapon : Catalog.MELEE_WEAPONS.items()) {
 			assertTrue(written.contains(weapon), weapon.getSimpleName() + " was not written to the journal file");
 		}

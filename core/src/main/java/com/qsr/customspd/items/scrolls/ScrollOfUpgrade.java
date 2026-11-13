@@ -35,6 +35,7 @@ import com.qsr.customspd.items.armor.Armor;
 import com.qsr.customspd.items.rings.Ring;
 import com.qsr.customspd.items.wands.Wand;
 import com.qsr.customspd.items.weapon.Weapon;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.utils.GLog;
 
@@ -113,6 +114,9 @@ public class ScrollOfUpgrade extends InventoryScroll {
 		Badges.validateItemLevelAquired( item );
 		Statistics.upgradesUsed++;
 		Badges.validateMageUnlock();
+
+		Catalog.countUse(item.getClass());
+		Catalog.countUse(getClass());
 	}
 	
 	public static void upgrade( Hero hero ) {

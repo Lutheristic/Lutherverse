@@ -42,6 +42,7 @@ import com.qsr.customspd.items.scrolls.ScrollOfMagicMapping;
 import com.qsr.customspd.items.scrolls.ScrollOfRemoveCurse;
 import com.qsr.customspd.items.scrolls.ScrollOfTransmutation;
 import com.qsr.customspd.items.scrolls.exotic.ExoticScroll;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.sprites.ItemSprite;
@@ -353,6 +354,7 @@ public class UnstableSpellbook extends Artifact {
 						item.detach(hero.belongings.backpack);
 
 						upgrade();
+						Catalog.countUse(UnstableSpellbook.class);
 						GLog.i( Messages.get(UnstableSpellbook.class, "infuse_scroll") );
 						return;
 					}

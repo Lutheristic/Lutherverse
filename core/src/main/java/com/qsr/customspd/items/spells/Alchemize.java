@@ -29,6 +29,7 @@ import com.qsr.customspd.actors.mobs.npcs.Shopkeeper;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.stones.Runestone;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.plants.Plant;
 import com.qsr.customspd.scenes.GameScene;
@@ -259,6 +260,7 @@ public class Alchemize extends Spell {
 				}
 				GameScene.selectItem(itemSelector);
 			}
+			Catalog.countUse(getClass());
 			if (curItem instanceof Alchemize && Random.Float() < ((Alchemize)curItem).talentChance){
 				Talent.onScrollUsed(curUser, curUser.pos, ((Alchemize) curItem).talentFactor);
 			}

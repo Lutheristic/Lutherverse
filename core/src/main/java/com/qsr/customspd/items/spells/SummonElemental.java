@@ -43,6 +43,7 @@ import com.qsr.customspd.items.quest.Embers;
 import com.qsr.customspd.items.scrolls.ScrollOfRecharging;
 import com.qsr.customspd.items.scrolls.ScrollOfTeleportation;
 import com.qsr.customspd.items.scrolls.ScrollOfTransmutation;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.sprites.CharSprite;
@@ -120,6 +121,7 @@ public class SummonElemental extends Spell {
 			curUser.spendAndNext(Actor.TICK);
 
 			detach(Dungeon.hero.belongings.backpack);
+			Catalog.countUse(getClass());
 			if (Random.Float() < talentChance){
 				Talent.onScrollUsed(curUser, curUser.pos, talentFactor);
 			}

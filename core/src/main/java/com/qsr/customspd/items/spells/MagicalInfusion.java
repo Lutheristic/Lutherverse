@@ -30,6 +30,7 @@ import com.qsr.customspd.items.armor.Armor;
 import com.qsr.customspd.items.scrolls.ScrollOfUpgrade;
 import com.qsr.customspd.items.wands.Wand;
 import com.qsr.customspd.items.weapon.Weapon;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.utils.GLog;
@@ -70,6 +71,9 @@ public class MagicalInfusion extends InventorySpell {
 		
 		GLog.p( Messages.get(this, "infuse") );
 		Badges.validateItemLevelAquired(item);
+
+		Catalog.countUse(item.getClass());
+		Catalog.countUse(getClass());
 
 		Statistics.upgradesUsed++;
 	}

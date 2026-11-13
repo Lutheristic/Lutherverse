@@ -25,9 +25,11 @@ import com.qsr.customspd.Assets;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.quest.MetalShard;
 import com.qsr.customspd.items.scrolls.ScrollOfMagicMapping;
 import com.qsr.customspd.items.scrolls.ScrollOfRecharging;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.levels.traps.Trap;
 import com.qsr.customspd.mechanics.Ballistica;
 import com.qsr.customspd.messages.Messages;
@@ -154,7 +156,12 @@ public class ReclaimTrap extends TargetedSpell {
 			output = ReclaimTrap.class;
 			outQuantity = OUT_QUANTITY;
 		}
-		
+
+		@Override
+		public Item brew(ArrayList<Item> ingredients) {
+			Catalog.countUse(MetalShard.class);
+			return super.brew(ingredients);
+		}
 	}
 	
 }

@@ -28,8 +28,10 @@ import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.effects.FloatingText;
 import com.qsr.customspd.effects.Speck;
+import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.potions.PotionOfHealing;
 import com.qsr.customspd.items.quest.GooBlob;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.assets.GeneralAsset;
@@ -40,6 +42,8 @@ import com.watabou.utils.GameMath;
 import com.watabou.utils.Random;
 
 import kotlin.Pair;
+
+import java.util.ArrayList;
 
 public class ElixirOfAquaticRejuvenation extends Elixir {
 	
@@ -157,7 +161,12 @@ public class ElixirOfAquaticRejuvenation extends Elixir {
 			output = ElixirOfAquaticRejuvenation.class;
 			outQuantity = 1;
 		}
-		
+
+		@Override
+		public Item brew(ArrayList<Item> ingredients) {
+			Catalog.countUse(GooBlob.class);
+			return super.brew(ingredients);
+		}
 	}
 	
 }

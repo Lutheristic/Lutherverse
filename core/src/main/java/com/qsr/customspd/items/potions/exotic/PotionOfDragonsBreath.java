@@ -35,6 +35,7 @@ import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.effects.MagicMissile;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.mechanics.Ballistica;
@@ -199,8 +200,11 @@ public class PotionOfDragonsBreath extends ExoticPotion {
 
 										curUser.spendAndNext(1f);
 
-										if (!anonymous && Random.Float() < talentChance){
-											Talent.onPotionUsed(curUser, curUser.pos, talentFactor);
+										if (!anonymous) {
+											Catalog.countUse(PotionOfDragonsBreath.class);
+											if (Random.Float() < talentChance) {
+												Talent.onPotionUsed(curUser, curUser.pos, talentFactor);
+											}
 										}
 									}
 								});

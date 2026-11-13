@@ -30,6 +30,7 @@ import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.HeroSubClass;
 import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.effects.Speck;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.assets.GeneralAsset;
@@ -93,6 +94,7 @@ public class TengusMask extends Item {
 	public void choose( HeroSubClass way ) {
 		
 		detach( curUser.belongings.backpack );
+		Catalog.countUse( getClass() );
 		
 		curUser.spend( Actor.TICK );
 		curUser.busy();

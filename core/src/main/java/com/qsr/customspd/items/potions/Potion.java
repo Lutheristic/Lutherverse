@@ -291,8 +291,11 @@ public class Potion extends Item {
 		
 		hero.sprite.operate( hero.pos );
 
-		if (!anonymous && Random.Float() < talentChance){
-			Talent.onPotionUsed(curUser, curUser.pos, talentFactor);
+		if (!anonymous) {
+			Catalog.countUse(getClass());
+			if (Random.Float() < talentChance) {
+				Talent.onPotionUsed(curUser, curUser.pos, talentFactor);
+			}
 		}
 	}
 	
@@ -310,8 +313,11 @@ public class Potion extends Item {
 			}
 			shatter( cell );
 
-			if (!anonymous && Random.Float() < talentChance){
-				Talent.onPotionUsed(curUser, cell, talentFactor);
+			if (!anonymous) {
+				Catalog.countUse(getClass());
+				if (Random.Float() < talentChance) {
+					Talent.onPotionUsed(curUser, cell, talentFactor);
+				}
 			}
 			
 		}

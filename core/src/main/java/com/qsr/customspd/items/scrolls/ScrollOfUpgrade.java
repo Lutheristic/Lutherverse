@@ -116,7 +116,6 @@ public class ScrollOfUpgrade extends InventoryScroll {
 		Badges.validateMageUnlock();
 
 		Catalog.countUse(item.getClass());
-		Catalog.countUse(getClass());
 	}
 	
 	public static void upgrade( Hero hero ) {

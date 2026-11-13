@@ -272,4 +272,13 @@ class LoadingScreenPortTest {
 
 		assertNull(story(scene));
 	}
+
+	// upstream 400eebcac: the final floor is past the five regions and has no intro
+	@Test
+	void walkingDownToTheLastFloorShowsNoStory() throws Exception {
+		walkDown("25", "26", 25);
+
+		assertEquals(6, InterlevelScene.lastRegion, "floor 26 is region 6, as upstream counts it");
+		assertNull(story(scene));
+	}
 }

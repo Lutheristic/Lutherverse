@@ -299,7 +299,8 @@ public class InterlevelScene extends PixelScene {
 		align(loadingText);
 		add(loadingText);
 
-		if (mode == Mode.DESCEND){
+		//regions are pack data here, so the intro index is bounded on both sides
+		if (mode == Mode.DESCEND && lastRegion >= 1 && lastRegion <= 5){
 			if (Dungeon.hero == null || (loadingDepth > Statistics.deepestFloor && loadingDepth % 5 == 1)){
 					storyMessage = PixelScene.renderTextBlock(Document.INTROS.pageBody(region), 6);
 					storyMessage.maxWidth( PixelScene.landscape() ? 180 : 125);
@@ -626,8 +627,9 @@ public class InterlevelScene extends PixelScene {
 				return 4;
 			case "HallsLevel":
 			case "HallsBossLevel":
-			case "LastLevel":
 				return 5;
+			case "LastLevel":
+				return 6;
 			default:
 				return -1;
 		}

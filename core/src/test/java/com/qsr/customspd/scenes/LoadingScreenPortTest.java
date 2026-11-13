@@ -11,6 +11,7 @@ import com.qsr.customspd.journal.Document;
 import com.qsr.customspd.levels.features.LevelTransition;
 import com.qsr.customspd.messages.Languages;
 import com.qsr.customspd.messages.Messages;
+import com.qsr.customspd.modding.DungeonLayout;
 import com.qsr.customspd.test.HeadlessRun;
 import com.qsr.customspd.ui.Button;
 import com.qsr.customspd.ui.RenderedTextBlock;
@@ -24,6 +25,7 @@ import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
 import com.watabou.utils.PlatformSupport;
 import com.watabou.utils.Random;
+import kotlinx.serialization.json.Json;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -302,6 +304,44 @@ class LoadingScreenPortTest {
 
 		assertEquals(6, InterlevelScene.lastRegion, "floor 26 is region 6, as upstream counts it");
 		assertNull(story(scene));
+	}
+
+	/** Pack floors the region table does not know: p30/p31 by name, c5/c6 with a custom region 0. */
+	private static void usePackLayout() {
+		String custom = "\"custom_layout\":{\"width\":1,\"height\":1,\"region\":0,"
+				+ "\"music\":{\"tracks\":[],\"probs\":[]},\"map\":[4]}";
+		String json = "{\"start\":\"p30\",\"dungeon\":{"
+				+ "\"p30\":{\"depth\":30,\"type\":\"regular\",\"layout\":\"PackLevel\","
+				+ "\"entrances\":[],\"exits\":[\"p31\"],\"chasm\":\"p31\",\"passage\":\"p30\"},"
+				+ "\"p31\":{\"depth\":31,\"type\":\"regular\",\"layout\":\"PackLevel\","
+				+ "\"entrances\":[\"p30\"],\"exits\":[],\"chasm\":\"p31\",\"passage\":\"p30\"},"
+				+ "\"c5\":{\"depth\":5,\"type\":\"custom\",\"entrances\":[],\"exits\":[\"c6\"],"
+				+ "\"chasm\":\"c6\",\"passage\":\"c5\"," + custom + "},"
+				+ "\"c6\":{\"depth\":6,\"type\":\"custom\",\"entrances\":[\"c5\"],\"exits\":[],"
+				+ "\"chasm\":\"c6\",\"passage\":\"c5\"," + custom + "}"
+				+ "}}";
+		Dungeon.layout = Json.Default.decodeFromString(DungeonLayout.Companion.serializer(), json);
+	}
+
+	// pack floors can land outside the five regions that have an intro
+	@Test
+	void walkingDownToADeepFloorTheTableDoesNotKnowShowsNoStory() throws Exception {
+		usePackLayout();
+		walkDown("p30", "p31", 30);
+
+		assertEquals(7, InterlevelScene.lastRegion, "test setup: floor 31 falls back to the depth rule");
+		assertNull(story(scene));
+		assertSplash(GeneralAsset.HALLS_SPLASH, scene);
+	}
+
+	@Test
+	void walkingDownToAPackRegionBelowTheFirstShowsNoStory() throws Exception {
+		usePackLayout();
+		walkDown("c5", "c6", 5);
+
+		assertEquals(0, InterlevelScene.lastRegion, "test setup: the custom layout names region 0");
+		assertNull(story(scene));
+		assertSplash(GeneralAsset.HALLS_SPLASH, scene);
 	}
 
 	// upstream 0368b61d8: going on past the story marks the intro read, and nothing else does

@@ -30,32 +30,37 @@ import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.LockedFloor;
 import com.qsr.customspd.actors.mobs.Mob;
+import com.qsr.customspd.effects.ShadowBox;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.LostBackpack;
+import com.qsr.customspd.journal.Document;
 import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.levels.features.Chasm;
 import com.qsr.customspd.levels.features.LevelTransition;
 import com.qsr.customspd.levels.rooms.special.SpecialRoom;
 import com.qsr.customspd.messages.Messages;
+import com.qsr.customspd.modding.LevelScheme;
 import com.qsr.customspd.services.updates.Updates;
 import com.qsr.customspd.ui.GameLog;
+import com.qsr.customspd.ui.IconButton;
 import com.qsr.customspd.ui.RenderedTextBlock;
 import com.qsr.customspd.ui.StyledButton;
 import com.qsr.customspd.ui.Window;
 import com.qsr.customspd.utils.BArray;
 import com.qsr.customspd.windows.WndError;
 import com.watabou.gltextures.TextureCache;
-import com.watabou.glwrap.Blending;
+import com.watabou.input.KeyEvent;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
-import com.watabou.noosa.NoosaScript;
-import com.watabou.noosa.NoosaScriptNoLighting;
-import com.watabou.noosa.SkinnedBlock;
+import com.watabou.noosa.tweeners.Tweener;
 import com.watabou.utils.DeviceCompat;
+import com.watabou.utils.GameMath;
+import com.watabou.utils.Random;
+import com.watabou.utils.Signal;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -92,13 +97,21 @@ public class InterlevelScene extends PixelScene {
 	private Phase phase;
 	private float timeLeft;
 
-	private RenderedTextBlock message;
+	public Image background;
+
+	private RenderedTextBlock loadingText;
+
+	private RenderedTextBlock storyMessage;
+	private ShadowBox storyBG;
+	private StyledButton btnContinue;
+	private IconButton btnHideStory;
 
 	private static Thread thread;
 	private static Exception error = null;
 	private float waitingTime;
 
 	private int dots = 0;
+	private boolean textFadingIn = true;
 
 	public static int lastRegion = -1;
 
@@ -116,86 +129,108 @@ public class InterlevelScene extends PixelScene {
 
 		String loadingAsset;
 		int loadingDepth;
-		final float scrollSpeed;
+		//the level being loaded, null where it is not known yet (a new game reads its layout when it starts)
+		String loadingLevel = null;
 		fadeTime = NORM_FADE;
+
+		long seed = Dungeon.seed;
 		switch (mode){
 			default:
-				scrollSpeed = 0;
+				loadingDepth = Dungeon.depth;
+				loadingLevel = Dungeon.levelName;
 				break;
 			case CONTINUE:
-				scrollSpeed = 5;
+				loadingDepth = GamesInProgress.check(GamesInProgress.curSlot).depth;
+				loadingLevel = GamesInProgress.check(GamesInProgress.curSlot).levelName;
+				seed = GamesInProgress.check(GamesInProgress.curSlot).seed;
 				break;
 			case DESCEND:
 				if (Dungeon.hero == null){
+					loadingDepth = 1;
 					fadeTime = SLOW_FADE;
 				} else {
-					loadingDepth = Dungeon.layout.getDungeon().get(curTransition.destLevel).getDepth();
+					if (curTransition != null){
+						loadingLevel = curTransition.destLevel;
+						loadingDepth = Dungeon.layout.getDungeon().get(loadingLevel).getDepth();
+					} else {
+						loadingDepth = Dungeon.depth+1;
+					}
 					if (Statistics.deepestFloor >= loadingDepth) {
 						fadeTime = FAST_FADE;
 					} else if (Dungeon.layout.getDungeon().get(Dungeon.levelName).getBoss()) {
 						fadeTime = SLOW_FADE;
 					}
 				}
-				scrollSpeed = 5;
 				break;
 			case FALL:
-				scrollSpeed = 50;
+				loadingLevel = Dungeon.layout.getDungeon().get(Dungeon.levelName).getChasm();
+				loadingDepth = Dungeon.layout.getDungeon().get(loadingLevel).getDepth();
 				break;
 			case ASCEND:
 				fadeTime = FAST_FADE;
-				scrollSpeed = -5;
+				if (curTransition != null){
+					loadingLevel = curTransition.destLevel;
+					loadingDepth = Dungeon.layout.getDungeon().get(loadingLevel).getDepth();
+				} else {
+					loadingDepth = Dungeon.depth-1;
+				}
 				break;
 			case RETURN:
-				scrollSpeed = Dungeon.layout.getDungeon().get(returnLevel).getDepth() > Dungeon.depth ? 15 : -15;
+				loadingLevel = returnLevel;
+				loadingDepth = Dungeon.layout.getDungeon().get(returnLevel).getDepth();
 				break;
 		}
 
 		//flush the texture cache whenever moving between regions, helps reduce memory load
-		int region;
-		if (curTransition == null) {
-			region = -1;
-		} else if (Dungeon.layout.getDungeon().get(curTransition.destLevel).getCustomLayout() != null) {
-			region = Dungeon.layout.getDungeon().get(curTransition.destLevel).getCustomLayout().getRegion();
-		} else {
-			switch (Dungeon.layout.getDungeon().get(curTransition.destLevel).getLayout()) {
-				case "SewerLevel":
-				case "SewerBossLevel":
-					region = 1;
-					break;
-				case "PrisonLevel":
-				case "PrisonBossLevel":
-					region = 2;
-					break;
-				case "CavesLevel":
-				case "CavesBossLevel":
-					region = 3;
-					break;
-				case "CityLevel":
-				case "CityBossLevel":
-					region = 4;
-					break;
-				case "HallsLevel":
-				case "HallsBossLevel":
-				case "LastLevel":
-					region = 5;
-					break;
-				default:
-					region = -1;
-			}
-		}
+		int region = region(loadingLevel, loadingDepth);
 
 		if (region != lastRegion) {
 			TextureCache.clear();
 			lastRegion = region;
 		}
 
-		if      (lastRegion == 1)    loadingAsset = Asset.getAssetFilePath(GeneralAsset.LOADING_SEWERS);
-        else if (lastRegion == 2)    loadingAsset = Asset.getAssetFilePath(GeneralAsset.LOADING_PRISON);
-		else if (lastRegion == 3)    loadingAsset = Asset.getAssetFilePath(GeneralAsset.LOADING_CAVES);
-		else if (lastRegion == 4)    loadingAsset = Asset.getAssetFilePath(GeneralAsset.LOADING_CITY);
-		else if (lastRegion >= 5)    loadingAsset = Asset.getAssetFilePath(GeneralAsset.LOADING_HALLS);
-		//region -1 (no transition: new game, continue, restart, fall, return, resurrect) has no art of its own
-		else                         loadingAsset = Asset.getAssetFilePath(GeneralAsset.SHADOW);
+		int loadingCenter = 400;
+
+		//for portrait users, each run the splashes change what details they focus on
+		Random.pushGenerator(seed+lastRegion);
+			switch (lastRegion){
+				case 1:
+					loadingAsset = Asset.getAssetFilePath(GeneralAsset.SEWERS_SPLASH);
+					switch (Random.Int(2)){
+						case 0: loadingCenter = 180; break; //focus on rats and left side
+						case 1: loadingCenter = 485; break; //focus on center pipe and door
+					}
+					break;
+				case 2:
+					loadingAsset = Asset.getAssetFilePath(GeneralAsset.PRISON_SPLASH);
+					switch (Random.Int(3)){
+						case 0: loadingCenter = 190; break; //focus on left skeleton
+						case 1: loadingCenter = 402; break; //focus on center arch
+					}
+					break;
+				case 3:
+					loadingAsset = Asset.getAssetFilePath(GeneralAsset.CAVES_SPLASH);
+					switch (Random.Int(3)){
+						case 0: loadingCenter = 340; break; //focus on center gnoll groups
+						case 1: loadingCenter = 625; break; //focus on right gnoll
+					}
+					break;
+				case 4:
+					loadingAsset = Asset.getAssetFilePath(GeneralAsset.CITY_SPLASH);
+					switch (Random.Int(3)){
+						case 0: loadingCenter = 275; break; //focus on left bookcases
+						case 1: loadingCenter = 485; break; //focus on center pathway
+					}
+					break;
+				case 5: default:
+					loadingAsset = Asset.getAssetFilePath(GeneralAsset.HALLS_SPLASH);
+					switch (Random.Int(3)){
+						case 0: loadingCenter = 145; break; //focus on left arches
+						case 1: loadingCenter = 400; break; //focus on ripper demon
+					}
+					break;
+			}
+		Random.popGenerator();
 
 		//slow down transition when displaying an install prompt
 		if (Updates.isInstallable()){
@@ -205,28 +240,32 @@ public class InterlevelScene extends PixelScene {
 			fadeTime = 0f;
 		}
 
-		SkinnedBlock bg = new SkinnedBlock(Camera.main.width, Camera.main.height, loadingAsset ){
-			@Override
-			protected NoosaScript script() {
-				return NoosaScriptNoLighting.get();
-			}
+		background = new Image(loadingAsset);
+		background.scale.set(Camera.main.height/background.height);
 
-			@Override
-			public void draw() {
-				Blending.disable();
-				super.draw();
-				Blending.enable();
-			}
+		if (Camera.main.width >= background.width()){
+			background.x = (Camera.main.width - background.width())/2f;
+		} else {
+			background.x = Camera.main.width/2f - loadingCenter*background.scale.x;
+			background.x = GameMath.gate(Camera.main.width - background.width(), background.x, 0);
+		}
+		background.y = (Camera.main.height - background.height())/2f;
+		PixelScene.align(background);
+		add(background);
 
-			@Override
-			public void update() {
-				super.update();
-				offset(0, Game.elapsed * scrollSpeed);
-			}
-		};
-		bg.scale(4, 4);
-		bg.autoAdjust = true;
-		add(bg);
+		Image fadeLeft, fadeRight;
+		fadeLeft = new Image(TextureCache.createGradient(0xFF000000, 0xFF000000, 0x00000000));
+		fadeLeft.x = background.x-2;
+		fadeLeft.scale.set(3, background.height());
+		fadeLeft.visible = background.x > 0;
+		add(fadeLeft);
+
+		fadeRight = new Image(fadeLeft);
+		fadeRight.x = background.x + background.width() + 2;
+		fadeRight.y = background.y + background.height();
+		fadeRight.angle = 180;
+		fadeRight.visible = fadeLeft.visible;
+		add(fadeRight);
 
 		Image im = new Image(TextureCache.createGradient(0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xFF000000)){
 			@Override
@@ -235,7 +274,7 @@ public class InterlevelScene extends PixelScene {
 				if (lastRegion == 6)                aa = 1;
 				else if (phase == Phase.FADE_IN)    aa = Math.max( 0, 2*(timeLeft - (fadeTime - 0.333f)));
 				else if (phase == Phase.FADE_OUT)   aa = Math.max( 0, 2*(0.333f - timeLeft));
-				else                                aa = 0;
+				//else                                aa = 0;
 			}
 		};
 		im.angle = 90;
@@ -246,13 +285,145 @@ public class InterlevelScene extends PixelScene {
 
 		String text = Messages.get(Mode.class, mode.name());
 
-		message = PixelScene.renderTextBlock( text, 9 );
-		message.setPos(
-			(Camera.main.width - message.width()) / 2,
-			(Camera.main.height - message.height()) / 2
+		loadingText = PixelScene.renderTextBlock( text, 9 );
+		loadingText.setPos(
+			(Camera.main.width - loadingText.width() - 8),
+			(Camera.main.height - loadingText.height() - 6)
 		);
-		align(message);
-		add( message );
+		align(loadingText);
+		add(loadingText);
+
+		//regions are pack data here, so the intro index is bounded on both sides
+		if (mode == Mode.DESCEND && lastRegion >= 1 && lastRegion <= 5 && !DeviceCompat.isDebug()){
+			if (Dungeon.hero == null || (loadingDepth > Statistics.deepestFloor && loadingDepth % 5 == 1)){
+					storyMessage = PixelScene.renderTextBlock(Document.INTROS.pageBody(region), 6);
+					storyMessage.maxWidth( PixelScene.landscape() ? 180 : 125);
+					storyMessage.setPos((Camera.main.width-storyMessage.width())/2f, (Camera.main.height-storyMessage.height())/2f);
+
+					storyBG = new ShadowBox();
+					storyBG.boxRect(storyMessage.left()-10, storyMessage.top()-10, storyMessage.width()+20, storyMessage.height()+20);
+					storyBG.alpha(0.8f);
+					add(storyBG);
+					add(storyMessage);
+
+					btnContinue = new StyledButton(Chrome.Type.TOAST_TR, Messages.get(InterlevelScene.class, "continue"), 9){
+						@Override
+						protected void onClick() {
+							phase = Phase.FADE_OUT;
+							timeLeft = fadeTime;
+
+							btnContinue.enable(false);
+							Document.INTROS.readPage(region);
+						}
+					};
+					btnContinue.icon(new Image(Asset.getAssetFilePath(GeneralAsset.ICON_STAIRS)));
+					btnContinue.setSize(btnContinue.reqWidth()+10, 22);
+					btnContinue.visible = false;
+					btnContinue.enable(false);
+
+					KeyEvent.addKeyListener(new Signal.Listener<KeyEvent>() {
+						@Override
+						public boolean onSignal(KeyEvent keyEvent) {
+							if (!keyEvent.pressed && btnContinue.active){
+								if (btnHideStory.active && !btnHideStory.icon().visible){
+									btnHideStory.setRect(btnContinue.right()+2, btnContinue.top(), 20, 21);
+									align(btnHideStory);
+									btnHideStory.icon().visible = true;
+									btnHideStory.parent.add(new Tweener(parent, 0.5f) {
+										@Override
+										protected void updateValues(float progress) {
+											float uiAlpha = progress;
+											btnContinue.alpha(uiAlpha);
+											storyBG.alpha(uiAlpha*0.8f);
+											storyMessage.alpha(uiAlpha);
+											btnHideStory.icon().alpha(uiAlpha);
+											loadingText.alpha(uiAlpha);
+											im.am = uiAlpha;
+										}
+									});
+								} else {
+									phase = Phase.FADE_OUT;
+									timeLeft = fadeTime;
+									btnContinue.enable(false);
+									Document.INTROS.readPage(region);
+								}
+								return true;
+							}
+							return false;
+						}
+					});
+
+					btnContinue.setPos((Camera.main.width - btnContinue.width())/2f, storyMessage.bottom()+10);
+					add(btnContinue);
+
+					btnHideStory = new IconButton(new Image(Asset.getAssetFilePath(GeneralAsset.ICON_CHEVRON))){
+						@Override
+						protected void onClick() {
+							if (btnContinue.alpha() != 0 && btnContinue.alpha() != 1){
+								return;
+							}
+							if (icon.visible) {
+								enable(false);
+								//button is effectively screen-sized, but invisible
+								parent.add(new Tweener(parent, 0.5f) {
+									@Override
+									protected void updateValues(float progress) {
+										float uiAlpha = 1 - progress;
+										btnContinue.alpha(uiAlpha);
+										storyBG.alpha(uiAlpha * 0.8f);
+										storyMessage.alpha(uiAlpha);
+										icon.alpha(uiAlpha);
+										loadingText.alpha(uiAlpha);
+										im.am = uiAlpha;
+									}
+
+									@Override
+									protected void onComplete() {
+										super.onComplete();
+										setRect(0, 0, Camera.main.width, Camera.main.height);
+										enable(true);
+										icon.visible = false;
+									}
+								});
+							} else {
+								setRect(btnContinue.right()+2, btnContinue.top(), 20, 21);
+								align(this);
+								icon.visible = true;
+								parent.add(new Tweener(parent, 0.5f) {
+									@Override
+									protected void updateValues(float progress) {
+										float uiAlpha = progress;
+										btnContinue.alpha(uiAlpha);
+										storyBG.alpha(uiAlpha*0.8f);
+										storyMessage.alpha(uiAlpha);
+										icon.alpha(uiAlpha);
+										loadingText.alpha(uiAlpha);
+										im.am = uiAlpha;
+									}
+								});
+							}
+						}
+
+						@Override
+						protected void onPointerDown() {
+							if (icon.visible) {
+								super.onPointerDown();
+							}
+						}
+					};
+					btnHideStory.icon().originToCenter();
+					btnHideStory.icon().angle = 180f;
+					btnHideStory.setRect(btnContinue.right()+2, btnContinue.top(), 20, 21);
+					align(btnHideStory);
+					btnHideStory.enable(false);
+					add(btnHideStory);
+
+					btnContinue.alpha(0);
+					storyBG.alpha(0);
+					storyMessage.alpha(0);
+					btnHideStory.icon().alpha(0);
+			}
+		}
 
 		if (Updates.isInstallable()){
 			StyledButton install = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "install")){
@@ -274,7 +445,7 @@ public class InterlevelScene extends PixelScene {
 			install.icon(new Image(Asset.getAssetFilePath(GeneralAsset.ICON_CHANGES)));
 			install.textColor(Window.SHPX_COLOR);
 			install.setSize(install.reqWidth()+5, 20);
-			install.setPos((Camera.main.width - install.width())/2, (Camera.main.height - message.bottom())/3 + message.bottom());
+			install.setPos((Camera.main.width - install.width())/2, loadingText.top() - install.height() - 4);
 			add(install);
 		}
 
@@ -322,8 +493,7 @@ public class InterlevelScene extends PixelScene {
 
 					synchronized (thread) {
 						if (phase == Phase.STATIC && error == null) {
-							phase = Phase.FADE_OUT;
-							timeLeft = fadeTime;
+							afterLoading();
 						}
 					}
 
@@ -342,35 +512,34 @@ public class InterlevelScene extends PixelScene {
 	public void update() {
 		super.update();
 
-		waitingTime += Game.elapsed;
+		if (btnContinue == null || !btnContinue.isActive()) {
+			waitingTime += Game.elapsed;
+		}
 
 		if (mode != Mode.FALL && dots != Math.ceil(waitingTime / ((2*fadeTime)/3f))) {
 			String text = Messages.get(Mode.class, mode.name());
 			dots = (int)Math.ceil(waitingTime / ((2*fadeTime)/3f))%3;
 			switch (dots){
 				case 1: default:
-					message.text(text + ".");
+					loadingText.text(text + ".");
 					break;
 				case 2:
-					message.text(text + "..");
+					loadingText.text(text + "..");
 					break;
 				case 0:
-					message.text(text + "...");
+					loadingText.text(text + "...");
 					break;
 			}
 		}
 
-		float p = timeLeft / fadeTime;
-
 		switch (phase) {
 
 			case FADE_IN:
-				message.alpha( 1 - p );
+				loadingText.alpha( Math.max(0, fadeTime - (timeLeft-0.333f)));
 				if ((timeLeft -= Game.elapsed) <= 0) {
 					synchronized (thread) {
 						if (!thread.isAlive() && error == null) {
-							phase = Phase.FADE_OUT;
-							timeLeft = fadeTime;
+							afterLoading();
 						} else {
 							phase = Phase.STATIC;
 						}
@@ -379,16 +548,55 @@ public class InterlevelScene extends PixelScene {
 				break;
 
 			case FADE_OUT:
-				message.alpha( p );
+				background.acc.set(0);
+				background.speed.set(0);
+
+				loadingText.alpha( Math.min(1, timeLeft+0.333f) );
+
+				if (btnContinue != null){
+					btnContinue.alpha((timeLeft/fadeTime));
+					storyMessage.alpha(btnContinue.alpha());
+					storyBG.alpha(btnContinue.alpha()*0.8f);
+					btnHideStory.icon().alpha(btnContinue.alpha());
+				}
 
 				if ((timeLeft -= Game.elapsed) <= 0) {
 					Game.switchScene( GameScene.class );
+					KeyEvent.clearListeners(); //removes potential listener for continue
 					thread = null;
 					error = null;
 				}
 				break;
 
 			case STATIC:
+
+				if (btnContinue != null && textFadingIn) {
+					btnContinue.alpha(Math.min(1, btnContinue.alpha() + Game.elapsed));
+					storyMessage.alpha(btnContinue.alpha());
+					storyBG.alpha(btnContinue.alpha()*0.8f);
+					btnHideStory.icon().alpha(btnContinue.alpha());
+
+					if (btnContinue.alpha() == 1){
+						textFadingIn = false;
+						btnHideStory.enable(true);
+					}
+				}
+
+				//slowly pan the background side to side in portait mode, if story text is displayed
+				if (btnContinue != null && !textFadingIn && Game.width < Game.height){
+					if (background.speed.isZero() && background.acc.isZero()){
+						background.acc.x = background.center().x >= Camera.main.width ? -1f : 1f;
+					} else {
+						background.speed.x = GameMath.gate(-10, background.speed.x, 10);
+						if (background.acc.x > 0 && background.x >= -25){
+							background.acc.x = -2.5f;
+						} else if (background.acc.x < 0 && background.x + background.width() <= Camera.main.width+25){
+							background.acc.x = 2.5f;
+						}
+					}
+
+				}
+
 				if (error != null) {
 					String errorMsg;
 					if (error instanceof FileNotFoundException)     errorMsg = Messages.get(this, "file_not_found");
@@ -424,6 +632,66 @@ public class InterlevelScene extends PixelScene {
 					}
 				}
 				break;
+		}
+
+		if (mode == Mode.FALL) {
+			loadingText.setPos(
+					//the randomization is effectively -2 to +2
+					// we don't use the generator stack as levelgen may be occurring
+					// and we don't want to accidentally use a seeded generator
+					(Camera.main.width - loadingText.width() - 4) + 4*(Random.Float(false)-0.5f),
+					(Camera.main.height - loadingText.height() - 6) + 4*(Random.Float(false)-0.5f)
+			);
+			align(loadingText);
+		}
+	}
+
+	private void afterLoading(){
+		if (btnContinue != null){
+			btnContinue.visible = true;
+			float alpha = btnContinue.alpha();
+			btnContinue.enable(true);
+			btnContinue.alpha(alpha);
+			phase = Phase.STATIC;
+		} else {
+			phase = Phase.FADE_OUT;
+			timeLeft = fadeTime;
+		}
+
+	}
+
+	//the layout names the region where it can, otherwise the depth decides it
+	private static int region(String levelName, int depth) {
+		int region = layoutRegion(levelName);
+		return region != -1 ? region : (int)Math.ceil(depth / 5f);
+	}
+
+	private static int layoutRegion(String levelName) {
+		if (levelName == null || Dungeon.layout == null) return -1;
+		LevelScheme scheme = Dungeon.layout.getDungeon().get(levelName);
+		if (scheme == null) return -1;
+		if (scheme.getCustomLayout() != null) return scheme.getCustomLayout().getRegion();
+		if (scheme.getLayout() == null) return -1;
+		switch (scheme.getLayout()) {
+			case "SewerLevel":
+			case "SewerBossLevel":
+				return 1;
+			case "PrisonLevel":
+			case "PrisonBossLevel":
+				return 2;
+			case "CavesLevel":
+			case "CavesBossLevel":
+				return 3;
+			case "CityLevel":
+			case "CityBossLevel":
+				return 4;
+			case "HallsLevel":
+			case "HallsBossLevel":
+				return 5;
+			case "LastLevel":
+				return 6;
+			default:
+				return -1;
 		}
 	}
 

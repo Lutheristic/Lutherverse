@@ -20,7 +20,8 @@ import java.util.List;
 
 /**
  * F4 test foundation: a REAL run, headless. {@link #start(long)} runs the real
- * {@code Dungeon.init()} against the shipped dungeon layout with a fixed seed, and the other
+ * {@code Dungeon.initSeed()} and {@code Dungeon.init()} against the shipped dungeon layout with a
+ * fixed seed, and the other
  * methods drive the same static-state assembly {@code InterlevelScene} performs between scenes
  * (newLevel / switchLevel / saveAll / loadGame / loadLevel) without any scene or rendering.
  *
@@ -65,8 +66,9 @@ public final class HeadlessRun implements AutoCloseable {
 	}
 
 	/**
-	 * Snapshots global state, then starts a fresh run exactly as InterlevelScene.descend() does
-	 * for a new game (Mob.clearHeldAllies + Dungeon.init), as a Warrior with the given seed.
+	 * Snapshots global state, then starts a fresh run exactly as hero select and
+	 * InterlevelScene.descend() do for a new game (Dungeon.initSeed, then Mob.clearHeldAllies +
+	 * Dungeon.init), as a Warrior with the given seed.
 	 * The seed travels the real path: SPDSettings.customSeed -> DungeonSeed.convertFromText.
 	 */
 	public static HeadlessRun start(long seed) {
@@ -93,6 +95,8 @@ public final class HeadlessRun implements AutoCloseable {
 			Dungeon.daily = Dungeon.dailyReplay = false;
 			deleteSlotFiles();
 
+			// hero select fixes the seed, then the loading screen runs Dungeon.init
+			Dungeon.initSeed();
 			Mob.clearHeldAllies();
 			Dungeon.init();
 			if (Dungeon.seed != seed) {

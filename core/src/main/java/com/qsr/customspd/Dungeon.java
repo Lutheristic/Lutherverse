@@ -207,19 +207,9 @@ public class Dungeon {
 	public static String impLevel;
 
 	public static DungeonLayout layout;
-	
-	public static void init() {
 
-		layout = JsonConfigRetriever.INSTANCE.retrieveDungeonLayout();
-
-		gameplayMods = ModManager.INSTANCE.getEnabledGameplayModNames().toArray(new String[]{});
-
-		visited = new String[]{};
-
-		initialVersion = version = Game.versionCode;
-		challenges = SPDSettings.challenges();
-		mobsToChampion = -1;
-
+	//we initialize the seed separately so that things like interlevelscene can access it early
+	public static void initSeed(){
 		if (daily) {
 			//Ensures that daily seeds are not in the range of user-enterable seeds
 			seed = SPDSettings.lastDaily() + DungeonSeed.TOTAL_SEEDS;
@@ -233,6 +223,19 @@ public class Dungeon {
 			customSeedText = "";
 			seed = DungeonSeed.randomSeed();
 		}
+	}
+
+	public static void init() {
+
+		layout = JsonConfigRetriever.INSTANCE.retrieveDungeonLayout();
+
+		gameplayMods = ModManager.INSTANCE.getEnabledGameplayModNames().toArray(new String[]{});
+
+		visited = new String[]{};
+
+		initialVersion = version = Game.versionCode;
+		challenges = SPDSettings.challenges();
+		mobsToChampion = -1;
 
 		Actor.clear();
 		Actor.resetNextID();

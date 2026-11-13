@@ -116,7 +116,6 @@ import com.qsr.customspd.windows.WndKeyBindings;
 import com.qsr.customspd.windows.WndMessage;
 import com.qsr.customspd.windows.WndOptions;
 import com.qsr.customspd.windows.WndResurrect;
-import com.qsr.customspd.windows.WndStory;
 import com.watabou.glwrap.Blending;
 import com.watabou.input.ControllerHandler;
 import com.watabou.input.KeyBindings;
@@ -421,17 +420,6 @@ public class GameScene extends PixelScene {
 				break;
 			case DESCEND:
 			case FALL:
-				if (Dungeon.depth == Statistics.deepestFloor){
-					switch (Dungeon.depth) {
-						case 1: case 6: case 11: case 16: case 21:
-							int region = (Dungeon.depth+4)/5;
-							if (!Document.INTROS.isPageRead(region)) {
-								add(new WndStory(Document.INTROS.pageBody(region)).setDelays(0.6f, 1.4f));
-								Document.INTROS.readPage(region);
-							}
-							break;
-					}
-				}
 				if (Dungeon.hero.isAlive()) {
 					Badges.validateNoKilling();
 				}

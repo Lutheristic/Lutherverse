@@ -557,6 +557,7 @@ enum class GeneralAsset(override val path: String) : Asset {
     ICON_CHAL_COUNT("interfaces/icons/chal_count.png"),
     ICON_CHANGES("interfaces/icons/changes.png"),
     ICON_CHECKED("interfaces/icons/checked.png"),
+    ICON_CHEVRON("interfaces/icons/chevron.png"),
     ICON_CLOSE("interfaces/icons/close.png"),
     ICON_COIN_SML("interfaces/icons/coin_sml.png"),
     ICON_COMPASS("interfaces/icons/compass.png"),
@@ -645,11 +646,6 @@ enum class GeneralAsset(override val path: String) : Asset {
     ICON_DISCORD("interfaces/icons/discord.png"),
     ICON_SNAKE("interfaces/icons/snake.png"),
 
-    LOADING_SEWERS("interfaces/loading_sewers.png"),
-    LOADING_PRISON("interfaces/loading_prison.png"),
-    LOADING_CAVES("interfaces/loading_caves.png"),
-    LOADING_CITY("interfaces/loading_city.png"),
-    LOADING_HALLS("interfaces/loading_halls.png"),
     SHADOW("interfaces/shadow.png"),
 
     MENU_PANE("interfaces/menu_pane.png"),
@@ -696,6 +692,12 @@ enum class GeneralAsset(override val path: String) : Asset {
     HUNTRESS_SPLASH("splashes/huntress.jpg"),
     DUELIST_SPLASH("splashes/duelist.jpg"),
     KEYBEARER_SPLASH("splashes/keybearer.jpg"),
+
+    SEWERS_SPLASH("splashes/sewers.jpg"),
+    PRISON_SPLASH("splashes/prison.jpg"),
+    CAVES_SPLASH("splashes/caves.jpg"),
+    CITY_SPLASH("splashes/city.jpg"),
+    HALLS_SPLASH("splashes/halls.jpg"),
 
     SOMETHING("sprites/items/something.png"),
     WEAPON_HOLDER("sprites/items/weapon_holder.png"),

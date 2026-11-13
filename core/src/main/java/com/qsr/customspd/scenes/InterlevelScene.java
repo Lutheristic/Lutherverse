@@ -245,7 +245,7 @@ public class InterlevelScene extends PixelScene {
 			fadeTime += 0.5f; //adds 1 second total
 			//speed up transition when debugging
 		} else if (DeviceCompat.isDebug()){
-			fadeTime = 1f;
+			fadeTime = 0f;
 		}
 
 		Image background = new Image(loadingAsset);
@@ -302,7 +302,7 @@ public class InterlevelScene extends PixelScene {
 		add(loadingText);
 
 		//regions are pack data here, so the intro index is bounded on both sides
-		if (mode == Mode.DESCEND && lastRegion >= 1 && lastRegion <= 5){
+		if (mode == Mode.DESCEND && lastRegion >= 1 && lastRegion <= 5 && !DeviceCompat.isDebug()){
 			if (Dungeon.hero == null || (loadingDepth > Statistics.deepestFloor && loadingDepth % 5 == 1)){
 					storyMessage = PixelScene.renderTextBlock(Document.INTROS.pageBody(region), 6);
 					storyMessage.maxWidth( PixelScene.landscape() ? 180 : 125);

@@ -26,6 +26,8 @@ import com.qsr.customspd.SPDAction;
 import com.qsr.customspd.ShatteredPixelDungeon;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.items.EnergyCrystal;
+import com.qsr.customspd.items.Gold;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.armor.Armor;
 import com.qsr.customspd.items.armor.ClassArmor;
@@ -638,10 +640,10 @@ public class WndJournal extends WndTabbed {
 						if (inside( x, y ) && itemSeen) {
 							if (item instanceof ClassArmor){
 								GameScene.show(new WndTitledMessage(new Image(icon),
-										Messages.titleCase(item.trueName()), item.desc()));
+										Messages.titleCase(item.trueName()), item.desc() + useCountText(item, itemClass)));
 							} else {
 								GameScene.show(new WndTitledMessage(new Image(icon),
-										Messages.titleCase(item.trueName()), item.info()));
+										Messages.titleCase(item.trueName()), item.info() + useCountText(item, itemClass)));
 							}
 							return true;
 						} else {
@@ -659,6 +661,24 @@ public class WndJournal extends WndTabbed {
 				list.addItem(listItem);
 
 			}
+		}
+
+		static String useCountText(Item item, Class<?> itemClass){
+			String desc = "";
+
+			if (Catalog.useCount(itemClass) > 1) {
+				if (item.isUpgradable()) {
+					desc += "\n\n" + Messages.get(CatalogTab.class, "upgrade_count", Catalog.useCount(itemClass));
+				} else if (item instanceof Gold) {
+					desc += "\n\n" + Messages.get(CatalogTab.class, "gold_count", Catalog.useCount(itemClass));
+				} else if (item instanceof EnergyCrystal) {
+					desc += "\n\n" + Messages.get(CatalogTab.class, "energy_count", Catalog.useCount(itemClass));
+				} else {
+					desc += "\n\n" + Messages.get(CatalogTab.class, "use_count", Catalog.useCount(itemClass));
+				}
+			}
+
+			return desc;
 		}
 
 		private void addEffectItem(ItemSprite sprite, boolean seen, String name, String desc){

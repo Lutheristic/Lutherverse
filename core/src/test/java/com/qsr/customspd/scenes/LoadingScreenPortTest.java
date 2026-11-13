@@ -347,4 +347,24 @@ class LoadingScreenPortTest {
 		assertEquals("Continue", Messages.get(InterlevelScene.class, "continue"), "the English text exists");
 		assertEquals(Messages.get(InterlevelScene.class, "continue"), ((StyledButton) continueButton(scene)).text());
 	}
+
+	// upstream 4eccfda92: the falling text shakes while levelgen runs on the loading thread
+	@Test
+	void theFallingTextShakeDrawsNothingFromTheLevelgenGenerator() throws Exception {
+		onFloor("5");
+		load(InterlevelScene.Mode.FALL);
+
+		Random.pushGenerator(4242L);
+		long control = Random.Long();
+		Random.popGenerator();
+
+		// the seeded generator levelgen pushes for the floor being built
+		Random.pushGenerator(4242L);
+		try {
+			for (int i = 0; i < 5; i++) scene.update();
+			assertEquals(control, Random.Long(), "the shake moved the levelgen generator");
+		} finally {
+			Random.popGenerator();
+		}
+	}
 }

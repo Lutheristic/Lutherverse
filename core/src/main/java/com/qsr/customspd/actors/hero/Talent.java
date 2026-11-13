@@ -35,7 +35,6 @@ import com.qsr.customspd.actors.buffs.EnhancedRings;
 import com.qsr.customspd.actors.buffs.FlavourBuff;
 import com.qsr.customspd.actors.buffs.Haste;
 import com.qsr.customspd.actors.buffs.Invisibility;
-import com.qsr.customspd.actors.buffs.LostInventory;
 import com.qsr.customspd.actors.buffs.PhysicalEmpower;
 import com.qsr.customspd.actors.buffs.Recharging;
 import com.qsr.customspd.actors.buffs.RevealedArea;
@@ -483,7 +482,7 @@ public enum Talent {
 		if (talent == LIGHT_CLOAK && hero.heroClass == HeroClass.ROGUE){
 			for (Item item : Dungeon.hero.belongings.backpack){
 				if (item instanceof CloakOfShadows){
-					if (hero.buff(LostInventory.class) == null || item.keptThoughLostInvent) {
+					if (!hero.belongings.lostInventory() || item.keptThoughLostInvent) {
 						((CloakOfShadows) item).activate(Dungeon.hero);
 					}
 				}

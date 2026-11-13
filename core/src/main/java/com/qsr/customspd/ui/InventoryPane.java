@@ -26,7 +26,6 @@ import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.SPDAction;
 import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.Char;
-import com.qsr.customspd.actors.buffs.LostInventory;
 import com.qsr.customspd.actors.hero.Belongings;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
@@ -362,7 +361,7 @@ public class InventoryPane extends Component {
 			}
 		}
 
-		boolean lostInvent = Dungeon.hero.buff(LostInventory.class) != null;
+		boolean lostInvent = Dungeon.hero.belongings.lostInventory();
 		for (InventorySlot b : equipped){
 			b.enable(lastEnabled
 					&& !(b.item() instanceof WndBag.Placeholder)
@@ -452,7 +451,7 @@ public class InventoryPane extends Component {
 		if (lastEnabled != (Dungeon.hero.ready || !Dungeon.hero.isAlive())) {
 			lastEnabled = (Dungeon.hero.ready || !Dungeon.hero.isAlive());
 
-			boolean lostInvent = Dungeon.hero.buff(LostInventory.class) != null;
+			boolean lostInvent = Dungeon.hero.belongings.lostInventory();
 			for (InventorySlot b : equipped){
 				b.enable(lastEnabled
 						&& !(b.item() instanceof WndBag.Placeholder)

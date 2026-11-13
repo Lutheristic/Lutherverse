@@ -23,7 +23,6 @@ package com.qsr.customspd.ui;
 
 import com.qsr.customspd.Assets;
 import com.qsr.customspd.Dungeon;
-import com.qsr.customspd.actors.buffs.LostInventory;
 import com.qsr.customspd.items.EquipableItem;
 import com.qsr.customspd.items.Gold;
 import com.qsr.customspd.items.Item;
@@ -101,7 +100,7 @@ public class InventorySlot extends ItemSlot {
 
 			if (item.name() == null) {
 				enable( false );
-			} else if (Dungeon.hero.buff(LostInventory.class) != null
+			} else if (Dungeon.hero.belongings.lostInventory()
 					&& !item.keptThoughLostInvent){
 				enable(false);
 			}

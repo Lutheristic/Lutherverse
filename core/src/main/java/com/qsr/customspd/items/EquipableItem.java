@@ -24,7 +24,6 @@ package com.qsr.customspd.items;
 import com.qsr.customspd.Assets;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.Char;
-import com.qsr.customspd.actors.buffs.LostInventory;
 import com.qsr.customspd.actors.buffs.MagicImmune;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.effects.particles.ShadowParticle;
@@ -127,7 +126,7 @@ public abstract class EquipableItem extends Item {
 
 		if (cursed
 				&& hero.buff(MagicImmune.class) == null
-				&& (hero.buff(LostInventory.class) == null || keptThoughLostInvent)) {
+				&& (!hero.belongings.lostInventory() || keptThoughLostInvent)) {
 			GLog.w(Messages.get(EquipableItem.class, "unequip_cursed"));
 			return false;
 		}

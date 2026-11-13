@@ -28,7 +28,6 @@ import com.qsr.customspd.SPDSettings;
 import com.qsr.customspd.Statistics;
 import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.Char;
-import com.qsr.customspd.actors.buffs.LostInventory;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.Item;
@@ -306,7 +305,7 @@ public class QuickSlotButton extends Button {
 	
 	private void enableSlot() {
 		slot.enable(Dungeon.quickslot.isNonePlaceholder( slotNum )
-				&& (Dungeon.hero.buff(LostInventory.class) == null || Dungeon.quickslot.getItem(slotNum).keptThoughLostInvent));
+				&& (!Dungeon.hero.belongings.lostInventory() || Dungeon.quickslot.getItem(slotNum).keptThoughLostInvent));
 	}
 
 	public void slotMargins( int left, int top, int right, int bottom){

@@ -3,7 +3,9 @@ package com.qsr.customspd.actors.mobs.npcs;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.mobs.Mob;
+import com.qsr.customspd.items.Heap;
 import com.qsr.customspd.items.weapon.melee.Sword;
+import com.qsr.customspd.levels.features.LevelTransition;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.test.HeadlessLevel;
 import com.qsr.customspd.test.HeadlessRun;
@@ -17,6 +19,7 @@ import com.watabou.utils.Random;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,13 +27,55 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Upstream 4bbd69a47 (v2.2.0): the sad ghost stays where it spawned. It no longer teleports
- * when you talk to it or heads for the hero once its quest is done.
+ * Upstream 4bbd69a47 and 0c0919f45 (v2.2.0): the sad ghost stays where it spawned. It no longer
+ * teleports when you talk to it or heads for the hero once its quest is done, and while it
+ * wanders it never picks a cell with a heap on it or the level exit.
  */
 class GhostQuestgiverMovementTest {
 
 	private static final long SEED = 20230913L;
 	private static final int W = 9;
+
+	@Test
+	void wanderingNeverPicksAHeapOrTheExit() throws Exception {
+		try (HeadlessRun run = HeadlessRun.start(SEED)) {
+			HeadlessLevel level = HeadlessLevel.install(W, W);
+			int exit = 4 * W + 4, free = 3 * W + 5;
+			level.transitions.add(new LevelTransition(level, exit, LevelTransition.Type.REGULAR_EXIT, 0));
+			assertEquals(exit, level.exit(), "test setup: the exit");
+			for (int cell = 0; cell < level.length(); cell++) {
+				if (level.passable[cell] && cell != exit && cell != free) level.heaps.put(cell, new Heap());
+			}
+			Ghost ghost = HeadlessLevel.at(new Ghost(), 2 * W + 2);
+
+			Method randomDestination = Class.forName("com.qsr.customspd.actors.mobs.Mob$Wandering").getDeclaredMethod("randomDestination");
+			randomDestination.setAccessible(true);
+
+			int heapPicks = 0, exitPicks = 0, freePicks = 0;
+			for (long seed = 1; seed <= 300; seed++) {
+				int stock, picked;
+				Random.pushGenerator(seed);
+				try {
+					stock = level.randomDestination(ghost);
+				} finally {
+					Random.popGenerator();
+				}
+				Random.pushGenerator(seed);
+				try {
+					picked = (int) randomDestination.invoke(ghost.WANDERING);
+				} finally {
+					Random.popGenerator();
+				}
+				if (stock == exit) exitPicks++;
+				else if (level.heaps.get(stock) != null) heapPicks++;
+				else freePicks++;
+				int expected = stock == exit || level.heaps.get(stock) != null ? -1 : stock;
+				assertEquals(expected, picked, "seed " + seed + ": the level offered cell " + stock);
+			}
+			assertTrue(heapPicks > 0 && exitPicks > 0 && freePicks > 0,
+					"the level offered heaps, the exit and the free cell: " + heapPicks + "/" + exitPicks + "/" + freePicks);
+		}
+	}
 
 	@Test
 	void talkingToTheGhostOnceTheQuestIsGivenLeavesItWhereItIs() throws Exception {

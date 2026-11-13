@@ -283,7 +283,7 @@ public class InterlevelScene extends PixelScene {
 
 		message = PixelScene.renderTextBlock( text, 9 );
 		message.setPos(
-			(Camera.main.width - message.width() - 6),
+			(Camera.main.width - message.width() - 8),
 			(Camera.main.height - message.height() - 6)
 		);
 		align(message);
@@ -461,7 +461,7 @@ public class InterlevelScene extends PixelScene {
 
 		if (mode == Mode.FALL) {
 			message.setPos(
-					(Camera.main.width - message.width() - 6) + Random.NormalFloat(-1, 1),
+					(Camera.main.width - message.width() - 4) + Random.NormalFloat(-1, 1),
 					(Camera.main.height - message.height() - 6) + Random.NormalFloat(-1, 1)
 			);
 			align(message);

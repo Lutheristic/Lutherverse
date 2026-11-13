@@ -23,6 +23,7 @@ package com.qsr.customspd.levels;
 
 import com.qsr.customspd.Assets;
 import com.qsr.customspd.Dungeon;
+import com.qsr.customspd.actors.mobs.npcs.Wandmaker;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.effects.particles.FlameParticle;
@@ -64,6 +65,12 @@ public class PrisonLevel extends RegularLevel {
 				new String[]{Assets.Music.PRISON_1, Assets.Music.PRISON_2, Assets.Music.PRISON_2},
 				new float[]{1, 1, 0.5f},
 				false);
+	}
+
+	@Override
+	protected void createMobs() {
+		Wandmaker.Quest.spawnWandmaker(this, roomEntrance);
+		super.createMobs();
 	}
 	
 	@Override

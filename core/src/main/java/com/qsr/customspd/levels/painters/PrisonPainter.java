@@ -21,11 +21,9 @@
 
 package com.qsr.customspd.levels.painters;
 
-import com.qsr.customspd.actors.mobs.npcs.Wandmaker;
 import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.levels.rooms.Room;
-import com.qsr.customspd.levels.rooms.standard.entrance.EntranceRoom;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -34,13 +32,6 @@ public class PrisonPainter extends RegularPainter {
 	
 	@Override
 	protected void decorate(Level level, ArrayList<Room> rooms) {
-		
-		for (Room r : rooms) {
-			if (r instanceof EntranceRoom) {
-				Wandmaker.Quest.spawnWandmaker(level, r);
-				break;
-			}
-		}
 		
 		int w = level.width();
 		int l = level.length();

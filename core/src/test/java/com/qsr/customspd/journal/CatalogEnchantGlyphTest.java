@@ -167,6 +167,23 @@ class CatalogEnchantGlyphTest {
 	}
 
 	@Test
+	void cleansingTheEnchantmentOrGlyphOfCarriedGearIsSafe() {
+		Weapon weapon = new Longsword();
+		weapon.enchant(new Blazing());
+		weapon.identify(false);
+		assertTrue(weapon.collect());
+		weapon.enchant(null);
+		assertEquals(null, weapon.enchantment);
+
+		Armor armor = new LeatherArmor();
+		armor.inscribe(new Viscosity());
+		armor.identify(false);
+		assertTrue(armor.collect());
+		armor.inscribe(null);
+		assertEquals(null, armor.glyph);
+	}
+
+	@Test
 	void pickupsThatNeverEnterTheBackpackAreRecorded() {
 		new Gold(10).doPickUp(hero, hero.pos);
 		new EnergyCrystal(2).doPickUp(hero, hero.pos);

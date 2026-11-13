@@ -460,3 +460,8 @@ Flashbang#explode(int)
 Flashbang#value()
 ShockBomb#explode(int)
 ShockBomb#value()
+
+# --- Wandmaker placement (1 entry), reviewed 2026-11-12 ---
+# matches v2.5.4: PrisonLevel.createMobs places the wandmaker in roomEntrance, and PrisonPainter
+# has no wandmaker code. The painter loop only matched a plain EntranceRoom.
+PrisonPainter#decorate(Level, ArrayList)

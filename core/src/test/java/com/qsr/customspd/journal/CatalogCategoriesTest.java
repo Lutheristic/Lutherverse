@@ -4,9 +4,11 @@ import com.qsr.customspd.Badges;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.items.Generator;
 import com.qsr.customspd.items.Item;
+import com.qsr.customspd.items.armor.Armor;
 import com.qsr.customspd.items.food.Food;
 import com.qsr.customspd.items.potions.exotic.ExoticPotion;
 import com.qsr.customspd.items.scrolls.exotic.ExoticScroll;
+import com.qsr.customspd.items.weapon.Weapon;
 import com.qsr.customspd.items.weapon.melee.Dagger;
 import com.qsr.customspd.items.weapon.missiles.darts.TippedDart;
 import com.qsr.customspd.messages.Messages;
@@ -93,9 +95,15 @@ class CatalogCategoriesTest {
 		Set<Class<?>> all = new LinkedHashSet<>();
 		for (Catalog cat : Catalog.values()) {
 			assertTrue(cat.totalItems() > 0, cat + " is empty");
-			for (Class<? extends Item> cls : cat.items()) {
+			for (Class<?> cls : cat.items()) {
 				assertTrue(all.add(cls), cls.getSimpleName() + " is listed in more than one category");
-				assertTrue(Item.class.isAssignableFrom(cls), cls + " is not an item");
+				if (cat == Catalog.ENCHANTMENTS) {
+					assertTrue(Weapon.Enchantment.class.isAssignableFrom(cls), cls + " is not an enchantment");
+				} else if (cat == Catalog.GLYPHS) {
+					assertTrue(Armor.Glyph.class.isAssignableFrom(cls), cls + " is not a glyph");
+				} else {
+					assertTrue(Item.class.isAssignableFrom(cls), cls + " is not an item");
+				}
 				// the journal builds every entry with Reflection.newInstance
 				assertNotNull(Reflection.newInstance(cls), cls + " cannot be instantiated for the journal");
 			}
@@ -107,6 +115,8 @@ class CatalogCategoriesTest {
 		for (Catalog cat : Catalog.values()) {
 			String title = cat.title();
 			assertNotEquals(Messages.NO_TEXT_FOUND, title, cat + " has no title string");
+			// a missing key comes back as a lookup path
+			assertFalse(title.endsWith(".title"), cat + " has no title string: " + title);
 			assertFalse(title.isEmpty(), cat + " has an empty title");
 		}
 	}
@@ -163,9 +173,9 @@ class CatalogCategoriesTest {
 	@Test
 	void seenItemsWithoutBadgesRoundTrip() throws Exception {
 		clearSeen();
-		Map<Catalog, Class<? extends Item>> picks = new LinkedHashMap<>();
+		Map<Catalog, Class<?>> picks = new LinkedHashMap<>();
 		for (Catalog cat : Catalog.values()) {
-			Class<? extends Item> first = cat.items().iterator().next();
+			Class<?> first = cat.items().iterator().next();
 			picks.put(cat, first);
 			Catalog.setSeen(first);
 		}
@@ -176,7 +186,7 @@ class CatalogCategoriesTest {
 		clearSeen();
 		Catalog.restore(loaded);
 
-		for (Map.Entry<Catalog, Class<? extends Item>> e : picks.entrySet()) {
+		for (Map.Entry<Catalog, Class<?>> e : picks.entrySet()) {
 			assertTrue(Catalog.isSeen(e.getValue()), e.getValue().getSimpleName() + " was lost");
 			assertEquals(1, e.getKey().totalSeen(), e.getKey() + " gained entries on load");
 		}

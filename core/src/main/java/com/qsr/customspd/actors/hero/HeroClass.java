@@ -60,6 +60,7 @@ import com.qsr.customspd.items.weapon.Weapon;
 import com.qsr.customspd.items.weapon.melee.MagesStaff;
 import com.qsr.customspd.items.weapon.melee.MeleeWeapon;
 import com.qsr.customspd.items.weapon.missiles.darts.TippedDart;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.modding.HeroConfig;
 import com.qsr.customspd.modding.ItemDescription;
@@ -159,7 +160,10 @@ public enum HeroClass {
 	static void setUp(HeroConfig config, Hero hero) {
 		if (config.getArmor() != null) {
 			Armor armor = (Armor) Reflection.newInstance(PackClasses.forName("com.qsr.customspd.items." + config.getArmor().getType()));
-			if (config.getArmor().getSeal()) armor.affixSeal(new BrokenSeal());
+			if (config.getArmor().getSeal()) {
+				armor.affixSeal(new BrokenSeal());
+				Catalog.setSeen(BrokenSeal.class); //as it's not added to the inventory
+			}
 			armor.level(config.getArmor().getLevel());
 			if (config.getArmor().getIdentified()) armor.identify();
 			if (config.getArmor().getCursed()) armor.cursed = true;

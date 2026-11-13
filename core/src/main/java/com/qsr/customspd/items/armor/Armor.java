@@ -58,7 +58,9 @@ import com.qsr.customspd.items.armor.glyphs.Stone;
 import com.qsr.customspd.items.armor.glyphs.Swiftness;
 import com.qsr.customspd.items.armor.glyphs.Thorns;
 import com.qsr.customspd.items.armor.glyphs.Viscosity;
+import com.qsr.customspd.items.bags.Bag;
 import com.qsr.customspd.items.rings.RingOfArcana;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.sprites.HeroSprite;
@@ -196,6 +198,26 @@ public class Armor extends EquipableItem {
 			}
 			updateQuickslot();
 		}
+	}
+
+	@Override
+	public boolean collect(Bag container) {
+		if(super.collect(container)){
+			if (isIdentified() && glyph != null){
+				Catalog.setSeen(glyph.getClass());
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public Item identify(boolean byHero) {
+		if (glyph != null && byHero && Dungeon.hero != null && Dungeon.hero.isAlive()){
+			Catalog.setSeen(glyph.getClass());
+		}
+		return super.identify(byHero);
 	}
 
 	@Override
@@ -600,6 +622,10 @@ public class Armor extends EquipableItem {
 		if (seal != null){
 			seal.setGlyph(glyph);
 		}
+		if (isIdentified() && Dungeon.hero != null
+				&& Dungeon.hero.isAlive() && Dungeon.hero.belongings.contains(this)){
+			Catalog.setSeen(glyph.getClass());
+		}
 		return this;
 	}
 
@@ -647,7 +673,7 @@ public class Armor extends EquipableItem {
 				10  //3.33% each
 		};
 
-		private static final Class<?>[] curses = new Class<?>[]{
+		public static final Class<?>[] curses = new Class<?>[]{
 				AntiEntropy.class, Corrosion.class, Displacement.class, Metabolism.class,
 				Multiplicity.class, Stench.class, Overgrowth.class, Bulk.class
 		};

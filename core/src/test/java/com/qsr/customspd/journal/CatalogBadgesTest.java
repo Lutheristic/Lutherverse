@@ -81,8 +81,8 @@ class CatalogBadgesTest {
 		return found;
 	}
 
-	private static List<Class<? extends Item>> everyCatalogItem() {
-		List<Class<? extends Item>> all = new ArrayList<>();
+	private static List<Class<?>> everyCatalogItem() {
+		List<Class<?>> all = new ArrayList<>();
 		for (Catalog cat : Catalog.values()) all.addAll(cat.items());
 		return all;
 	}
@@ -107,14 +107,14 @@ class CatalogBadgesTest {
 		Bundle stored = new Bundle();
 		Catalog.store(stored);
 		List<Class> written = Arrays.asList(SaveRoundtrip.writeRead(stored).getClassArray("catalog_items"));
-		for (Class<? extends Item> weapon : Catalog.MELEE_WEAPONS.items()) {
+		for (Class<?> weapon : Catalog.MELEE_WEAPONS.items()) {
 			assertTrue(written.contains(weapon), weapon.getSimpleName() + " was not written to the journal file");
 		}
 	}
 
 	@Test
 	void identifyingAWholeCategoryNoLongerUnlocksTheOldBadges() {
-		for (Class<? extends Item> armor : Catalog.ARMOR.items()) Catalog.setSeen(armor);
+		for (Class<?> armor : Catalog.ARMOR.items()) Catalog.setSeen(armor);
 		assertEquals(Catalog.ARMOR.totalItems(), Catalog.ARMOR.totalSeen());
 		assertFalse(Badges.isUnlocked(Badges.Badge.ALL_ARMOR_IDENTIFIED));
 		assertEquals(Badges.BadgeType.HIDDEN, Badges.Badge.ALL_ARMOR_IDENTIFIED.type);
@@ -125,7 +125,7 @@ class CatalogBadgesTest {
 	@Test
 	void researcherBadgesFollowTheNumberOfEntries() {
 		int entries = foundGuidePages();
-		List<Class<? extends Item>> items = everyCatalogItem();
+		List<Class<?>> items = everyCatalogItem();
 		int next = 0;
 		int[] thresholds = { 40, 80, 160 };
 		Badges.Badge[] badges = { Badges.Badge.RESEARCHER_1, Badges.Badge.RESEARCHER_2, Badges.Badge.RESEARCHER_3 };
@@ -146,7 +146,7 @@ class CatalogBadgesTest {
 
 	@Test
 	void grandmasterResearcherNeedsEveryEntry() {
-		List<Class<? extends Item>> items = everyCatalogItem();
+		List<Class<?>> items = everyCatalogItem();
 		for (Document doc : Document.values()) {
 			if (doc.isLoreDoc()) continue;
 			for (String page : doc.pageNames()) doc.findPage(page);
@@ -160,24 +160,23 @@ class CatalogBadgesTest {
 	}
 
 	@Test
-	void researcherFourIsSkippedWhileTheJournalHasFewerThan320Entries() {
-		// upstream's bestiary entries take its total past 320; without them a full journal goes
-		// from researcher 3 straight to 5
+	void aFullJournalEarnsEveryResearcherBadge() {
+		// the enchantment and glyph sections take the total past 320, so researcher 4 can be earned
 		int total = 0;
 		for (Catalog cat : Catalog.values()) total += cat.totalItems();
 		for (Document doc : Document.values()) {
 			if (!doc.isLoreDoc()) total += doc.pageNames().size();
 		}
-		assertTrue(total < 320, total + " entries, so researcher 4 can be earned now");
+		assertTrue(total >= 320, total + " entries, so researcher 4 can never be earned");
 
 		for (Document doc : Document.values()) {
 			if (doc.isLoreDoc()) continue;
 			for (String page : doc.pageNames()) doc.findPage(page);
 		}
-		for (Class<? extends Item> item : everyCatalogItem()) Catalog.setSeen(item);
+		for (Class<?> item : everyCatalogItem()) Catalog.setSeen(item);
 		assertTrue(Badges.isUnlocked(Badges.Badge.RESEARCHER_5));
 		assertTrue(Badges.isUnlocked(Badges.Badge.RESEARCHER_3));
-		assertFalse(Badges.isUnlocked(Badges.Badge.RESEARCHER_4), "a full journal skips researcher 4");
+		assertTrue(Badges.isUnlocked(Badges.Badge.RESEARCHER_4));
 	}
 
 	// ----------------------------------------------------------------------- task badges

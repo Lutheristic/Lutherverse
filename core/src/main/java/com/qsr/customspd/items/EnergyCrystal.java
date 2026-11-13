@@ -25,6 +25,7 @@ import com.qsr.customspd.Assets;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.effects.FloatingText;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.watabou.noosa.audio.Sample;
@@ -53,6 +54,8 @@ public class EnergyCrystal extends Item {
 
 	@Override
 	public boolean doPickUp(Hero hero, int pos) {
+
+		Catalog.setSeen(getClass());
 
 		Dungeon.energy += quantity;
 		//TODO track energy collected maybe? We do already track recipes crafted though..

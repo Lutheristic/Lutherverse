@@ -24,6 +24,7 @@ package com.qsr.customspd.items.keys;
 import com.qsr.customspd.Assets;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.items.Item;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.journal.Notes;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.windows.WndJournal;
@@ -48,6 +49,7 @@ public abstract class Key extends Item {
 
 	@Override
 	public boolean doPickUp(Hero hero, int pos) {
+		Catalog.setSeen(getClass());
 		GameScene.pickUpJournal(this, pos);
 		WndJournal.last_index = 2;
 		Notes.add(this);

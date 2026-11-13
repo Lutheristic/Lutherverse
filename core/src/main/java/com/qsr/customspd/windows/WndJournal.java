@@ -27,12 +27,14 @@ import com.qsr.customspd.ShatteredPixelDungeon;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.Item;
+import com.qsr.customspd.items.armor.Armor;
 import com.qsr.customspd.items.armor.ClassArmor;
 import com.qsr.customspd.items.potions.Potion;
 import com.qsr.customspd.items.potions.exotic.ExoticPotion;
 import com.qsr.customspd.items.rings.Ring;
 import com.qsr.customspd.items.scrolls.Scroll;
 import com.qsr.customspd.items.scrolls.exotic.ExoticScroll;
+import com.qsr.customspd.items.weapon.Weapon;
 import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.journal.Document;
 import com.qsr.customspd.journal.Notes;
@@ -560,7 +562,7 @@ public class WndJournal extends WndTabbed {
 		}
 
 		//rings, potions and scrolls (and their exotic versions) are only known once identified in this run
-		private static boolean isKnown(Catalog catalog, Class<? extends Item> cls){
+		private static boolean isKnown(Catalog catalog, Class<?> cls){
 			switch (catalog){
 				case RINGS:
 					return Ring.getKnown().contains(cls);
@@ -579,13 +581,13 @@ public class WndJournal extends WndTabbed {
 
 		private void addListItems(Catalog catalog) {
 
-			ArrayList<Class<? extends Item>> itemClasses = new ArrayList<>(catalog.items());
-			final HashMap<Class<?  extends Item>, Boolean> known = new HashMap<>();
-			for (Class<? extends Item> cls : itemClasses) known.put(cls, isKnown(catalog, cls));
+			ArrayList<Class<?>> itemClasses = new ArrayList<>(catalog.items());
+			final HashMap<Class<?>, Boolean> known = new HashMap<>();
+			for (Class<?> cls : itemClasses) known.put(cls, isKnown(catalog, cls));
 
-			Collections.sort(itemClasses, new Comparator<Class<? extends Item>>() {
+			Collections.sort(itemClasses, new Comparator<Class<?>>() {
 				@Override
-				public int compare(Class<? extends Item> a, Class<? extends Item> b) {
+				public int compare(Class<?> a, Class<?> b) {
 					int result = 0;
 
 					//specifically known items appear first, then seen items, then unknown items.
@@ -598,10 +600,23 @@ public class WndJournal extends WndTabbed {
 				}
 			});
 
-			for (Class<? extends Item> itemClass : itemClasses) {
-				Item item = Reflection.newInstance(itemClass);
-				boolean itemIDed = known.get(itemClass);
+			for (Class<?> itemClass : itemClasses) {
 				boolean itemSeen = Catalog.isSeen(itemClass);
+
+				if (Weapon.Enchantment.class.isAssignableFrom(itemClass)){
+					Weapon.Enchantment ench = (Weapon.Enchantment) Reflection.newInstance(itemClass);
+					addEffectItem(new ItemSprite(GeneralAsset.WORN_SHORTSWORD, itemSeen ? ench.glowing() : null),
+							itemSeen, ench.name(), ench.desc());
+					continue;
+				} else if (Armor.Glyph.class.isAssignableFrom(itemClass)){
+					Armor.Glyph glyph = (Armor.Glyph) Reflection.newInstance(itemClass);
+					addEffectItem(new ItemSprite(GeneralAsset.ARMOR_CLOTH, itemSeen ? glyph.glowing() : null),
+							itemSeen, glyph.name(), glyph.desc());
+					continue;
+				}
+
+				Item item = (Item) Reflection.newInstance(itemClass);
+				boolean itemIDed = known.get(itemClass);
 				if ( itemSeen && !itemIDed ){
 					if (item instanceof Ring){
 						((Ring) item).anonymize();
@@ -644,6 +659,28 @@ public class WndJournal extends WndTabbed {
 				list.addItem(listItem);
 
 			}
+		}
+
+		private void addEffectItem(ItemSprite sprite, final boolean seen, String name, final String desc){
+			if (!seen) sprite.lightness(0);
+			final String title = Messages.titleCase(name);
+			ScrollingListPane.ListItem listItem = new ScrollingListPane.ListItem(
+					sprite,
+					null,
+					seen ? title : "???"
+			){
+				@Override
+				public boolean onClick(float x, float y) {
+					if (inside( x, y ) && seen) {
+						GameScene.show(new WndTitledMessage(new Image(icon), title, desc));
+						return true;
+					} else {
+						return false;
+					}
+				}
+			};
+			if (!seen) listItem.hardlight( 0x999999 );
+			list.addItem(listItem);
 		}
 
 	}

@@ -28,6 +28,7 @@ import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.effects.FloatingText;
+import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
@@ -49,6 +50,7 @@ public class Dewdrop extends Item {
 	public boolean doPickUp(Hero hero, int pos) {
 		
 		Waterskin flask = hero.belongings.getItem( Waterskin.class );
+		Catalog.setSeen(getClass());
 		
 		if (flask != null && !flask.isFull()){
 

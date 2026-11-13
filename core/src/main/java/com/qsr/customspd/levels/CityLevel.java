@@ -60,12 +60,14 @@ public class CityLevel extends RegularLevel {
 		color2 = 0xf2f2f2;
 	}
 
+	public static final String[] CITY_TRACK_LIST
+			= new String[]{Assets.Music.CITY_1, Assets.Music.CITY_2, Assets.Music.CITY_2,
+			Assets.Music.CITY_1, Assets.Music.CITY_3, Assets.Music.CITY_3};
+	public static final float[] CITY_TRACK_CHANCES = new float[]{1f, 1f, 0.5f, 0.25f, 1f, 0.5f};
+
 	@Override
 	public void playLevelMusic() {
-		Music.INSTANCE.playTracks(
-				new String[]{Assets.Music.CITY_1, Assets.Music.CITY_2, Assets.Music.CITY_2},
-				new float[]{1, 1, 0.5f},
-				false);
+		Music.INSTANCE.playTracks(CITY_TRACK_LIST, CITY_TRACK_CHANCES, false);
 	}
 
 	@Override

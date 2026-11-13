@@ -58,11 +58,13 @@ public class SewerLevel extends RegularLevel {
 		color2 = 0x59994a;
 	}
 
+	public static final String[] SEWER_TRACK_LIST
+			= new String[]{Assets.Music.SEWERS_1, Assets.Music.SEWERS_2, Assets.Music.SEWERS_2,
+			Assets.Music.SEWERS_1, Assets.Music.SEWERS_3, Assets.Music.SEWERS_3};
+	public static final float[] SEWER_TRACK_CHANCES = new float[]{1f, 1f, 0.5f, 0.25f, 1f, 0.5f};
+
 	public void playLevelMusic(){
-		Music.INSTANCE.playTracks(
-				new String[]{Assets.Music.SEWERS_1, Assets.Music.SEWERS_2, Assets.Music.SEWERS_2},
-				new float[]{1, 1, 0.5f},
-				false);
+		Music.INSTANCE.playTracks(SEWER_TRACK_LIST, SEWER_TRACK_CHANCES, false);
 	}
 	
 	@Override

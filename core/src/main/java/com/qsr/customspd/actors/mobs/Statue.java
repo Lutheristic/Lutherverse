@@ -54,17 +54,19 @@ public class Statue extends Mob {
 	public Statue() {
 		super();
 		
-		weapon = createWeapon();
-		
 		HP = HT = 15 + Dungeon.depth * 5;
 		defenseSkill = 4 + Dungeon.depth;
 	}
 
-	public Weapon createWeapon(){
-		Weapon weapon = (MeleeWeapon) Generator.random(Generator.Category.WEAPON);
+	public void createWeapon( boolean useDecks ){
+		if (useDecks) {
+			weapon = (MeleeWeapon) Generator.random(Generator.Category.WEAPON);
+		} else {
+			weapon = (MeleeWeapon) Generator.randomUsingDefaults(Generator.Category.WEAPON);
+		}
+		levelGenStatue = useDecks;
 		weapon.cursed = false;
 		weapon.enchant( Enchantment.random() );
-		return weapon;
 	}
 	
 	private static final String WEAPON	= "weapon";
@@ -186,11 +188,18 @@ public class Statue extends Mob {
 	}
 
 	public static Statue random(){
+		return random( true );
+	}
+
+	public static Statue random( boolean useDecks ){
+		Statue statue;
 		if (Random.Int(10) == 0){
-			return new ArmoredStatue();
+			statue = new ArmoredStatue();
 		} else {
-			return new Statue();
+			statue = new Statue();
 		}
+		statue.createWeapon(useDecks);
+		return statue;
 	}
 	
 }

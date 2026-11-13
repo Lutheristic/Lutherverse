@@ -28,7 +28,6 @@ import com.qsr.customspd.actors.mobs.Statue;
 import com.qsr.customspd.effects.CellEmitter;
 import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.items.Generator;
-import com.qsr.customspd.items.weapon.Weapon;
 import com.qsr.customspd.items.weapon.melee.MeleeWeapon;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
@@ -59,6 +58,7 @@ public class GuardianTrap extends Trap {
 
 		for (int i = 0; i < (scalingDepth() - 5)/5; i++){
 			Guardian guardian = new Guardian();
+			guardian.createWeapon(false);
 			guardian.state = guardian.WANDERING;
 			guardian.pos = Dungeon.level.randomRespawnCell( guardian );
 			if (guardian.pos != -1) {
@@ -81,12 +81,11 @@ public class GuardianTrap extends Trap {
 		}
 
 		@Override
-		public Weapon createWeapon() {
-			Weapon w = (MeleeWeapon) Generator.randomUsingDefaults(Generator.Category.WEAPON);
-			w.cursed = false;
-			w.enchant(null);
-			w.level(0);
-			return w;
+		public void createWeapon( boolean useDecks ) {
+			weapon = (MeleeWeapon) Generator.randomUsingDefaults(Generator.Category.WEAPON);
+			weapon.cursed = false;
+			weapon.enchant(null);
+			weapon.level(0);
 		}
 
 		@Override

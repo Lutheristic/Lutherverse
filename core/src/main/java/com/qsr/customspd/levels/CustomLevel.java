@@ -29,6 +29,7 @@ import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.mobs.CustomMob;
 import com.qsr.customspd.actors.mobs.Mimic;
 import com.qsr.customspd.actors.mobs.Mob;
+import com.qsr.customspd.actors.mobs.Statue;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.BrokenSeal;
@@ -289,6 +290,9 @@ public class CustomLevel extends Level {
 				mob = new CustomMob(mobSpawn.getType());
 			} else {
 				mob = (Mob) Reflection.newInstance(Reflection.forName("com.qsr.customspd.actors.mobs." + mobSpawn.getType()));
+			}
+			if (mob instanceof Statue) {
+				((Statue) mob).createWeapon( true );
 			}
 			mob.pos = pos;
 			if (mobSpawn.getAlignment() != null)

@@ -47,6 +47,7 @@ class NonLevelgenDeckDrawsPortTest {
 					Generator.fullReset();
 					before = weaponCards();
 					statue = new Statue();
+					statue.createWeapon(true);
 				} finally {
 					Random.popGenerator();
 				}
@@ -65,6 +66,7 @@ class NonLevelgenDeckDrawsPortTest {
 				Random.pushGenerator(seed);
 				try {
 					guardian = new GuardianTrap.Guardian();
+					guardian.createWeapon(false);
 				} finally {
 					Random.popGenerator();
 				}

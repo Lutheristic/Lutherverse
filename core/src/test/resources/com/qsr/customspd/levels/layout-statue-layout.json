@@ -1,0 +1,47 @@
+{
+  "start": "s1",
+  "dungeon": {
+    "s1": {
+      "depth": 4,
+      "type": "regular",
+      "layout": "SewerLevel",
+      "entrances": ["surface"],
+      "exits": ["s2"],
+      "chasm": "s2",
+      "passage": "s1",
+      "bestiary": ["Rat"],
+      "extra_mobs": [
+        { "type": "Statue" }
+      ]
+    },
+    "s2": {
+      "depth": 5,
+      "type": "custom",
+      "entrances": ["s1"],
+      "exits": ["s3"],
+      "chasm": "s3",
+      "passage": "s1",
+      "custom_layout": {
+        "width": 9,
+        "height": 7,
+        "region": 1,
+        "music": { "tracks": [], "probs": [] },
+        "map": [
+          4, 4, 4, 4, 4, 4, 4, 4, 4,
+          4, 7, 1, 1, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 1, 1, 1, 8, 4,
+          4, 4, 4, 4, 4, 4, 4, 4, 4
+        ],
+        "entrances": [ { "x": 1, "y": 1 } ],
+        "exits": [ { "x": 7, "y": 5 } ],
+        "mobs": [
+          { "x": 5, "y": 3, "type": "Statue" },
+          { "x": 3, "y": 3, "type": "ArmoredStatue" }
+        ]
+      }
+    }
+  }
+}

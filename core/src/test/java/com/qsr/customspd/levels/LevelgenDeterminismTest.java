@@ -88,7 +88,7 @@ class LevelgenDeterminismTest {
 	 * theSameSeedRebuildsTheSameFloors stays green, is cross-JVM nondeterminism: look for a
 	 * HashMap/HashSet keyed by Class, enum or object feeding Random.
 	 */
-	private static final String[] GOLDEN_31337 = {"32a4e8104ab90324", "65bf0a8bbc3c6f2b", "77946891c8388aab", "5edc1be68b4a00c7", "b75b194f306e1b09", "0bc1f5a453e81b97"};
+	private static final String[] GOLDEN_31337 = {"32a4e8104ab90324", "65bf0a8bbc3c6f2b", "77946891c8388aab", "d8cff880565d0064", "b75b194f306e1b09", "86b6a244d67c2eba"};
 	private static final String[] GOLDEN_8675309 = {"8c71122aab9aab18", "4443ab90fe39c3e0", "b7c04bba7c66dcfd", "04b3396dbf2cb081", "9d7b34ac85ad378d", "945a88fd5b9da1c7"};
 
 	@Test

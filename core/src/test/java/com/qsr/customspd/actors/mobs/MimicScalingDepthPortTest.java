@@ -3,12 +3,9 @@ package com.qsr.customspd.actors.mobs;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.buffs.AscensionChallenge;
 import com.qsr.customspd.actors.buffs.Buff;
-import com.qsr.customspd.items.Item;
 import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.test.HeadlessRun;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -32,7 +29,7 @@ class MimicScalingDepthPortTest {
 			Level floor = run.enterFirstLevel();
 			Buff.affect(Dungeon.hero, AscensionChallenge.class);
 
-			Mimic mimic = Mimic.spawnAt(floor.entrance(), new ArrayList<Item>());
+			Mimic mimic = Mimic.spawnAt(floor.entrance());
 
 			assertEquals(26, Dungeon.scalingDepth(), "precondition: the ascent scales to depth 26");
 			assertEquals(hpForLevel(26), mimic.HT);
@@ -45,7 +42,7 @@ class MimicScalingDepthPortTest {
 		try (HeadlessRun run = HeadlessRun.start(SEED)) {
 			Level floor = run.enterFirstLevel();
 
-			Mimic mimic = Mimic.spawnAt(floor.entrance(), new ArrayList<Item>());
+			Mimic mimic = Mimic.spawnAt(floor.entrance());
 
 			assertEquals(hpForLevel(Dungeon.depth), mimic.HT);
 		}

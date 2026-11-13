@@ -1,0 +1,25 @@
+{
+  "start": "s1",
+  "dungeon": {
+    "s1": {
+      "depth": 4,
+      "type": "regular",
+      "layout": "SewerLevel",
+      "entrances": ["surface"],
+      "exits": ["s2"],
+      "chasm": "s2",
+      "passage": "s1",
+      "bestiary": ["Statue", "ArmoredStatue"]
+    },
+    "s2": {
+      "depth": 5,
+      "type": "regular",
+      "layout": "SewerLevel",
+      "entrances": ["s1"],
+      "exits": [],
+      "chasm": "s2",
+      "passage": "s1",
+      "bestiary": ["Rat"]
+    }
+  }
+}

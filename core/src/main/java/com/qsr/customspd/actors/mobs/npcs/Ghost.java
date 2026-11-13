@@ -31,8 +31,6 @@ import com.qsr.customspd.actors.mobs.FetidRat;
 import com.qsr.customspd.actors.mobs.GnollTrickster;
 import com.qsr.customspd.actors.mobs.GreatCrab;
 import com.qsr.customspd.actors.mobs.Mob;
-import com.qsr.customspd.effects.CellEmitter;
-import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.items.Generator;
 import com.qsr.customspd.items.armor.Armor;
 import com.qsr.customspd.items.armor.LeatherArmor;
@@ -44,6 +42,7 @@ import com.qsr.customspd.items.weapon.melee.MeleeWeapon;
 import com.qsr.customspd.journal.Notes;
 import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.levels.SewerLevel;
+import com.qsr.customspd.levels.rooms.Room;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.sprites.GhostSprite;
@@ -64,10 +63,23 @@ public class Ghost extends NPC {
 		
 		flying = true;
 
+		WANDERING = new Wandering();
 		state = WANDERING;
 
 		//not actually large of course, but this makes the ghost stick to the exit room
 		properties.add(Property.LARGE);
+	}
+
+	protected class Wandering extends Mob.Wandering{
+		@Override
+		protected int randomDestination() {
+			int pos = super.randomDestination();
+			//cannot wander onto heaps or the level exit
+			if (Dungeon.level.heaps.get(pos) != null || pos == Dungeon.level.exit()){
+				return -1;
+			}
+			return pos;
+		}
 	}
 
 	@Override
@@ -75,9 +87,6 @@ public class Ghost extends NPC {
 		if (Dungeon.hero.buff(AscensionChallenge.class) != null){
 			die(null);
 			return true;
-		}
-		if (Quest.processed()) {
-			target = Dungeon.hero.pos;
 		}
 		if (Dungeon.level.heroFOV[pos] && !Quest.completed()){
 			Notes.add( Notes.Landmark.GHOST );
@@ -153,20 +162,6 @@ public class Ghost extends NPC {
 						}
 					});
 
-					int newPos = -1;
-					for (int i = 0; i < 10; i++) {
-						newPos = Dungeon.level.randomRespawnCell( this );
-						if (newPos != -1) {
-							break;
-						}
-					}
-					if (newPos != -1) {
-
-						CellEmitter.get(pos).start(Speck.factory(Speck.LIGHT), 0.2f, 3);
-						pos = newPos;
-						sprite.place(pos);
-						sprite.visible = Dungeon.level.heroFOV[pos];
-					}
 				}
 			}
 		} else {
@@ -291,11 +286,18 @@ public class Ghost extends NPC {
 			}
 		}
 		
-		public static void spawn( Level lvl ) {
+		//room is the level's exit room, or null on a level without rooms
+		public static void spawn( Level lvl, Room room ) {
 			Ghost ghost = new Ghost();
-			do {
-				ghost.pos = lvl.randomRespawnCell( ghost );
-			} while (ghost.pos == -1);
+			if (room != null) {
+				do {
+					ghost.pos = lvl.pointToCell(room.random());
+				} while (ghost.pos == -1 || lvl.solid[ghost.pos] || ghost.pos == lvl.exit());
+			} else {
+				do {
+					ghost.pos = lvl.randomRespawnCell( ghost );
+				} while (ghost.pos == -1);
+			}
 			lvl.mobs.add( ghost );
 
 			spawned = true;

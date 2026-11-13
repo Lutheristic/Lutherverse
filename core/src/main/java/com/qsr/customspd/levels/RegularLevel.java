@@ -37,7 +37,6 @@ import com.qsr.customspd.actors.mobs.Mob;
 import com.qsr.customspd.actors.mobs.Statue;
 import com.qsr.customspd.actors.mobs.npcs.Blacksmith;
 import com.qsr.customspd.actors.mobs.npcs.Ghost;
-import com.qsr.customspd.actors.mobs.npcs.Wandmaker;
 import com.qsr.customspd.items.BrokenSeal;
 import com.qsr.customspd.items.wands.Wand;
 import com.qsr.customspd.items.weapon.melee.MagesStaff;
@@ -171,10 +170,6 @@ public abstract class RegularLevel extends Level {
 			Blacksmith.Quest.spawn(initRooms);
 		}
 
-		if (Dungeon.levelName.equals(Dungeon.wandmakerLevel)) {
-			Wandmaker.Quest.spawnRoom(initRooms);
-		}
-		
 		return initRooms;
 	}
 	
@@ -257,7 +252,7 @@ public abstract class RegularLevel extends Level {
 
 		Mob mob = null;
 		while (mobsToSpawn > 0) {
-			if (mob == null) mob = createMob();
+			if (mob == null) mob = createMob( true );
 			Room roomToSpawn;
 			
 			if (!stdRoomIter.hasNext()) {
@@ -285,7 +280,7 @@ public abstract class RegularLevel extends Level {
 
 				//chance to add a second mob to this room, except on floor 1
 				if (Dungeon.depth > 1 && mobsToSpawn > 0 && Random.Int(4) == 0){
-					mob = createMob();
+					mob = createMob( true );
 
 					tries = 30;
 					do {
@@ -311,6 +306,9 @@ public abstract class RegularLevel extends Level {
 
 		for (ExtraMobSpawn mobSpawn : Dungeon.layout.getDungeon().get(Dungeon.levelName).getExtraMobs()) {
 			Mob m = (Mob) Reflection.newInstance(Reflection.forName("com.qsr.customspd.actors.mobs." + mobSpawn.getType()));
+			if (m instanceof Statue) {
+				((Statue) m).createWeapon( true );
+			}
 			if (mobSpawn.getAlignment() != null) m.alignment = Char.Alignment.valueOf(mobSpawn.getAlignment().toUpperCase(Locale.ENGLISH));
 			if (m instanceof Mimic) {
 				((Mimic) m).setLevel( Dungeon.scalingDepth() );
@@ -480,7 +478,7 @@ public abstract class RegularLevel extends Level {
 					(toDrop.isUpgradable() && Random.Int(4 - toDrop.level()) == 0)){
 
 				if (Dungeon.depth > 1 && Random.Int(10) == 0 && findMob(cell) == null){
-					mobs.add(Mimic.spawnAt(cell, toDrop, GoldenMimic.class));
+					mobs.add(Mimic.spawnAt(cell, GoldenMimic.class, toDrop));
 				} else {
 					Heap dropped = drop(toDrop, cell);
 					if (heaps.get(cell) == dropped) {

@@ -29,6 +29,7 @@ import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.effects.particles.FlameParticle;
 import com.qsr.customspd.levels.painters.Painter;
 import com.qsr.customspd.levels.painters.PrisonPainter;
+import com.qsr.customspd.levels.rooms.Room;
 import com.qsr.customspd.levels.traps.AlarmTrap;
 import com.qsr.customspd.levels.traps.BurningTrap;
 import com.qsr.customspd.levels.traps.ChillingTrap;
@@ -52,6 +53,8 @@ import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
 
+import java.util.ArrayList;
+
 public class PrisonLevel extends RegularLevel {
 
 	{
@@ -65,6 +68,11 @@ public class PrisonLevel extends RegularLevel {
 				new String[]{Assets.Music.PRISON_1, Assets.Music.PRISON_2, Assets.Music.PRISON_2},
 				new float[]{1, 1, 0.5f},
 				false);
+	}
+
+	@Override
+	protected ArrayList<Room> initRooms() {
+		return Wandmaker.Quest.spawnRoom(super.initRooms());
 	}
 
 	@Override

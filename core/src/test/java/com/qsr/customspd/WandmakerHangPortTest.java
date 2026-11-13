@@ -36,10 +36,15 @@ class WandmakerHangPortTest {
 		HeadlessGdx.boot();
 	}
 
+	private String prevLevelName;
+	private String prevWandmakerLevel;
+
 	@AfterEach
 	void tearDown() {
 		HeadlessLevel.uninstall();
 		Wandmaker.Quest.reset();
+		Dungeon.levelName = prevLevelName;
+		Dungeon.wandmakerLevel = prevWandmakerLevel;
 	}
 
 	@Test
@@ -58,6 +63,11 @@ class WandmakerHangPortTest {
 			}
 		}
 		level.buildFlagMaps();
+
+		// spawnRoom only arms the quest on the wandmaker's floor
+		prevLevelName = Dungeon.levelName;
+		prevWandmakerLevel = Dungeon.wandmakerLevel;
+		Dungeon.levelName = Dungeon.wandmakerLevel = "8";
 
 		assertTimeoutPreemptively(Duration.ofSeconds(10), new org.junit.jupiter.api.function.Executable() {
 			@Override

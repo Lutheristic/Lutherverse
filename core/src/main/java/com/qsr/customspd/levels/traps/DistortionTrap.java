@@ -112,6 +112,9 @@ public class DistortionTrap extends Trap{
 						floor = Random.Int(25);
 					} while( Dungeon.bossLevel(String.valueOf(floor)));
 					mob = Reflection.newInstance(Bestiary.INSTANCE.getMobRotation().get(0));
+					if (mob instanceof Statue) {
+						((Statue) mob).createWeapon( false );
+					}
 					break;
 				case 2:
 					switch (Random.Int(4)){
@@ -123,12 +126,12 @@ public class DistortionTrap extends Trap{
 							mob = Piranha.random();
 							break;
 						case 2:
-							mob = Mimic.spawnAt(point, new ArrayList<>());
+							mob = Mimic.spawnAt(point, false);
 							((Mimic)mob).stopHiding();
 							mob.alignment = Char.Alignment.ENEMY;
 							break;
 						case 3:
-							mob = Statue.random();
+							mob = Statue.random(false);
 							break;
 					}
 					break;

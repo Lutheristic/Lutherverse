@@ -53,6 +53,7 @@ import com.qsr.customspd.actors.mobs.Bestiary;
 import com.qsr.customspd.actors.mobs.CustomMob;
 import com.qsr.customspd.actors.mobs.Mob;
 import com.qsr.customspd.actors.mobs.Piranha;
+import com.qsr.customspd.actors.mobs.Statue;
 import com.qsr.customspd.actors.mobs.YogFist;
 import com.qsr.customspd.actors.mobs.npcs.Ghost;
 import com.qsr.customspd.actors.mobs.npcs.Imp;
@@ -516,6 +517,11 @@ public abstract class Level implements Bundlable {
 	private List<String> customMobsToSpawn = new ArrayList<>();
 	
 	public Mob createMob() {
+		return createMob( false );
+	}
+
+	//useDecks is true at levelgen, for statues a pack lists in a bestiary
+	protected Mob createMob( boolean useDecks ) {
 		if (mobsToSpawn == null || mobsToSpawn.isEmpty()) {
 			mobsToSpawn = Bestiary.INSTANCE.getMobRotation();
 			customMobsToSpawn = Bestiary.INSTANCE.getCustomMobs();
@@ -528,12 +534,15 @@ public abstract class Level implements Bundlable {
 		} else {
 			m = Reflection.newInstance(mobClass);
 		}
+		if (m instanceof Statue) {
+			((Statue) m).createWeapon( useDecks );
+		}
 		ChampionEnemy.rollForChampion(m);
 		return m;
 	}
 
 	protected void createMobs() {
-		if (Dungeon.levelName.equals(Dungeon.ghostLevel)) Ghost.Quest.spawn( this );
+		if (Dungeon.levelName.equals(Dungeon.ghostLevel)) Ghost.Quest.spawn( this, this instanceof RegularLevel ? ((RegularLevel) this).roomExit : null );
 		if (Dungeon.levelName.equals(Dungeon.impLevel)) Imp.Quest.spawn( this );
 	}
 

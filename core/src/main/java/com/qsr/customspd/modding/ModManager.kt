@@ -3,6 +3,12 @@ package com.qsr.customspd.modding
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.qsr.customspd.assets.tiles.CavesTile
+import com.qsr.customspd.assets.tiles.CityTile
+import com.qsr.customspd.assets.tiles.HallsTile
+import com.qsr.customspd.assets.tiles.PrisonTile
+import com.qsr.customspd.assets.tiles.SewersTile
+import com.qsr.customspd.assets.tiles.TileAsset
 import com.qsr.customspd.utils.Archiver
 import com.qsr.customspd.utils.Network
 import com.watabou.noosa.Game
@@ -55,6 +61,25 @@ object ModManager {
             if (getFileHandle(path).exists()) return "$STORAGE$SLASH$path"
         }
         return assetPath
+    }
+
+    //special stairs, and the plain stairs they fall back to
+    private val SPECIAL_STAIRS: Map<TileAsset, TileAsset> = mapOf(
+        SewersTile.ENTRANCE_SP to SewersTile.ENTRANCE,
+        PrisonTile.ENTRANCE_SP to PrisonTile.ENTRANCE,
+        CavesTile.ENTRANCE_SP to CavesTile.ENTRANCE,
+        CityTile.ENTRANCE_SP to CityTile.ENTRANCE,
+        HallsTile.ENTRANCE_SP to HallsTile.ENTRANCE,
+    )
+
+    //The file a tile sheet draws a tile from. When the enabled mods restyle a region's stairs
+    //but none ships its special stairs, the special stairs use the mod's stairs, not the base art.
+    fun getModdedTileFilePath(tile: TileAsset): String {
+        val path = getModdedAssetFilePath(tile.path)
+        val stairs = SPECIAL_STAIRS[tile] ?: return path
+        if (path != tile.path) return path
+        val stairsPath = getModdedAssetFilePath(stairs.path)
+        return if (stairsPath != stairs.path) stairsPath else path
     }
 
     fun getAllModdedAssetFilePaths(assetPath: String): List<String> = lazyEnabledModNames.mapNotNull {

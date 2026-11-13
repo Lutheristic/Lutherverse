@@ -24,9 +24,9 @@ public class AndroidTileMapCompiler implements TileMapCompiler {
             FileHandle handle = FileUtils.getFileHandle(
                 Files.FileType.External,
                 FileUtils.defaultPath,
-                ModManager.INSTANCE.getModdedAssetFilePath(tileAsset.getPath())
+                ModManager.INSTANCE.getModdedTileFilePath(tileAsset)
             );
-            if (!handle.exists()) handle = Gdx.files.internal(ModManager.INSTANCE.getModdedAssetFilePath(tileAsset.getPath()));
+            if (!handle.exists()) handle = Gdx.files.internal(ModManager.INSTANCE.getModdedTileFilePath(tileAsset));
             int pos = tileAsset.getPos();
             InputStream inputStream = handle.read();
             canvas.drawBitmap(

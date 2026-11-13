@@ -27,7 +27,6 @@ import com.qsr.customspd.SPDAction;
 import com.qsr.customspd.SPDSettings;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.HoldFast;
-import com.qsr.customspd.actors.buffs.LostInventory;
 import com.qsr.customspd.actors.hero.Belongings;
 import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.assets.Asset;
@@ -130,7 +129,7 @@ public class Toolbar extends Component {
 						Item item = Dungeon.quickslot.getItem(i);
 
 						if (item != null && !Dungeon.quickslot.isPlaceholder(i) &&
-								(Dungeon.hero.buff(LostInventory.class) == null || item.keptThoughLostInvent)){
+								(!Dungeon.hero.belongings.lostInventory() || item.keptThoughLostInvent)){
 							slotNames[i] = Messages.titleCase(item.name());
 							slotIcons[i] = new ItemSprite(item);
 						} else {
@@ -156,7 +155,7 @@ public class Toolbar extends Component {
 							Item item = Dungeon.quickslot.getItem(idx);
 
 							if (item == null || Dungeon.quickslot.isPlaceholder(idx)
-									|| (Dungeon.hero.buff(LostInventory.class) != null && !item.keptThoughLostInvent)
+									|| (Dungeon.hero.belongings.lostInventory() && !item.keptThoughLostInvent)
 									|| alt){
 								//TODO would be nice to use a radial menu for this too
 								// Also a bunch of code could be moved out of here into subclasses of RadialMenu
@@ -422,7 +421,7 @@ public class Toolbar extends Component {
 
 							for(Item i : bag.items){
 								if (i instanceof Bag) items.remove(i);
-								if (Dungeon.hero.buff(LostInventory.class) != null && !i.keptThoughLostInvent) items.remove(i);
+								if (Dungeon.hero.belongings.lostInventory() && !i.keptThoughLostInvent) items.remove(i);
 							}
 
 							if (idx == 0){

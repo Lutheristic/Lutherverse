@@ -28,7 +28,6 @@ import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.buffs.Buff;
-import com.qsr.customspd.actors.buffs.LostInventory;
 import com.qsr.customspd.actors.mobs.Eye;
 import com.qsr.customspd.actors.mobs.npcs.NPC;
 import com.qsr.customspd.assets.Asset;
@@ -257,7 +256,7 @@ public class SentryRoom extends SpecialRoom {
 				if (fieldOfView[Dungeon.hero.pos]
 						&& Dungeon.level.map[Dungeon.hero.pos] == Terrain.EMPTY_SP
 						&& room.inside(Dungeon.level.cellToPoint(Dungeon.hero.pos))
-						&& Dungeon.hero.buff(LostInventory.class) == null){
+						&& !Dungeon.hero.belongings.lostInventory()){
 
 					if (curChargeDelay > 0.001f){ //helps prevent rounding errors
 						if (curChargeDelay == initialChargeDelay) {

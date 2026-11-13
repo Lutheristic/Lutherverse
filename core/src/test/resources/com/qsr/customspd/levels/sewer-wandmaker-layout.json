@@ -1,0 +1,49 @@
+{
+  "start": "w1",
+  "wandmaker_spawn_levels": ["w1"],
+  "dungeon": {
+    "w1": {
+      "depth": 7,
+      "type": "regular",
+      "layout": "SewerLevel",
+      "entrances": ["surface"],
+      "exits": ["w2"],
+      "chasm": "w2",
+      "passage": "w1",
+      "bestiary": ["Rat"]
+    },
+    "w2": {
+      "depth": 8,
+      "type": "regular",
+      "layout": "PrisonLevel",
+      "entrances": ["w1"],
+      "exits": ["w3"],
+      "chasm": "w3",
+      "passage": "w1",
+      "bestiary": ["Rat"]
+    },
+    "w3": {
+      "depth": 9,
+      "type": "custom",
+      "entrances": ["w2"],
+      "exits": ["w4"],
+      "chasm": "w4",
+      "passage": "w1",
+      "custom_layout": {
+        "width": 7,
+        "height": 5,
+        "region": 2,
+        "music": { "tracks": [], "probs": [] },
+        "map": [
+          4, 4, 4, 4, 4, 4, 4,
+          4, 7, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 1, 8, 4,
+          4, 4, 4, 4, 4, 4, 4
+        ],
+        "entrances": [ { "x": 1, "y": 1 } ],
+        "exits": [ { "x": 5, "y": 3 } ]
+      }
+    }
+  }
+}

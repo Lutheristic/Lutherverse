@@ -336,24 +336,27 @@ public class Wandmaker extends NPC {
 		}
 		
 		public static ArrayList<Room> spawnRoom( ArrayList<Room> rooms) {
+			questRoomSpawned = false;
+			if (Dungeon.levelName.equals(Dungeon.wandmakerLevel)) {
 
-			// decide between 1,2, or 3 for quest type.
-			if (type == 0) type = Random.Int(3)+1;
+				// decide between 1,2, or 3 for quest type.
+				if (type == 0) type = Random.Int(3)+1;
 
-			switch (type){
-				case 1: default:
-					rooms.add(new MassGraveRoom());
-					break;
-				case 2:
-					rooms.add(new RitualSiteRoom());
-					break;
-				case 3:
-					rooms.add(new RotGardenRoom());
-					break;
+				switch (type){
+					case 1: default:
+						rooms.add(new MassGraveRoom());
+						break;
+					case 2:
+						rooms.add(new RitualSiteRoom());
+						break;
+					case 3:
+						rooms.add(new RotGardenRoom());
+						break;
+				}
+
+				questRoomSpawned = true;
+
 			}
-
-			questRoomSpawned = true;
-
 			return rooms;
 		}
 		

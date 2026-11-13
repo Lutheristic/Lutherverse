@@ -37,7 +37,6 @@ import com.qsr.customspd.actors.mobs.Mob;
 import com.qsr.customspd.actors.mobs.Statue;
 import com.qsr.customspd.actors.mobs.npcs.Blacksmith;
 import com.qsr.customspd.actors.mobs.npcs.Ghost;
-import com.qsr.customspd.actors.mobs.npcs.Wandmaker;
 import com.qsr.customspd.items.BrokenSeal;
 import com.qsr.customspd.items.wands.Wand;
 import com.qsr.customspd.items.weapon.melee.MagesStaff;
@@ -171,10 +170,6 @@ public abstract class RegularLevel extends Level {
 			Blacksmith.Quest.spawn(initRooms);
 		}
 
-		if (Dungeon.levelName.equals(Dungeon.wandmakerLevel)) {
-			Wandmaker.Quest.spawnRoom(initRooms);
-		}
-		
 		return initRooms;
 	}
 	

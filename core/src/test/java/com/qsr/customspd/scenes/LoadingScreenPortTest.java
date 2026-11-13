@@ -4,10 +4,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.qsr.customspd.Dungeon;
+import com.qsr.customspd.Statistics;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.journal.Document;
 import com.qsr.customspd.levels.features.LevelTransition;
 import com.qsr.customspd.test.HeadlessRun;
+import com.qsr.customspd.ui.RenderedTextBlock;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
@@ -24,6 +27,8 @@ import java.lang.reflect.Proxy;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
@@ -122,6 +127,20 @@ class LoadingScreenPortTest {
 		return t;
 	}
 
+	/** The region intro the loading screen shows, or null if it shows none. */
+	private static String story(InterlevelScene scene) throws Exception {
+		RenderedTextBlock text = (RenderedTextBlock) field(InterlevelScene.class, "storyMessage").get(scene);
+		return text == null ? null : text.text();
+	}
+
+	/** Walks down the regular stairs from one floor to the next. */
+	private InterlevelScene walkDown(String from, String to, int deepest) throws Exception {
+		onFloor(from);
+		Statistics.deepestFloor = deepest;
+		InterlevelScene.curTransition = toFloor(to);
+		return load(InterlevelScene.Mode.DESCEND);
+	}
+
 	private static void onFloor(String levelName) {
 		Dungeon.levelName = levelName;
 		Dungeon.depth = Dungeon.layout.getDungeon().get(levelName).getDepth();
@@ -198,5 +217,59 @@ class LoadingScreenPortTest {
 		} finally {
 			Random.popGenerator();
 		}
+	}
+
+	// upstream 92905ae81: the region intro moves onto the loading screen
+	@Test
+	void aNewGameShowsTheSewersStory() throws Exception {
+		Dungeon.hero = null;
+		load(InterlevelScene.Mode.DESCEND);
+
+		assertEquals(Document.INTROS.pageBody(1), story(scene));
+	}
+
+	@Test
+	void walkingDownToANewRegionShowsItsStory() throws Exception {
+		walkDown("5", "6", 5);
+
+		assertEquals(Document.INTROS.pageBody(2), story(scene));
+	}
+
+	@Test
+	void theStoryShowsEveryRunEvenWhenAlreadyRead() throws Exception {
+		Document.INTROS.readPage(3);
+		walkDown("10", "11", 10);
+
+		assertEquals(Document.INTROS.pageBody(3), story(scene));
+	}
+
+	@Test
+	void fallingIntoANewRegionShowsNoStory() throws Exception {
+		onFloor("5");
+		Statistics.deepestFloor = 5;
+		load(InterlevelScene.Mode.FALL);
+
+		assertNull(story(scene));
+	}
+
+	@Test
+	void revisitingARegionsFirstFloorShowsNoStory() throws Exception {
+		walkDown("5", "6", 8);
+
+		assertNull(story(scene));
+	}
+
+	@Test
+	void aNewFloorInsideARegionShowsNoStory() throws Exception {
+		walkDown("6", "7", 6);
+
+		assertNull(story(scene));
+	}
+
+	@Test
+	void continuingShowsNoStory() throws Exception {
+		load(InterlevelScene.Mode.CONTINUE);
+
+		assertNull(story(scene));
 	}
 }

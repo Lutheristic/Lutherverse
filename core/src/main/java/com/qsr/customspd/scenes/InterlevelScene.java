@@ -30,10 +30,12 @@ import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.buffs.LockedFloor;
 import com.qsr.customspd.actors.mobs.Mob;
+import com.qsr.customspd.effects.ShadowBox;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.LostBackpack;
+import com.qsr.customspd.journal.Document;
 import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.levels.features.Chasm;
@@ -91,7 +93,11 @@ public class InterlevelScene extends PixelScene {
 	private Phase phase;
 	private float timeLeft;
 
-	private RenderedTextBlock message;
+	private RenderedTextBlock loadingText;
+
+	private RenderedTextBlock storyMessage;
+	private ShadowBox storyBG;
+	private StyledButton btnContinue;
 
 	private static Thread thread;
 	private static Exception error = null;
@@ -233,7 +239,7 @@ public class InterlevelScene extends PixelScene {
 			fadeTime += 0.5f; //adds 1 second total
 			//speed up transition when debugging
 		} else if (DeviceCompat.isDebug()){
-			fadeTime = 0f;
+			fadeTime = 1f;
 		}
 
 		Image background = new Image(loadingAsset);
@@ -281,13 +287,44 @@ public class InterlevelScene extends PixelScene {
 
 		String text = Messages.get(Mode.class, mode.name());
 
-		message = PixelScene.renderTextBlock( text, 9 );
-		message.setPos(
-			(Camera.main.width - message.width() - 8),
-			(Camera.main.height - message.height() - 6)
+		loadingText = PixelScene.renderTextBlock( text, 9 );
+		loadingText.setPos(
+			(Camera.main.width - loadingText.width() - 8),
+			(Camera.main.height - loadingText.height() - 6)
 		);
-		align(message);
-		add( message );
+		align(loadingText);
+		add(loadingText);
+
+		//TODo this is functional and doesn't look awful, but there's still improving to be done here
+		if (mode == Mode.DESCEND){
+			if (Dungeon.hero == null || (loadingDepth > Statistics.deepestFloor && loadingDepth % 5 == 1)){
+					storyMessage = PixelScene.renderTextBlock(Document.INTROS.pageBody(region), 6);
+					storyMessage.maxWidth( PixelScene.landscape() ? 180 : 125);
+					storyMessage.setPos((Camera.main.width-storyMessage.width())/2f, (Camera.main.height-storyMessage.height())/2f);
+
+					storyBG = new ShadowBox();
+					storyBG.boxRect(storyMessage.left()-10, storyMessage.top()-10, storyMessage.width()+20, storyMessage.height()+20);
+					storyBG.alpha(0.75f);
+					add(storyBG);
+					add(storyMessage);
+
+					btnContinue = new StyledButton(Chrome.Type.TOAST_TR, "Continue", 9){
+						@Override
+						protected void onClick() {
+							phase = Phase.FADE_OUT;
+							timeLeft = fadeTime;
+
+							btnContinue.enable(false);
+						}
+					};
+					btnContinue.icon(new Image(Asset.getAssetFilePath(GeneralAsset.ICON_STAIRS)));
+					btnContinue.setSize(btnContinue.reqWidth()+10, 22);
+					btnContinue.enable(false);
+
+					btnContinue.setPos((Camera.main.width - btnContinue.width())/2f, storyMessage.bottom()+10);
+					add(btnContinue);
+			}
+		}
 
 		if (Updates.isInstallable()){
 			StyledButton install = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "install")){
@@ -309,7 +346,7 @@ public class InterlevelScene extends PixelScene {
 			install.icon(new Image(Asset.getAssetFilePath(GeneralAsset.ICON_CHANGES)));
 			install.textColor(Window.SHPX_COLOR);
 			install.setSize(install.reqWidth()+5, 20);
-			install.setPos((Camera.main.width - install.width())/2, (Camera.main.height - message.bottom())/3 + message.bottom());
+			install.setPos((Camera.main.width - install.width())/2, (Camera.main.height - loadingText.bottom())/3 + loadingText.bottom());
 			add(install);
 		}
 
@@ -357,8 +394,7 @@ public class InterlevelScene extends PixelScene {
 
 					synchronized (thread) {
 						if (phase == Phase.STATIC && error == null) {
-							phase = Phase.FADE_OUT;
-							timeLeft = fadeTime;
+							afterLoading();
 						}
 					}
 
@@ -384,13 +420,13 @@ public class InterlevelScene extends PixelScene {
 			dots = (int)Math.ceil(waitingTime / ((2*fadeTime)/3f))%3;
 			switch (dots){
 				case 1: default:
-					message.text(text + ".");
+					loadingText.text(text + ".");
 					break;
 				case 2:
-					message.text(text + "..");
+					loadingText.text(text + "..");
 					break;
 				case 0:
-					message.text(text + "...");
+					loadingText.text(text + "...");
 					break;
 			}
 		}
@@ -398,12 +434,11 @@ public class InterlevelScene extends PixelScene {
 		switch (phase) {
 
 			case FADE_IN:
-				message.alpha( Math.max(0, fadeTime - (timeLeft-0.333f)));
+				loadingText.alpha( Math.max(0, fadeTime - (timeLeft-0.333f)));
 				if ((timeLeft -= Game.elapsed) <= 0) {
 					synchronized (thread) {
 						if (!thread.isAlive() && error == null) {
-							phase = Phase.FADE_OUT;
-							timeLeft = fadeTime;
+							afterLoading();
 						} else {
 							phase = Phase.STATIC;
 						}
@@ -412,7 +447,7 @@ public class InterlevelScene extends PixelScene {
 				break;
 
 			case FADE_OUT:
-				message.alpha( Math.min(1, timeLeft+0.333f) );
+				loadingText.alpha( Math.min(1, timeLeft+0.333f) );
 
 				if ((timeLeft -= Game.elapsed) <= 0) {
 					Game.switchScene( GameScene.class );
@@ -460,12 +495,22 @@ public class InterlevelScene extends PixelScene {
 		}
 
 		if (mode == Mode.FALL) {
-			message.setPos(
-					(Camera.main.width - message.width() - 4) + Random.NormalFloat(-1, 1),
-					(Camera.main.height - message.height() - 6) + Random.NormalFloat(-1, 1)
+			loadingText.setPos(
+					(Camera.main.width - loadingText.width() - 4) + Random.NormalFloat(-1, 1),
+					(Camera.main.height - loadingText.height() - 6) + Random.NormalFloat(-1, 1)
 			);
-			align(message);
+			align(loadingText);
 		}
+	}
+
+	private void afterLoading(){
+		if (btnContinue != null){
+			btnContinue.enable(true);
+		} else {
+			phase = Phase.FADE_OUT;
+			timeLeft = fadeTime;
+		}
+
 	}
 
 	//the region a level's layout belongs to, or -1 if the layout does not name one

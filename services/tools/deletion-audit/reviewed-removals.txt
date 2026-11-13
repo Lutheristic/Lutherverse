@@ -465,3 +465,38 @@ ShockBomb#value()
 # matches v2.5.4: PrisonLevel.createMobs places the wandmaker in roomEntrance, and PrisonPainter
 # has no wandmaker code. The painter loop only matched a plain EntranceRoom.
 PrisonPainter#decorate(Level, ArrayList)
+
+# --- Statues, mimics and the sad ghost (16 entries), reviewed 2026-11-12 ---
+# upstream e7bd3857e and a86e20c79 (v2.2.0): createWeapon, random, spawnAt and generatePrize take a
+# useDecks flag so only levelgen statues and mimics draw from the item decks. v2.5.4 has only the
+# boolean and varargs forms. 897b7f1ed moves the armored statue's armor roll into createWeapon.
+Statue#createWeapon()
+Statue#random()
+GuardianTrap.Guardian#createWeapon()
+ArmoredStatue#ArmoredStatue()
+Mimic#spawnAt(int, Item)
+Mimic#spawnAt(int, Item, Class)
+Mimic#spawnAt(int, List)
+Mimic#spawnAt(int, List, Class)
+Mimic#generatePrize()
+CrystalMimic#generatePrize()
+GoldenMimic#generatePrize()
+# Lutherverse only: Level.createMob's body moved to createMob(boolean) so statues from a pack's
+# bestiary get a weapon, from the decks at levelgen and from default chances in play.
+Level#createMob()
+# upstream 4bbd69a47 and 97b8edd4d (v2.4.0): the sad ghost spawns in the exit room, no longer
+# teleports when spoken to and no longer follows the hero. v2.5.4 has spawn(SewerLevel, Room).
+Ghost.Quest#spawn(Level)
+Ghost#act()
+Ghost#interact(Char)
+# matches v2.5.4: PrisonLevel.initRooms adds the wandmaker quest room, not RegularLevel.
+RegularLevel#initRooms()
+
+# --- Loading screen (4 entries), reviewed 2026-11-12 ---
+# upstream 4ed89d588 (v2.5.0): the seed is set in Dungeon.initSeed, called from hero select.
+Dungeon#init()
+# upstream 92905ae81 (v2.5.0): the region story moves from a GameScene window to the loading screen.
+GameScene#create()
+# upstream afe3f71cb (v2.5.0): the region splash replaces the tiled backdrop these drew.
+InterlevelScene#script()
+InterlevelScene#draw()

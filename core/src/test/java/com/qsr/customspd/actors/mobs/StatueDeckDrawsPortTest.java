@@ -61,6 +61,70 @@ class StatueDeckDrawsPortTest {
 		}
 	}
 
+	/** Upstream 897b7f1ed (v2.2.1): an armored statue rolls its armor with its weapon, once. */
+	@Test
+	void loadingAStatueFromASaveRollsNothing() throws IOException {
+		try (HeadlessRun run = HeadlessRun.start(RUN_SEED)) {
+			int armored = 0;
+			for (long seed = 1; seed <= 200 && armored < 5; seed++) {
+				Statue statue;
+				Random.pushGenerator(seed);
+				try {
+					statue = Statue.random();
+				} finally {
+					Random.popGenerator();
+				}
+				if (statue instanceof ArmoredStatue) armored++;
+
+				long untouched, afterLoad;
+				Statue loaded;
+				Random.pushGenerator(seed);
+				try {
+					untouched = Random.Long();
+				} finally {
+					Random.popGenerator();
+				}
+				Random.pushGenerator(seed);
+				try {
+					loaded = SaveRoundtrip.of(statue);
+					afterLoad = Random.Long();
+				} finally {
+					Random.popGenerator();
+				}
+				assertEquals(untouched, afterLoad, "seed " + seed + ": loading the " + statue.getClass().getSimpleName() + " rolled random numbers");
+				if (statue instanceof ArmoredStatue) {
+					assertEquals(armorOf((ArmoredStatue) statue).getClass(), armorOf((ArmoredStatue) loaded).getClass(), "seed " + seed + ": the saved armor comes back");
+				}
+			}
+			assertEquals(5, armored, "armored statues checked");
+		}
+	}
+
+	@Test
+	void anArmoredStatuesArmorIsNeverCursed() {
+		try (HeadlessRun run = HeadlessRun.start(RUN_SEED)) {
+			for (boolean useDecks : new boolean[]{true, false}) {
+				int armored = 0;
+				for (long seed = 1; seed <= 400 && armored < 20; seed++) {
+					Statue statue;
+					Random.pushGenerator(seed);
+					try {
+						statue = Statue.random(useDecks);
+					} finally {
+						Random.popGenerator();
+					}
+					if (!(statue instanceof ArmoredStatue)) continue;
+					armored++;
+					Armor armor = armorOf((ArmoredStatue) statue);
+					assertNotNull(armor, "seed " + seed + ": an armored statue has armor");
+					assertFalse(armor.cursed, "seed " + seed + ": and it is not cursed");
+					assertNotNull(armor.glyph, "seed " + seed + ": and it carries a glyph");
+				}
+				assertEquals(20, armored, "armored statues checked");
+			}
+		}
+	}
+
 	@Test
 	void aLevelgenStatueDrawsItsWeaponFromTheDecks() {
 		try (HeadlessRun run = HeadlessRun.start(RUN_SEED)) {
@@ -167,6 +231,16 @@ class StatueDeckDrawsPortTest {
 			for (float p : tier.probs) sum += p;
 		}
 		return sum;
+	}
+
+	static Armor armorOf(ArmoredStatue statue) {
+		try {
+			Field f = ArmoredStatue.class.getDeclaredField("armor");
+			f.setAccessible(true);
+			return (Armor) f.get(statue);
+		} catch (ReflectiveOperationException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 
 	static Weapon weaponOf(Statue statue) {

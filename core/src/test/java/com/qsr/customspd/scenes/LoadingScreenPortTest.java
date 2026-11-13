@@ -14,6 +14,7 @@ import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
 import com.watabou.utils.PlatformSupport;
+import com.watabou.utils.Random;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -180,5 +181,22 @@ class LoadingScreenPortTest {
 
 		assertEquals(5, InterlevelScene.lastRegion);
 		assertSplash(GeneralAsset.HALLS_SPLASH, scene);
+	}
+
+	// upstream 4ed89d588: the splash picks its focus from a generator of its own
+	@Test
+	void theSplashDrawsNothingFromTheGeneratorUnderIt() throws Exception {
+		Random.pushGenerator(4242L);
+		long control = Random.Long();
+		Random.popGenerator();
+
+		Dungeon.hero = null;
+		Random.pushGenerator(4242L);
+		try {
+			load(InterlevelScene.Mode.DESCEND);
+			assertEquals(control, Random.Long(), "the loading screen moved the generator under it");
+		} finally {
+			Random.popGenerator();
+		}
 	}
 }

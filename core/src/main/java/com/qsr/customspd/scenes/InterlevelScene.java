@@ -53,6 +53,7 @@ import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.utils.DeviceCompat;
+import com.watabou.utils.GameMath;
 import com.watabou.utils.Random;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -117,6 +118,8 @@ public class InterlevelScene extends PixelScene {
 		//the level being loaded, null where it is not known yet (a new game reads its layout when it starts)
 		String loadingLevel = null;
 		fadeTime = NORM_FADE;
+
+		long seed = Dungeon.seed;
 		switch (mode){
 			default:
 				loadingDepth = Dungeon.depth;
@@ -125,6 +128,7 @@ public class InterlevelScene extends PixelScene {
 			case CONTINUE:
 				loadingDepth = GamesInProgress.check(GamesInProgress.curSlot).depth;
 				loadingLevel = GamesInProgress.check(GamesInProgress.curSlot).levelName;
+				seed = GamesInProgress.check(GamesInProgress.curSlot).seed;
 				break;
 			case DESCEND:
 				if (Dungeon.hero == null){
@@ -175,11 +179,54 @@ public class InterlevelScene extends PixelScene {
 			lastRegion = region;
 		}
 
-		if      (lastRegion == 1)    loadingAsset = Asset.getAssetFilePath(GeneralAsset.SEWERS_SPLASH);
-		else if (lastRegion == 2)    loadingAsset = Asset.getAssetFilePath(GeneralAsset.PRISON_SPLASH);
-		else if (lastRegion == 3)    loadingAsset = Asset.getAssetFilePath(GeneralAsset.CAVES_SPLASH);
-		else if (lastRegion == 4)    loadingAsset = Asset.getAssetFilePath(GeneralAsset.CITY_SPLASH);
-		else                         loadingAsset = Asset.getAssetFilePath(GeneralAsset.HALLS_SPLASH);
+		int loadingCenter = 400;
+
+		//for portrait users, each run the splashes change what details they focus on
+		//TOD should these be uniform, or should some be more common?
+		Random.pushGenerator(seed+lastRegion);
+			switch (lastRegion){
+				case 1:
+					loadingAsset = Asset.getAssetFilePath(GeneralAsset.SEWERS_SPLASH);
+					switch (Random.Int(3)){
+						case 0: loadingCenter = 180; break; //focus on rats and left side
+						case 1: loadingCenter = 485; break; //focus on center pipe and door
+						case 2: loadingCenter = 700; break; //focus on right pipe
+					}
+					break;
+				case 2:
+					loadingAsset = Asset.getAssetFilePath(GeneralAsset.PRISON_SPLASH);
+					switch (Random.Int(3)){
+						case 0: loadingCenter = 190; break; //focus on left skeleton
+						case 1: loadingCenter = 402; break; //focus on center arch
+						case 2: loadingCenter = 650; break; //focus on right stairs
+					}
+					break;
+				case 3:
+					loadingAsset = Asset.getAssetFilePath(GeneralAsset.CAVES_SPLASH);
+					switch (Random.Int(3)){
+						case 0: loadingCenter = 120; break; //focus on far-left mining machinery
+						case 1: loadingCenter = 340; break; //focus on center gnoll groups
+						case 2: loadingCenter = 625; break; //focus on right gnoll
+					}
+					break;
+				case 4:
+					loadingAsset = Asset.getAssetFilePath(GeneralAsset.CITY_SPLASH);
+					switch (Random.Int(3)){
+						case 0: loadingCenter = 275; break; //focus on left bookcases
+						case 1: loadingCenter = 460; break; //focus on center pathway
+						case 2: loadingCenter = 625; break; //focus on right bookcases
+					}
+					break;
+				case 5: default:
+					loadingAsset = Asset.getAssetFilePath(GeneralAsset.HALLS_SPLASH);
+					switch (Random.Int(3)){
+						case 0: loadingCenter = 145; break; //focus on left arches
+						case 1: loadingCenter = 400; break; //focus on ripper demon
+						case 2: loadingCenter = 615; break; //focus on right arches
+					}
+					break;
+			}
+		Random.popGenerator();
 
 		//slow down transition when displaying an install prompt
 		if (Updates.isInstallable()){
@@ -192,7 +239,12 @@ public class InterlevelScene extends PixelScene {
 		Image background = new Image(loadingAsset);
 		background.scale.set(Camera.main.height/background.height);
 
-		background.x = (Camera.main.width - background.width())/2f;
+		if (Camera.main.width >= background.width()){
+			background.x = (Camera.main.width - background.width())/2f;
+		} else {
+			background.x = Camera.main.width/2f - loadingCenter*background.scale.x;
+			background.x = GameMath.gate(Camera.main.width - background.width(), background.x, 0);
+		}
 		background.y = (Camera.main.height - background.height())/2f;
 		PixelScene.align(background);
 		add(background);
@@ -208,7 +260,7 @@ public class InterlevelScene extends PixelScene {
 		fadeRight.x = background.x + background.width() + 2;
 		fadeRight.y = background.y + background.height();
 		fadeRight.angle = 180;
-		fadeRight.visible = background.x + background.width() < Camera.main.width;
+		fadeRight.visible = fadeLeft.visible;
 		add(fadeRight);
 
 		Image im = new Image(TextureCache.createGradient(0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xFF000000)){

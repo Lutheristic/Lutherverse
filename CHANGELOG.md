@@ -10,6 +10,43 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 Everything on `main` since the fork base (`cpd-sync-base-2025-08-15`, CPD commit `c97fb83`).
 
+### 2026-11-12: missed upstream fixes for rooms, the corpse dust quest, traps, bombs, hero abilities and text, plus Belarusian
+
+The third batch from the check of Slice 1 commits against v2.5.4.
+
+**Fixed**
+- The wandmaker appears on every prison floor that has his quest room. Since the entrance room variants arrived he only showed up next to the plain entrance room, so about four floors in five had his quest room and no wandmaker.
+- The imp asks for monks on floor 17 and golems on floor 19, and picks either on 18, as upstream does. The floors were in a different order before.
+- Special entrance stairs have their own tile art in every region. Statue entrance rooms used them already and drew an empty tile.
+- Packs that restyle the stairs but have no special stairs art use their own stairs for both.
+- A seed now stocks the secret laboratory and the secret library the same way on every run, and a cursing trap, allies following the hero to a new floor, and a dead hero's scattered belongings pick their cells from the seed too.
+- Mimics a pack adds to a floor as extra mobs get their stats for that floor, then any hp the pack sets. They used to keep empty stats.
+- Packs that still name the old flashbang or shock bomb get the renamed bombs instead of crashing when a hero starts with one or an enemy drops one.
+- On a save from before the staff imbue rework, the imbue window promises the old wand back when its preservation is still unused, as it should.
+- The Jowiro's Class Reskins pack text is up to date with the current talents and abilities.
+
+**Ported**
+- On cave floors the corner fill no longer walls up a corner next to a door, or leaves a visible trap in a hallway.
+- Demon spawner rooms can't connect to an exit room, as in v2.5.4.
+- Circle basin and hallway entrance rooms use special stairs, and a dewdrop on special stairs is picked up even at full health, as one on the normal stairs is.
+- Bridge rooms and cave fissure rooms no longer put items or characters in the gap or on the bridge, so seeded floors with one lay out differently.
+- The corpse dust quest raises its own kind of wraith. They spawn at least a third of the hero's view distance away, the summon cost stops growing at 49 turns, and only these wraiths count toward it or die when the curse is lifted. Before, a third wraith could never spawn. Mass graves can't connect to the entrance and need three rooms between them and it.
+- Mass grave and ritual site floors use a tile nothing can change, so fire no longer leaves embers on them.
+- A pitfall trap's delayed collapse belongs to the floor it was set off on, not just its depth.
+- Geysers and aqua brew put out burning targets.
+- Trampled high grass drops dew at the intended rate, and grassy floors drop half as much.
+- Throwing an aqua brew at your own cell no longer aims it up and to the left.
+- Knockback, the wand of blast wave's follow-up and the amulet scene act at effect priority, and a floor change rounds partial turns for every actor, not just characters.
+- The ninja log presses the cell it lands on, a cursed wand of warding aims like other cursed wands, and elemental strike reaches 4 tiles before talents. Retribution and psionic blast pick their targets before they deal damage.
+- During hourglass stasis the hero looks frozen in place, and ending it clears each sprite effect on its own, so invisibility no longer sticks.
+- Conjured explosions deal physical damage.
+- The v2.5.3 alchemy bomb rework: each bomb hits everything in its own range, arcane, holy and shrapnel bombs hit harder, and the regrowth bomb reaches 3 tiles. The flashbang becomes the smoke bomb, and the shock bomb becomes the flashbang, which deals electricity damage and paralyses. Old saves keep their bombs under the new names.
+- Several splash colours can play at once. Warning text is orange and every damage number is red.
+- The imp is easier to see, and his quest opens with its own intro line. His floor tile now sets the tile's flags too.
+- A dying demon spawner's splash covers the whole sprite.
+- Belarusian is the 19th language, with v2.5.4's translations and a later upstream fix to its berserk rage text. Text only Lutherverse has shows in English for now.
+- The new and changed lines take v2.5.4's translations, and where upstream's line is only the English, the English shows.
+
 ### 2026-11-12: missed upstream fixes for rooms, combat, mob behaviour, the shop and the desktop launcher
 
 The second batch from the same check of Slice 1 commits against v2.5.4.

@@ -154,7 +154,7 @@ public class SpectralNecromancer extends Necromancer {
 
 	summoning = firstSummon = false;
 
-	Wraith wraith = Wraith.spawnAt(summoningPos, false);
+	Wraith wraith = Wraith.spawnAt(summoningPos, Wraith.class);
 	if (wraith == null){
 		spend(TICK);
 		return;

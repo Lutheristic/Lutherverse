@@ -312,6 +312,9 @@ public abstract class RegularLevel extends Level {
 		for (ExtraMobSpawn mobSpawn : Dungeon.layout.getDungeon().get(Dungeon.levelName).getExtraMobs()) {
 			Mob m = (Mob) Reflection.newInstance(Reflection.forName("com.qsr.customspd.actors.mobs." + mobSpawn.getType()));
 			if (mobSpawn.getAlignment() != null) m.alignment = Char.Alignment.valueOf(mobSpawn.getAlignment().toUpperCase(Locale.ENGLISH));
+			if (m instanceof Mimic) {
+				((Mimic) m).setLevel( Dungeon.scalingDepth() );
+			}
 			if (mobSpawn.getHp() != null) {
 				m.HP = mobSpawn.getHp();
 			}

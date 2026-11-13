@@ -17,6 +17,7 @@ enum class CityTile(override val path: String, override val pos: Int) : TileAsse
     WELL("environment/city/well.png", 18),
     EMPTY_WELL("environment/city/empty_well.png", 19),
     PEDESTAL("environment/city/pedestal.png", 20),
+    ENTRANCE_SP("environment/city/entrance_sp.png", 22),
     WATER_0("environment/city/water_0.png", 32),
     WATER_1("environment/city/water_1.png", 33),
     WATER_2("environment/city/water_2.png", 34),

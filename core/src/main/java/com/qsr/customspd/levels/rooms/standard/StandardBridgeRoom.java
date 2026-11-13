@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public abstract class BridgeRoom extends StandardRoom {
+public abstract class StandardBridgeRoom extends StandardRoom {
 
 	@Override
 	public int minWidth() {
@@ -49,6 +49,16 @@ public abstract class BridgeRoom extends StandardRoom {
 	public boolean canMerge(Level l, Room other, Point p, int mergeTerrain) {
 		int cell = l.pointToCell(pointInside(p, 1));
 		return l.map[cell] != spaceTile();
+	}
+
+	@Override
+	public boolean canPlaceItem(Point p, Level l) {
+		return super.canPlaceItem(p, l) && (spaceRect == null || !spaceRect.inside(p));
+	}
+
+	@Override
+	public boolean canPlaceCharacter(Point p, Level l) {
+		return super.canPlaceItem(p, l) && (spaceRect == null || !spaceRect.inside(p));
 	}
 
 	//keep these so that subclasses can use them in their methods

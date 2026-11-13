@@ -61,8 +61,8 @@ public class DemonSpawnerRoom extends SpecialRoom {
 	@Override
 	public boolean connect(Room room) {
 		//cannot connect to entrance, otherwise works normally
-		if (room.isEntrance()) return false;
-		else                              return super.connect(room);
+		if (room.isExit())  return false;
+		else                return super.connect(room);
 	}
 
 	@Override

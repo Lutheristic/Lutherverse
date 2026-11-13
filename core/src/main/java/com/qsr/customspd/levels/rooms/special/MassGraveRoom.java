@@ -33,6 +33,7 @@ import com.qsr.customspd.items.quest.CorpseDust;
 import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.levels.painters.Painter;
+import com.qsr.customspd.levels.rooms.Room;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.tiles.CustomTilemap;
 import com.watabou.noosa.Image;
@@ -56,7 +57,7 @@ public class MassGraveRoom extends SpecialRoom {
 		level.addItemToSpawn(new PotionOfLiquidFlame());
 
 		Painter.fill(level, this, Terrain.WALL);
-		Painter.fill(level, this, 1, Terrain.EMPTY_SP);
+		Painter.fill(level, this, 1, Terrain.CUSTOM_DECO_EMPTY);
 
 		Bones b = new Bones();
 
@@ -70,7 +71,7 @@ public class MassGraveRoom extends SpecialRoom {
 			int pos;
 			do {
 				pos = level.pointToCell(random());
-			} while (level.map[pos] != Terrain.EMPTY_SP || level.findMob(pos) != null);
+			} while (level.map[pos] != Terrain.CUSTOM_DECO_EMPTY || level.findMob(pos) != null);
 			skele.pos = pos;
 			level.mobs.add( skele );
 		}
@@ -89,11 +90,37 @@ public class MassGraveRoom extends SpecialRoom {
 			int pos;
 			do {
 				pos = level.pointToCell(random());
-			} while (level.map[pos] != Terrain.EMPTY_SP || level.heaps.get(pos) != null);
+			} while (level.map[pos] != Terrain.CUSTOM_DECO_EMPTY || level.heaps.get(pos) != null);
 			Heap h = level.drop(item, pos);
 			h.setHauntedIfCursed();
 			h.type = Heap.Type.SKELETON;
 		}
+	}
+
+	@Override
+	public boolean canConnect(Room r) {
+		if (r.isEntrance()){
+			return false;
+		}
+
+		//must have at least 3 rooms between it and the entrance room
+		for (Room r1 : r.connected.keySet()) {
+			if (r1.isEntrance()){
+				return false;
+			}
+			for (Room r2 : r1.connected.keySet()) {
+				if (r2.isEntrance()){
+					return false;
+				}
+				for (Room r3 : r2.connected.keySet()) {
+					if (r3.isEntrance()){
+						return false;
+					}
+				}
+			}
+		}
+
+		return super.canConnect(r);
 	}
 
 	public static class Bones extends CustomTilemap {

@@ -1,0 +1,42 @@
+{
+  "start": "x1",
+  "dungeon": {
+    "x1": {
+      "depth": 4,
+      "type": "regular",
+      "layout": "SewerLevel",
+      "entrances": ["surface"],
+      "exits": ["x2"],
+      "chasm": "x2",
+      "passage": "x1",
+      "bestiary": ["Rat"],
+      "extra_mobs": [
+        { "type": "Mimic", "hp": 5 },
+        { "type": "Mimic" }
+      ]
+    },
+    "x2": {
+      "depth": 5,
+      "type": "custom",
+      "entrances": ["x1"],
+      "exits": ["x3"],
+      "chasm": "x3",
+      "passage": "x1",
+      "custom_layout": {
+        "width": 7,
+        "height": 5,
+        "region": 1,
+        "music": { "tracks": [], "probs": [] },
+        "map": [
+          4, 4, 4, 4, 4, 4, 4,
+          4, 7, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 1, 1, 4,
+          4, 1, 1, 1, 1, 8, 4,
+          4, 4, 4, 4, 4, 4, 4
+        ],
+        "entrances": [ { "x": 1, "y": 1 } ],
+        "exits": [ { "x": 5, "y": 3 } ]
+      }
+    }
+  }
+}

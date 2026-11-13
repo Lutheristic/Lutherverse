@@ -445,7 +445,7 @@ public class InterlevelScene extends PixelScene {
 			install.icon(new Image(Asset.getAssetFilePath(GeneralAsset.ICON_CHANGES)));
 			install.textColor(Window.SHPX_COLOR);
 			install.setSize(install.reqWidth()+5, 20);
-			install.setPos((Camera.main.width - install.width())/2, (Camera.main.height - loadingText.bottom())/3 + loadingText.bottom());
+			install.setPos((Camera.main.width - install.width())/2, loadingText.top() - install.height() - 4);
 			add(install);
 		}
 

@@ -23,6 +23,7 @@ package com.qsr.customspd.effects;
 
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.tiles.DungeonTilemap;
+import com.watabou.noosa.Visual;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.particles.PixelParticle;
 import com.watabou.utils.PointF;
@@ -72,6 +73,25 @@ public class Splash {
 		SplashFactory fact = FACTORIES.get(color);fact.color = color;
 		fact.dir = dir;
 		fact.cone = cone;
+		emitter.burst( fact, n );
+	}
+
+	public static void around(Visual v, final int color, int n ) {
+		if (n <= 0) {
+			return;
+		}
+
+		Emitter emitter = GameScene.emitter();
+		if (emitter == null) return;
+		emitter.pos( v );
+
+		if (!FACTORIES.containsKey(color)){
+			FACTORIES.put(color, new SplashFactory());
+		}
+		SplashFactory fact = FACTORIES.get(color);
+		fact.color = color;
+		fact.dir = -3.1415926f / 2;
+		fact.cone = 3.1415926f;
 		emitter.burst( fact, n );
 	}
 

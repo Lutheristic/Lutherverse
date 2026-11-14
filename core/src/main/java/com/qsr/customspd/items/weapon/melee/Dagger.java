@@ -34,9 +34,9 @@ import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
+import com.qsr.customspd.scenes.PixelScene;
 import com.qsr.customspd.utils.BArray;
 import com.qsr.customspd.utils.GLog;
-import com.watabou.noosa.Camera;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -111,8 +111,7 @@ public class Dagger extends MeleeWeapon {
 		PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null), maxDist);
 		if (PathFinder.distance[target] == Integer.MAX_VALUE || !Dungeon.level.heroFOV[target] || hero.rooted) {
 			GLog.w(Messages.get(wep, "ability_target_range"));
-			//CPDU has no PixelScene.shake (upstream 02210b0a8's screen-shake setting); Camera.main.shake is its equivalent
-			if (Dungeon.hero.rooted) Camera.main.shake( 1, 1f );
+			if (Dungeon.hero.rooted) PixelScene.shake( 1, 1f );
 			return;
 		}
 

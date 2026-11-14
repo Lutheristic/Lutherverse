@@ -39,11 +39,11 @@ import com.qsr.customspd.items.quest.GooBlob;
 import com.qsr.customspd.mechanics.Ballistica;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
+import com.qsr.customspd.scenes.PixelScene;
 import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.sprites.GooSprite;
 import com.qsr.customspd.ui.BossHealthBar;
 import com.qsr.customspd.utils.GLog;
-import com.watabou.noosa.Camera;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
@@ -162,7 +162,7 @@ public class Goo extends Mob {
 		}
 
 		if (pumpedUp > 0) {
-			Camera.main.shake( 3, 0.2f );
+			PixelScene.shake( 3, 0.2f );
 		}
 
 		return damage;

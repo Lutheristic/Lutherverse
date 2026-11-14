@@ -60,12 +60,12 @@ import com.qsr.customspd.mechanics.Ballistica;
 import com.qsr.customspd.mechanics.ConeAOE;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
+import com.qsr.customspd.scenes.PixelScene;
 import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.sprites.DM300Sprite;
 import com.qsr.customspd.tiles.DungeonTilemap;
 import com.qsr.customspd.ui.BossHealthBar;
 import com.qsr.customspd.utils.GLog;
-import com.watabou.noosa.Camera;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundle;
@@ -324,7 +324,7 @@ public class DM300 extends Mob {
 	public void move(int step, boolean travelling) {
 		super.move(step, travelling);
 
-		if (travelling) Camera.main.shake( supercharged ? 3 : 1, 0.25f );
+		if (travelling) PixelScene.shake( supercharged ? 3 : 1, 0.25f );
 
 		if (!flying && Dungeon.level.map[pos] == Terrain.INACTIVE_TRAP && state == HUNTING) {
 
@@ -630,7 +630,7 @@ public class DM300 extends Mob {
 				if (bestpos != pos) {
 					move(bestpos);
 				}
-				Camera.main.shake( 5, 1f );
+				PixelScene.shake( 5, 1f );
 
 				return true;
 			}
@@ -689,7 +689,7 @@ public class DM300 extends Mob {
 				}
 			}
 
-			Camera.main.shake( 3, 0.7f );
+			PixelScene.shake( 3, 0.7f );
 			Sample.INSTANCE.play(Assets.Sounds.ROCKS);
 
 			detach();

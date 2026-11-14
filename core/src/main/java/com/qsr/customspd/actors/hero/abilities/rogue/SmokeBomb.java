@@ -50,11 +50,11 @@ import com.qsr.customspd.items.scrolls.ScrollOfTeleportation;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.modding.SpriteSizeConfig;
 import com.qsr.customspd.scenes.GameScene;
+import com.qsr.customspd.scenes.PixelScene;
 import com.qsr.customspd.sprites.MobSprite;
 import com.qsr.customspd.ui.HeroIcon;
 import com.qsr.customspd.utils.BArray;
 import com.qsr.customspd.utils.GLog;
-import com.watabou.noosa.Camera;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PathFinder;
@@ -92,8 +92,7 @@ public class SmokeBomb extends ArmorAbility {
 		if (target != null) {
 
 			if (target != hero.pos && hero.rooted){
-				//CPDU has no PixelScene.shake (upstream 02210b0a8's screen-shake setting); Camera.main.shake is its equivalent
-				Camera.main.shake( 1, 1f );
+				PixelScene.shake( 1, 1f );
 				return;
 			}
 

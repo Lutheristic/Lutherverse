@@ -35,8 +35,8 @@ import com.qsr.customspd.effects.particles.LeafParticle;
 import com.qsr.customspd.effects.particles.ShadowParticle;
 import com.qsr.customspd.effects.particles.SparkParticle;
 import com.qsr.customspd.modding.SpriteSizeConfig;
+import com.qsr.customspd.scenes.PixelScene;
 import com.qsr.customspd.tiles.DungeonTilemap;
-import com.watabou.noosa.Camera;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
@@ -151,7 +151,7 @@ public abstract class FistSprite extends MobSprite {
 	public void onComplete( Animation anim ) {
 		super.onComplete( anim );
 		if (anim == attack) {
-			Camera.main.shake( 4, 0.2f );
+			PixelScene.shake( 4, 0.2f );
 		} else if (anim == zap) {
 			idle();
 		}

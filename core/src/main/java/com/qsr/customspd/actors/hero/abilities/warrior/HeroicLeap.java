@@ -37,8 +37,8 @@ import com.qsr.customspd.items.wands.WandOfBlastWave;
 import com.qsr.customspd.mechanics.Ballistica;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
+import com.qsr.customspd.scenes.PixelScene;
 import com.qsr.customspd.ui.HeroIcon;
-import com.watabou.noosa.Camera;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -69,8 +69,7 @@ public class HeroicLeap extends ArmorAbility {
 		if (target != null) {
 
 			if (hero.rooted){
-				//CPDU has no PixelScene.shake (upstream 02210b0a8's screen-shake setting); Camera.main.shake is its equivalent
-				Camera.main.shake( 1, 1f );
+				PixelScene.shake( 1, 1f );
 				return;
 			}
 
@@ -118,7 +117,7 @@ public class HeroicLeap extends ArmorAbility {
 					}
 
 					WandOfBlastWave.BlastWave.blast(dest);
-					Camera.main.shake(2, 0.5f);
+					PixelScene.shake(2, 0.5f);
 
 					Invisibility.dispel();
 					hero.spendAndNext(Actor.TICK);

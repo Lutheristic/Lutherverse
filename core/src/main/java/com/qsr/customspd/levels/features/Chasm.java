@@ -38,10 +38,10 @@ import com.qsr.customspd.levels.rooms.special.WeakFloorRoom;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.scenes.InterlevelScene;
+import com.qsr.customspd.scenes.PixelScene;
 import com.qsr.customspd.sprites.MobSprite;
 import com.qsr.customspd.utils.GLog;
 import com.qsr.customspd.windows.WndOptions;
-import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
@@ -138,7 +138,7 @@ public class Chasm implements Hero.Doom {
 			return;
 		}
 		
-		Camera.main.shake( 4, 1f );
+		PixelScene.shake( 4, 1f );
 
 		Dungeon.level.occupyCell(hero );
 		Buff.prolong( hero, Cripple.class, Cripple.DURATION );

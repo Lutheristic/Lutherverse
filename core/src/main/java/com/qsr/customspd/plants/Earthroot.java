@@ -32,8 +32,8 @@ import com.qsr.customspd.effects.CellEmitter;
 import com.qsr.customspd.effects.particles.EarthParticle;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.scenes.PixelScene;
 import com.qsr.customspd.ui.BuffIndicator;
-import com.watabou.noosa.Camera;
 import com.watabou.utils.Bundle;
 
 import kotlin.Pair;
@@ -58,7 +58,7 @@ public class Earthroot extends Plant {
 		
 		if (Dungeon.level.heroFOV[pos]) {
 			CellEmitter.bottom( pos ).start( EarthParticle.FACTORY, 0.05f, 8 );
-			Camera.main.shake( 1, 0.4f );
+			PixelScene.shake( 1, 0.4f );
 		}
 	}
 	

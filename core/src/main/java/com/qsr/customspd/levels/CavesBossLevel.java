@@ -47,11 +47,11 @@ import com.qsr.customspd.levels.painters.CavesPainter;
 import com.qsr.customspd.levels.painters.Painter;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
+import com.qsr.customspd.scenes.PixelScene;
 import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.sprites.PylonSprite;
 import com.qsr.customspd.tiles.CustomTilemap;
 import com.qsr.customspd.utils.GLog;
-import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
@@ -315,7 +315,7 @@ public class CavesBossLevel extends Level {
 		Dungeon.observe();
 
 		CellEmitter.get( entrance ).start( Speck.factory( Speck.ROCK ), 0.07f, 10 );
-		Camera.main.shake( 3, 0.7f );
+		PixelScene.shake( 3, 0.7f );
 		Sample.INSTANCE.play( Assets.Sounds.ROCKS );
 
 		DM300 boss = new DM300();

@@ -33,9 +33,9 @@ import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.levels.RegularLevel;
 import com.qsr.customspd.levels.rooms.Room;
 import com.qsr.customspd.messages.Messages;
+import com.qsr.customspd.scenes.PixelScene;
 import com.qsr.customspd.utils.BArray;
 import com.qsr.customspd.utils.GLog;
-import com.watabou.noosa.Camera;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
@@ -110,7 +110,7 @@ public class RockfallTrap extends Trap {
 		}
 		
 		if (seen){
-			Camera.main.shake(3, 0.7f);
+			PixelScene.shake(3, 0.7f);
 			Sample.INSTANCE.play(Assets.Sounds.ROCKS);
 		}
 

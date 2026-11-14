@@ -41,9 +41,9 @@ import com.qsr.customspd.items.armor.ClassArmor;
 import com.qsr.customspd.mechanics.Ballistica;
 import com.qsr.customspd.mechanics.ConeAOE;
 import com.qsr.customspd.messages.Messages;
+import com.qsr.customspd.scenes.PixelScene;
 import com.qsr.customspd.ui.HeroIcon;
 import com.qsr.customspd.utils.GLog;
-import com.watabou.noosa.Camera;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
@@ -100,7 +100,7 @@ public class Shockwave extends ArmorAbility {
 
 		hero.sprite.zap(target);
 		Sample.INSTANCE.play(Assets.Sounds.BLAST, 1f, 0.5f);
-		Camera.main.shake(2, 0.5f);
+		PixelScene.shake(2, 0.5f);
 		//final zap at 2/3 distance, for timing of the actual effect
 		MagicMissile.boltFromChar(hero.sprite.parent,
 				MagicMissile.FORCE_CONE,

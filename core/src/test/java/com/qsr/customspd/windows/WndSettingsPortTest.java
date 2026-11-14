@@ -12,6 +12,7 @@ import com.qsr.customspd.services.updates.Updates;
 import com.qsr.customspd.test.HeadlessRun;
 import com.qsr.customspd.ui.Button;
 import com.qsr.customspd.ui.CheckBox;
+import com.qsr.customspd.ui.OptionSlider;
 import com.watabou.noosa.Game;
 import com.watabou.utils.DeviceCompat;
 import com.watabou.noosa.ui.Component;
@@ -157,6 +158,56 @@ class WndSettingsPortTest {
 
 		assertFalse(vibration.active, "a device that cannot vibrate cannot change the setting");
 		assertFalse(vibration.checked(), "the saved setting is not shown where it does nothing");
+	}
+
+	private static int sliderBound(OptionSlider slider, String name) throws Exception {
+		Field f = OptionSlider.class.getDeclaredField(name);
+		f.setAccessible(true);
+		return f.getInt(slider);
+	}
+
+	/** What a drag does once the node is let go: the value is set, then onChange runs. */
+	private static void slideTo(OptionSlider slider, int value) throws Exception {
+		slider.setSelectedValue(value);
+		Method onChange = OptionSlider.class.getDeclaredMethod("onChange");
+		onChange.setAccessible(true);
+		onChange.invoke(slider);
+	}
+
+	// upstream 02210b0a8
+	@Test
+	void theScreenShakeSliderShowsAndSavesTheSetting() throws Exception {
+		SPDSettings.screenShake(3);
+		createTab("DisplayTab");
+		OptionSlider shake = (OptionSlider) read(tab, "optScreenShake");
+		assertNotNull(shake, "the display tab has a screen shake slider");
+		assertEquals(0, sliderBound(shake, "minVal"), "from off");
+		assertEquals(4, sliderBound(shake, "maxVal"), "to twice the default");
+		assertEquals(3, shake.getSelectedValue(), "the slider starts at the saved setting");
+
+		slideTo(shake, 0);
+		assertEquals(0, SPDSettings.screenShake(), "sliding to off saves it");
+
+		slideTo(shake, 4);
+		assertEquals(4, SPDSettings.screenShake(), "sliding to high saves it");
+	}
+
+	// upstream 02210b0a8
+	@Test
+	void theScreenShakeSliderFollowsTheCameraFollowSlider() throws Exception {
+		createTab("DisplayTab");
+		OptionSlider follow = (OptionSlider) read(tab, "optFollowIntensity");
+		OptionSlider shake = (OptionSlider) read(tab, "optScreenShake");
+
+		tab.setRect(0, 0, 240, 0);
+		assertEquals(follow.top(), shake.top(), 0.001f, "wide: on the camera follow slider's row");
+		assertTrue(shake.left() > follow.right(), "wide: to its right");
+		assertEquals(shake.bottom(), tab.height(), 0.001f, "it ends the tab");
+
+		tab.setRect(0, 0, 120, 0);
+		assertTrue(shake.top() > follow.bottom(), "narrow: below the camera follow slider");
+		assertEquals(follow.left(), shake.left(), 0.001f, "narrow: in the same column");
+		assertEquals(shake.bottom(), tab.height(), 0.001f, "it ends the tab");
 	}
 
 	/** Reports the device as the given platform and OS version, the rest from the headless app. */

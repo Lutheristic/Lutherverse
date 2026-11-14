@@ -149,6 +149,7 @@ import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.scenes.AlchemyScene;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.scenes.InterlevelScene;
+import com.qsr.customspd.scenes.PixelScene;
 import com.qsr.customspd.scenes.SurfaceScene;
 import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.sprites.HeroSprite;
@@ -163,7 +164,6 @@ import com.qsr.customspd.windows.WndMessage;
 import com.qsr.customspd.windows.WndOptions;
 import com.qsr.customspd.windows.WndResurrect;
 import com.qsr.customspd.windows.WndTradeItem;
-import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
@@ -1134,7 +1134,7 @@ public class Hero extends Char {
 				switch (heap.type) {
 				case TOMB:
 					Sample.INSTANCE.play( Assets.Sounds.TOMB );
-					Camera.main.shake( 1, 0.5f );
+					PixelScene.shake( 1, 0.5f );
 					break;
 				case SKELETON:
 				case REMAINS:
@@ -1213,7 +1213,7 @@ public class Hero extends Char {
 		LevelTransition transition = Dungeon.level.getTransition(stairs);
 
 		if (rooted) {
-			Camera.main.shake(1, 1f);
+			PixelScene.shake(1, 1f);
 			ready();
 			return false;
 		} else if (transition != null && transition.inside(pos)) {
@@ -1588,7 +1588,7 @@ public class Hero extends Char {
 			return false;
 
 		if (rooted) {
-			Camera.main.shake( 1, 1f );
+			PixelScene.shake( 1, 1f );
 			return false;
 		}
 		

@@ -43,12 +43,12 @@ import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.items.armor.ClassArmor;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
+import com.qsr.customspd.scenes.PixelScene;
 import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.ui.BuffIndicator;
 import com.qsr.customspd.ui.HeroIcon;
 import com.qsr.customspd.utils.BArray;
 import com.qsr.customspd.utils.GLog;
-import com.watabou.noosa.Camera;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
@@ -142,15 +142,13 @@ public class Challenge extends ArmorAbility {
 
 		if (reachable[blinkpos] == Integer.MAX_VALUE){
 			GLog.w(Messages.get(this, "unreachable_target"));
-			//CPDU has no PixelScene.shake (upstream 02210b0a8's screen-shake setting); Camera.main.shake is its equivalent
-			if (hero.rooted) Camera.main.shake( 1, 1f );
+			if (hero.rooted) PixelScene.shake( 1, 1f );
 			return;
 		}
 
 		if (Dungeon.level.distance(blinkpos, targetCh.pos) > 5){
 			GLog.w(Messages.get(this, "distant_target"));
-			//CPDU has no PixelScene.shake (upstream 02210b0a8's screen-shake setting); Camera.main.shake is its equivalent
-			if (hero.rooted) Camera.main.shake( 1, 1f );
+			if (hero.rooted) PixelScene.shake( 1, 1f );
 			return;
 		}
 

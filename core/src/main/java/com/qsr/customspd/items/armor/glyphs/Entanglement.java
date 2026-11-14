@@ -28,9 +28,9 @@ import com.qsr.customspd.effects.particles.EarthParticle;
 import com.qsr.customspd.items.armor.Armor;
 import com.qsr.customspd.items.armor.Armor.Glyph;
 import com.qsr.customspd.plants.Earthroot;
+import com.qsr.customspd.scenes.PixelScene;
 import com.qsr.customspd.sprites.ItemSprite;
 import com.qsr.customspd.sprites.ItemSprite.Glowing;
-import com.watabou.noosa.Camera;
 import com.watabou.utils.Random;
 
 public class Entanglement extends Glyph {
@@ -49,7 +49,7 @@ public class Entanglement extends Glyph {
 
 			Buff.affect( defender, Earthroot.Armor.class ).level( Math.round((5 + 2 * level)*powerMulti) );
 			CellEmitter.bottom( defender.pos ).start( EarthParticle.FACTORY, 0.05f, 8 );
-			Camera.main.shake( 1, 0.4f );
+			PixelScene.shake( 1, 0.4f );
 			
 		}
 

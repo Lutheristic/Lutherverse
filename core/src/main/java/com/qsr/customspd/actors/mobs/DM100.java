@@ -30,10 +30,10 @@ import com.qsr.customspd.effects.particles.SparkParticle;
 import com.qsr.customspd.items.Generator;
 import com.qsr.customspd.mechanics.Ballistica;
 import com.qsr.customspd.messages.Messages;
+import com.qsr.customspd.scenes.PixelScene;
 import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.sprites.DM100Sprite;
 import com.qsr.customspd.utils.GLog;
-import com.watabou.noosa.Camera;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 
@@ -106,7 +106,7 @@ public class DM100 extends Mob implements Callback {
 				
 				if (enemy == Dungeon.hero) {
 					
-					Camera.main.shake( 2, 0.3f );
+					PixelScene.shake( 2, 0.3f );
 					
 					if (!enemy.isAlive()) {
 						Badges.validateDeathFromEnemyMagic();

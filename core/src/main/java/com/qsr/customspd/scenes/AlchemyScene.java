@@ -28,7 +28,6 @@ import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.SPDAction;
 import com.qsr.customspd.ShatteredPixelDungeon;
 import com.qsr.customspd.Statistics;
-import com.qsr.customspd.actors.buffs.LostInventory;
 import com.qsr.customspd.actors.hero.Belongings;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
@@ -254,8 +253,8 @@ public class AlchemyScene extends PixelScene {
 									ArrayList<Item> items = (ArrayList<Item>) bag.items.clone();
 
 									for(Item i : bag.items){
-										//CPDU: no Belongings.lostInventory() / keptThroughLostInventory(); same checks as Toolbar's selector
-										if (Dungeon.hero.buff(LostInventory.class) != null && !i.keptThoughLostInvent) items.remove(i);
+										//CPDU: no Item.keptThroughLostInventory(); reads the keptThoughLostInvent field like Toolbar's selector
+										if (Dungeon.hero.belongings.lostInventory() && !i.keptThoughLostInvent) items.remove(i);
 										if (!Recipe.usableInRecipe(i)) items.remove(i);
 									}
 

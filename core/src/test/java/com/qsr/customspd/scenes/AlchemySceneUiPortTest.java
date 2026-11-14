@@ -2,13 +2,18 @@ package com.qsr.customspd.scenes;
 
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.qsr.customspd.Dungeon;
+import com.qsr.customspd.SPDAction;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.LiquidMetal;
 import com.qsr.customspd.journal.Document;
+import com.qsr.customspd.plants.Firebloom;
+import com.qsr.customspd.plants.Sungrass;
 import com.qsr.customspd.test.HeadlessRun;
+import com.qsr.customspd.ui.Button;
 import com.qsr.customspd.ui.IconButton;
+import com.qsr.customspd.ui.RadialMenu;
 import com.qsr.customspd.ui.RedButton;
 import com.qsr.customspd.ui.RenderedTextBlock;
 import com.qsr.customspd.ui.ScrollPane;
@@ -354,5 +359,67 @@ class AlchemySceneUiPortTest {
 		combine(scene, 0);
 
 		assertNotSame(shown, shownRecipes(guide).get(0), "the guide must refresh");
+	}
+
+	/** The scene's inventory selector, the button bound to the inventory selector key. */
+	private static Button inventorySelector(AlchemyScene scene) throws Exception {
+		Button found = null;
+		for (Gizmo g : members(scene)) {
+			if (g instanceof Button && ((Button) g).keyAction() == SPDAction.INVENTORY_SELECTOR) {
+				assertNull(found, "more than one inventory selector");
+				found = (Button) g;
+			}
+		}
+		assertNotNull(found, "test setup: the scene has an inventory selector");
+		return found;
+	}
+
+	private static List<RadialMenu> radialMenus(AlchemyScene scene) throws Exception {
+		List<RadialMenu> menus = new ArrayList<>();
+		for (Gizmo g : members(scene)) {
+			if (g instanceof RadialMenu) menus.add((RadialMenu) g);
+		}
+		return menus;
+	}
+
+	// upstream 8efb48d83's selector as v2.5.4 has it: it reads the lost inventory flag that
+	// 2466974a7 cached in Belongings (set by the LostInventory buff) instead of looking the buff up
+	@Test
+	void theBagSelectorOffersOnlyItemsKeptThroughALostInventory() throws Exception {
+		createScene();
+		Dungeon.hero.belongings.backpack.items.clear();
+		Item lost = new Sungrass.Seed();
+		Item kept = new Firebloom.Seed();
+		kept.keptThoughLostInvent = true;
+		Dungeon.hero.belongings.backpack.items.add(lost);
+		Dungeon.hero.belongings.backpack.items.add(kept);
+		Dungeon.hero.belongings.lostInventory(true);
+
+		Game priorGame = Game.instance;
+		try {
+			new Game(null, Game.platform);
+			Field sceneField = Game.class.getDeclaredField("scene");
+			sceneField.setAccessible(true);
+			sceneField.set(Game.instance, scene);
+
+			Method onClick = Button.class.getDeclaredMethod("onClick");
+			onClick.setAccessible(true);
+			onClick.invoke(inventorySelector(scene));
+			List<RadialMenu> menus = radialMenus(scene);
+			assertEquals(1, menus.size(), "the selector first asks for a bag");
+			RadialMenu bagMenu = menus.get(0);
+
+			bagMenu.onSelect(0, false); // the backpack
+			menus = radialMenus(scene);
+			menus.remove(bagMenu);
+			assertEquals(1, menus.size(), "picking the backpack asks for an item");
+			@SuppressWarnings("unchecked")
+			List<Item> offered = (List<Item>) read(menus.get(0), menus.get(0).getClass(), "val$items");
+
+			assertEquals(1, offered.size(), "only the kept item is offered");
+			assertSame(kept, offered.get(0));
+		} finally {
+			Game.instance = priorGame;
+		}
 	}
 }

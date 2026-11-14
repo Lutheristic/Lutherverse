@@ -15,6 +15,7 @@ import com.qsr.customspd.levels.features.LevelTransition;
 import com.qsr.customspd.messages.Languages;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.modding.DungeonLayout;
+import com.qsr.customspd.modding.JsonConfigRetriever;
 import com.qsr.customspd.modding.ModManager;
 import com.qsr.customspd.test.HeadlessRun;
 import com.qsr.customspd.ui.Button;
@@ -23,11 +24,13 @@ import com.qsr.customspd.ui.StyledButton;
 import com.badlogic.gdx.Input;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.input.KeyEvent;
+import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
 import com.watabou.utils.FileUtils;
+import com.watabou.utils.GameMath;
 import com.watabou.utils.PlatformSupport;
 import com.watabou.utils.Random;
 import kotlinx.serialization.json.Json;
@@ -239,6 +242,65 @@ class LoadingScreenPortTest {
 		assertSplash(GeneralAsset.SEWERS_SPLASH, scene);
 	}
 
+	// the splash focus comes from the run seed plus the region, as v2.5.4 picks it
+	@Test
+	void aNewGameOnTheShippedLayoutKeepsUpstreamsSplashFocus() throws Exception {
+		Game.width = Game.dispWidth = 500;
+		Game.height = Game.dispHeight = 1000;
+		Dungeon.hero = null;
+		load(InterlevelScene.Mode.DESCEND);
+		Image splash = backdrop(scene);
+		assertTrue(Camera.main.width < splash.width(), "test setup: a portrait screen crops the splash");
+
+		Random.pushGenerator(Dungeon.seed + 1);
+		int focus = Random.Int(2) == 0 ? 180 : 485;
+		Random.popGenerator();
+		float expected = focusedAt(splash, focus);
+		float other = focusedAt(splash, focus == 180 ? 485 : 180);
+		assertTrue(Math.abs(expected - other) > 1, "test setup: the two focus points place the splash apart");
+
+		assertEquals(1, InterlevelScene.lastRegion);
+		assertEquals(expected, splash.x, 1f);
+	}
+
+	private static float focusedAt(Image splash, int center) {
+		return GameMath.gate(Camera.main.width - splash.width(), Camera.main.width/2f - center*splash.scale.x, 0);
+	}
+
+	// a pack can start the run in a later region
+	@Test
+	void aNewGameShowsTheRegionOfThePacksStartFloor() throws Exception {
+		enablePack("{\"merge\":true,\"start\":\"11\"}");
+		Dungeon.hero = null;
+		load(InterlevelScene.Mode.DESCEND);
+
+		assertEquals(3, InterlevelScene.lastRegion);
+		assertSplash(GeneralAsset.CAVES_SPLASH, scene);
+		assertEquals(Document.INTROS.pageBody(3), story(scene));
+	}
+
+	@Test
+	void aNewGameOnAPackStartAboveTheSewersShowsTheSewers() throws Exception {
+		enablePack(TOWN_LAYOUT);
+		Dungeon.hero = null;
+		load(InterlevelScene.Mode.DESCEND);
+
+		assertEquals(1, InterlevelScene.lastRegion);
+		assertSplash(GeneralAsset.SEWERS_SPLASH, scene);
+		assertEquals(Document.INTROS.pageBody(1), story(scene));
+	}
+
+	@Test
+	void aNewGameStartingPastTheFiveRegionsShowsNoStory() throws Exception {
+		enablePack("{\"merge\":true,\"start\":\"26\"}");
+		Dungeon.hero = null;
+		load(InterlevelScene.Mode.DESCEND);
+
+		assertEquals(6, InterlevelScene.lastRegion);
+		assertSplash(GeneralAsset.HALLS_SPLASH, scene);
+		assertNull(story(scene));
+	}
+
 	@Test
 	void continuingOnFloorOneShowsTheSewers() throws Exception {
 		load(InterlevelScene.Mode.CONTINUE);
@@ -386,13 +448,16 @@ class LoadingScreenPortTest {
 	// Town and FiveExit start above floor 1 on a floor that is already in the first region
 	@Test
 	void aPackStartInTheFirstRegionShowsTheSewersStoryOnce() throws Exception {
-		useTownLayout();
+		enablePack(TOWN_LAYOUT);
 		Hero hero = Dungeon.hero;
 		Dungeon.hero = null;
 		load(InterlevelScene.Mode.DESCEND);
 		assertEquals(Document.INTROS.pageBody(1), story(scene), "a new game shows the sewers story");
 		Dungeon.hero = hero;
 
+		// the run goes on in the layout Dungeon.init reads for it
+		Dungeon.layout = JsonConfigRetriever.INSTANCE.retrieveDungeonLayout();
+		assertEquals("Town", Dungeon.layout.getStart(), "test setup: the run starts on the Town floor");
 		walkDown("Town", "1", 0);
 
 		assertEquals(1, InterlevelScene.lastRegion, "test setup: floor 1 is in the sewers");

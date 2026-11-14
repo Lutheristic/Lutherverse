@@ -131,7 +131,7 @@ public class InterlevelScene extends PixelScene {
 
 		String loadingAsset;
 		int loadingDepth;
-		//the level being loaded, null where it is not known yet (a new game reads its layout when it starts)
+		//the level being loaded, null where it is not known
 		String loadingLevel = null;
 		//the layout that level is looked up in
 		DungeonLayout loadingLayout = Dungeon.layout;
@@ -152,7 +152,15 @@ public class InterlevelScene extends PixelScene {
 				break;
 			case DESCEND:
 				if (Dungeon.hero == null){
-					loadingDepth = 1;
+					//a new game starts on the start level of the layout Dungeon.init reads
+					loadingLayout = layoutToLoad();
+					LevelScheme start = loadingLayout == null ? null : loadingLayout.getDungeon().get(loadingLayout.getStart());
+					if (start != null){
+						loadingLevel = loadingLayout.getStart();
+						loadingDepth = start.getDepth();
+					} else {
+						loadingDepth = 1;
+					}
 					fadeTime = SLOW_FADE;
 				} else {
 					if (curTransition != null){

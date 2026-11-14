@@ -183,12 +183,17 @@ class CatalogBadgesTest {
 
 	@Test
 	void wellEquippedNeedsOneEntryInEveryEquipmentCategory() {
-		List<Catalog> equipment = Catalog.equipmentCatalogs;
+		// enchantments and glyphs are listed with the equipment, but the badge does not ask for them
+		List<Catalog> equipment = new ArrayList<>(Catalog.equipmentCatalogs);
+		assertTrue(equipment.remove(Catalog.ENCHANTMENTS), "test setup: enchantments are equipment");
+		assertTrue(equipment.remove(Catalog.GLYPHS), "test setup: glyphs are equipment");
 		for (int i = 0; i < equipment.size() - 1; i++) {
 			Catalog.setSeen(equipment.get(i).items().iterator().next());
 		}
 		assertFalse(Badges.isUnlocked(Badges.Badge.CATALOG_ONE_EQUIPMENT));
+
 		Catalog.setSeen(equipment.get(equipment.size() - 1).items().iterator().next());
+		assertEquals(0, Catalog.ENCHANTMENTS.totalSeen() + Catalog.GLYPHS.totalSeen(), "no effect was seen");
 		assertTrue(Badges.isUnlocked(Badges.Badge.CATALOG_ONE_EQUIPMENT));
 	}
 

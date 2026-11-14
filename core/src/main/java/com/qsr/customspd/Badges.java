@@ -660,9 +660,11 @@ public class Badges {
 
 		boolean qualified = true;
 		for (Catalog cat : Catalog.equipmentCatalogs) {
-			if (cat.totalSeen() == 0) {
-				qualified = false;
-				break;
+			if (cat != Catalog.ENCHANTMENTS && cat != Catalog.GLYPHS) {
+				if (cat.totalSeen() == 0) {
+					qualified = false;
+					break;
+				}
 			}
 		}
 		if (qualified) {

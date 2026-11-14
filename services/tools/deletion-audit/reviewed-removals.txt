@@ -509,3 +509,9 @@ InterlevelScene#draw()
 # any regular floor. Prison floors keep their build order.
 PrisonLevel#initRooms()
 PrisonLevel#createMobs()
+
+# --- Loading screen layout lookup (2 entries), reviewed 2026-11-14 ---
+# Lutherverse only: region and layoutRegion take the layout the loading thread will read, so
+# continuing from a cold start and a new game find the floor's region. The bodies are unchanged.
+InterlevelScene#region(String, int)
+InterlevelScene#layoutRegion(String)

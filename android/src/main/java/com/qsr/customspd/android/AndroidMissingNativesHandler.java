@@ -64,18 +64,24 @@ public class AndroidMissingNativesHandler extends Activity {
 			installer = "???";
 		}
 
+		//names the game by the app's own label, as the desktop crash dialogs use their title
+		String appName = getApplicationInfo().loadLabel(getPackageManager()).toString();
+
 		TextView text = new TextView(this);
-		String message = "ShatteredPD failed to access some of its internal code and cannot start!\n\n" +
+		String message = appName + " failed to access some of its internal code and cannot start!\n\n" +
 				"Try downloading the game from an official source if you haven't already. You can also screenshot this debug info and include it when you report this problem:";
 
 		message += "\n\nPackage: " + getPackageName();
 		message += "\nVersion: " + versionName + " (" + versionCode + ")";
 		message += "\nDevice: " + Build.MODEL;
 		message += "\nInstaller: " + installer;
-		while (error.getCause() != null){
-			error = error.getCause();
+		//null if Android recreated this screen after the process died
+		if (error != null) {
+			while (error.getCause() != null){
+				error = error.getCause();
+			}
+			message += "\nError: " + error.getMessage();
 		}
-		message += "\nError: " + error.getMessage();
 		text.setText(message);
 		text.setTextSize(16);
 		text.setTextColor(0xFFFFFFFF);

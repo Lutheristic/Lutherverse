@@ -293,9 +293,11 @@ public class InterlevelScene extends PixelScene {
 		align(loadingText);
 		add(loadingText);
 
-		//regions are pack data here, so the intro index is bounded on both sides
+		//regions are pack data here, so the intro index is bounded on both sides,
+		//and a new region means the level being left is in another one
 		if (mode == Mode.DESCEND && lastRegion >= 1 && lastRegion <= 5 && !DeviceCompat.isDebug()){
-			if (Dungeon.hero == null || (loadingDepth > Statistics.deepestFloor && loadingDepth % 5 == 1)){
+			if (Dungeon.hero == null || (loadingDepth > Statistics.deepestFloor
+					&& region != region(Dungeon.levelName, Dungeon.depth))){
 					storyMessage = PixelScene.renderTextBlock(Document.INTROS.pageBody(region), 6);
 					storyMessage.maxWidth( PixelScene.landscape() ? 180 : 125);
 					storyMessage.setPos((Camera.main.width-storyMessage.width())/2f, (Camera.main.height-storyMessage.height())/2f);

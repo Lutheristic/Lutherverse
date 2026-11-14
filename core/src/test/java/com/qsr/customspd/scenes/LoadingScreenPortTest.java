@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.Statistics;
+import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.journal.Document;
@@ -33,6 +34,8 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -108,6 +111,7 @@ class LoadingScreenPortTest {
 
 	/** Builds the loading screen for a mode without starting its loading thread. */
 	private InterlevelScene load(InterlevelScene.Mode mode) throws Exception {
+		if (scene != null) scene.destroy();
 		InterlevelScene.mode = mode;
 		field(InterlevelScene.class, "thread").set(null, new Thread());
 		scene = new InterlevelScene();
@@ -297,6 +301,61 @@ class LoadingScreenPortTest {
 		assertNull(story(scene));
 	}
 
+	// on the shipped layout a new region starts every five floors, so the story shows where v2.5.4 shows it
+	@Test
+	void walkingDownTheShippedLayoutShowsTheStoryOnUpstreamsFloors() throws Exception {
+		List<Integer> shown = new ArrayList<>();
+		Hero hero = Dungeon.hero;
+		Dungeon.hero = null;
+		if (story(load(InterlevelScene.Mode.DESCEND)) != null) shown.add(1);
+		Dungeon.hero = hero;
+
+		for (int floor = 2; floor <= 26; floor++) {
+			if (story(walkDown(Integer.toString(floor - 1), Integer.toString(floor), floor - 1)) != null) {
+				shown.add(floor);
+			}
+		}
+
+		assertEquals(Arrays.asList(1, 6, 11, 16, 21), shown);
+	}
+
+	@Test
+	void fallingThroughTheShippedLayoutShowsNoStory() throws Exception {
+		for (int floor = 1; floor <= 25; floor++) {
+			onFloor(Integer.toString(floor));
+			Statistics.deepestFloor = floor;
+			assertNull(story(load(InterlevelScene.Mode.FALL)), "falling from floor " + floor);
+		}
+	}
+
+	// Town and FiveExit start above floor 1 on a floor that is already in the first region
+	@Test
+	void aPackStartInTheFirstRegionShowsTheSewersStoryOnce() throws Exception {
+		useTownLayout();
+		Hero hero = Dungeon.hero;
+		Dungeon.hero = null;
+		load(InterlevelScene.Mode.DESCEND);
+		assertEquals(Document.INTROS.pageBody(1), story(scene), "a new game shows the sewers story");
+		Dungeon.hero = hero;
+
+		walkDown("Town", "1", 0);
+
+		assertEquals(1, InterlevelScene.lastRegion, "test setup: floor 1 is in the sewers");
+		assertNull(story(scene), "floor 1 is not a new region");
+	}
+
+	@Test
+	void aRegionStartingOffTheFiveFloorGridShowsItsStory() throws Exception {
+		useTownLayout();
+		walkDown("2", "3", 2);
+		assertNull(story(scene), "test setup: floor 3 is still in the sewers");
+
+		walkDown("3", "4", 3);
+
+		assertEquals(2, InterlevelScene.lastRegion, "test setup: floor 4 is in the prison");
+		assertEquals(Document.INTROS.pageBody(2), story(scene));
+	}
+
 	// upstream 400eebcac: the final floor is past the five regions and has no intro
 	@Test
 	void walkingDownToTheLastFloorShowsNoStory() throws Exception {
@@ -321,6 +380,33 @@ class LoadingScreenPortTest {
 				+ "\"chasm\":\"c6\",\"passage\":\"c5\"," + custom + "}"
 				+ "}}";
 		Dungeon.layout = Json.Default.decodeFromString(DungeonLayout.Companion.serializer(), json);
+	}
+
+	private static String customLayout(int region) {
+		return "\"custom_layout\":{\"width\":1,\"height\":1,\"region\":" + region + ","
+				+ "\"music\":{\"tracks\":[],\"probs\":[]},\"map\":[4]}";
+	}
+
+	private static String floor(String name, int depth, String layout, String from, String to) {
+		return "\"" + name + "\":{\"depth\":" + depth + ",\"type\":\"regular\",\"layout\":\"" + layout + "\","
+				+ "\"entrances\":[\"" + from + "\"],\"exits\":[\"" + to + "\"],\"chasm\":\"" + to + "\",\"passage\":\"" + from + "\"}";
+	}
+
+	/**
+	 * A start floor at depth 0 that names the first region and leads down to the sewers, as the
+	 * Town pack has. Here the prison starts at floor 4, off the five floor grid.
+	 */
+	static final String TOWN_LAYOUT = "{\"merge\":true,\"start\":\"Town\",\"dungeon\":{"
+			+ "\"Town\":{\"depth\":0,\"type\":\"custom\",\"entrances\":[],\"exits\":[\"1\"],"
+			+ "\"chasm\":\"1\",\"passage\":\"Town\"," + customLayout(1) + "},"
+			+ floor("1", 1, "SewerLevel", "Town", "2") + ","
+			+ floor("2", 2, "SewerLevel", "1", "3") + ","
+			+ floor("3", 3, "SewerLevel", "2", "4") + ","
+			+ floor("4", 4, "PrisonLevel", "3", "5")
+			+ "}}";
+
+	private static void useTownLayout() {
+		Dungeon.layout = Json.Default.decodeFromString(DungeonLayout.Companion.serializer(), TOWN_LAYOUT);
 	}
 
 	// pack floors can land outside the five regions that have an intro

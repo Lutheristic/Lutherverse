@@ -37,6 +37,7 @@ import com.qsr.customspd.actors.mobs.Mob;
 import com.qsr.customspd.actors.mobs.Statue;
 import com.qsr.customspd.actors.mobs.npcs.Blacksmith;
 import com.qsr.customspd.actors.mobs.npcs.Ghost;
+import com.qsr.customspd.actors.mobs.npcs.Wandmaker;
 import com.qsr.customspd.items.BrokenSeal;
 import com.qsr.customspd.items.wands.Wand;
 import com.qsr.customspd.items.weapon.melee.MagesStaff;
@@ -170,7 +171,9 @@ public abstract class RegularLevel extends Level {
 			Blacksmith.Quest.spawn(initRooms);
 		}
 
-		return initRooms;
+		//Lutherverse: v2.5.4 only adds the wandmaker's quest room on prison floors,
+		// here any regular floor the layout names as the wandmaker floor gets it
+		return Wandmaker.Quest.spawnRoom(initRooms);
 	}
 	
 	protected int standardRooms(boolean forceMax){
@@ -226,6 +229,9 @@ public abstract class RegularLevel extends Level {
 	
 	@Override
 	protected void createMobs() {
+
+		//places the wandmaker if this floor's initRooms added his quest room
+		Wandmaker.Quest.spawnWandmaker(this, roomEntrance);
 
 		super.createMobs();
 

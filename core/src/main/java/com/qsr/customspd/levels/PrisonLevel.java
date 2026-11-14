@@ -23,13 +23,11 @@ package com.qsr.customspd.levels;
 
 import com.qsr.customspd.Assets;
 import com.qsr.customspd.Dungeon;
-import com.qsr.customspd.actors.mobs.npcs.Wandmaker;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.effects.particles.FlameParticle;
 import com.qsr.customspd.levels.painters.Painter;
 import com.qsr.customspd.levels.painters.PrisonPainter;
-import com.qsr.customspd.levels.rooms.Room;
 import com.qsr.customspd.levels.traps.AlarmTrap;
 import com.qsr.customspd.levels.traps.BurningTrap;
 import com.qsr.customspd.levels.traps.ChillingTrap;
@@ -53,8 +51,6 @@ import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
 
-import java.util.ArrayList;
-
 public class PrisonLevel extends RegularLevel {
 
 	{
@@ -72,17 +68,6 @@ public class PrisonLevel extends RegularLevel {
 		Music.INSTANCE.playTracks(PRISON_TRACK_LIST, PRISON_TRACK_CHANCES, false);
 	}
 
-	@Override
-	protected ArrayList<Room> initRooms() {
-		return Wandmaker.Quest.spawnRoom(super.initRooms());
-	}
-
-	@Override
-	protected void createMobs() {
-		Wandmaker.Quest.spawnWandmaker(this, roomEntrance);
-		super.createMobs();
-	}
-	
 	@Override
 	protected int standardRooms(boolean forceMax) {
 		if (forceMax) return 6;

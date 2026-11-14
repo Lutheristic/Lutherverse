@@ -293,8 +293,8 @@ class LevelgenDeterminismTest {
 		return item.getClass().getName() + " x" + item.quantity();
 	}
 
-	/** What a same-seed rebuild must reproduce of one floor. */
-	private static final class Floor {
+	/** What a same-seed rebuild must reproduce of one floor. WandmakerQuestRoomFloorTest digests one too. */
+	static final class Floor {
 		final int[] map;
 		final List<String> mobs = new ArrayList<>();
 		final List<String> heaps = new ArrayList<>();

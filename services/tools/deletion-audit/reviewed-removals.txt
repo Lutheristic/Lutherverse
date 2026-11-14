@@ -462,8 +462,9 @@ ShockBomb#explode(int)
 ShockBomb#value()
 
 # --- Wandmaker placement (1 entry), reviewed 2026-11-12 ---
-# matches v2.5.4: PrisonLevel.createMobs places the wandmaker in roomEntrance, and PrisonPainter
-# has no wandmaker code. The painter loop only matched a plain EntranceRoom.
+# matches v2.5.4: createMobs places the wandmaker in roomEntrance (RegularLevel here, PrisonLevel
+# upstream), and PrisonPainter has no wandmaker code. The painter loop only matched a plain
+# EntranceRoom.
 PrisonPainter#decorate(Level, ArrayList)
 
 # --- Statues, mimics and the sad ghost (16 entries), reviewed 2026-11-12 ---
@@ -489,7 +490,8 @@ Level#createMob()
 Ghost.Quest#spawn(Level)
 Ghost#act()
 Ghost#interact(Char)
-# matches v2.5.4: PrisonLevel.initRooms adds the wandmaker quest room, not RegularLevel.
+# the wandmaker quest room is added by Wandmaker.Quest.spawnRoom on the finished room list, as
+# v2.5.4's PrisonLevel.initRooms does, instead of inside RegularLevel's room loop.
 RegularLevel#initRooms()
 
 # --- Loading screen (4 entries), reviewed 2026-11-12 ---
@@ -500,3 +502,10 @@ GameScene#create()
 # upstream afe3f71cb (v2.5.0): the region splash replaces the tiled backdrop these drew.
 InterlevelScene#script()
 InterlevelScene#draw()
+
+# --- Wandmaker quest on any layout floor (2 entries), reviewed 2026-11-13 ---
+# Lutherverse only: RegularLevel.initRooms adds the quest room and RegularLevel.createMobs places the
+# wandmaker, at the same points PrisonLevel's overrides did, so a pack layout can host the quest on
+# any regular floor. Prison floors keep their build order.
+PrisonLevel#initRooms()
+PrisonLevel#createMobs()

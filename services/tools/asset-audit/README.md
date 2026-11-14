@@ -3,7 +3,7 @@
 Finds asset files that ship in the build but nothing can reference.
 
 ```
-pwsh services/tools/asset-audit/asset-audit.ps1 [-MaxOrphanKb 9989] [-Canary]
+pwsh services/tools/asset-audit/asset-audit.ps1 [-MaxOrphanKb 7754] [-Canary]
 ```
 
 Exit 0 within the ceiling, 1 above it, 2 if the scan itself is broken.

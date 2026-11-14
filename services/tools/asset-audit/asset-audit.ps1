@@ -17,12 +17,13 @@
     report a wall of false positives and get switched off.
 .PARAMETER MaxOrphanKb
     Fail if unreferenced assets exceed this many kilobytes. Ratchet: park the known backlog,
-    fail anything new.
+    fail anything new. The default is the 7754 KB still unreferenced once the region levels
+    play their *_3.ogg tracks: 9 .ogg (the tense and finale music), 14 .png, 1 .ttf.
 .PARAMETER Canary
     Negative control: verifies the matcher rejects a file name that cannot be referenced.
 #>
 param(
-    [int]$MaxOrphanKb = 9989,
+    [int]$MaxOrphanKb = 7754,
     [switch]$Canary
 )
 

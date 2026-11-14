@@ -1,6 +1,7 @@
 package com.qsr.customspd.journal;
 
 import com.qsr.customspd.Dungeon;
+import com.qsr.customspd.actors.hero.Belongings;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.items.BrokenSeal;
 import com.qsr.customspd.items.Dewdrop;
@@ -12,6 +13,7 @@ import com.qsr.customspd.items.armor.glyphs.Repulsion;
 import com.qsr.customspd.items.armor.glyphs.Stone;
 import com.qsr.customspd.items.armor.glyphs.Thorns;
 import com.qsr.customspd.items.armor.glyphs.Viscosity;
+import com.qsr.customspd.items.bags.Bag;
 import com.qsr.customspd.items.keys.IronKey;
 import com.qsr.customspd.items.quest.CeremonialCandle;
 import com.qsr.customspd.items.quest.CorpseDust;
@@ -115,6 +117,61 @@ class CatalogEnchantGlyphTest {
 		assertFalse(Catalog.isSeen(Blazing.class), "the weapon has not been picked up yet");
 		assertTrue(known.collect());
 		assertTrue(Catalog.isSeen(Blazing.class));
+	}
+
+	private static Weapon knownBlazingSword() {
+		Weapon weapon = new Longsword();
+		weapon.enchant(new Blazing());
+		weapon.identify(false);
+		return weapon;
+	}
+
+	private static Armor knownViscousArmor() {
+		Armor armor = new LeatherArmor();
+		armor.inscribe(new Viscosity());
+		armor.identify(false);
+		return armor;
+	}
+
+	// upstream 364b2ee5b: opening a ranking restores that run's backpack while there is no hero
+	@Test
+	void restoringABackpackWithNoHeroRecordsNoEffect() throws Exception {
+		Bag backpack = new Belongings.Backpack();
+		backpack.items.add(knownBlazingSword());
+		backpack.items.add(knownViscousArmor());
+		Bundle stored = new Bundle();
+		stored.put("backpack", backpack);
+		Bundle loaded = SaveRoundtrip.writeRead(stored);
+		assertEquals(0, Catalog.ENCHANTMENTS.totalSeen() + Catalog.GLYPHS.totalSeen(), "test setup: nothing seen yet");
+
+		Dungeon.hero = null;
+		Bag restored = (Bag) loaded.get("backpack");
+
+		assertEquals(2, restored.items.size(), "test setup: both items are back in the bag");
+		assertTrue(restored.items.get(0).isIdentified() && restored.items.get(1).isIdentified(),
+				"test setup: both items are still identified");
+		assertFalse(Catalog.isSeen(Blazing.class));
+		assertFalse(Catalog.isSeen(Viscosity.class));
+	}
+
+	@Test
+	void aDeadHeroCollectingRecordsNoEffect() {
+		hero.HP = 0;
+		assertTrue(knownBlazingSword().collect());
+		assertTrue(knownViscousArmor().collect());
+
+		assertFalse(Catalog.isSeen(Blazing.class));
+		assertFalse(Catalog.isSeen(Viscosity.class));
+	}
+
+	@Test
+	void aLivingHeroCollectingStillRecordsTheEffects() {
+		assertTrue(hero.isAlive(), "test setup");
+		assertTrue(knownBlazingSword().collect());
+		assertTrue(knownViscousArmor().collect());
+
+		assertTrue(Catalog.isSeen(Blazing.class));
+		assertTrue(Catalog.isSeen(Viscosity.class));
 	}
 
 	@Test

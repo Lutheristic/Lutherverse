@@ -10,6 +10,30 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 Everything on `main` since the fork base (`cpd-sync-base-2025-08-15`, CPD commit `c97fb83`).
 
+### 2026-11-14: the loading screen, statues and mimics, the sad ghost, music, the catalog and the update check
+
+The fourth batch from the check of Slice 1 commits against v2.5.4.
+
+**Fixed**
+- The wandmaker's quest room and the wandmaker always arrive together, on whichever regular floor the layout names. Before, a pack that named a floor outside the prison got a quest room with no wandmaker, and the next prison floor got a wandmaker with no room.
+- Packs with their own start floor get the right loading screen. A new game shows the start floor's region, continuing from the title shows the region of the floor you saved on, and the region story shows when the layout enters a new region instead of on every fifth floor. A pack that starts above the Sewers shows the Sewers story once, not twice.
+- The missing libraries screen on Android names this game and no longer crashes when Android reopens it.
+
+**Ported**
+- The loading screen shows each region's splash art and pans it to suit the window. Walking down to the first floor of a new region shows that region's story there, every run, with a button to continue and a button to hide the text. Any key continues. Falling skips the story, and the story window on arrival is gone. The amulet floor counts as its own region, so it shows no Halls story.
+- The run's seed is set when you start from hero select, as upstream does.
+- Statues and mimics draw from the item decks only while a floor is generated. Loading a save, a distortion trap's statue or a cursed wand's mimic no longer shifts what later floors hold. Armored statues roll their armour once. Seeded floors with a mimic lay out differently.
+- The sad ghost appears in the exit room and stays there. It no longer teleports when you talk to it or follows you afterwards, and it never wanders onto items or the exit. Seeded sewer floors lay out differently.
+- Each region's music has its third track.
+- The missing libraries screen shows the app version, device and Android details for a bug report.
+- Empty files left by an interrupted save are cleaned up at startup.
+- The hero remains items have upstream's redrawn art, and the seal shard reads as plural.
+- The victory scene's daytime runs from 8:00 to 19:59.
+- Fewer allocations every frame: the lost inventory check is cached, and the status bar, arcs, cell selector and game log do less work when nothing changed. The alchemy screen reads the same cached check.
+- The catalog records enchantments and glyphs in their own sections and counts how often each item is used. The journal popup shows the count. Cleansing an enchantment or glyph no longer crashes, stones used from the inventory always count, sandals upgrades count and upgrade scrolls count once. Opening a ranking no longer marks that run's enchantments and glyphs as seen.
+- The update check skips releases this device or build can't run.
+- The new and changed lines take v2.5.4's translations, and where upstream's line is only the English, the English shows.
+
 ### 2026-11-12: missed upstream fixes for rooms, the corpse dust quest, traps, bombs, hero abilities and text, plus Belarusian
 
 The third batch from the check of Slice 1 commits against v2.5.4.

@@ -42,6 +42,8 @@ import com.qsr.customspd.levels.features.Chasm;
 import com.qsr.customspd.levels.features.LevelTransition;
 import com.qsr.customspd.levels.rooms.special.SpecialRoom;
 import com.qsr.customspd.messages.Messages;
+import com.qsr.customspd.modding.DungeonLayout;
+import com.qsr.customspd.modding.JsonConfigRetriever;
 import com.qsr.customspd.modding.LevelScheme;
 import com.qsr.customspd.services.updates.Updates;
 import com.qsr.customspd.ui.GameLog;
@@ -131,6 +133,8 @@ public class InterlevelScene extends PixelScene {
 		int loadingDepth;
 		//the level being loaded, null where it is not known yet (a new game reads its layout when it starts)
 		String loadingLevel = null;
+		//the layout that level is looked up in
+		DungeonLayout loadingLayout = Dungeon.layout;
 		fadeTime = NORM_FADE;
 
 		long seed = Dungeon.seed;
@@ -143,6 +147,8 @@ public class InterlevelScene extends PixelScene {
 				loadingDepth = GamesInProgress.check(GamesInProgress.curSlot).depth;
 				loadingLevel = GamesInProgress.check(GamesInProgress.curSlot).levelName;
 				seed = GamesInProgress.check(GamesInProgress.curSlot).seed;
+				//loading the game reads its layout again, and from a cold start nothing has read it yet
+				loadingLayout = layoutToLoad();
 				break;
 			case DESCEND:
 				if (Dungeon.hero == null){
@@ -182,7 +188,7 @@ public class InterlevelScene extends PixelScene {
 		}
 
 		//flush the texture cache whenever moving between regions, helps reduce memory load
-		int region = region(loadingLevel, loadingDepth);
+		int region = region(loadingLayout, loadingLevel, loadingDepth);
 
 		if (region != lastRegion) {
 			TextureCache.clear();
@@ -297,7 +303,7 @@ public class InterlevelScene extends PixelScene {
 		//and a new region means the level being left is in another one
 		if (mode == Mode.DESCEND && lastRegion >= 1 && lastRegion <= 5 && !DeviceCompat.isDebug()){
 			if (Dungeon.hero == null || (loadingDepth > Statistics.deepestFloor
-					&& region != region(Dungeon.levelName, Dungeon.depth))){
+					&& region != region(Dungeon.layout, Dungeon.levelName, Dungeon.depth))){
 					storyMessage = PixelScene.renderTextBlock(Document.INTROS.pageBody(region), 6);
 					storyMessage.maxWidth( PixelScene.landscape() ? 180 : 125);
 					storyMessage.setPos((Camera.main.width-storyMessage.width())/2f, (Camera.main.height-storyMessage.height())/2f);
@@ -663,14 +669,15 @@ public class InterlevelScene extends PixelScene {
 	}
 
 	//the layout names the region where it can, otherwise the depth decides it
-	private static int region(String levelName, int depth) {
-		int region = layoutRegion(levelName);
-		return region != -1 ? region : (int)Math.ceil(depth / 5f);
+	//(a depth 0 level is above the first region's floors, so it counts as the first)
+	private static int region(DungeonLayout layout, String levelName, int depth) {
+		int region = layoutRegion(layout, levelName);
+		return region != -1 ? region : Math.max(1, (int)Math.ceil(depth / 5f));
 	}
 
-	private static int layoutRegion(String levelName) {
-		if (levelName == null || Dungeon.layout == null) return -1;
-		LevelScheme scheme = Dungeon.layout.getDungeon().get(levelName);
+	private static int layoutRegion(DungeonLayout layout, String levelName) {
+		if (levelName == null || layout == null) return -1;
+		LevelScheme scheme = layout.getDungeon().get(levelName);
 		if (scheme == null) return -1;
 		if (scheme.getCustomLayout() != null) return scheme.getCustomLayout().getRegion();
 		if (scheme.getLayout() == null) return -1;
@@ -694,6 +701,16 @@ public class InterlevelScene extends PixelScene {
 				return 6;
 			default:
 				return -1;
+		}
+	}
+
+	//the layout Dungeon.init and Dungeon.loadGame read on the loading thread, without keeping it
+	private static DungeonLayout layoutToLoad() {
+		try {
+			return JsonConfigRetriever.INSTANCE.retrieveDungeonLayout();
+		} catch (RuntimeException e) {
+			//the loading thread reports a layout that cannot be read
+			return Dungeon.layout;
 		}
 	}
 

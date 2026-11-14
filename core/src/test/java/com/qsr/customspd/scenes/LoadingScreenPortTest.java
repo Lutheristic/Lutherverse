@@ -1,9 +1,11 @@
 package com.qsr.customspd.scenes;
 
+import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.qsr.customspd.Dungeon;
+import com.qsr.customspd.GamesInProgress;
 import com.qsr.customspd.Statistics;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.Asset;
@@ -13,6 +15,7 @@ import com.qsr.customspd.levels.features.LevelTransition;
 import com.qsr.customspd.messages.Languages;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.modding.DungeonLayout;
+import com.qsr.customspd.modding.ModManager;
 import com.qsr.customspd.test.HeadlessRun;
 import com.qsr.customspd.ui.Button;
 import com.qsr.customspd.ui.RenderedTextBlock;
@@ -24,6 +27,7 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
+import com.watabou.utils.FileUtils;
 import com.watabou.utils.PlatformSupport;
 import com.watabou.utils.Random;
 import kotlinx.serialization.json.Json;
@@ -31,12 +35,18 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -56,6 +66,11 @@ class LoadingScreenPortTest {
 	private GL20 priorGl;
 	private GL20 priorGl20;
 	private InterlevelScene scene;
+
+	private static final String PACK = "Loading Screen Test Pack";
+	private Path packRoot;
+	private Files.FileType priorFileType;
+	private String priorFilePath;
 
 	@BeforeEach
 	void start() {
@@ -92,15 +107,55 @@ class LoadingScreenPortTest {
 	}
 
 	@AfterEach
-	void tearDown() {
+	void tearDown() throws Exception {
 		try {
 			if (scene != null) scene.destroy();
 		} finally {
 			Gdx.gl = priorGl;
 			Gdx.gl20 = priorGl20;
 			Game.instance = priorInstance;
-			run.close();
+			try {
+				if (packRoot != null) dropPack();
+			} finally {
+				run.close();
+			}
 		}
+	}
+
+	/**
+	 * Enables a pack whose dungeon.json is the given text. As in SpecialStairsPackArtTest, mod
+	 * storage is pointed at a throwaway folder by a path relative to home, and put back afterwards.
+	 */
+	private void enablePack(String dungeonJson) throws Exception {
+		priorFileType = (Files.FileType) field(FileUtils.class, "defaultFileType").get(null);
+		priorFilePath = FileUtils.defaultPath;
+		packRoot = java.nio.file.Files.createTempDirectory("cpdu-loading-pack");
+		Path home = Paths.get(System.getProperty("user.home")).toAbsolutePath();
+		FileUtils.setDefaultFileProperties(Files.FileType.External, home.relativize(packRoot.toAbsolutePath()) + File.separator);
+		Path layout = packRoot.resolve(ModManager.STORAGE).resolve(PACK).resolve("dungeon").resolve("dungeon.json");
+		java.nio.file.Files.createDirectories(layout.getParent());
+		java.nio.file.Files.write(layout, dungeonJson.getBytes(StandardCharsets.UTF_8));
+		ModManager.INSTANCE.enableMod(PACK);
+	}
+
+	private void dropPack() throws Exception {
+		try {
+			// also drops ModManager's cached mod list, so the next lookup reads the real one again
+			ModManager.INSTANCE.disableMod(PACK);
+		} finally {
+			FileUtils.setDefaultFileProperties(priorFileType, priorFilePath);
+			try (Stream<Path> files = java.nio.file.Files.walk(packRoot)) {
+				files.sorted(Comparator.reverseOrder()).forEach(p -> p.toFile().delete());
+			}
+			packRoot = null;
+		}
+	}
+
+	/** The save in the run's slot is on the given level, as the title screen reads it. */
+	private static void savedOn(String levelName, int depth) {
+		GamesInProgress.Info info = GamesInProgress.check(GamesInProgress.curSlot);
+		info.levelName = levelName;
+		info.depth = depth;
 	}
 
 	private static Field field(Class<?> type, String name) throws Exception {
@@ -365,11 +420,13 @@ class LoadingScreenPortTest {
 		assertNull(story(scene));
 	}
 
-	/** Pack floors the region table does not know: p30/p31 by name, c5/c6 with a custom region 0. */
+	/** Pack floors the region table does not know: p0/p30/p31 by name, c5/c6 with a custom region 0. */
 	private static void usePackLayout() {
 		String custom = "\"custom_layout\":{\"width\":1,\"height\":1,\"region\":0,"
 				+ "\"music\":{\"tracks\":[],\"probs\":[]},\"map\":[4]}";
 		String json = "{\"start\":\"p30\",\"dungeon\":{"
+				+ "\"p0\":{\"depth\":0,\"type\":\"regular\",\"layout\":\"PackLevel\","
+				+ "\"entrances\":[],\"exits\":[\"p30\"],\"chasm\":\"p30\",\"passage\":\"p0\"},"
 				+ "\"p30\":{\"depth\":30,\"type\":\"regular\",\"layout\":\"PackLevel\","
 				+ "\"entrances\":[],\"exits\":[\"p31\"],\"chasm\":\"p31\",\"passage\":\"p30\"},"
 				+ "\"p31\":{\"depth\":31,\"type\":\"regular\",\"layout\":\"PackLevel\","
@@ -407,6 +464,76 @@ class LoadingScreenPortTest {
 
 	private static void useTownLayout() {
 		Dungeon.layout = Json.Default.decodeFromString(DungeonLayout.Companion.serializer(), TOWN_LAYOUT);
+	}
+
+	/** A pack start floor at depth 0 that names the third region. */
+	static final String GROTTO_LAYOUT = "{\"merge\":true,\"start\":\"Grotto\",\"dungeon\":{"
+			+ "\"Grotto\":{\"depth\":0,\"type\":\"custom\",\"entrances\":[],\"exits\":[\"1\"],"
+			+ "\"chasm\":\"1\",\"passage\":\"Grotto\"," + customLayout(3) + "}"
+			+ "}}";
+
+	// a cold start has not read the run's layout when the loading screen is built
+	@Test
+	void continuingAPackRunFromAColdStartShowsItsRegion() throws Exception {
+		enablePack(TOWN_LAYOUT);
+		savedOn("Town", 0);
+		// the game has just launched, and the continue button clears the hero
+		Dungeon.layout = null;
+		Dungeon.level = null;
+		Dungeon.hero = null;
+
+		Random.pushGenerator(4242L);
+		long control = Random.Long();
+		Random.popGenerator();
+
+		Random.pushGenerator(4242L);
+		try {
+			load(InterlevelScene.Mode.CONTINUE);
+			assertEquals(control, Random.Long(), "reading the layout moved the generator under it");
+		} finally {
+			Random.popGenerator();
+		}
+
+		assertEquals(1, InterlevelScene.lastRegion);
+		assertSplash(GeneralAsset.SEWERS_SPLASH, scene);
+		assertNull(Dungeon.layout, "the layout is left for loading the game to read");
+	}
+
+	@Test
+	void continuingFromAColdStartOntoAFloorInAnotherRegionShowsThatRegion() throws Exception {
+		enablePack(GROTTO_LAYOUT);
+		savedOn("Grotto", 0);
+		Dungeon.layout = null;
+		Dungeon.level = null;
+		Dungeon.hero = null;
+
+		load(InterlevelScene.Mode.CONTINUE);
+
+		assertEquals(3, InterlevelScene.lastRegion);
+		assertSplash(GeneralAsset.CAVES_SPLASH, scene);
+	}
+
+	// a layout left from an earlier run need not be the one the continued run loads
+	@Test
+	void continuingLooksTheLevelUpInTheLayoutTheRunLoads() throws Exception {
+		enablePack(GROTTO_LAYOUT);
+		savedOn("Grotto", 0);
+		Dungeon.hero = null;
+
+		load(InterlevelScene.Mode.CONTINUE);
+
+		assertEquals(3, InterlevelScene.lastRegion);
+		assertSplash(GeneralAsset.CAVES_SPLASH, scene);
+	}
+
+	@Test
+	void aDepthZeroFloorTheTableDoesNotKnowShowsTheSewers() throws Exception {
+		usePackLayout();
+		onFloor("p0");
+		load(InterlevelScene.Mode.RESURRECT);
+
+		assertEquals(1, InterlevelScene.lastRegion);
+		assertSplash(GeneralAsset.SEWERS_SPLASH, scene);
 	}
 
 	// pack floors can land outside the five regions that have an intro

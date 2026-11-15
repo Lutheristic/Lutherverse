@@ -343,6 +343,10 @@ class JournalScenePortTest {
 				assertEquals(1, tabs.size(), "badges tab");
 				assertNotNull(read(tabs.get(0), WndJournal.BadgesTab.class, "btnLocal"), "This Run button");
 				assertNotNull(read(tabs.get(0), WndJournal.BadgesTab.class, "btnGlobal"), "Overall button");
+				Gizmo local = (Gizmo) read(tabs.get(0), WndJournal.BadgesTab.class, "badgesLocal");
+				Gizmo global = (Gizmo) read(tabs.get(0), WndJournal.BadgesTab.class, "badgesGlobal");
+				assertTrue(local.visible != global.visible, "exactly one badge grid shows, local "
+						+ local.visible + " global " + global.visible);
 			}
 		}
 	}

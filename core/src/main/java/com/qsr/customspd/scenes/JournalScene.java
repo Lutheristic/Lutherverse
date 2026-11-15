@@ -114,6 +114,8 @@ public class JournalScene extends PixelScene {
 						panel.y + panel.marginTop(),
 						panel.width() - panel.marginHor(),
 						panel.height() - panel.marginVer());
+				//CPDU: with a kept run the tab has both grids, so show only the chosen one
+				badges.updateList();
 				break;
 			case 1:
 				WndJournal.CatalogTab catalog = new WndJournal.CatalogTab();

@@ -1108,7 +1108,8 @@ public class WndJournal extends WndTabbed {
 			}
 		}
 
-		private void updateList(){
+		//CPDU: public so the title journal can pick a grid when a run is kept in memory
+		public void updateList(){
 			if (btnLocal != null) {
 				badgesLocal.visible = badgesLocal.active = !global;
 				badgesGlobal.visible = badgesGlobal.active = global;

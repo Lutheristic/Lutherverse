@@ -13,11 +13,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Upstream da42665e8: level feelings carry their own title and description under
@@ -27,6 +30,17 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 class LevelFeelingTextPortTest {
 
 	private static final String[] FEELING_KEYS = {"chasm", "water", "grass", "dark", "large", "traps", "secrets"};
+
+	private static final String[] LOCALES = {"be", "cs", "de", "el", "es", "fr", "hu", "in", "it",
+			"ja", "ko", "nl", "pl", "pt", "ru", "tr", "uk", "vi", "zh"};
+
+	//v2.5.4's be files carry these lines only as copies of the English text, so the locale
+	//takes nothing and the English base line shows instead
+	private static final HashSet<String> ENGLISH_ONLY_IN_BE = new HashSet<>(Arrays.asList(
+			"levels.level$feeling.chasm_title", "levels.level$feeling.water_title",
+			"levels.level$feeling.grass_title", "levels.level$feeling.dark_title",
+			"levels.level$feeling.large_title", "levels.level$feeling.traps_title",
+			"levels.level$feeling.secrets_title", "journal.notes$landmark.distant_well"));
 
 	private HeadlessRun run;
 
@@ -58,13 +72,18 @@ class LevelFeelingTextPortTest {
 		assertEquals("The atmosphere hints that this floor hides many secrets.", Level.Feeling.SECRETS.desc());
 	}
 
-	@Test
-	void sceneFeelingLinesAreGone() throws IOException {
+	private static Properties load(String path) throws IOException {
 		Properties p = new Properties();
-		try (InputStream in = new FileInputStream(new File("messages/scenes/scenes.properties"))) {
+		try (InputStream in = new FileInputStream(new File(path))) {
 			p.load(new InputStreamReader(in, StandardCharsets.UTF_8));
 		}
-		assertFalse(p.isEmpty(), "test setup: scenes.properties read");
+		assertFalse(p.isEmpty(), "test setup: " + path + " read");
+		return p;
+	}
+
+	@Test
+	void sceneFeelingLinesAreGone() throws IOException {
+		Properties p = load("messages/scenes/scenes.properties");
 		for (String k : FEELING_KEYS) {
 			assertFalse(p.containsKey("scenes.gamescene." + k), "scenes.gamescene." + k + " still present");
 		}
@@ -82,6 +101,49 @@ class LevelFeelingTextPortTest {
 			assertEquals(f.desc(), rec.desc());
 			assertFalse(isFallback(rec.title()), f + " record title is the fallback: " + rec.title());
 			assertFalse(isFallback(rec.desc()), f + " record desc is the fallback: " + rec.desc());
+		}
+	}
+
+	@Test
+	void translatedSceneFeelingLinesAreGone() throws IOException {
+		for (String lang : LOCALES) {
+			Properties p = load("messages/scenes/scenes_" + lang + ".properties");
+			for (String k : FEELING_KEYS) {
+				assertFalse(p.containsKey("scenes.gamescene." + k),
+						"scenes_" + lang + " still has scenes.gamescene." + k);
+			}
+		}
+	}
+
+	@Test
+	void everyLocaleHasTheFeelingLines() throws IOException {
+		for (String lang : LOCALES) {
+			Properties p = load("messages/levels/levels_" + lang + ".properties");
+			for (String f : FEELING_KEYS) {
+				for (String suffix : new String[]{"_title", "_desc"}) {
+					String key = "levels.level$feeling." + f + suffix;
+					if (lang.equals("be") && ENGLISH_ONLY_IN_BE.contains(key)) {
+						assertFalse(p.containsKey(key), "levels_be should leave " + key + " to English");
+					} else {
+						assertTrue(p.containsKey(key), "levels_" + lang + " lacks " + key);
+					}
+				}
+			}
+		}
+	}
+
+	@Test
+	void everyLocaleHasTheNewLandmarkLines() throws IOException {
+		for (String lang : LOCALES) {
+			Properties p = load("messages/journal/journal_" + lang + ".properties");
+			for (String name : new String[]{"distant_well", "rat_king"}) {
+				String key = "journal.notes$landmark." + name;
+				if (lang.equals("be") && ENGLISH_ONLY_IN_BE.contains(key)) {
+					assertFalse(p.containsKey(key), "journal_be should leave " + key + " to English");
+				} else {
+					assertTrue(p.containsKey(key), "journal_" + lang + " lacks " + key);
+				}
+			}
 		}
 	}
 }

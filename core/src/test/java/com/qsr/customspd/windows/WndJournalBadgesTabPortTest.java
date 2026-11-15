@@ -331,10 +331,16 @@ class WndJournalBadgesTabPortTest {
 		}
 		assertNotNull(item, "the guide lists the intro page");
 
+		//an empty slot in the scene: add() would fill it, addToFront() appends
+		Gizmo gone = new Gizmo();
+		scene.add(gone);
+		scene.add(new Gizmo());
+		scene.erase(gone);
+		assertTrue(members(scene).contains(null), "the scene has an empty slot behind the end");
+
 		assertTrue(item.onClick(item.left() + 1, item.top() + 1), "the click lands on the page");
 		List<Gizmo> m = members(scene);
-		Gizmo last = null;
-		for (Gizmo g : m) if (g != null) last = g;
+		Gizmo last = m.isEmpty() ? null : m.get(m.size() - 1);
 		assertTrue(last instanceof WndStory, "the page opens as the scene's front window, got "
 				+ (last == null ? "nothing" : last.getClass().getSimpleName()));
 	}

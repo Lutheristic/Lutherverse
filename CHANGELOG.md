@@ -10,7 +10,7 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 Everything on `main` since the fork base (`cpd-sync-base-2025-08-15`, CPD commit `c97fb83`).
 
-### 2026-11-15: the journal catalog grid, the bestiary and the lore section
+### 2026-11-15: the journal catalog, bestiary, lore and notes
 
 The first two pieces of upstream's v2.5 journal rework.
 
@@ -21,6 +21,10 @@ The first two pieces of upstream's v2.5 journal rework.
 - The mob spawn rotation moved to its new upstream name. Old saves load as before, and seeded runs spawn the same mobs.
 - The catalog has two more sections. The bestiary lists every enemy, ally, trap and plant, drawn from its sprite, with how many times you met it. The lore section gives each lore page a cell, marks unread ones and opens them in place. The separate lore tab is gone, and picking up a lore page opens the catalog at its lore section.
 - Statues, armored statues, guardians, the spirit hawk, earthen guardian, golden lotus, wards and sentries describe themselves correctly with no gear or hero behind them. Jowiro's Class Reskins drops its old hawk turns sentence so the description doesn't repeat it.
+- Journal notes are a grid: one header per floor you have visited, deepest first, with that floor's landmarks and keys as icon cells. The current floor is highlighted, a pack's depth 0 start floor reads Floor 0, and notes from a floor a pack no longer has stay visible in a last group under the floor's name. Notes sort by kind as upstream does, and old saves load unchanged.
+- The journal's tabs run notes, guide, alchemy, catalog, as in v2.5.4, each with a hover title. Keys open the notes, and guide and alchemy pages open their own tabs.
+- The guidebook hint is logged once from the journal flash, with a line for touch or for keyboard and a short popup over the hero.
+- The journal, well, grass and altar icons and the journal button art take upstream's v2.5.4 drawings.
 
 ### 2026-11-14: pack music
 

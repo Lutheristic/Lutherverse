@@ -161,6 +161,35 @@ class WndJournalNotesGridTest {
 	}
 
 	@Test
+	void twoFloorsAtOneDepthGetTwoHeadersAndOnlyTheCurrentIsHighlighted() throws Exception {
+		DungeonLayout prior = Dungeon.layout;
+		try {
+			Dungeon.layout = testLayout();
+			Dungeon.visited = new String[]{"a5", "b5"};
+			Dungeon.levelName = "b5";
+			List<String> headers = headers(notesGrid());
+			assertTrue(headers.size() >= 2, "the title and description headers are shown");
+			assertEquals(Arrays.asList("Floor 5", "_Floor 5_"), headers.subList(2, headers.size()));
+		} finally {
+			Dungeon.layout = prior;
+		}
+	}
+
+	@Test
+	void keyWithQuantityTwoShowsASecondIcon() throws Exception {
+		Dungeon.visited = new String[]{"1"};
+		Dungeon.levelName = "1";
+		Notes.add(new IronKey("1"));
+		Notes.add(new IronKey("1"));
+
+		List<Gizmo> cells = itemsUnder(notesGrid(), "_Floor 1_");
+		assertEquals(1, cells.size(), "the two keys share one cell");
+		Object second = field(ScrollingGridPane.GridItem.class, "secondIcon").get(cells.get(0));
+		assertTrue(second instanceof BitmapText, "the cell carries the quantity as a second icon");
+		assertEquals("2", ((BitmapText) second).text());
+	}
+
+	@Test
 	void itemsUnderAFloorFollowOrder() throws Exception {
 		Dungeon.visited = new String[]{"1"};
 		Dungeon.levelName = "1";

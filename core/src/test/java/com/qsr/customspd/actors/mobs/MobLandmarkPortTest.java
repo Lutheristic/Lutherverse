@@ -87,6 +87,23 @@ class MobLandmarkPortTest {
 	}
 
 	@Test
+	void levelGenStatueIsRecordedOnlyWhenInView() {
+		int cell = quietCell();
+		Statue statue = new Statue();
+		statue.levelGenStatue = true;
+		statue.pos = cell;
+		level.mobs.add(statue);
+		level.visited[cell] = true;
+
+		hero.checkVisibleMobs();
+		assertFalse(Notes.contains(Notes.Landmark.STATUE), "a statue out of view must not be recorded");
+
+		hero.fieldOfView[cell] = true;
+		hero.checkVisibleMobs();
+		assertTrue(Notes.contains(Notes.Landmark.STATUE), "a levelgen statue in view must be recorded");
+	}
+
+	@Test
 	void statueDestroyRemovesTheStatue() {
 		Statue statue = new Statue();
 		statue.levelGenStatue = true;
@@ -123,8 +140,12 @@ class MobLandmarkPortTest {
 
 		try {
 			spawner.die(null);
-		} catch (NullPointerException expectedWithoutAScene) {
-			//death effects after the journal update need the game scene
+		} catch (NullPointerException withoutAScene) {
+			//death effects after the journal update need the game scene; an NPE thrown before
+			//the journal update is a real failure and must surface as itself
+			if (Notes.contains(Notes.Landmark.DEMON_SPAWNER)) {
+				throw new AssertionError("spawner death failed before removing its landmark", withoutAScene);
+			}
 		}
 
 		assertFalse(Notes.contains(Notes.Landmark.DEMON_SPAWNER), "a dead spawner removes its landmark");

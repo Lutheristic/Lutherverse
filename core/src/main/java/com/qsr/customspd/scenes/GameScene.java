@@ -62,6 +62,7 @@ import com.qsr.customspd.items.weapon.melee.MeleeWeapon;
 import com.qsr.customspd.journal.Bestiary;
 import com.qsr.customspd.journal.Document;
 import com.qsr.customspd.journal.Journal;
+import com.qsr.customspd.journal.Notes;
 import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.levels.RegularLevel;
 import com.qsr.customspd.levels.Terrain;
@@ -523,13 +524,34 @@ public class GameScene extends PixelScene {
 			}
 
 			switch (Dungeon.level.feeling) {
-				case CHASM:     GLog.w(Messages.get(this, "chasm"));    break;
-				case WATER:     GLog.w(Messages.get(this, "water"));    break;
-				case GRASS:     GLog.w(Messages.get(this, "grass"));    break;
-				case DARK:      GLog.w(Messages.get(this, "dark"));     break;
-				case LARGE:     GLog.w(Messages.get(this, "large"));    break;
-				case TRAPS:     GLog.w(Messages.get(this, "traps"));    break;
-				case SECRETS:   GLog.w(Messages.get(this, "secrets"));  break;
+				case CHASM:
+					GLog.w(Dungeon.level.feeling.desc());
+					Notes.add(Notes.Landmark.CHASM_FLOOR);
+					break;
+				case WATER:
+					GLog.w(Dungeon.level.feeling.desc());
+					Notes.add(Notes.Landmark.WATER_FLOOR);
+					break;
+				case GRASS:
+					GLog.w(Dungeon.level.feeling.desc());
+					Notes.add(Notes.Landmark.GRASS_FLOOR);
+					break;
+				case DARK:
+					GLog.w(Dungeon.level.feeling.desc());
+					Notes.add(Notes.Landmark.DARK_FLOOR);
+					break;
+				case LARGE:
+					GLog.w(Dungeon.level.feeling.desc());
+					Notes.add(Notes.Landmark.LARGE_FLOOR);
+					break;
+				case TRAPS:
+					GLog.w(Dungeon.level.feeling.desc());
+					Notes.add(Notes.Landmark.TRAPS_FLOOR);
+					break;
+				case SECRETS:
+					GLog.w(Dungeon.level.feeling.desc());
+					Notes.add(Notes.Landmark.SECRETS_FLOOR);
+					break;
 			}
 
 			for (Mob mob : Dungeon.level.mobs) {

@@ -5,6 +5,7 @@ import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.blobs.Alchemy;
 import com.qsr.customspd.actors.blobs.Blob;
+import com.qsr.customspd.actors.blobs.Foliage;
 import com.qsr.customspd.actors.blobs.SacrificialFire;
 import com.qsr.customspd.actors.blobs.WaterOfHealth;
 import com.qsr.customspd.actors.mobs.Mob;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -75,6 +77,35 @@ class HeroLandmarkSightPortTest {
 	}
 
 	@Test
+	void gardenIsRecordedOnSightNotOnAVisitedCell() {
+		level.blobs.remove(Foliage.class);
+		int cell = quietCell();
+		Foliage foliage = Blob.seed(cell, 1, Foliage.class, level);
+		assertVisitedButUnseenRecordsNothing(foliage, cell, Notes.Landmark.GARDEN);
+	}
+
+	@Test
+	void sacrificialFireStaysRecordedUntilItsLastCellIsSpent() {
+		level.blobs.remove(SacrificialFire.class);
+		int first = quietCell();
+		int second = quietCellAwayFrom(first);
+		SacrificialFire fire = Blob.seed(first, 1, SacrificialFire.class, level);
+		Blob.seed(second, 1, SacrificialFire.class, level);
+		assertEquals(2, fire.volume, "fixture: one unit of fire on each of two cells");
+		Notes.add(Notes.Landmark.SACRIFICIAL_FIRE);
+
+		sacrificeRatAt(fire, first);
+		assertEquals(1, fire.volume, "fixture: the first cell is spent");
+		assertTrue(Notes.contains(Notes.Landmark.SACRIFICIAL_FIRE),
+				"the fire is still recorded while another of its cells burns");
+
+		sacrificeRatAt(fire, second);
+		assertEquals(0, fire.volume, "fixture: the last cell is spent");
+		assertFalse(Notes.contains(Notes.Landmark.SACRIFICIAL_FIRE),
+				"the fire is removed once its last cell is spent");
+	}
+
+	@Test
 	void aMobWithALandmarkIsRecordedOnlyWhenInView() {
 		int cell = quietCell();
 		Mob mob = new Rat() {
@@ -124,6 +155,37 @@ class HeroLandmarkSightPortTest {
 		hero.fieldOfView[cell] = true;
 		hero.checkVisibleMobs();
 		assertTrue(Notes.contains(landmark), landmark + " must be recorded once the hero sees it");
+	}
+
+	/**
+	 * Sacrifices a rat standing on a fire cell. A rat is worth more than the one unit of fire on the
+	 * cell, so the cell is spent. The reward burst after the journal update needs CellEmitter.get,
+	 * which needs the game scene, so the headless run stops there.
+	 */
+	private void sacrificeRatAt(SacrificialFire fire, int cell) {
+		Rat rat = new Rat();
+		rat.pos = cell;
+		try {
+			fire.sacrifice(rat);
+		} catch (NullPointerException expectedWithoutAScene) {
+			//the reward effects run after the fire cell is cleared and the journal updated
+		}
+	}
+
+	/** A quiet cell whose neighbourhood does not touch {@code other}'s. */
+	private int quietCellAwayFrom(int other) {
+		for (int cell = 0; cell < level.length(); cell++) {
+			if (!level.insideMap(cell) || level.distance(cell, hero.pos) <= 2 || level.distance(cell, other) <= 2) continue;
+			boolean quiet = true;
+			for (int k : PathFinder.NEIGHBOURS9) {
+				if (Actor.findChar(cell + k) != null) {
+					quiet = false;
+					break;
+				}
+			}
+			if (quiet) return cell;
+		}
+		throw new IllegalStateException("no second quiet cell on the floor");
 	}
 
 	/** A cell inside the map, away from the hero, with no character on it or next to it. */

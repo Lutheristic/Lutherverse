@@ -21,7 +21,9 @@
 
 package com.qsr.customspd.actors.mobs.npcs;
 
+import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.mobs.Mob;
+import com.qsr.customspd.journal.Bestiary;
 
 public abstract class NPC extends Mob {
 
@@ -31,6 +33,15 @@ public abstract class NPC extends Mob {
 
 		alignment = Alignment.NEUTRAL;
 		state = PASSIVE;
+	}
+
+	@Override
+	protected boolean act() {
+		if (Dungeon.level.heroFOV[pos]){
+			Bestiary.setSeen(getClass());
+		}
+
+		return super.act();
 	}
 
 	@Override

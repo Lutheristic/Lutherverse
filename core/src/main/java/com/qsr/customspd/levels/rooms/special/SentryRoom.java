@@ -40,6 +40,7 @@ import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.armor.Armor;
 import com.qsr.customspd.items.potions.PotionOfHaste;
 import com.qsr.customspd.items.weapon.Weapon;
+import com.qsr.customspd.journal.Bestiary;
 import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.levels.painters.Painter;
@@ -243,6 +244,10 @@ public class SentryRoom extends SpecialRoom {
 
 		@Override
 		protected boolean act() {
+			if (Dungeon.level.heroFOV[pos]){
+				Bestiary.setSeen(getClass());
+			}
+
 			if (fieldOfView == null || fieldOfView.length != Dungeon.level.length()){
 				fieldOfView = new boolean[Dungeon.level.length()];
 			}

@@ -148,6 +148,18 @@ class BestiarySightRecordingTest {
 	}
 
 	@Test
+	void upgradingAPlacedWardFromTierTwoSeesNothing() {
+		assertUnrecorded(WandOfWarding.Ward.WardSentry.class);
+		WandOfWarding.Ward ward = nextToHero(new WandOfWarding.Ward());
+		ward.tier = 2;
+
+		ward.upgrade(1);
+
+		assertEquals(3, ward.tier, "test setup: the ward went up a tier");
+		assertFalse(Bestiary.isSeen(WandOfWarding.Ward.WardSentry.class), "a ward reaching tier 3 only after the check does not see the ward sentry");
+	}
+
+	@Test
 	void upgradingAWardThatWasNeverPlacedSeesNothing() {
 		assertUnrecorded(WandOfWarding.Ward.WardSentry.class);
 		WandOfWarding.Ward ward = new WandOfWarding.Ward();

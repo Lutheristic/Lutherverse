@@ -40,4 +40,27 @@ class WndJournalCatalogKeysTest {
 		assertEquals("You haven't found and identified an armor with that glyph in any of your runs yet.",
 				Messages.get(catalogTab, "not_seen_glyph"));
 	}
+
+	@Test
+	void germanCarriesTheUpstreamTranslation() {
+		Messages.setup(Languages.GERMAN);
+		assertEquals("Du hast diesen Gegenstand bisher bei keinem Lauf gefunden und identifiziert.",
+				Messages.get(catalogTab, "not_seen_item"));
+		assertEquals("Katalog", Messages.get(catalogTab, "title"));
+	}
+
+	@Test
+	void englishOnlyUpstreamLinesFallBackToEnglish() {
+		// v2.5.4's tr not_seen_* lines and be title are still English, so they are not taken.
+		Messages.setup(Languages.TURKISH);
+		assertEquals("You haven't found and identified that item in any of your runs yet.",
+				Messages.get(catalogTab, "not_seen_item"));
+		assertEquals("Kataloglar", Messages.get(catalogTab, "title"));
+
+		Messages.setup(Languages.BELARUSIAN);
+		assertEquals("Catalogs", Messages.get(catalogTab, "title"));
+		// be takes upstream's untranslated line as it stands, typo included.
+		assertEquals("You haven't found and identified a weapon with that enchantmet in any of your runs yet.",
+				Messages.get(catalogTab, "not_seen_enchantment"));
+	}
 }

@@ -127,6 +127,16 @@ public class ItemSprite extends MovieClip {
 		}
 	}
 
+	@Override
+	public void copy(Image other) {
+		super.copy(other);
+
+		if (other instanceof ItemSprite && ((ItemSprite) other).glowing != null){
+			glow(((ItemSprite) other).glowing);
+		}
+
+	}
+
 	public void visible(boolean value){
 		this.visible = value;
 		if (emitter != null && !visible){
@@ -236,14 +246,6 @@ public class ItemSprite extends MovieClip {
 	public synchronized void glow( Glowing glowing ){
 		this.glowing = glowing;
 		if (glowing == null) resetColor();
-	}
-
-	@Override
-	public void copy( Image other ){
-		super.copy(other);
-		if (other instanceof ItemSprite && ((ItemSprite) other).glowing != null){
-			glow(((ItemSprite) other).glowing);
-		}
 	}
 
 	@Override

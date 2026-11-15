@@ -107,6 +107,9 @@ class ScrollingGridPaneTest {
 		List<ScrollingGridPane.GridItem> cells = addCells(9);
 		grid.setRect(0, 0, 100, 200);
 
+		// Headless text has zero height, so a plain header is just its +2 padding.
+		assertEquals(2, header.height(), "plain header height");
+
 		float[] rowOne = {0, 18, 36, 54, 72};
 		for (int i = 0; i < rowOne.length; i++) {
 			assertEquals(rowOne[i], cells.get(i).left(), "row 1 cell " + i + " x");

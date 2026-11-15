@@ -551,6 +551,7 @@ enum class GeneralAsset(override val path: String) : Asset {
     ICON_BUFFS("interfaces/icons/buffs.png"),
     ICON_BUSY("interfaces/icons/busy.png"),
     ICON_CALENDAR("interfaces/icons/calendar.png"),
+    ICON_CATALOG("interfaces/icons/catalog.png"),
     ICON_CELESTI("interfaces/icons/celesti.png"),
     ICON_CHALLENGE_OFF("interfaces/icons/challenge_off.png"),
     ICON_CHALLENGE_ON("interfaces/icons/challenge_on.png"),

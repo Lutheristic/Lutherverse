@@ -3,8 +3,10 @@ package com.qsr.customspd.windows;
 import com.qsr.customspd.items.EnergyCrystal;
 import com.qsr.customspd.items.Gold;
 import com.qsr.customspd.items.Item;
+import com.qsr.customspd.items.armor.WarriorArmor;
 import com.qsr.customspd.items.food.Food;
 import com.qsr.customspd.items.food.Pasty;
+import com.qsr.customspd.items.weapon.SpiritBow;
 import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.test.HeadlessRun;
 import com.watabou.utils.Reflection;
@@ -16,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  * The journal's item popup ends with how often the item was upgraded or used (upstream f6299e07c,
@@ -85,6 +88,30 @@ class WndJournalUseCountTest {
 			} finally {
 				for (Map.Entry<Class<?>, Integer> e : before.entrySet()) setUses(e.getKey(), e.getValue());
 			}
+		}
+	}
+
+	private static String itemDesc(Item item) throws Exception {
+		Method m = Class.forName("com.qsr.customspd.windows.WndJournal$CatalogTab")
+				.getDeclaredMethod("itemDesc", Item.class);
+		m.setAccessible(true);
+		return (String) m.invoke(null, item);
+	}
+
+	/** Upstream b6f7e7462: the spirit bow and class armor show their plain description. */
+	@Test
+	void theSpiritBowAndClassArmorShowTheirDescription() throws Exception {
+		try (HeadlessRun run = HeadlessRun.start(20240611L)) {
+			run.enterFirstLevel();
+			SpiritBow bow = new SpiritBow();
+			assertNotEquals(bow.desc(), bow.info(), "test setup: the bow's info adds stats to its desc");
+			assertEquals(bow.desc(), itemDesc(bow));
+
+			WarriorArmor armor = new WarriorArmor();
+			assertEquals(armor.desc(), itemDesc(armor));
+
+			Item weapon = (Item) Reflection.newInstance(Catalog.MELEE_WEAPONS.items().iterator().next());
+			assertEquals(weapon.info(), itemDesc(weapon), "other items show their full info");
 		}
 	}
 }

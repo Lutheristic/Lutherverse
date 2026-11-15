@@ -21,6 +21,7 @@
 
 package com.qsr.customspd;
 
+import com.qsr.customspd.modding.ModManager;
 import com.qsr.customspd.modding.SpriteSizeConfig;
 import com.qsr.customspd.modding.TileMapCompilationManager;
 import com.qsr.customspd.modding.TileMapCompiler;
@@ -116,13 +117,19 @@ public class ShatteredPixelDungeon extends Game {
 		updateSystemUI();
 		SPDAction.loadBindings();
 		
-		Music.INSTANCE.enable( SPDSettings.music() );
-		Music.INSTANCE.volume( SPDSettings.musicVol()*SPDSettings.musicVol()/100f );
+		setUpMusic();
 		Sample.INSTANCE.enable( SPDSettings.soundFx() );
 		Sample.INSTANCE.volume( SPDSettings.SFXVol()*SPDSettings.SFXVol()/100f );
 
 		Sample.INSTANCE.load( Assets.Sounds.all );
 		
+	}
+
+	//music plays a pack's file for any track an enabled pack ships, then takes the player's settings
+	public static void setUpMusic() {
+		ModManager.INSTANCE.useModdedMusic();
+		Music.INSTANCE.enable( SPDSettings.music() );
+		Music.INSTANCE.volume( SPDSettings.musicVol()*SPDSettings.musicVol()/100f );
 	}
 
 	@Override

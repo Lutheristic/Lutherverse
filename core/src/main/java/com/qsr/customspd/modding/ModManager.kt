@@ -12,6 +12,7 @@ import com.qsr.customspd.assets.tiles.TileAsset
 import com.qsr.customspd.utils.Archiver
 import com.qsr.customspd.utils.Network
 import com.watabou.noosa.Game
+import com.watabou.noosa.audio.Music
 import com.watabou.utils.Bundle
 import com.watabou.utils.FileUtils
 import io.ktor.client.request.get
@@ -97,6 +98,19 @@ object ModManager {
 
         return FileUtils.getFileHandle(assetPath)
     }
+
+    //The file a music track plays from: the first enabled mod that ships the track, found and
+    //opened the way sprites are, else the base file exactly as before mods could replace music.
+    //If mod storage can't be read, the base file still plays. On Android the next track in a
+    //list is opened off the render thread, so this may run there too.
+    fun getMusicFileHandle(track: String): FileHandle = try {
+        val path = getModdedAssetFilePath(track)
+        if (path == track) Gdx.files.internal(track) else getAssetFileHandle(path)
+    } catch (e: Exception) {
+        Gdx.files.internal(track)
+    }
+
+    fun useModdedMusic() = Music.INSTANCE.setTrackResolver { getMusicFileHandle(it) }
 
     @OptIn(DelicateCoroutinesApi::class)
     fun receiveMarketplaceInfo() = GlobalScope.launch {
@@ -208,6 +222,7 @@ object ModManager {
             }.sortedBy { lazyEnabledModNames.indexOf(it.info.name) }
         else emptyList()
 
+    @Volatile
     private var _lazyEnabledModNames: Array<String>? = null
     private val lazyEnabledModNames get() = _lazyEnabledModNames ?: enabledModNames().also { _lazyEnabledModNames = it }
 

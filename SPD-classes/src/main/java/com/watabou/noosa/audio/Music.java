@@ -22,6 +22,7 @@
 package com.watabou.noosa.audio;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Callback;
 import com.watabou.utils.DeviceCompat;
@@ -50,6 +51,28 @@ public enum Music {
 	float[] trackChances;
 	private final ArrayList<String> trackQueue = new ArrayList<>();
 	boolean shuffle = false;
+
+	//finds the file a track plays from, given the track's path. Off desktop, the next track in a
+	//list is opened on its own thread, so this can be called away from the render thread.
+	public interface TrackResolver {
+		FileHandle resolve( String track );
+	}
+
+	//null plays every track from the internal assets
+	private TrackResolver trackResolver = null;
+
+	//lets a game play tracks from somewhere other than the internal assets, such as a mod
+	//folder. The track names Music keeps and compares are unchanged; only the opened file is.
+	public synchronized void setTrackResolver( TrackResolver resolver ) {
+		trackResolver = resolver;
+	}
+
+	private FileHandle trackFile( String track ){
+		if (trackResolver == null) {
+			return Gdx.files.internal(track);
+		}
+		return trackResolver.resolve(track);
+	}
 	
 	public synchronized void play( String assetName, boolean looping ) {
 
@@ -214,7 +237,7 @@ public enum Music {
 		try {
 			fadeTime = fadeTotal = -1;
 
-			player = Gdx.audio.newMusic(Gdx.files.internal(track));
+			player = Gdx.audio.newMusic(trackFile(track));
 			player.setLooping(looping);
 			player.setVolume(volumeWithFade());
 			if (!paused) player.play();

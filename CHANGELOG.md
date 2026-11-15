@@ -10,6 +10,11 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 Everything on `main` since the fork base (`cpd-sync-base-2025-08-15`, CPD commit `c97fb83`).
 
+### 2026-11-14: pack music
+
+**Added**
+- A pack can ship its own copy of any music file, and that copy plays in place of the base track, the same way pack sprites replace the base art. With several packs, the first enabled one wins. A layout's music block can also name a file only its pack ships. Track picks draw the same random numbers as before, so seeded runs are unchanged.
+
 ### 2026-11-14: the loading screen, statues and mimics, the sad ghost, music, the catalog and the update check
 
 The fourth batch from the check of Slice 1 commits against v2.5.4.

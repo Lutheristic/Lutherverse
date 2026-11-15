@@ -41,6 +41,7 @@ import com.qsr.customspd.actors.mobs.Statue;
 import com.qsr.customspd.actors.mobs.Wraith;
 import com.qsr.customspd.actors.mobs.npcs.RatKing;
 import com.qsr.customspd.items.scrolls.ScrollOfTeleportation;
+import com.qsr.customspd.journal.Bestiary;
 import com.qsr.customspd.scenes.GameScene;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -158,6 +159,8 @@ public class DistortionTrap extends Trap{
 			if ((t = Dungeon.level.traps.get(mob.pos)) != null && t.active){
 				if (t.disarmedByActivation) t.disarm();
 				t.reveal();
+				Bestiary.setSeen(t.getClass());
+				Bestiary.countEncounter(t.getClass());
 				t.activate();
 			}
 			ScrollOfTeleportation.appear(mob, mob.pos);

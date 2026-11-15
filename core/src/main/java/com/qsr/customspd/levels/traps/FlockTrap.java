@@ -27,6 +27,7 @@ import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.actors.mobs.npcs.Sheep;
 import com.qsr.customspd.effects.CellEmitter;
 import com.qsr.customspd.effects.Speck;
+import com.qsr.customspd.journal.Bestiary;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.utils.BArray;
 import com.watabou.noosa.audio.Sample;
@@ -66,6 +67,8 @@ public class FlockTrap extends Trap {
 				if ((t = Dungeon.level.traps.get(i)) != null && t.active){
 					if (t.disarmedByActivation) t.disarm();
 					t.reveal();
+					Bestiary.setSeen(t.getClass());
+					Bestiary.countEncounter(t.getClass());
 					t.activate();
 				}
 				Dungeon.level.occupyCell(sheep);

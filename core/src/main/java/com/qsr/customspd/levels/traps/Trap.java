@@ -23,6 +23,7 @@ package com.qsr.customspd.levels.traps;
 
 import com.qsr.customspd.Assets;
 import com.qsr.customspd.Dungeon;
+import com.qsr.customspd.journal.Bestiary;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
 import com.watabou.noosa.audio.Sample;
@@ -94,6 +95,8 @@ public abstract class Trap implements Bundlable {
 			}
 			if (disarmedByActivation) disarm();
 			Dungeon.level.discover(pos);
+			Bestiary.setSeen(getClass());
+			Bestiary.countEncounter(getClass());
 			activate();
 		}
 	}

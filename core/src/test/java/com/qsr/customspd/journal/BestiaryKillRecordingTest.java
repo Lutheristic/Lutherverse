@@ -147,6 +147,20 @@ class BestiaryKillRecordingTest {
 	}
 
 	@Test
+	void destroyingAnAlliedTransmogRatDoesNotCountTheOriginalAgain() {
+		assertUnrecorded(Snake.class);
+		Ratmogrify.TransmogRat rat = new Ratmogrify.TransmogRat();
+		rat.setup(new Snake());
+		nextToHero(rat);
+		rat.makeAlly();
+		assertEquals(1, Bestiary.encounterCount(Snake.class), "test setup: making the rat an ally counted the original");
+
+		rat.destroy();
+
+		assertEquals(1, Bestiary.encounterCount(Snake.class), "destroying an allied transmog rat does not count the original again");
+	}
+
+	@Test
 	void destroyingATransmogRatWithNoOriginalDoesNotThrow() {
 		Ratmogrify.TransmogRat rat = nextToHero(new Ratmogrify.TransmogRat());
 		assertSame(Char.Alignment.ENEMY, rat.alignment);

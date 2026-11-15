@@ -526,3 +526,12 @@ WndJournal.CatalogTab#onClick(float, float)
 # resetCooldown is public there as upstream has it.
 Level.Respawner#act()
 Level.Respawner#resetCooldown()
+
+# --- Lore tab removal (5 entries), reviewed 2026-11-15 ---
+# Upstream 3dbcfef05 deletes LoreTab; lore pages now live in the catalog's lore section, so the
+# journal window builds one tab fewer. v2.5.4 has no LoreTab.
+WndJournal.LoreTab#createChildren()
+WndJournal.LoreTab#layout()
+WndJournal.LoreTab#updateList()
+WndJournal.LoreTab#onClick(float, float)
+WndJournal#WndJournal()

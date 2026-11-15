@@ -540,3 +540,26 @@ WndJournal#WndJournal()
 # Upstream dd9f90c37 renames Landmark.desc() to title(); the record's desc() now holds the
 # longer text. v2.5.4's Landmark enum has no desc().
 Notes.Landmark#desc()
+
+# --- Landmarks recorded on sight (9 entries), reviewed 2026-11-15 ---
+# Upstream aa7b64564 moves landmark recording off the visited cell and into
+# Hero.checkVisibleMobs and Blob.landmark(). The blob, statue, spawner and quest NPC
+# bodies lose their Notes.add lines; the records come back through landmark().
+Alchemy#evolve()
+Foliage#evolve()
+WaterOfAwareness#record()
+WaterOfHealth#record()
+WellWater#record()
+WellWater#evolve()
+DemonSpawner#act()
+Statue#act()
+Wandmaker#act()
+
+# --- Title-screen journal and badge grid (4 entries), reviewed 2026-11-15 ---
+# Upstream 53139c9e5 renames BadgesScene to JournalScene, which keeps destroy and
+# onBackPressed and takes v2.5.4's create.
+BadgesScene#create()
+BadgesScene#destroy()
+BadgesScene#onBackPressed()
+# Upstream 3dbcfef05 sizes the badge grid by area instead of a fixed column table.
+BadgesGrid#layout()

@@ -25,7 +25,7 @@ Adding a **mob** (`core/.../actors/mobs/YourMob.java`):
   package like `Messages` does, so a mob in `actors.mobs.npcs` is `actors.mobs.npcs.yourmob.*`.
   Only the default (English) `*.properties` count: a translation cannot satisfy a missing key.
 - **M3 Registration**: named in a level's `bestiary`, `rare_mob` or `extra_mobs` in
-  `core/src/main/assets/dungeon/dungeon.json` (or referenced in `Bestiary.kt`), or
+  `core/src/main/assets/dungeon/dungeon.json` (or referenced in `MobSpawner.kt`), or
   allowlisted (bosses, quest NPCs, room-placed mobs, summons).
 
 Adding an **item** (`core/.../items/<category>/YourItem.java`):
@@ -33,7 +33,7 @@ Adding an **item** (`core/.../items/<category>/YourItem.java`):
 - **I2 Localization**: `items.<category>.youritem.name`/`.desc`.
 - **I3 Registration**: referenced in a `Generator` `Category` (or a `dungeon.json`
   `extra_items` type), or allowlisted. For M3 and I3, a name that appears only inside a comment
-  in `Bestiary.kt` / `Generator.java` does not count.
+  in `MobSpawner.kt` / `Generator.java` does not count.
 
 Either kind:
 - **G1 Unique simple name**: no two scanned classes share a simple name. Ancestry is

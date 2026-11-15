@@ -24,7 +24,7 @@ public final class Checks {
                 findings.add(new Finding(prefix + "M2", "M2 localization: " + base + ".{name,desc} missing"));
             }
             if (!reg.bestiaryReferences(name)) {
-                findings.add(new Finding(prefix + "M3", "M3 registration: not referenced in Bestiary.kt or a dungeon.json spawn list"));
+                findings.add(new Finding(prefix + "M3", "M3 registration: not referenced in MobSpawner.kt or a dungeon.json spawn list"));
             }
         } else { // Item
             if (!sprites.spriteExists(e.resolvedImageAsset())) {

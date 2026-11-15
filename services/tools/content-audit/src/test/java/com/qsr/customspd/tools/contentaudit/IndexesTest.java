@@ -1,9 +1,11 @@
 package com.qsr.customspd.tools.contentaudit;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
@@ -91,7 +93,7 @@ class IndexesTest {
 
     @Test
     void registryIndexDetectsWordTokenReferences(@TempDir Path root) throws Exception {
-        write(root.resolve("core/src/main/java/com/qsr/customspd/actors/mobs/Bestiary.kt"),
+        write(root.resolve("core/src/main/java/com/qsr/customspd/actors/mobs/MobSpawner.kt"),
                 "fun mobClass() { if (cl == Rat::class.java) {} ; val x = RatKing }");
         write(root.resolve("core/src/main/java/com/qsr/customspd/items/Generator.java"),
                 "class Generator { Category c = new Category(Ration.class); }");
@@ -105,7 +107,7 @@ class IndexesTest {
     @Test
     void registryIndexIgnoresNamesThatOnlyAppearInComments(@TempDir Path root) throws Exception {
         // A class named in a comment ("upstream also lists Pickaxe here") is not registered.
-        write(root.resolve("core/src/main/java/com/qsr/customspd/actors/mobs/Bestiary.kt"),
+        write(root.resolve("core/src/main/java/com/qsr/customspd/actors/mobs/MobSpawner.kt"),
                 "// Ghost spawns from its quest\n/* Wraith is\n   summoned */ fun f() { if (cl == Rat::class.java) {} }");
         write(root.resolve("core/src/main/java/com/qsr/customspd/items/Generator.java"),
                 "class Generator {\n"
@@ -127,9 +129,9 @@ class IndexesTest {
 
     @Test
     void registryIndexCountsDungeonJsonSpawnListsAsRegistration(@TempDir Path root) throws Exception {
-        // CPDU's Bestiary.kt resolves each level's "bestiary"/"rare_mob" strings by
+        // CPDU's MobSpawner.kt resolves each level's "bestiary"/"rare_mob" strings by
         // reflection, and RegularLevel places "extra_mobs"/"extra_items" by "type";
-        // none of those names appear as tokens in Bestiary.kt or Generator.java.
+        // none of those names appear as tokens in MobSpawner.kt or Generator.java.
         write(root.resolve("core/src/main/assets/dungeon/dungeon.json"),
                 "{ \"dungeon\": {\n"
                         + "  \"1\": { \"depth\": 1, \"type\": \"regular\", \"layout\": \"SewerBossLevel\",\n"
@@ -137,6 +139,8 @@ class IndexesTest {
                         + "    \"extra_mobs\": [ { \"type\": \"npcs.Sheep\", \"hp\": 5 } ],\n"
                         + "    \"extra_items\": [ { \"type\": \"weapon.missiles.darts.TippedDart\", \"quantity\": 2 } ] }\n"
                         + "}, \"rat_king_level\": \"1\" }");
+        write(root.resolve("core/src/main/java/com/qsr/customspd/actors/mobs/MobSpawner.kt"),
+                "class MobSpawner {}");
         RegistryIndex r = RegistryIndex.load(root.toFile());
         assertTrue(r.bestiaryReferences("Snake"));
         assertTrue(r.bestiaryReferences("Thief"));
@@ -150,5 +154,14 @@ class IndexesTest {
         assertFalse(r.bestiaryReferences("Crab"));
         assertFalse(r.generatorReferences("Snake"));
         assertFalse(r.bestiaryReferences("TippedDart"));
+    }
+
+    @Test
+    void registryIndexLoadFailsWhenTheSpawnerFileIsMissing(@TempDir Path root) throws Exception {
+        // Reading a missing spawner as empty would flag every mob M3 against the wrong file,
+        // or pass silently on a fixture whose dungeon.json lists everything. Fail loudly instead.
+        write(root.resolve("core/src/main/java/com/qsr/customspd/items/Generator.java"), "class Generator {}");
+        IOException e = assertThrows(IOException.class, () -> RegistryIndex.load(root.toFile()));
+        assertTrue(e.getMessage().contains("actors/mobs/MobSpawner.kt"), () -> "message must name the path: " + e.getMessage());
     }
 }

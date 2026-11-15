@@ -17,7 +17,7 @@ class ChecksTest {
         Files.writeString(p, s);
     }
 
-    /** A fully-wired mob fixture: sprite chain present, both localization keys, in Bestiary. */
+    /** A fully-wired mob fixture: sprite chain present, both localization keys, in MobSpawner.kt. */
     private static File wiredMobRepo(Path root) throws Exception {
         write(root.resolve("core/src/main/java/com/qsr/customspd/assets/GeneralAsset.kt"),
                 "enum class GeneralAsset(val path: String) {\n"
@@ -27,7 +27,7 @@ class ChecksTest {
                 "class RatSprite { { texture(GeneralAsset.RAT); } }");
         write(root.resolve("core/src/main/assets/messages/actors/actors.properties"),
                 "actors.mobs.rat.name=rat\nactors.mobs.rat.desc=nasty\n");
-        write(root.resolve("core/src/main/java/com/qsr/customspd/actors/mobs/Bestiary.kt"),
+        write(root.resolve("core/src/main/java/com/qsr/customspd/actors/mobs/MobSpawner.kt"),
                 "if (cl == Rat::class.java) {}");
         write(root.resolve("core/src/main/java/com/qsr/customspd/items/Generator.java"), "class Generator {}");
         return root.toFile();
@@ -49,6 +49,8 @@ class ChecksTest {
                 "items.food.supplyration.name=supply ration\nitems.food.supplyration.desc=field ration\n");
         write(root.resolve("core/src/main/java/com/qsr/customspd/items/Generator.java"),
                 "class Generator { Class c = SupplyRation.class; }");
+        write(root.resolve("core/src/main/java/com/qsr/customspd/actors/mobs/MobSpawner.kt"),
+                "class MobSpawner {}");
         return root.toFile();
     }
 
@@ -69,7 +71,7 @@ class ChecksTest {
     @Test
     void mobMissingEverythingReportsM1M2M3(@TempDir Path root) throws Exception {
         File repo = wiredMobRepo(root);
-        // "Ghost": no sprite asset named GHOST, no localization, not in Bestiary
+        // "Ghost": no sprite asset named GHOST, no localization, not in MobSpawner.kt
         List<Finding> f = Checks.run(mob("Ghost", "GhostSprite", null),
                 SpriteIndex.load(repo), MessageIndex.load(repo), RegistryIndex.load(repo));
         List<String> ids = f.stream().map(Finding::key).collect(Collectors.toList());

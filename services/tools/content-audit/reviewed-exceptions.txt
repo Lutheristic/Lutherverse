@@ -12,7 +12,7 @@
 # --- First run, 2026-08-12 ---
 # 314 entities scanned, 189 findings: I3=119, M3=48, M2=13, M1=5, I2=4.
 #
-# The registration checks (M3 "not in Bestiary.kt" / I3 "not in Generator.java")
+# The registration checks (M3 "not in MobSpawner.kt" / I3 "not in Generator.java")
 # OVER-REPORT against CPDU's actual registration mechanism: standard Bestiary mobs
 # (Bat, Crab, Gnoll, Skeleton, ...) are flagged M3 despite being real spawns, which
 # means CPDU registers most content somewhere the loose word-token check does not see.

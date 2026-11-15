@@ -167,7 +167,7 @@ public class TitleScene extends PixelScene {
 		StyledButton btnBadges = new StyledButton(GREY_TR, Messages.get(this, "badges")){
 			@Override
 			protected void onClick() {
-				ShatteredPixelDungeon.switchNoFade( BadgesScene.class );
+				ShatteredPixelDungeon.switchNoFade( JournalScene.class );
 			}
 		};
 		btnBadges.icon(new Image(Asset.getAssetFilePath(GeneralAsset.ICON_BADGES)));

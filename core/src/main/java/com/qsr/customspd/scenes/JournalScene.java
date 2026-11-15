@@ -33,7 +33,7 @@ import com.qsr.customspd.ui.Window;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.audio.Music;
 
-public class BadgesScene extends PixelScene {
+public class JournalScene extends PixelScene {
 
 	@Override
 	public void create() {

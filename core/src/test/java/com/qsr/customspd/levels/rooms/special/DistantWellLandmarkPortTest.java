@@ -141,14 +141,20 @@ class DistantWellLandmarkPortTest {
 		int cell = f.room.left + 1 + f.level.width() * (f.room.top + 1);
 
 		Game priorInstance = Game.instance;
+		InterlevelScene.Mode priorMode = InterlevelScene.mode;
+		boolean priorFallIntoPit = InterlevelScene.fallIntoPit;
+		boolean fellIntoPit;
 		new Game(null, null);
 		try {
 			Chasm.heroFall(cell);
+			fellIntoPit = InterlevelScene.fallIntoPit;
 		} finally {
 			Game.instance = priorInstance;
+			InterlevelScene.mode = priorMode;
+			InterlevelScene.fallIntoPit = priorFallIntoPit;
 		}
 
-		assertTrue(InterlevelScene.fallIntoPit, "a fall inside the room is a fall into the pit");
+		assertTrue(fellIntoPit, "a fall inside the room is a fall into the pit");
 		assertFalse(Notes.contains(Notes.Landmark.DISTANT_WELL), "falling into the room removes the distant well");
 	}
 }

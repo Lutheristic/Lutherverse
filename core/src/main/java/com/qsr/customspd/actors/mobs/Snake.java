@@ -24,12 +24,9 @@ package com.qsr.customspd.actors.mobs;
 import com.qsr.customspd.Badges;
 import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.items.Generator;
-import com.qsr.customspd.items.journal.Guidebook;
 import com.qsr.customspd.journal.Document;
-import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.sprites.SnakeSprite;
-import com.qsr.customspd.utils.GLog;
 import com.watabou.utils.Random;
 
 public class Snake extends Mob {
@@ -64,7 +61,6 @@ public class Snake extends Mob {
 		dodges++;
 		if ((dodges >= 2 && !Document.ADVENTURERS_GUIDE.isPageRead(Document.GUIDE_SURPRISE_ATKS))
 				|| (dodges >= 4 && !Badges.isUnlocked(Badges.Badge.BOSS_SLAIN_1))){
-			GLog.p(Messages.get(Guidebook.class, "hint"));
 			GameScene.flashForDocument(Document.ADVENTURERS_GUIDE, Document.GUIDE_SURPRISE_ATKS);
 			dodges = 0;
 		}

@@ -515,3 +515,14 @@ PrisonLevel#createMobs()
 # continuing from a cold start and a new game find the floor's region. The bodies are unchanged.
 InterlevelScene#region(String, int)
 InterlevelScene#layoutRegion(String)
+
+# --- Journal catalog grid and MobSpawner rename (4 entries), reviewed 2026-11-15 ---
+# v2.5.4's grid catalog shows entries in Catalog order and has no known-first comparator.
+WndJournal.CatalogTab#compare(Class, Class)
+# The list item's click handler is gone; the grid cell's click lives in WndJournal.addGridItems,
+# where v2.5.4 puts it.
+WndJournal.CatalogTab#onClick(float, float)
+# Upstream 16977c418 moved Respawner into MobSpawner. Both bodies are in MobSpawner.kt, and
+# resetCooldown is public there as upstream has it.
+Level.Respawner#act()
+Level.Respawner#resetCooldown()

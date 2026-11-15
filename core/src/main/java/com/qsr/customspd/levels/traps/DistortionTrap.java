@@ -29,12 +29,12 @@ import com.qsr.customspd.actors.mobs.Acidic;
 import com.qsr.customspd.actors.mobs.Albino;
 import com.qsr.customspd.actors.mobs.ArmoredBrute;
 import com.qsr.customspd.actors.mobs.Bandit;
-import com.qsr.customspd.actors.mobs.Bestiary;
 import com.qsr.customspd.actors.mobs.CausticSlime;
 import com.qsr.customspd.actors.mobs.DM201;
 import com.qsr.customspd.actors.mobs.Elemental;
 import com.qsr.customspd.actors.mobs.Mimic;
 import com.qsr.customspd.actors.mobs.Mob;
+import com.qsr.customspd.actors.mobs.MobSpawner;
 import com.qsr.customspd.actors.mobs.Piranha;
 import com.qsr.customspd.actors.mobs.Senior;
 import com.qsr.customspd.actors.mobs.Statue;
@@ -111,7 +111,7 @@ public class DistortionTrap extends Trap{
 					do {
 						floor = Random.Int(25);
 					} while( Dungeon.bossLevel(String.valueOf(floor)));
-					mob = Reflection.newInstance(Bestiary.INSTANCE.getMobRotation().get(0));
+					mob = Reflection.newInstance(MobSpawner.getMobRotation().get(0));
 					if (mob instanceof Statue) {
 						((Statue) mob).createWeapon( false );
 					}

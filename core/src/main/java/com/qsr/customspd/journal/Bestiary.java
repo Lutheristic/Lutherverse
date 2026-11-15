@@ -254,7 +254,7 @@ public enum Bestiary {
 		classConversions.put(Necromancer.NecroSkeleton.class,  Skeleton.class);
 
 		classConversions.put(TenguDartTrap.class,              PoisonDartTrap.class);
-		//GnollRockfallTrap -> RockfallTrap returns with its Slice 2 content
+		//the GnollRockfallTrap to RockfallTrap conversion returns with its Slice 2 content
 
 		classConversions.put(DwarfKing.DKGhoul.class,          Ghoul.class);
 		classConversions.put(DwarfKing.DKWarlock.class,        Warlock.class);

@@ -25,6 +25,7 @@ import com.qsr.customspd.test.HeadlessGdx;
 import com.qsr.customspd.test.SaveRoundtrip;
 import com.qsr.customspd.test.StaticSnapshot;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -131,6 +132,11 @@ class BestiaryTest {
 		Bestiary.countEncounter(Rat.class);
 		assertEquals(Integer.MAX_VALUE, Bestiary.encounterCount(Rat.class));
 
+		// a bulk add that wraps past MAX_VALUE is clamped by the overflow check
+		Bestiary.countEncounters(Snake.class, Integer.MAX_VALUE - 1);
+		Bestiary.countEncounters(Snake.class, 5);
+		assertEquals(Integer.MAX_VALUE, Bestiary.encounterCount(Snake.class));
+
 		Bestiary.skipCountingEncounters = true;
 		Bestiary.countEncounter(Gnoll.class);
 		Bestiary.setSeen(Gnoll.class);
@@ -186,15 +192,20 @@ class BestiaryTest {
 	void journalSavesTheBestiary() throws Exception {
 		Bestiary.setSeen(Snake.class);
 		Bestiary.countEncounters(Snake.class, 4);
-		Journal.saveGlobal(true);
+		try {
+			Journal.saveGlobal(true);
 
-		clearBestiary();
-		Field loaded = Journal.class.getDeclaredField("loaded");
-		loaded.setAccessible(true);
-		loaded.setBoolean(null, false);
-		Journal.loadGlobal();
+			clearBestiary();
+			Field loaded = Journal.class.getDeclaredField("loaded");
+			loaded.setAccessible(true);
+			loaded.setBoolean(null, false);
+			Journal.loadGlobal();
 
-		assertTrue(Bestiary.isSeen(Snake.class));
-		assertEquals(4, Bestiary.encounterCount(Snake.class));
+			assertTrue(Bestiary.isSeen(Snake.class));
+			assertEquals(4, Bestiary.encounterCount(Snake.class));
+		} finally {
+			// the headless file root is shared by the whole test JVM
+			FileUtils.deleteFile(Journal.JOURNAL_FILE);
+		}
 	}
 }

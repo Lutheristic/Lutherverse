@@ -469,8 +469,12 @@ public class WandOfRegrowth extends Wand {
 
 		@Override
 		public String description() {
-			int preservation = Math.round(seedPreservation()*100);
-			return Messages.get(this, "desc", wandLvl, preservation, preservation);
+			String desc = Messages.get(this, "desc");
+			if (Actor.chars().contains(this)) {
+				int preservation = Math.round(seedPreservation()*100);
+				desc += "\n\n" + Messages.get(this, "wand_info", wandLvl, preservation, preservation);
+			}
+			return desc;
 		}
 
 		private static final String WAND_LVL = "wand_lvl";

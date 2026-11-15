@@ -439,7 +439,16 @@ public class WandOfWarding extends Wand {
 
 		@Override
 		public String description() {
-			return Messages.get(this, "desc_" + tier, 2+wandLevel, 8 + 4*wandLevel, tier );
+			if (!Actor.chars().contains(this)){
+				//for viewing in the journal
+				if (tier < 4){
+					return Messages.get(this, "desc_generic_ward");
+				} else {
+					return Messages.get(this, "desc_generic_sentry");
+				}
+			} else {
+				return Messages.get(this, "desc_" + tier, 2 + wandLevel, 8 + 4 * wandLevel, tier);
+			}
 		}
 		
 		{

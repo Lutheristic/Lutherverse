@@ -54,6 +54,8 @@ class BestiaryTrapRecordingTest {
 	private Game priorInstance;
 	private GL20 priorGl;
 	private GL20 priorGl20;
+	private PlatformSupport priorPlatform;
+	private InterlevelScene.Mode priorMode;
 	private GameScene scene;
 
 	@BeforeEach
@@ -63,6 +65,8 @@ class BestiaryTrapRecordingTest {
 		priorInstance = Game.instance;
 		priorGl = Gdx.gl;
 		priorGl20 = Gdx.gl20;
+		priorPlatform = Game.platform;
+		priorMode = InterlevelScene.mode;
 		new Game(null, null);
 		Game.platform = new PlatformSupport() {
 			@Override public void updateDisplaySize() {}
@@ -109,6 +113,8 @@ class BestiaryTrapRecordingTest {
 			Gdx.gl = priorGl;
 			Gdx.gl20 = priorGl20;
 			Game.instance = priorInstance;
+			Game.platform = priorPlatform;
+			InterlevelScene.mode = priorMode;
 			run.close();
 		}
 	}

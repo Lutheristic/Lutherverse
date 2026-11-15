@@ -19,6 +19,8 @@ import com.watabou.utils.PlatformSupport;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
@@ -125,6 +127,16 @@ class GameSceneFeelingLandmarkPortTest {
 		assertEquals(1, floorRecords());
 		List<String> log = gameLogQueue();
 		assertTrue(log.contains(GLog.WARNING + Level.Feeling.CHASM.desc()), "log was " + log);
+	}
+
+	@ParameterizedTest
+	@EnumSource(value = Level.Feeling.class, names = "NONE", mode = EnumSource.Mode.EXCLUDE)
+	void eachFeelingAddsItsOwnFloorLandmark(Level.Feeling feeling) throws Exception {
+		arrive(feeling);
+
+		assertTrue(Notes.contains(Notes.Landmark.valueOf(feeling.name() + "_FLOOR")), feeling + " record missing");
+		assertEquals(1, floorRecords(), feeling + " added more than its own record");
+		assertTrue(gameLogQueue().contains(GLog.WARNING + feeling.desc()), feeling + " log was " + gameLogQueue());
 	}
 
 	@Test

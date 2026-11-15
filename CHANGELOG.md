@@ -10,7 +10,7 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 Everything on `main` since the fork base (`cpd-sync-base-2025-08-15`, CPD commit `c97fb83`).
 
-### 2026-11-15: the journal catalog grid and the bestiary
+### 2026-11-15: the journal catalog grid, the bestiary and the lore section
 
 The first two pieces of upstream's v2.5 journal rework.
 
@@ -19,6 +19,8 @@ The first two pieces of upstream's v2.5 journal rework.
 - The game now keeps a bestiary across runs: every enemy, ally, trap and plant you meet is marked seen, with a count of how often you defeated, triggered or trampled it. Minions that die with their boss are seen but not counted. The bestiary is saved with the journal, and older journals load as empty. It has no page yet; that comes with the next piece.
 - A new badge, Big Game Hunter, unlocks once every rare enemy has been seen, and the Researcher badges now count the bestiary too.
 - The mob spawn rotation moved to its new upstream name. Old saves load as before, and seeded runs spawn the same mobs.
+- The catalog has two more sections. The bestiary lists every enemy, ally, trap and plant, drawn from its sprite, with how many times you met it. The lore section gives each lore page a cell, marks unread ones and opens them in place. The separate lore tab is gone, and picking up a lore page opens the catalog at its lore section.
+- Statues, armored statues, guardians, the spirit hawk, earthen guardian, golden lotus, wards and sentries describe themselves correctly with no gear or hero behind them. Jowiro's Class Reskins drops its old hawk turns sentence so the description doesn't repeat it.
 
 ### 2026-11-14: pack music
 

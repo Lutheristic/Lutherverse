@@ -3,6 +3,8 @@ package com.qsr.customspd;
 import com.qsr.customspd.test.HeadlessRun;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -27,7 +29,7 @@ class BadgeTypeTest {
 	private static final List<Badges.Badge> JOURNAL = Arrays.asList(
 			Badges.Badge.CATALOG_ONE_EQUIPMENT, Badges.Badge.RESEARCHER_1, Badges.Badge.RESEARCHER_2,
 			Badges.Badge.RESEARCHER_3, Badges.Badge.RESEARCHER_4, Badges.Badge.RESEARCHER_5,
-			Badges.Badge.RODNEY);
+			Badges.Badge.RODNEY, Badges.Badge.ALL_RARE_ENEMIES);
 
 	// the identification badges the redesign replaced; still loaded from old badge files
 	private static final List<Badges.Badge> OLD_IDENTIFICATION = Arrays.asList(
@@ -52,6 +54,21 @@ class BadgeTypeTest {
 		for (Badges.Badge b : OLD_IDENTIFICATION) {
 			assertEquals(Badges.BadgeType.HIDDEN, b.type, b + " was replaced by the catalog badges");
 		}
+	}
+
+	@Test
+	void everyBadgeIconResolvesToAnExistingFile() {
+		// core:test runs with src/main/assets as its working directory (see HeadlessGdx)
+		File assets = new File(".");
+		assertTrue(new File(assets, Badges.Badge.RODNEY.asset.getPath()).isFile(),
+				"fixture sanity: working directory must be core/src/main/assets, was " + assets.getAbsolutePath());
+		List<String> missing = new ArrayList<>();
+		for (Badges.Badge b : Badges.Badge.values()) {
+			if (b.asset != null && !new File(assets, b.asset.getPath()).isFile()) {
+				missing.add(b + " -> " + b.asset.getPath());
+			}
+		}
+		assertTrue(missing.isEmpty(), "badge icons with no file: " + missing);
 	}
 
 	@Test

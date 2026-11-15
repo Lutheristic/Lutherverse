@@ -9,7 +9,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/** References to content classes inside the registries: word tokens in Bestiary.kt /
+/** References to content classes inside the registries: word tokens in MobSpawner.kt /
  *  Generator.java code (comments excluded), plus the class names core dungeon.json spawns by
  *  reflection. Loose by design (matching asset-audit); intentional non-registration rides the
  *  allowlist. */
@@ -71,9 +71,11 @@ public final class RegistryIndex {
         return new RegistryIndex(bestiarySource, generatorSource, dungeonJson);
     }
 
+    /** Throws when the spawner file is missing: reading it as empty would turn a moved or
+     *  renamed spawner into M3 noise, or a silent pass, instead of an error. */
     public static RegistryIndex load(File repoRoot) throws IOException {
         return new RegistryIndex(
-                read(repoRoot, "core/src/main/java/com/qsr/customspd/actors/mobs/Bestiary.kt"),
+                readRequired(repoRoot, "core/src/main/java/com/qsr/customspd/actors/mobs/MobSpawner.kt"),
                 read(repoRoot, "core/src/main/java/com/qsr/customspd/items/Generator.java"),
                 read(repoRoot, "core/src/main/assets/dungeon/dungeon.json"));
     }
@@ -83,7 +85,13 @@ public final class RegistryIndex {
         return Files.exists(p) ? Files.readString(p) : "";
     }
 
-    /** Bestiary.kt reflects each level's "bestiary" and "rare_mob" entries into
+    private static String readRequired(File repoRoot, String rel) throws IOException {
+        Path p = repoRoot.toPath().resolve(rel);
+        if (!Files.exists(p)) throw new IOException("registry source not found: " + rel + " (under " + repoRoot + ")");
+        return Files.readString(p);
+    }
+
+    /** MobSpawner.kt reflects each level's "bestiary" and "rare_mob" entries into
      *  com.qsr.customspd.actors.mobs.<entry>; RegularLevel does the same for each
      *  "extra_mobs" type, and for "extra_items" types under com.qsr.customspd.items. */
     private void indexDungeon(String json) {

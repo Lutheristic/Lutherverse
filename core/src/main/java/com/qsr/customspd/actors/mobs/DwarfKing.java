@@ -52,6 +52,7 @@ import com.qsr.customspd.items.rings.RingOfForce;
 import com.qsr.customspd.items.scrolls.ScrollOfTeleportation;
 import com.qsr.customspd.items.wands.Wand;
 import com.qsr.customspd.items.wands.WandOfLightning;
+import com.qsr.customspd.journal.Bestiary;
 import com.qsr.customspd.levels.CityBossLevel;
 import com.qsr.customspd.mechanics.Ballistica;
 import com.qsr.customspd.messages.Messages;
@@ -497,13 +498,11 @@ public class DwarfKing extends Mob {
 			for (Summoning s : buffs(Summoning.class)) {
 				s.detach();
 			}
-			for (Mob m : Dungeon.level.mobs.toArray(new Mob[0])) {
-				if (m.alignment == alignment) {
-					if (m instanceof Ghoul || m instanceof Monk || m instanceof Warlock || m instanceof Golem) {
-						m.die(null);
-					}
-				}
+			Bestiary.skipCountingEncounters = true;
+			for (Mob m : getSubjects()) {
+				m.die(null);
 			}
+			Bestiary.skipCountingEncounters = false;
 			for (Buff b: buffs()){
 				if (b instanceof LifeLink){
 					b.detach();
@@ -557,9 +556,11 @@ public class DwarfKing extends Mob {
 
 		Dungeon.level.unseal();
 
+		Bestiary.skipCountingEncounters = true;
 		for (Mob m : getSubjects()){
 			m.die(null);
 		}
+		Bestiary.skipCountingEncounters = false;
 
 		yell( Messages.get(this, "defeated") );
 	}

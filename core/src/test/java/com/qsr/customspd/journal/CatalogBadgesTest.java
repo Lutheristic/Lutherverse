@@ -46,7 +46,7 @@ class CatalogBadgesTest {
 	@BeforeEach
 	void snapshot() throws ReflectiveOperationException {
 		statics = StaticSnapshot.capture(Arrays.<Class<?>>asList(
-				Catalog.class, Badges.class, Journal.class, Document.class));
+				Catalog.class, Bestiary.class, Badges.class, Journal.class, Document.class));
 		savedSeedText = Dungeon.customSeedText;
 		Dungeon.customSeedText = "";
 		clearSeen();
@@ -68,6 +68,18 @@ class CatalogBadgesTest {
 				e.setValue(false);
 			}
 		}
+		Field bestiarySeen = Bestiary.class.getDeclaredField("seen");
+		Field bestiaryCounts = Bestiary.class.getDeclaredField("encounterCount");
+		bestiarySeen.setAccessible(true);
+		bestiaryCounts.setAccessible(true);
+		for (Bestiary cat : Bestiary.values()) {
+			for (Map.Entry<Class<?>, Boolean> e : ((Map<Class<?>, Boolean>) bestiarySeen.get(cat)).entrySet()) {
+				e.setValue(false);
+			}
+			for (Map.Entry<Class<?>, Integer> e : ((Map<Class<?>, Integer>) bestiaryCounts.get(cat)).entrySet()) {
+				e.setValue(0);
+			}
+		}
 	}
 
 	private static int foundGuidePages() {
@@ -85,6 +97,19 @@ class CatalogBadgesTest {
 		List<Class<?>> all = new ArrayList<>();
 		for (Catalog cat : Catalog.values()) all.addAll(cat.items());
 		return all;
+	}
+
+	private static List<Class<?>> everyBestiaryEntity() {
+		List<Class<?>> all = new ArrayList<>();
+		for (Bestiary cat : Bestiary.values()) all.addAll(cat.entities());
+		return all;
+	}
+
+	private static void findEveryGuidePage() {
+		for (Document doc : Document.values()) {
+			if (doc.isLoreDoc()) continue;
+			for (String page : doc.pageNames()) doc.findPage(page);
+		}
 	}
 
 	// ------------------------------------------------------------------ saves from before the split
@@ -147,10 +172,8 @@ class CatalogBadgesTest {
 	@Test
 	void grandmasterResearcherNeedsEveryEntry() {
 		List<Class<?>> items = everyCatalogItem();
-		for (Document doc : Document.values()) {
-			if (doc.isLoreDoc()) continue;
-			for (String page : doc.pageNames()) doc.findPage(page);
-		}
+		findEveryGuidePage();
+		for (Class<?> entity : everyBestiaryEntity()) Bestiary.setSeen(entity);
 		for (int i = 0; i < items.size() - 1; i++) Catalog.setSeen(items.get(i));
 		assertFalse(Badges.isUnlocked(Badges.Badge.RESEARCHER_5), "one entry is still missing");
 
@@ -164,22 +187,46 @@ class CatalogBadgesTest {
 		// the enchantment and glyph sections take the total past 320, so researcher 4 can be earned
 		int total = 0;
 		for (Catalog cat : Catalog.values()) total += cat.totalItems();
+		for (Bestiary cat : Bestiary.values()) total += cat.totalEntities();
 		for (Document doc : Document.values()) {
 			if (!doc.isLoreDoc()) total += doc.pageNames().size();
 		}
 		assertTrue(total >= 320, total + " entries, so researcher 4 can never be earned");
 
-		for (Document doc : Document.values()) {
-			if (doc.isLoreDoc()) continue;
-			for (String page : doc.pageNames()) doc.findPage(page);
-		}
+		findEveryGuidePage();
+		for (Class<?> entity : everyBestiaryEntity()) Bestiary.setSeen(entity);
 		for (Class<?> item : everyCatalogItem()) Catalog.setSeen(item);
 		assertTrue(Badges.isUnlocked(Badges.Badge.RESEARCHER_5));
 		assertTrue(Badges.isUnlocked(Badges.Badge.RESEARCHER_3));
 		assertTrue(Badges.isUnlocked(Badges.Badge.RESEARCHER_4));
 	}
 
+	@Test
+	void grandmasterResearcherAlsoNeedsTheBestiary() {
+		// the bestiary counts toward the researcher total, as the catalog and guide pages do
+		findEveryGuidePage();
+		for (Class<?> item : everyCatalogItem()) Catalog.setSeen(item);
+		List<Class<?>> entities = everyBestiaryEntity();
+		for (int i = 0; i < entities.size() - 1; i++) Bestiary.setSeen(entities.get(i));
+		assertFalse(Badges.isUnlocked(Badges.Badge.RESEARCHER_5), "one bestiary entry is still missing");
+
+		Bestiary.setSeen(entities.get(entities.size() - 1));
+		assertTrue(Badges.isUnlocked(Badges.Badge.RESEARCHER_5));
+	}
+
 	// ----------------------------------------------------------------------- task badges
+
+	@Test
+	void bigGameHunterNeedsEveryRareEnemy() {
+		List<Class<?>> rare = new ArrayList<>(Bestiary.RARE.entities());
+		assertTrue(rare.size() > 1, "test setup: the rare section lists several enemies");
+		for (int i = 0; i < rare.size() - 1; i++) Bestiary.setSeen(rare.get(i));
+		assertFalse(Badges.isUnlocked(Badges.Badge.ALL_RARE_ENEMIES), "one rare enemy is still missing");
+
+		Bestiary.setSeen(rare.get(rare.size() - 1));
+		assertTrue(Badges.isUnlocked(Badges.Badge.ALL_RARE_ENEMIES));
+		assertEquals(Badges.BadgeType.JOURNAL, Badges.Badge.ALL_RARE_ENEMIES.type);
+	}
 
 	@Test
 	void wellEquippedNeedsOneEntryInEveryEquipmentCategory() {

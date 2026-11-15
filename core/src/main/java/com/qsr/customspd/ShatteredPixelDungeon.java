@@ -84,6 +84,11 @@ public class ShatteredPixelDungeon extends Game {
 				com.qsr.customspd.items.bombs.SmokeBomb.class,
 				"com.qsr.customspd.items.bombs.Flashbang" );
 
+		//pre-v2.5.0
+		com.watabou.utils.Bundle.addAlias(
+				com.qsr.customspd.actors.mobs.MobSpawner.class,
+				"com.qsr.customspd.levels.Level$Respawner" );
+
 		//pre-v2.4.0
 		com.watabou.utils.Bundle.addAlias(
 				com.qsr.customspd.items.potions.brews.UnstableBrew.class,

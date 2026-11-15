@@ -49,9 +49,9 @@ import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.hero.HeroSubClass;
 import com.qsr.customspd.actors.hero.Talent;
 import com.qsr.customspd.actors.hero.abilities.huntress.SpiritHawk;
-import com.qsr.customspd.actors.mobs.Bestiary;
 import com.qsr.customspd.actors.mobs.CustomMob;
 import com.qsr.customspd.actors.mobs.Mob;
+import com.qsr.customspd.actors.mobs.MobSpawner;
 import com.qsr.customspd.actors.mobs.Piranha;
 import com.qsr.customspd.actors.mobs.Statue;
 import com.qsr.customspd.actors.mobs.YogFist;
@@ -456,7 +456,7 @@ public abstract class Level implements Bundlable {
 		}
 
 		if (bundle.contains( "respawner" )){
-			respawner = (Respawner) bundle.get("respawner");
+			respawner = (MobSpawner) bundle.get("respawner");
 		}
 
 		buildFlagMaps();
@@ -523,8 +523,8 @@ public abstract class Level implements Bundlable {
 	//useDecks is true at levelgen, for statues a pack lists in a bestiary
 	protected Mob createMob( boolean useDecks ) {
 		if (mobsToSpawn == null || mobsToSpawn.isEmpty()) {
-			mobsToSpawn = Bestiary.INSTANCE.getMobRotation();
-			customMobsToSpawn = Bestiary.INSTANCE.getCustomMobs();
+			mobsToSpawn = MobSpawner.getMobRotation();
+			customMobsToSpawn = MobSpawner.getCustomMobs();
 		}
 
 		Class<? extends Mob> mobClass = mobsToSpawn.remove(0);
@@ -711,11 +711,11 @@ public abstract class Level implements Bundlable {
 		return null;
 	}
 
-	private Respawner respawner;
+	private MobSpawner respawner;
 
 	public Actor addRespawner() {
 		if (respawner == null){
-			respawner = new Respawner();
+			respawner = new MobSpawner();
 			Actor.addDelayed(respawner, respawnCooldown());
 		} else {
 			Actor.add(respawner);
@@ -724,36 +724,6 @@ public abstract class Level implements Bundlable {
 			}
 		}
 		return respawner;
-	}
-
-	public static class Respawner extends Actor {
-		{
-			actPriority = BUFF_PRIO; //as if it were a buff.
-		}
-
-		@Override
-		protected boolean act() {
-
-			if (Dungeon.level.mobCount() < Dungeon.level.mobLimit()) {
-
-				if (Dungeon.level.spawnMob(12)){
-					spend(Dungeon.level.respawnCooldown());
-				} else {
-					//try again in 1 turn
-					spend(TICK);
-				}
-
-			} else {
-				spend(Dungeon.level.respawnCooldown());
-			}
-
-			return true;
-		}
-
-		protected void resetCooldown(){
-			spend(-cooldown());
-			spend(Dungeon.level.respawnCooldown());
-		}
 	}
 
 	public float respawnCooldown(){

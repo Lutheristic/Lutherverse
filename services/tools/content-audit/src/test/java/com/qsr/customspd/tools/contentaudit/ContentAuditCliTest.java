@@ -24,7 +24,7 @@ class ContentAuditCliTest {
         write(root.resolve("core/src/main/assets/sprites/mobs/rat.png"), "png");
         write(root.resolve("core/src/main/assets/messages/actors/actors.properties"),
                 "actors.mobs.rat.name=rat\nactors.mobs.rat.desc=nasty\n");
-        write(root.resolve("core/src/main/java/com/qsr/customspd/actors/mobs/Bestiary.kt"),
+        write(root.resolve("core/src/main/java/com/qsr/customspd/actors/mobs/MobSpawner.kt"),
                 "if (cl == Rat::class.java) {}");
         write(root.resolve("core/src/main/java/com/qsr/customspd/items/Generator.java"), "class Generator {}");
         write(root.resolve("core/src/main/java/com/qsr/customspd/sprites/RatSprite.java"),
@@ -58,8 +58,8 @@ class ContentAuditCliTest {
     @Test
     void dungeonJsonBestiaryRegistersAMobButUnlistedMobsStillFail(@TempDir Path root) throws Exception {
         File repo = fixture(root);
-        write(root.resolve("core/src/main/java/com/qsr/customspd/actors/mobs/Bestiary.kt"),
-                "object Bestiary {}"); // no Rat token: registration must come from dungeon.json
+        write(root.resolve("core/src/main/java/com/qsr/customspd/actors/mobs/MobSpawner.kt"),
+                "class MobSpawner {}"); // no Rat token: registration must come from dungeon.json
         write(root.resolve("core/src/main/assets/dungeon/dungeon.json"),
                 "{ \"dungeon\": { \"1\": { \"depth\": 1, \"bestiary\": [ \"Rat\" ] } } }");
         ContentAuditCli.Result r = ContentAuditCli.run(repo, Allowlist.load(null));

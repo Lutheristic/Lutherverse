@@ -29,6 +29,7 @@ import com.qsr.customspd.actors.hero.HeroSubClass;
 import com.qsr.customspd.actors.mobs.Mimic;
 import com.qsr.customspd.actors.mobs.Mob;
 import com.qsr.customspd.effects.FloatingText;
+import com.qsr.customspd.journal.Bestiary;
 import com.qsr.customspd.sprites.CharSprite;
 
 //generic class for buffs which convert an enemy into an ally
@@ -64,6 +65,8 @@ public abstract class AllyBuff extends Buff {
 			Statistics.enemiesSlain++;
 			Badges.validateMonstersSlain();
 			Statistics.qualifiedForNoKilling = false;
+			Bestiary.setSeen(enemy.getClass());
+			Bestiary.countEncounter(enemy.getClass());
 
 			AscensionChallenge.processEnemyKill(enemy);
 

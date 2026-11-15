@@ -29,18 +29,19 @@ import com.qsr.customspd.actors.mobs.Acidic;
 import com.qsr.customspd.actors.mobs.Albino;
 import com.qsr.customspd.actors.mobs.ArmoredBrute;
 import com.qsr.customspd.actors.mobs.Bandit;
-import com.qsr.customspd.actors.mobs.Bestiary;
 import com.qsr.customspd.actors.mobs.CausticSlime;
 import com.qsr.customspd.actors.mobs.DM201;
 import com.qsr.customspd.actors.mobs.Elemental;
 import com.qsr.customspd.actors.mobs.Mimic;
 import com.qsr.customspd.actors.mobs.Mob;
+import com.qsr.customspd.actors.mobs.MobSpawner;
 import com.qsr.customspd.actors.mobs.Piranha;
 import com.qsr.customspd.actors.mobs.Senior;
 import com.qsr.customspd.actors.mobs.Statue;
 import com.qsr.customspd.actors.mobs.Wraith;
 import com.qsr.customspd.actors.mobs.npcs.RatKing;
 import com.qsr.customspd.items.scrolls.ScrollOfTeleportation;
+import com.qsr.customspd.journal.Bestiary;
 import com.qsr.customspd.scenes.GameScene;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -111,7 +112,7 @@ public class DistortionTrap extends Trap{
 					do {
 						floor = Random.Int(25);
 					} while( Dungeon.bossLevel(String.valueOf(floor)));
-					mob = Reflection.newInstance(Bestiary.INSTANCE.getMobRotation().get(0));
+					mob = Reflection.newInstance(MobSpawner.getMobRotation().get(0));
 					if (mob instanceof Statue) {
 						((Statue) mob).createWeapon( false );
 					}
@@ -158,6 +159,8 @@ public class DistortionTrap extends Trap{
 			if ((t = Dungeon.level.traps.get(mob.pos)) != null && t.active){
 				if (t.disarmedByActivation) t.disarm();
 				t.reveal();
+				Bestiary.setSeen(t.getClass());
+				Bestiary.countEncounter(t.getClass());
 				t.activate();
 			}
 			ScrollOfTeleportation.appear(mob, mob.pos);

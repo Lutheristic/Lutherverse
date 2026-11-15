@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * F1 modding/JSON registration sweep. CPDU registers content data-driven: dungeon.json names
  * mobs and level layouts as bare strings that the game resolves at runtime via reflection
- * (Bestiary.standardMobRotation, Dungeon's level factory), and heroes/*.json names starting-kit
+ * (MobSpawner.standardMobRotation, Dungeon's level factory), and heroes/*.json names starting-kit
  * items the same way (HeroClass.setUp). The static content-audit tool's M3/I3 heuristics cannot
  * see these registrations (they scan source tokens, not JSON), so this suite closes that gap
  * honestly by proving every shipped token actually resolves through the SAME runtime paths the
@@ -37,10 +37,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * here with the token and location named.
  *
  * Resolution semantics mirrored exactly:
- *  - Bestiary tokens (Bestiary.kt standardMobRotation): customMobExists(token) -> CustomMob;
+ *  - Bestiary tokens (MobSpawner.kt standardMobRotation): customMobExists(token) -> CustomMob;
  *    "Elemental" -> Elemental.random(); "Shaman" -> Shaman.random();
  *    else Reflection.forName("com.qsr.customspd.actors.mobs." + token).
- *  - rare_mob tokens (Bestiary.kt addRareMobs): reflection ONLY, no custom-mob or
+ *  - rare_mob tokens (MobSpawner.kt addRareMobs): reflection ONLY, no custom-mob or
  *    Elemental/Shaman special-casing. A rare_mob of "Elemental" would crash at runtime,
  *    so the sweep must not paper over it.
  *  - REGULAR level layouts (Dungeon.newLevel):
@@ -57,7 +57,7 @@ class RegistrationSweepTest {
 	}
 
 	/**
-	 * Mirrors the token-to-class mapping of Bestiary.standardMobRotation. Returns null when the
+	 * Mirrors the token-to-class mapping of MobSpawner.standardMobRotation. Returns null when the
 	 * token resolves to a spawnable mob, or a human-readable failure reason otherwise.
 	 * Caller must have a seeded RNG pushed: Elemental.random()/Shaman.random() consume Random.
 	 */
@@ -128,7 +128,7 @@ class RegistrationSweepTest {
 				String token = e.getValue().getRareMob();
 				if (token == null) continue;
 				rareMobs++;
-				// Bestiary.addRareMobs resolves rare_mob by reflection only, no custom-mob
+				// MobSpawner.addRareMobs resolves rare_mob by reflection only, no custom-mob
 				// lookup, no Elemental/Shaman special cases, so the sweep must be as strict.
 				Class<?> cls = Reflection.forName("com.qsr.customspd.actors.mobs." + token);
 				assertNotNull(cls, "rare_mob token '" + token + "' on level '" + e.getKey()

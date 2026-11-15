@@ -56,6 +56,9 @@ public abstract class DocumentPage extends Item {
 		if (document() == Document.ALCHEMY_GUIDE){
 			WndJournal.last_index = 1;
 			WndJournal.AlchemyTab.currentPageIdx = document().pageIdx(page());
+		} else if (document().isLoreDoc()){
+			WndJournal.last_index = 3;
+			WndJournal.CatalogTab.currentItemIdx = 3;
 		} else {
 			WndJournal.last_index = 0;
 		}

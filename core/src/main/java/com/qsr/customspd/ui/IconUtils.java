@@ -128,4 +128,25 @@ public class IconUtils {
 			}
 		}
 	}
+
+	public static Image getLarge(Level.Feeling feeling){
+		switch (feeling){
+			case NONE: default:
+				return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_STAIRS));
+			case CHASM:
+				return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_STAIRS_CHASM));
+			case WATER:
+				return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_STAIRS_WATER));
+			case GRASS:
+				return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_STAIRS_GRASS));
+			case DARK:
+				return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_STAIRS_DARK));
+			case LARGE:
+				return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_STAIRS_LARGE));
+			case TRAPS:
+				return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_STAIRS_TRAPS));
+			case SECRETS:
+				return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_STAIRS_SECRETS));
+		}
+	}
 }

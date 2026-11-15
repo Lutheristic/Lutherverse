@@ -27,6 +27,7 @@ import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.buffs.Buff;
 import com.qsr.customspd.actors.hero.abilities.Ratmogrify;
 import com.qsr.customspd.items.KingsCrown;
+import com.qsr.customspd.journal.Notes;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.sprites.RatKingSprite;
@@ -82,6 +83,11 @@ public class RatKing extends NPC {
 		if (firstAdded && !Dungeon.levelName.equals(Dungeon.layout.getRatKingLevel())){
 			yell(Messages.get(this, "confused"));
 		}
+	}
+
+	@Override
+	public Notes.Landmark landmark() {
+		return Dungeon.levelName.equals(Dungeon.layout.getRatKingLevel()) ? Notes.Landmark.RAT_KING : null;
 	}
 
 	@Override

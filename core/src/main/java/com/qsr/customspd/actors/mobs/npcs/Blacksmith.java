@@ -62,13 +62,16 @@ public class Blacksmith extends NPC {
 	}
 	
 	@Override
+	public Notes.Landmark landmark() {
+		return Quest.reforged ? null : Notes.Landmark.TROLL;
+	}
+
+	@Override
 	protected boolean act() {
 		if (Dungeon.hero.buff(AscensionChallenge.class) != null){
 			die(null);
+			Notes.remove( landmark() );
 			return true;
-		}
-		if (Dungeon.level.visited[pos] && !Quest.reforged){
-			Notes.add( Notes.Landmark.TROLL );
 		}
 		return super.act();
 	}
@@ -96,7 +99,6 @@ public class Blacksmith extends NPC {
 							
 							Quest.given = true;
 							Quest.completed = false;
-							Notes.add( Notes.Landmark.TROLL );
 							
 							Pickaxe pick = new Pickaxe();
 							pick.identify();

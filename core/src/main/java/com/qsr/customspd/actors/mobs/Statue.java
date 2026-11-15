@@ -84,14 +84,6 @@ public class Statue extends Mob {
 	}
 	
 	@Override
-	protected boolean act() {
-		if (levelGenStatue && Dungeon.level.visited[pos]) {
-			Notes.add( Notes.Landmark.STATUE );
-		}
-		return super.act();
-	}
-	
-	@Override
 	public int damageRoll() {
 		return weapon.damageRoll(this);
 	}
@@ -161,9 +153,14 @@ public class Statue extends Mob {
 	}
 	
 	@Override
+	public Notes.Landmark landmark() {
+		return levelGenStatue ? Notes.Landmark.STATUE : null;
+	}
+
+	@Override
 	public void destroy() {
-		if (levelGenStatue) {
-			Notes.remove( Notes.Landmark.STATUE );
+		if (landmark() != null) {
+			Notes.remove( landmark() );
 		}
 		super.destroy();
 	}

@@ -31,9 +31,9 @@ import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.actors.mobs.Mob;
 import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.items.potions.elixirs.ElixirOfFeatherFall;
+import com.qsr.customspd.journal.Notes;
 import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.levels.RegularLevel;
-import com.qsr.customspd.levels.rooms.Room;
 import com.qsr.customspd.levels.rooms.special.WeakFloorRoom;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
@@ -106,9 +106,10 @@ public class Chasm implements Hero.Doom {
 		if (Dungeon.hero.isAlive()) {
 			Dungeon.hero.interrupt();
 			InterlevelScene.mode = InterlevelScene.Mode.FALL;
-			if (Dungeon.level instanceof RegularLevel) {
-				Room room = ((RegularLevel)Dungeon.level).room( pos );
-				InterlevelScene.fallIntoPit = room != null && room instanceof WeakFloorRoom;
+			if (Dungeon.level instanceof RegularLevel &&
+						((RegularLevel)Dungeon.level).room( pos ) instanceof WeakFloorRoom){
+				InterlevelScene.fallIntoPit = true;
+				Notes.remove(Notes.Landmark.DISTANT_WELL);
 			} else {
 				InterlevelScene.fallIntoPit = false;
 			}

@@ -78,6 +78,7 @@ import com.qsr.customspd.items.weapon.missiles.MissileWeapon;
 import com.qsr.customspd.items.weapon.missiles.darts.Dart;
 import com.qsr.customspd.items.weapon.missiles.darts.TippedDart;
 import com.qsr.customspd.journal.Bestiary;
+import com.qsr.customspd.journal.Notes;
 import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.levels.features.Chasm;
 import com.qsr.customspd.messages.Messages;
@@ -1050,6 +1051,12 @@ public abstract class Mob extends Char {
 	public void yell( String str ) {
 		GLog.newLine();
 		GLog.n( "%s: \"%s\" ", Messages.titleCase(name()), str );
+	}
+
+	//some mobs have an associated landmark entry, which is added when the hero sees them
+	//mobs may also remove this landmark in some cases, such as when a quest is complete or they die
+	public Notes.Landmark landmark(){
+		return null;
 	}
 
 	public interface AiState {

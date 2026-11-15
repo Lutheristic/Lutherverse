@@ -172,6 +172,10 @@ public class Dungeon {
 	public static Hero hero;
 	public static Level level;
 
+	//set by a mode that holds an unsaved run across the title screen (Bonfire Mode), so the
+	//journal scene leaves that run alone. In memory only, never bundled.
+	public static boolean runKeptInMemory = false;
+
 	public static QuickSlot quickslot = new QuickSlot();
 	
 	public static int depth;
@@ -361,7 +365,9 @@ public class Dungeon {
 
 	public static long seedForDepth(int depth, String levelName){
 		int lookAhead = depth;
-		if (levelName.equals(String.valueOf(depth))) lookAhead += levelName.hashCode() % 100;
+		//levelName is null out of a run, where the journal still builds bosses that seed
+		//themselves; a null name matches no depth, so seeds in a run are unchanged
+		if (levelName != null && levelName.equals(String.valueOf(depth))) lookAhead += levelName.hashCode() % 100;
 
 		Random.pushGenerator( seed );
 

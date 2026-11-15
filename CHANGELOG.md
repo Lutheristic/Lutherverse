@@ -10,6 +10,16 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 Everything on `main` since the fork base (`cpd-sync-base-2025-08-15`, CPD commit `c97fb83`).
 
+### 2026-11-15: the journal catalog grid and the bestiary
+
+The first two pieces of upstream's v2.5 journal rework.
+
+**Ported**
+- The journal's catalog tab is upstream's grid: a header per catalog and one cell per entry in catalog order. Unseen entries are dark and open a short "not seen yet" popup, seen items show their icon, enchantment and glyph glows carry into the cells, and each sub-tab keeps its scroll position. The tab has its own icon, and the popup text is translated in every language v2.5.4 has it in.
+- The game now keeps a bestiary across runs: every enemy, ally, trap and plant you meet is marked seen, with a count of how often you defeated, triggered or trampled it. Minions that die with their boss are seen but not counted. The bestiary is saved with the journal, and older journals load as empty. It has no page yet; that comes with the next piece.
+- A new badge, Big Game Hunter, unlocks once every rare enemy has been seen, and the Researcher badges now count the bestiary too.
+- The mob spawn rotation moved to its new upstream name. Old saves load as before, and seeded runs spawn the same mobs.
+
 ### 2026-11-14: pack music
 
 **Added**

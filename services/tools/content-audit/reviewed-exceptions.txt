@@ -4,7 +4,7 @@
 # lines starting with `#` are ignored, so each entry can carry a rationale above it.
 #
 # An entry here means the finding is CORRECT FOREVER, not a gap -- e.g. a boss that
-# is placed by its boss level and legitimately never appears in Bestiary. The known
+# is placed by its boss level and legitimately never appears in the MobSpawner rotation. The known
 # backlog of un-triaged findings is NOT listed here; it is parked behind the
 # `--max-findings` ceiling and stays visible in the tool's output as
 # "TRACKED, NOT ACCEPTED". Add an entry ONLY after individually verifying the finding.

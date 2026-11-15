@@ -42,7 +42,7 @@ Either kind:
 
 ## Two knobs
 - `reviewed-exceptions.txt`: permanent, correct exceptions (`Type Name#Check`), like
-  bosses that legitimately never spawn via Bestiary.
+  bosses that legitimately never spawn from the MobSpawner rotation.
 - `--max-findings`: the ratchet ceiling for a known backlog. It is 0 now that the backlog is
   cleared; if a finding ever has to be parked, raise it in CI with a reason and lower it again
   once the content is wired. Findings are always printed.

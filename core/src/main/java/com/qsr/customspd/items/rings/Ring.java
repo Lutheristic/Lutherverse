@@ -79,6 +79,10 @@ public class Ring extends KindofMisc {
 	public static void initGems() {
 		handler = new ItemStatusHandler<>( (Class<? extends Ring>[])Generator.Category.RING.classes, gems );
 	}
+
+	public static void clearGems(){
+		handler = null;
+	}
 	
 	public static void save( Bundle bundle ) {
 		handler.save( bundle );
@@ -113,6 +117,9 @@ public class Ring extends KindofMisc {
 		if (handler != null && handler.contains(this)){
 			image = handler.image(this);
 			gem = handler.label(this);
+		} else {
+			image = GeneralAsset.RING_GARNET;
+			gem = "garnet";
 		}
 	}
 	

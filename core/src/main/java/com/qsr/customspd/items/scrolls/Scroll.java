@@ -107,6 +107,10 @@ public abstract class Scroll extends Item {
 	public static void initLabels() {
 		handler = new ItemStatusHandler<>( (Class<? extends Scroll>[])Generator.Category.SCROLL.classes, runes );
 	}
+
+	public static void clearLabels(){
+		handler = null;
+	}
 	
 	public static void save( Bundle bundle ) {
 		handler.save( bundle );
@@ -154,6 +158,9 @@ public abstract class Scroll extends Item {
 		if (handler != null && handler.contains(this)) {
 			image = handler.image(this);
 			rune = handler.label(this);
+		} else {
+			image = GeneralAsset.SCROLL_KAUNAN;
+			rune = "KAUNAN";
 		}
 	}
 	

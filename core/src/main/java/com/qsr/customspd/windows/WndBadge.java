@@ -26,7 +26,9 @@ import com.qsr.customspd.effects.BadgeBanner;
 import com.qsr.customspd.scenes.PixelScene;
 import com.qsr.customspd.ui.RenderedTextBlock;
 import com.qsr.customspd.ui.Window;
+import com.watabou.input.PointerEvent;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.PointerArea;
 
 public class WndBadge extends Window {
 	
@@ -79,5 +81,14 @@ public class WndBadge extends Window {
 		resize( (int)w, (int)(info.bottom() + MARGIN) );
 		
 		if (unlocked) BadgeBanner.highlight( icon, badge.asset);
+
+		PointerArea blocker = new PointerArea( 0, 0, PixelScene.uiCamera.width, PixelScene.uiCamera.height ) {
+			@Override
+			protected void onClick( PointerEvent event ) {
+				onBackPressed();
+			}
+		};
+		blocker.camera = PixelScene.uiCamera;
+		add(blocker);
 	}
 }

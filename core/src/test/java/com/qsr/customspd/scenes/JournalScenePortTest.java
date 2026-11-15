@@ -115,7 +115,7 @@ class JournalScenePortTest {
 		}
 	}
 
-	// ---- helpers ----
+	// helpers
 
 	private void destroyScene() {
 		if (scene != null) {
@@ -141,12 +141,7 @@ class JournalScenePortTest {
 	}
 
 	private static void setLastIdx(int idx) throws Exception {
-		Field f;
-		try {
-			f = JournalScene.class.getDeclaredField("lastIDX");
-		} catch (NoSuchFieldException e) {
-			return; // the old one-grid badges scene has no tabs to pick
-		}
+		Field f = JournalScene.class.getDeclaredField("lastIDX");
 		f.setAccessible(true);
 		f.setInt(null, idx);
 	}
@@ -255,7 +250,7 @@ class JournalScenePortTest {
 		return read(null, type, "handler");
 	}
 
-	// ---- tests ----
+	// tests
 
 	@Test
 	void theTitleIsAJournalIconTitle() throws Exception {

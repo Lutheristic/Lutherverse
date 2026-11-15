@@ -46,21 +46,31 @@ class OutOfRunItemDefaultsPortTest {
 		return f.get(item);
 	}
 
+	// one test per item family, so a failure in one family never hides another
+
 	@Test
-	void potionsScrollsAndRingsFallBackToTheirFirstLook() throws Exception {
+	void aPotionFallsBackToItsFirstColor() throws Exception {
 		Potion.clearColors();
-		Scroll.clearLabels();
-		Ring.clearGems();
 
 		PotionOfHealing potion = assertDoesNotThrow(() -> new PotionOfHealing());
 		assertEquals(GeneralAsset.POTION_CRIMSON, potion.image);
 		assertEquals("crimson", field(potion, Potion.class, "color"));
 		assertFalse(assertDoesNotThrow(potion::isKnown));
+	}
+
+	@Test
+	void aScrollFallsBackToItsFirstRune() throws Exception {
+		Scroll.clearLabels();
 
 		ScrollOfIdentify scroll = assertDoesNotThrow(() -> new ScrollOfIdentify());
 		assertEquals(GeneralAsset.SCROLL_KAUNAN, scroll.image);
 		assertEquals("KAUNAN", field(scroll, Scroll.class, "rune"));
 		assertFalse(assertDoesNotThrow(scroll::isKnown));
+	}
+
+	@Test
+	void aRingFallsBackToItsFirstGem() throws Exception {
+		Ring.clearGems();
 
 		RingOfHaste ring = assertDoesNotThrow(() -> new RingOfHaste());
 		assertEquals(GeneralAsset.RING_GARNET, ring.image);

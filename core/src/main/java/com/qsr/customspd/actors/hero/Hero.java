@@ -142,6 +142,7 @@ import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.levels.Terrain;
 import com.qsr.customspd.levels.features.Chasm;
 import com.qsr.customspd.levels.features.LevelTransition;
+import com.qsr.customspd.levels.rooms.special.WeakFloorRoom;
 import com.qsr.customspd.levels.traps.Trap;
 import com.qsr.customspd.mechanics.Ballistica;
 import com.qsr.customspd.mechanics.ShadowCaster;
@@ -1583,6 +1584,12 @@ public class Hero extends Char {
 						}
 					}
 					if (found) break;
+				}
+
+				//Clear blobs that only exist for landmarks.
+				// Might want to make this a properly if it's used more
+				if (found && b instanceof WeakFloorRoom.WellID){
+					b.fullyClear();
 				}
 			}
 		}

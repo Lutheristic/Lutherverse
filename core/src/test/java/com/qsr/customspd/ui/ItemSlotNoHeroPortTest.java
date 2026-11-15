@@ -52,19 +52,19 @@ class ItemSlotNoHeroPortTest {
 	void anItemSlotNeedsNoHeroForAKnownWeapon() throws Exception {
 		// a melee weapon's status() reads the hero's belongings, here and upstream alike, so the
 		// weapon case uses a thrown weapon, as the journal does for its missile placeholder
-		ThrowingStone sword = new ThrowingStone();
-		sword.levelKnown = true;
+		ThrowingStone stone = new ThrowingStone();
+		stone.levelKnown = true;
 		ClothArmor armor = new ClothArmor();
 		armor.levelKnown = true;
-		int swordStr = sword.STRReq();
+		int stoneStr = stone.STRReq();
 		int armorStr = armor.STRReq();
 
 		Dungeon.hero = null;
 
 		// ItemSlot.TXT_STRENGTH
-		ItemSlot swordSlot = assertDoesNotThrow(() -> new ItemSlot(sword));
+		ItemSlot stoneSlot = assertDoesNotThrow(() -> new ItemSlot(stone));
 		ItemSlot armorSlot = assertDoesNotThrow(() -> new ItemSlot(armor));
-		assertEquals(Messages.format(":%d", swordStr), extraText(swordSlot));
+		assertEquals(Messages.format(":%d", stoneStr), extraText(stoneSlot));
 		assertEquals(Messages.format(":%d", armorStr), extraText(armorSlot));
 	}
 

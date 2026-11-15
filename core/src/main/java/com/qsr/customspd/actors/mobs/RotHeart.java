@@ -27,6 +27,7 @@ import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.blobs.Blob;
 import com.qsr.customspd.actors.blobs.ToxicGas;
 import com.qsr.customspd.actors.buffs.Burning;
+import com.qsr.customspd.journal.Bestiary;
 import com.qsr.customspd.plants.Rotberry;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.sprites.RotHeartSprite;
@@ -86,11 +87,13 @@ public class RotHeart extends Mob {
 	@Override
 	public void destroy() {
 		super.destroy();
+		Bestiary.skipCountingEncounters = true;
 		for (Mob mob : Dungeon.level.mobs.toArray(new Mob[Dungeon.level.mobs.size()])){
 			if (mob instanceof RotLasher){
 				mob.die(null);
 			}
 		}
+		Bestiary.skipCountingEncounters = false;
 	}
 
 	@Override

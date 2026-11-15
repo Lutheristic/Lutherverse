@@ -39,6 +39,7 @@ import com.qsr.customspd.effects.TargetedCell;
 import com.qsr.customspd.effects.particles.PurpleParticle;
 import com.qsr.customspd.effects.particles.ShadowParticle;
 import com.qsr.customspd.items.artifacts.DriedRose;
+import com.qsr.customspd.journal.Bestiary;
 import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.mechanics.Ballistica;
 import com.qsr.customspd.messages.Messages;
@@ -506,11 +507,13 @@ public class YogDzewa extends Mob {
 	@Override
 	public void die( Object cause ) {
 
+		Bestiary.skipCountingEncounters = true;
 		for (Mob mob : (Iterable<Mob>)Dungeon.level.mobs.clone()) {
 			if (mob instanceof Larva || mob instanceof YogRipper || mob instanceof YogEye || mob instanceof YogScorpio) {
 				mob.die( cause );
 			}
 		}
+		Bestiary.skipCountingEncounters = false;
 
 		updateVisibility(Dungeon.level);
 

@@ -8,6 +8,7 @@ import com.qsr.customspd.scenes.PixelScene;
 import com.qsr.customspd.test.HeadlessRun;
 import com.qsr.customspd.windows.WndBadge;
 import com.watabou.gltextures.TextureCache;
+import com.watabou.input.GameAction;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.BitmapText;
@@ -27,6 +28,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -50,6 +52,10 @@ class BadgesUiPortTest {
 	private Camera priorMain;
 	private int priorZoom;
 	private Object priorGlobal;
+	private Camera priorUiCamera;
+	private PlatformSupport priorPlatform;
+	private LinkedHashMap<Integer, GameAction> priorBindings;
+	private LinkedHashMap<Integer, GameAction> priorControllerBindings;
 	private Scene scene;
 
 	@BeforeEach
@@ -60,6 +66,10 @@ class BadgesUiPortTest {
 		priorMain = Camera.main;
 		priorZoom = PixelScene.defaultZoom;
 		priorGlobal = field(Badges.class, "global").get(null);
+		priorUiCamera = PixelScene.uiCamera;
+		priorPlatform = Game.platform;
+		priorBindings = KeyBindings.getAllBindings();
+		priorControllerBindings = KeyBindings.getAllControllerBindings();
 		// PixelScene.align divides by this; the game sets it from the display at startup
 		PixelScene.defaultZoom = 1;
 		new Game(null, null);
@@ -92,6 +102,10 @@ class BadgesUiPortTest {
 			Camera.main = priorMain;
 			PixelScene.defaultZoom = priorZoom;
 			Game.instance = priorInstance;
+			PixelScene.uiCamera = priorUiCamera;
+			Game.platform = priorPlatform;
+			KeyBindings.setAllBindings(priorBindings);
+			KeyBindings.setAllControllerBindings(priorControllerBindings);
 		} finally {
 			run.close();
 		}

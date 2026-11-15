@@ -132,6 +132,24 @@ class NotesRecordModelTest {
 	}
 
 	@Test
+	void perFloorGetterSortsAnUnsortedRestore() throws IOException {
+		Bundle keyHolder = new Bundle();
+		keyHolder.put("key", new IronKey("4"));
+		String json = "{\"records\":["
+				+ "{\"__className\":\"" + Notes.KeyRecord.class.getName() + "\","
+				+ "\"key\":" + keyHolder.getBundle("key").toString() + "},"
+				+ landmarkJson("STATUE", "4") + ","
+				+ landmarkJson("ALCHEMY", "4")
+				+ "]}";
+		Notes.restoreFromBundle(Bundle.read(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8))));
+
+		assertEquals(Arrays.asList("IronKey@4", "STATUE@4", "ALCHEMY@4"),
+				describe(Notes.getRecords(Notes.Record.class)), "restore keeps the stored order");
+		assertEquals(Arrays.asList("ALCHEMY@4", "STATUE@4", "IronKey@4"), describe(Notes.getRecords("4")),
+				"the per-floor getter sorts by order() even when the global list is unsorted");
+	}
+
+	@Test
 	void oldSaveFormatRestores() throws IOException {
 		Bundle keyHolder = new Bundle();
 		keyHolder.put("key", new IronKey("4"));

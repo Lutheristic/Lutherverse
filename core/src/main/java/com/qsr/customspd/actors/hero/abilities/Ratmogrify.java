@@ -40,6 +40,7 @@ import com.qsr.customspd.effects.Speck;
 import com.qsr.customspd.items.armor.ClassArmor;
 import com.qsr.customspd.items.artifacts.MasterThievesArmband;
 import com.qsr.customspd.items.scrolls.ScrollOfTeleportation;
+import com.qsr.customspd.journal.Bestiary;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
 import com.qsr.customspd.sprites.RatSprite;
@@ -267,6 +268,8 @@ public class Ratmogrify extends ArmorAbility {
 			allied = true;
 			alignment = Alignment.ALLY;
 			timeLeft = Float.POSITIVE_INFINITY;
+			Bestiary.setSeen(original.getClass());
+			Bestiary.countEncounter(original.getClass());
 		}
 
 		public int attackSkill(Char target) {
@@ -296,6 +299,15 @@ public class Ratmogrify extends ArmorAbility {
 			if (original != null) {
 				original.pos = pos;
 				original.rollToDropLoot();
+			}
+		}
+
+		@Override
+		public void destroy() {
+			super.destroy();
+			if (alignment == Alignment.ENEMY && original != null) {
+				Bestiary.setSeen(original.getClass());
+				Bestiary.countEncounter(original.getClass());
 			}
 		}
 

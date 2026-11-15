@@ -77,6 +77,7 @@ import com.qsr.customspd.items.weapon.melee.MagesStaff;
 import com.qsr.customspd.items.weapon.missiles.MissileWeapon;
 import com.qsr.customspd.items.weapon.missiles.darts.Dart;
 import com.qsr.customspd.items.weapon.missiles.darts.TippedDart;
+import com.qsr.customspd.journal.Bestiary;
 import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.levels.features.Chasm;
 import com.qsr.customspd.messages.Messages;
@@ -801,6 +802,8 @@ public abstract class Mob extends Char {
 				Statistics.enemiesSlain++;
 				Badges.validateMonstersSlain();
 				Statistics.qualifiedForNoKilling = false;
+				Bestiary.setSeen(getClass());
+				Bestiary.countEncounter(getClass());
 
 				AscensionChallenge.processEnemyKill(this);
 				

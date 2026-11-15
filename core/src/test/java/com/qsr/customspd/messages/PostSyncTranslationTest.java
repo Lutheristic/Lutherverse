@@ -478,6 +478,26 @@ class PostSyncTranslationTest {
 		}
 	}
 
+	// v2.5.4 replaced the badges scene with the journal scene, so no file may keep the old keys.
+	// Its French journal lines, French badges tab title and Belarusian badges tab counters are only
+	// the English, so those show English.
+	@Test
+	void journalSceneAndBadgesTabShipInEveryLanguage() throws IOException {
+		for (Map.Entry<Languages, ObjectMap<String, String>> e : translatedBundles(Assets.Messages.SCENES).entrySet()) {
+			for (String old : new String[]{"scenes.badgesscene.title", "scenes.titlescene.badges"}) {
+				assertNull(e.getValue().get(old), e.getKey() + " still carries " + old);
+			}
+		}
+		assertTranslatedEverywhere(Assets.Messages.SCENES, "scenes.journalscene.title", Languages.FRENCH);
+		assertTranslatedEverywhere(Assets.Messages.SCENES, "scenes.titlescene.journal", Languages.FRENCH);
+		assertV254Line(Assets.Messages.SCENES, Languages.BELARUSIAN, "scenes.journalscene.title", "Запісы");
+		assertV254Line(Assets.Messages.SCENES, Languages.BELARUSIAN, "scenes.titlescene.journal", "Запісы");
+		assertTranslatedEverywhere(Assets.Messages.WINDOWS, "windows.wndjournal$badgestab.title", Languages.FRENCH);
+		assertTranslatedEverywhere(Assets.Messages.WINDOWS, "windows.wndjournal$badgestab.title_main_menu");
+		assertTranslatedEverywhere(Assets.Messages.WINDOWS, "windows.wndjournal$badgestab.this_run", Languages.BELARUSIAN);
+		assertTranslatedEverywhere(Assets.Messages.WINDOWS, "windows.wndjournal$badgestab.overall", Languages.BELARUSIAN);
+	}
+
 	// Both English texts changed. Greek and Turkish v2.5.4 lines for the stone, the Turkish
 	// alchemize line and both Belarusian lines are only the English, so those show English; French
 	// and Italian are spot checks that the new lines arrived.

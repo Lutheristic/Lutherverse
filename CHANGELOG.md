@@ -32,6 +32,7 @@ The fourth batch from the check of Slice 1 commits against v2.5.4.
 - Fewer allocations every frame: the lost inventory check is cached, and the status bar, arcs, cell selector and game log do less work when nothing changed. The alchemy screen reads the same cached check.
 - The catalog records enchantments and glyphs in their own sections and counts how often each item is used. The journal popup shows the count. Cleansing an enchantment or glyph no longer crashes, stones used from the inventory always count, sandals upgrades count and upgrade scrolls count once. Opening a ranking no longer marks that run's enchantments and glyphs as seen.
 - The update check skips releases this device or build can't run.
+- The display settings have a screen shake slider, from off to twice the default. At the default, shakes are twice as strong as before, which is how upstream has them.
 - The new and changed lines take v2.5.4's translations, and where upstream's line is only the English, the English shows.
 
 ### 2026-11-12: missed upstream fixes for rooms, the corpse dust quest, traps, bombs, hero abilities and text, plus Belarusian

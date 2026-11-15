@@ -89,10 +89,10 @@ class WndJournalTabsTest {
 	@Test
 	void hoverTextIsEachTabTitle() throws Exception {
 		List<Button> tabs = tabs(open());
-		assertEquals(4, tabs.size());
+		assertEquals(5, tabs.size());
 		Method hover = Button.class.getDeclaredMethod("hoverText");
 		hover.setAccessible(true);
-		String[] expected = {"Adventuring Notes", "Dungeon Guide", "Alchemy Guide", "Catalogs"};
+		String[] expected = {"Adventuring Notes", "Dungeon Guide", "Alchemy Guide", "Catalogs", "Badges"};
 		for (int i = 0; i < expected.length; i++) {
 			assertEquals(expected[i], hover.invoke(tabs.get(i)), "tab " + i + " hover text");
 		}

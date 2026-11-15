@@ -32,6 +32,7 @@ import com.qsr.customspd.ui.RenderedTextBlock;
 import com.qsr.customspd.ui.Tooltip;
 import com.qsr.customspd.ui.Window;
 import com.qsr.customspd.utils.Holiday;
+import com.qsr.customspd.windows.WndJournal;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.glwrap.Blending;
 import com.watabou.input.ControllerHandler;
@@ -382,6 +383,9 @@ public class PixelScene extends Scene {
 						banner.y = align(uiCamera, (uiCamera.height - banner.height) / 2 - banner.height / 2 - 16 - offset);
 						left += BadgeBanner.SIZE * BadgeBanner.DEFAULT_SCALE;
 					}
+
+					WndJournal.last_index = 4;
+					WndJournal.BadgesTab.global = badge.type != Badges.BadgeType.LOCAL;
 
 				}
 			}

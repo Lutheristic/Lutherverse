@@ -208,7 +208,7 @@ class WndJournalLoreTest {
 	void theJournalHasFourTabsAndNoLoreTab() throws Exception {
 		open(0);
 		List<?> tabs = (List<?>) field(WndTabbed.class, "tabs").get(wnd);
-		assertEquals(4, tabs.size(), "guide, alchemy, notes and catalog");
+		assertEquals(5, tabs.size(), "guide, alchemy, notes, catalog and badges");
 		assertThrows(ClassNotFoundException.class,
 				() -> Class.forName("com.qsr.customspd.windows.WndJournal$LoreTab"));
 	}

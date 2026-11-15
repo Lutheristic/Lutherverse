@@ -21,6 +21,7 @@
 
 package com.qsr.customspd.windows;
 
+import com.qsr.customspd.Badges;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.SPDAction;
 import com.qsr.customspd.ShatteredPixelDungeon;
@@ -55,12 +56,15 @@ import com.qsr.customspd.scenes.PixelScene;
 import com.qsr.customspd.sprites.CharSprite;
 import com.qsr.customspd.sprites.ItemSprite;
 import com.qsr.customspd.tiles.TerrainFeaturesTilemap;
+import com.qsr.customspd.ui.BadgesGrid;
+import com.qsr.customspd.ui.BadgesList;
 import com.qsr.customspd.ui.QuickRecipe;
 import com.qsr.customspd.ui.RedButton;
 import com.qsr.customspd.ui.RenderedTextBlock;
 import com.qsr.customspd.ui.ScrollPane;
 import com.qsr.customspd.ui.ScrollingGridPane;
 import com.qsr.customspd.ui.ScrollingListPane;
+import com.qsr.customspd.ui.Window;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
 import com.watabou.noosa.BitmapText;
@@ -92,6 +96,7 @@ public class WndJournal extends WndTabbed {
 	private AlchemyTab alchemyTab;
 	private NotesTab notesTab;
 	private CatalogTab catalogTab;
+	private BadgesTab badgesTab;
 
 	public static int last_index = 0;
 
@@ -120,6 +125,11 @@ public class WndJournal extends WndTabbed {
 		add(catalogTab);
 		catalogTab.setRect(0, 0, width, height);
 		catalogTab.updateList();
+
+		badgesTab = new BadgesTab();
+		add(badgesTab);
+		badgesTab.setRect(0, 0, width, height);
+		badgesTab.updateList();
 
 		Tab[] tabs = {
 				new IconTab( new Image(Asset.getAssetFilePath(GeneralAsset.ICON_JOURNAL)) ) {
@@ -169,6 +179,18 @@ public class WndJournal extends WndTabbed {
 					protected String hoverText() {
 						return Messages.get(catalogTab, "title");
 					}
+				},
+				new IconTab( new Image(Asset.getAssetFilePath(GeneralAsset.ICON_BADGES)) ) {
+					protected void select( boolean value ) {
+						super.select( value );
+						badgesTab.active = badgesTab.visible = value;
+						if (value) last_index = 4;
+					}
+
+					@Override
+					protected String hoverText() {
+						return Messages.get(badgesTab, "title");
+					}
 				}
 		};
 
@@ -213,10 +235,10 @@ public class WndJournal extends WndTabbed {
 		@Override
 		protected void layout() {
 			super.layout();
-			list.setRect( 0, 0, width, height);
+			list.setRect( x, y, width, height);
 		}
 
-		private void updateList(){
+		public void updateList(){
 			list.addTitle(Document.ADVENTURERS_GUIDE.title());
 
 			for (String page : Document.ADVENTURERS_GUIDE.pageNames()){
@@ -229,7 +251,7 @@ public class WndJournal extends WndTabbed {
 					@Override
 					public boolean onClick(float x, float y) {
 						if (inside( x, y ) && found) {
-							GameScene.show( new WndStory( Document.ADVENTURERS_GUIDE.pageSprite(page),
+							ShatteredPixelDungeon.scene().addToFront( new WndStory( Document.ADVENTURERS_GUIDE.pageSprite(page),
 									Document.ADVENTURERS_GUIDE.pageTitle(page),
 									Document.ADVENTURERS_GUIDE.pageBody(page) ));
 							Document.ADVENTURERS_GUIDE.readPage(page);
@@ -574,16 +596,19 @@ public class WndJournal extends WndTabbed {
 			float buttonWidth = width()/perRow;
 
 			for (int i = 0; i < NUM_BUTTONS; i++) {
-				itemButtons[i].setRect((i%perRow) * (buttonWidth), (i/perRow) * (ITEM_HEIGHT ),
+				itemButtons[i].setRect(x +(i%perRow) * (buttonWidth),
+						y + (i/perRow) * (ITEM_HEIGHT ),
 						buttonWidth, ITEM_HEIGHT);
 				PixelScene.align(itemButtons[i]);
 			}
 
-			grid.setRect(0, itemButtons[NUM_BUTTONS-1].bottom() + 1, width,
-					height - itemButtons[NUM_BUTTONS-1].bottom() - 1);
+			grid.setRect(x,
+					itemButtons[NUM_BUTTONS-1].bottom() + 1,
+					width,
+					height - itemButtons[NUM_BUTTONS-1].height() - 1);
 		}
 
-		private void updateList() {
+		public void updateList() {
 
 			grid.clear();
 
@@ -688,7 +713,7 @@ public class WndJournal extends WndTabbed {
 			}
 
 			grid.setRect(x, itemButtons[NUM_BUTTONS-1].bottom() + 1, width,
-					height - itemButtons[NUM_BUTTONS-1].bottom() - 1);
+					height - itemButtons[NUM_BUTTONS-1].height() - 1);
 
 			grid.scrollTo(0, scrollPositions[currentItemIdx]);
 		}
@@ -1010,6 +1035,91 @@ public class WndJournal extends WndTabbed {
 			}
 			grid.addItem(gridItem);
 		}
+	}
+
+	public static class BadgesTab extends Component {
+
+		private RedButton btnLocal;
+		private RedButton btnGlobal;
+
+		private RenderedTextBlock title;
+
+		private Component badgesLocal;
+		private Component badgesGlobal;
+
+		public static boolean global = false;
+
+		@Override
+		protected void createChildren() {
+
+			if (Dungeon.hero != null) {
+				btnLocal = new RedButton(Messages.get(this, "this_run")) {
+					@Override
+					protected void onClick() {
+						super.onClick();
+						global = false;
+						updateList();
+					}
+				};
+				btnLocal.icon(new Image(Asset.getAssetFilePath(GeneralAsset.ICON_BADGES)));
+				add(btnLocal);
+
+				btnGlobal = new RedButton(Messages.get(this, "overall")) {
+					@Override
+					protected void onClick() {
+						super.onClick();
+						global = true;
+						updateList();
+					}
+				};
+				btnGlobal.icon(new Image(Asset.getAssetFilePath(GeneralAsset.ICON_BADGES)));
+				add(btnGlobal);
+
+				if (Badges.filterReplacedBadges(false).size() <= 8){
+					badgesLocal = new BadgesList(false);
+				} else {
+					badgesLocal = new BadgesGrid(false);
+				}
+				add( badgesLocal );
+			} else {
+				title = PixelScene.renderTextBlock(Messages.get(this, "title_main_menu"), 9);
+				title.hardlight(Window.TITLE_COLOR);
+				add(title);
+			}
+
+			badgesGlobal = new BadgesGrid(true);
+			add( badgesGlobal );
+		}
+
+		@Override
+		protected void layout() {
+			super.layout();
+
+			if (btnLocal != null) {
+				btnLocal.setRect(x, y, width / 2, 18);
+				btnGlobal.setRect(x + width / 2, y, width / 2, 18);
+
+				badgesLocal.setRect(x, y + 20, width, height-20);
+				badgesGlobal.setRect( x, y + 20, width, height-20);
+			} else {
+				title.setPos( x + (width - title.width())/2, y + (12-title.height())/2);
+
+				badgesGlobal.setRect( x, y + 14, width, height-14);
+			}
+		}
+
+		private void updateList(){
+			if (btnLocal != null) {
+				badgesLocal.visible = badgesLocal.active = !global;
+				badgesGlobal.visible = badgesGlobal.active = global;
+
+				btnLocal.textColor(global ? Window.WHITE : Window.TITLE_COLOR);
+				btnGlobal.textColor(global ? Window.TITLE_COLOR : Window.WHITE);
+			} else {
+				badgesGlobal.visible = badgesGlobal.active = true;
+			}
+		}
+
 	}
 
 }

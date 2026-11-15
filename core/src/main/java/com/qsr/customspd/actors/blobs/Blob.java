@@ -24,6 +24,7 @@ package com.qsr.customspd.actors.blobs;
 import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.actors.Actor;
 import com.qsr.customspd.effects.BlobEmitter;
+import com.qsr.customspd.journal.Notes;
 import com.qsr.customspd.levels.Level;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Rect;
@@ -221,6 +222,12 @@ public class Blob extends Actor {
 
 	public void onBuildFlagMaps( Level l ){
 		//do nothing by default, only some blobs affect flags
+	}
+
+	//some blobs have an associated landmark entry, which is added when the hero sees them
+	//blobs may also remove this landmark in some cases, such as when they expire or are consumed
+	public Notes.Landmark landmark(){
+		return null;
 	}
 	
 	public String tileDesc() {

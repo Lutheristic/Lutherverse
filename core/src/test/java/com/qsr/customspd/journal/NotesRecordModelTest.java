@@ -198,7 +198,7 @@ class NotesRecordModelTest {
 			assertSame(texture(GeneralAsset.ICON_GRASS),
 					new Notes.LandmarkRecord(Notes.Landmark.GARDEN, "1").icon().texture);
 			assertEquals(Messages.get(Notes.Landmark.class, "well_of_health"), well.title());
-			assertEquals("", well.desc());
+			assertEquals(Messages.get(com.qsr.customspd.actors.blobs.WaterOfHealth.class, "desc"), well.desc());
 
 			IronKey key = new IronKey("1");
 			Notes.KeyRecord rec = new Notes.KeyRecord(key);

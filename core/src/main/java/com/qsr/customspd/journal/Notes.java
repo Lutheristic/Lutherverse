@@ -22,10 +22,25 @@
 package com.qsr.customspd.journal;
 
 import com.qsr.customspd.Dungeon;
+import com.qsr.customspd.actors.blobs.Foliage;
+import com.qsr.customspd.actors.blobs.SacrificialFire;
+import com.qsr.customspd.actors.blobs.WaterOfAwareness;
+import com.qsr.customspd.actors.blobs.WaterOfHealth;
+import com.qsr.customspd.actors.mobs.DemonSpawner;
+import com.qsr.customspd.actors.mobs.Statue;
+import com.qsr.customspd.actors.mobs.npcs.Blacksmith;
+import com.qsr.customspd.actors.mobs.npcs.Ghost;
+import com.qsr.customspd.actors.mobs.npcs.Imp;
+import com.qsr.customspd.actors.mobs.npcs.ImpShopkeeper;
+import com.qsr.customspd.actors.mobs.npcs.RatKing;
+import com.qsr.customspd.actors.mobs.npcs.Shopkeeper;
+import com.qsr.customspd.actors.mobs.npcs.Wandmaker;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.Generator;
 import com.qsr.customspd.items.keys.Key;
+import com.qsr.customspd.levels.Level;
+import com.qsr.customspd.levels.rooms.special.WeakFloorRoom;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.modding.LevelScheme;
 import com.qsr.customspd.scenes.PixelScene;
@@ -33,9 +48,12 @@ import com.qsr.customspd.sprites.BlacksmithSprite;
 import com.qsr.customspd.sprites.GhostSprite;
 import com.qsr.customspd.sprites.ImpSprite;
 import com.qsr.customspd.sprites.ItemSprite;
+import com.qsr.customspd.sprites.RatKingSprite;
+import com.qsr.customspd.sprites.ShopkeeperSprite;
 import com.qsr.customspd.sprites.SpawnerSprite;
 import com.qsr.customspd.sprites.StatueSprite;
 import com.qsr.customspd.sprites.WandmakerSprite;
+import com.qsr.customspd.ui.IconUtils;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.Visual;
@@ -113,24 +131,30 @@ public class Notes {
 	}
 	
 	public enum Landmark {
-		WELL_OF_HEALTH,
-		WELL_OF_AWARENESS,
+		CHASM_FLOOR,
+		WATER_FLOOR,
+		GRASS_FLOOR,
+		DARK_FLOOR,
+		LARGE_FLOOR,
+		TRAPS_FLOOR,
+		SECRETS_FLOOR,
+
+		SHOP,
 		ALCHEMY,
 		GARDEN,
-		STATUE,
+		DISTANT_WELL,
+		WELL_OF_HEALTH,
+		WELL_OF_AWARENESS,
 		SACRIFICIAL_FIRE,
-		SHOP,
-		
+		STATUE,
+
 		GHOST,
+		RAT_KING,
 		WANDMAKER,
 		TROLL,
 		IMP,
 
 		DEMON_SPAWNER;
-		
-		public String title() {
-			return Messages.get(this, name());
-		}
 	}
 	
 	public static class LandmarkRecord extends Record {
@@ -150,23 +174,43 @@ public class Notes {
 				default:
 					return super.icon();
 
-				case WELL_OF_HEALTH:
-					return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_WELL_HEALTH));
-				case WELL_OF_AWARENESS:
-					return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_WELL_AWARENESS));
+				case CHASM_FLOOR:
+					return IconUtils.getLarge(Level.Feeling.CHASM);
+				case WATER_FLOOR:
+					return IconUtils.getLarge(Level.Feeling.WATER);
+				case GRASS_FLOOR:
+					return IconUtils.getLarge(Level.Feeling.GRASS);
+				case DARK_FLOOR:
+					return IconUtils.getLarge(Level.Feeling.DARK);
+				case LARGE_FLOOR:
+					return IconUtils.getLarge(Level.Feeling.LARGE);
+				case TRAPS_FLOOR:
+					return IconUtils.getLarge(Level.Feeling.TRAPS);
+				case SECRETS_FLOOR:
+					return IconUtils.getLarge(Level.Feeling.SECRETS);
+
+				case SHOP:
+					if (isImpShop())    return new Image(new ImpSprite());
+					else                return new Image(new ShopkeeperSprite());
 				case ALCHEMY:
 					return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_ALCHEMY));
 				case GARDEN:
 					return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_GRASS));
-				case STATUE:
-					return new Image(new StatueSprite());
+				case DISTANT_WELL:
+					return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_DISTANT_WELL));
+				case WELL_OF_HEALTH:
+					return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_WELL_HEALTH));
+				case WELL_OF_AWARENESS:
+					return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_WELL_AWARENESS));
 				case SACRIFICIAL_FIRE:
 					return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_SACRIFICE_ALTAR));
-				case SHOP:
-					return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_GOLD));
+				case STATUE:
+					return new Image(new StatueSprite());
 
 				case GHOST:
 					return new Image(new GhostSprite());
+				case RAT_KING:
+					return new Image(new RatKingSprite());
 				case WANDMAKER:
 					return new Image(new WandmakerSprite());
 				case TROLL:
@@ -181,12 +225,59 @@ public class Notes {
 
 		@Override
 		public String title() {
-			return landmark.title();
+			switch (landmark) {
+				default:            return Messages.get(Landmark.class, landmark.name());
+				case CHASM_FLOOR:   return Messages.get(Level.Feeling.class, "chasm_title");
+				case WATER_FLOOR:   return Messages.get(Level.Feeling.class, "water_title");
+				case GRASS_FLOOR:   return Messages.get(Level.Feeling.class, "grass_title");
+				case DARK_FLOOR:    return Messages.get(Level.Feeling.class, "dark_title");
+				case LARGE_FLOOR:   return Messages.get(Level.Feeling.class, "large_title");
+				case TRAPS_FLOOR:   return Messages.get(Level.Feeling.class, "traps_title");
+				case SECRETS_FLOOR: return Messages.get(Level.Feeling.class, "secrets_title");
+			}
 		}
 
 		@Override
 		public String desc() {
-			return "";
+			switch (landmark) {
+				default:            return "";
+
+				case CHASM_FLOOR:   return Messages.get(Level.Feeling.class, "chasm_desc");
+				case WATER_FLOOR:   return Messages.get(Level.Feeling.class, "water_desc");
+				case GRASS_FLOOR:   return Messages.get(Level.Feeling.class, "grass_desc");
+				case DARK_FLOOR:    return Messages.get(Level.Feeling.class, "dark_desc");
+				case LARGE_FLOOR:   return Messages.get(Level.Feeling.class, "large_desc");
+				case TRAPS_FLOOR:   return Messages.get(Level.Feeling.class, "traps_desc");
+				case SECRETS_FLOOR: return Messages.get(Level.Feeling.class, "secrets_desc");
+
+				case SHOP:
+					if (isImpShop())    return Messages.get(ImpShopkeeper.class, "desc");
+					else                return Messages.get(Shopkeeper.class, "desc");
+				case ALCHEMY:           return Messages.get(Level.class, "alchemy_desc");
+				case GARDEN:            return Messages.get(Foliage.class, "desc");
+				case DISTANT_WELL:      return Messages.get(WeakFloorRoom.HiddenWell.class, "desc");
+				case WELL_OF_HEALTH:    return Messages.get(WaterOfHealth.class, "desc");
+				case WELL_OF_AWARENESS: return Messages.get(WaterOfAwareness.class, "desc");
+				case SACRIFICIAL_FIRE:  return Messages.get(SacrificialFire.class, "desc");
+				case STATUE:            return Messages.get(Statue.class, "desc");
+
+				case GHOST:         return Messages.get(Ghost.class, "desc");
+				case RAT_KING:      return Messages.get(RatKing.class, "desc");
+				case WANDMAKER:     return Messages.get(Wandmaker.class, "desc");
+				case TROLL:         return Messages.get(Blacksmith.class, "desc");
+				case IMP:           return Messages.get(Imp.class, "desc");
+
+				case DEMON_SPAWNER: return Messages.get(DemonSpawner.class, "desc");
+			}
+		}
+
+		//upstream checks depth 20; here the imp shop is any floor built as an imp shop level
+		private boolean isImpShop(){
+			if (Dungeon.layout == null) return false;
+			LevelScheme s = Dungeon.layout.getDungeon().get(levelName());
+			if (s == null) return false;
+			String l = s.getLayout();
+			return "CityBossLevel".equals(l) || "LastShopLevel".equals(l);
 		}
 
 		@Override
@@ -325,6 +416,10 @@ public class Notes {
 		return false;
 	}
 	
+	public static boolean contains( Landmark landmark ){
+		return records.contains(new LandmarkRecord(landmark, Dungeon.levelName));
+	}
+
 	public static boolean remove( Landmark landmark ) {
 		return records.remove( new LandmarkRecord(landmark, Dungeon.levelName) );
 	}

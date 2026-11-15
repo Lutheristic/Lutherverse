@@ -40,6 +40,7 @@ import com.qsr.customspd.items.potions.Potion;
 import com.qsr.customspd.items.remains.RemainsItem;
 import com.qsr.customspd.items.scrolls.Scroll;
 import com.qsr.customspd.items.weapon.melee.MeleeWeapon;
+import com.qsr.customspd.journal.Bestiary;
 import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.journal.Document;
 import com.qsr.customspd.messages.Messages;
@@ -158,6 +159,7 @@ public class Badges {
 		BOSS_SLAIN_4                ( GeneralAsset.BOSS_SLAIN_4 ),
 		ALL_RINGS_IDENTIFIED        , //still exists internally for pre-2.5 saves
 		ALL_ARTIFACTS_IDENTIFIED    , //still exists internally for pre-2.5 saves
+		ALL_RARE_ENEMIES            ( GeneralAsset.ALL_RARE_ENEMIES, BadgeType.JOURNAL ),
 		DEATH_FROM_GRIM_TRAP        ( GeneralAsset.DEATH_FROM_GRIM_TRAP ), //also disintegration traps
 		VICTORY                     ( GeneralAsset.VICTORY ),
 		BOSS_CHALLENGE_1            ( GeneralAsset.BOSS_CHALLENGE_1 ),
@@ -624,6 +626,11 @@ public class Badges {
 			totalThings += cat.totalItems();
 		}
 
+		for (Bestiary cat : Bestiary.values()){
+			totalSeen += cat.totalSeen();
+			totalThings += cat.totalEntities();
+		}
+
 		for (Document doc : Document.values()){
 			if (!doc.isLoreDoc()) {
 				for (String page : doc.pageNames()){
@@ -677,6 +684,10 @@ public class Badges {
 				&& Dungeon.hero != null && Dungeon.hero.isAlive()){
 			local.add(Badge.CATALOG_POTIONS_SCROLLS);
 			displayBadge(Badge.CATALOG_POTIONS_SCROLLS);
+		}
+
+		if (Bestiary.RARE.totalEntities() == Bestiary.RARE.totalSeen()){
+			displayBadge(Badge.ALL_RARE_ENEMIES);
 		}
 
 		if (Document.HALLS_KING.isPageRead(Document.KING_ATTRITION)){

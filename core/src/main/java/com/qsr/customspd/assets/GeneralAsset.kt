@@ -92,6 +92,7 @@ enum class GeneralAsset(override val path: String) : Asset {
     ALL_BAGS_BOUGHT("interfaces/badges/all_bags_bought.png"),
     ALL_ITEMS_IDENTIFIED("interfaces/badges/all_items_identified.png"),
     ALL_POTIONS_IDENTIFIED("interfaces/badges/all_potions_identified.png"),
+    ALL_RARE_ENEMIES("interfaces/badges/all_rare_enemies.png"),
     ALL_RINGS_IDENTIFIED("interfaces/badges/all_rings_identified.png"),
     ALL_SCROLLS_IDENTIFIED("interfaces/badges/all_scrolls_identified.png"),
     ALL_WANDS_IDENTIFIED("interfaces/badges/all_wands_identified.png"),

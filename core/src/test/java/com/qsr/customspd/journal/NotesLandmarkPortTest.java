@@ -21,9 +21,18 @@ import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.levels.rooms.special.WeakFloorRoom;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.modding.DungeonLayout;
+import com.qsr.customspd.sprites.BlacksmithSprite;
+import com.qsr.customspd.sprites.GhostSprite;
+import com.qsr.customspd.sprites.ImpSprite;
+import com.qsr.customspd.sprites.RatKingSprite;
+import com.qsr.customspd.sprites.ShopkeeperSprite;
+import com.qsr.customspd.sprites.SpawnerSprite;
+import com.qsr.customspd.sprites.StatueSprite;
+import com.qsr.customspd.sprites.WandmakerSprite;
 import com.qsr.customspd.test.HeadlessRun;
 import com.qsr.customspd.test.SaveRoundtrip;
 import com.watabou.gltextures.TextureCache;
+import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 import kotlinx.serialization.json.Json;
 import org.junit.jupiter.api.AfterEach;
@@ -96,17 +105,34 @@ class NotesLandmarkPortTest {
 		expected.put("IMP", Messages.get(Imp.class, "desc"));
 		expected.put("DEMON_SPAWNER", Messages.get(DemonSpawner.class, "desc"));
 
+		//English titles from v2.5.4's journal.properties block
+		Map<String, String> titles = new LinkedHashMap<>();
+		titles.put("SHOP", "shop");
+		titles.put("ALCHEMY", "alchemy pot");
+		titles.put("GARDEN", "garden");
+		titles.put("DISTANT_WELL", "distant well");
+		titles.put("WELL_OF_HEALTH", "well of health");
+		titles.put("WELL_OF_AWARENESS", "well of awareness");
+		titles.put("SACRIFICIAL_FIRE", "sacrificial fire");
+		titles.put("STATUE", "animated statue");
+		titles.put("GHOST", "sad ghost");
+		titles.put("RAT_KING", "rat king");
+		titles.put("WANDMAKER", "old wandmaker");
+		titles.put("TROLL", "troll blacksmith");
+		titles.put("IMP", "ambitious imp");
+		titles.put("DEMON_SPAWNER", "demon spawner");
+		assertEquals(titles.keySet(), expected.keySet());
+
 		for (Map.Entry<String, String> e : expected.entrySet()) {
 			Notes.LandmarkRecord rec = new Notes.LandmarkRecord(lm(e.getKey()), "3");
-			String title = rec.title();
-			assertFalse(title.startsWith("journal.notes$landmark."), e.getKey() + " title is the missing-key fallback: " + title);
-			assertFalse(e.getValue().contains("actors.") || e.getValue().contains("levels."),
-					e.getKey() + " source key is missing: " + e.getValue());
+			//Messages walks up to Object when a key is missing, so the fallback reads java.lang.object.*
+			assertEquals(titles.get(e.getKey()), rec.title(), e.getKey() + " title");
+			assertFalse(e.getValue().startsWith("java.lang."), e.getKey() + " source key is missing: " + e.getValue());
 			assertEquals(e.getValue(), rec.desc(), e.getKey() + " desc");
+			assertFalse(rec.desc().startsWith("java.lang."), e.getKey() + " desc is the missing-key fallback: " + rec.desc());
+			assertFalse(rec.desc().isEmpty(), e.getKey() + " desc is empty");
 			assertFalse(rec.desc().contains("%"), e.getKey() + " desc has a format marker");
 		}
-		assertEquals("distant well", new Notes.LandmarkRecord(lm("DISTANT_WELL"), "3").title());
-		assertEquals("rat king", new Notes.LandmarkRecord(lm("RAT_KING"), "3").title());
 	}
 
 	@Test
@@ -205,6 +231,21 @@ class NotesLandmarkPortTest {
 		assertSame(texture(GeneralAsset.ICON_WELL_HEALTH), new Notes.LandmarkRecord(Notes.Landmark.WELL_OF_HEALTH, "3").icon().texture);
 		assertNotEquals(texture(GeneralAsset.ICON_GOLD), new Notes.LandmarkRecord(Notes.Landmark.SHOP, "3").icon().texture,
 				"the shop shows a shopkeeper sprite, not the gold icon");
+
+		Object impTex = new Image(new ImpSprite()).texture;
+		Object shopTex = new Image(new ShopkeeperSprite()).texture;
+		assertNotEquals(impTex, shopTex);
+		assertSame(impTex, new Notes.LandmarkRecord(Notes.Landmark.SHOP, "20").icon().texture, "floor 20 shop shows the imp");
+		assertSame(shopTex, new Notes.LandmarkRecord(Notes.Landmark.SHOP, "21").icon().texture, "floor 21 shop shows the shopkeeper");
+		assertSame(shopTex, new Notes.LandmarkRecord(Notes.Landmark.SHOP, "3").icon().texture);
+
+		assertSame(new Image(new StatueSprite()).texture, new Notes.LandmarkRecord(Notes.Landmark.STATUE, "3").icon().texture);
+		assertSame(new Image(new GhostSprite()).texture, new Notes.LandmarkRecord(Notes.Landmark.GHOST, "3").icon().texture);
+		assertSame(new Image(new RatKingSprite()).texture, new Notes.LandmarkRecord(lm("RAT_KING"), "3").icon().texture);
+		assertSame(new Image(new WandmakerSprite()).texture, new Notes.LandmarkRecord(Notes.Landmark.WANDMAKER, "3").icon().texture);
+		assertSame(new Image(new BlacksmithSprite()).texture, new Notes.LandmarkRecord(Notes.Landmark.TROLL, "3").icon().texture);
+		assertSame(impTex, new Notes.LandmarkRecord(Notes.Landmark.IMP, "3").icon().texture);
+		assertSame(new Image(new SpawnerSprite()).texture, new Notes.LandmarkRecord(Notes.Landmark.DEMON_SPAWNER, "3").icon().texture);
 	}
 
 	@Test

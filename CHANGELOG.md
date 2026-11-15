@@ -10,6 +10,19 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 Everything on `main` since the fork base (`cpd-sync-base-2025-08-15`, CPD commit `c97fb83`).
 
+### 2026-11-15: landmarks, the title screen journal and the badges tab
+
+The next two pieces of upstream's v2.5 journal rework.
+
+**Ported**
+- Landmarks follow upstream's list, with the seven floor feelings first plus the distant well and the rat king. Each note shows its own icon, title and description. Floor feelings have their own text and each one is noted for its floor, with large stairs icons per feeling.
+- Wells, gardens, the alchemy pot, the sacrificial fire, shops, statues, demon spawners, the rat king and the quest characters are noted when the hero sees them rather than when the hero steps on them. A well seen across a weak floor room is noted as a distant well and drops off once you jump to it. A used-up well's note goes away unless some of its water is still in a visited cell.
+- The shop shows the imp and its text on the city boss and last shop floors, since packs have no fixed floor 20.
+- The floor feeling and landmark text comes from v2.5.4 in every language it has.
+- The journal has a badges tab, the badge grid sizes its columns by area, and a badge window closes on any tap.
+- The title screen's badges button is now a Journal button that opens the whole journal, badges included. Potions, scrolls and rings show a default look there, and item slots show strength text with no hero. A run kept in memory survives opening it.
+- The title screen journal no longer crashes when its bestiary builds Yog-Dzewa with no run loaded.
+
 ### 2026-11-15: the journal catalog, bestiary, lore and notes
 
 The first two pieces of upstream's v2.5 journal rework.

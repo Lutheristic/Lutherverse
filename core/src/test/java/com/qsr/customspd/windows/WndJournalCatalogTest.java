@@ -108,6 +108,8 @@ class WndJournalCatalogTest {
 	}
 
 	static List<Gizmo> grid(Gizmo root) throws ReflectiveOperationException {
+		// the notes tab is a grid too; a whole journal means its catalog tab
+		if (root instanceof WndJournal) root = (Gizmo) field(WndJournal.class, "catalogTab").get(root);
 		List<Gizmo> out = new ArrayList<>();
 		walkGrid(root, out);
 		return out;

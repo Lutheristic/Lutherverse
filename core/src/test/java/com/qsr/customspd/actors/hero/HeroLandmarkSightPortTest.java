@@ -140,7 +140,7 @@ class HeroLandmarkSightPortTest {
 
 		hero.checkVisibleMobs();
 
-		assertTrue(Notes.getRecords().isEmpty(), "a plain mob in view records nothing: " + Notes.getRecords());
+		assertTrue(Notes.getRecords(Notes.Record.class).isEmpty(), "a plain mob in view records nothing: " + Notes.getRecords(Notes.Record.class));
 	}
 
 	private void assertVisitedButUnseenRecordsNothing(Blob blob, int cell, Notes.Landmark landmark) {

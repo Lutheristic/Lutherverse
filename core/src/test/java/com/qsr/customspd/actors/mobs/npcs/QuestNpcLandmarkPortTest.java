@@ -120,7 +120,7 @@ class QuestNpcLandmarkPortTest {
 			for (int i = 0; i < npcs.length; i++) {
 				//no catch: an act() that threw early would skip the old record line unseen
 				acts[i].run();
-				assertTrue(Notes.getRecords().isEmpty(),
+				assertTrue(Notes.getRecords(Notes.Record.class).isEmpty(),
 						npcs[i].getClass().getSimpleName() + ".act() must not record a landmark any more");
 			}
 		} finally {

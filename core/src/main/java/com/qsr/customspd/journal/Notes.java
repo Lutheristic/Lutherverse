@@ -38,6 +38,7 @@ import com.qsr.customspd.actors.mobs.npcs.Wandmaker;
 import com.qsr.customspd.assets.Asset;
 import com.qsr.customspd.assets.GeneralAsset;
 import com.qsr.customspd.items.Generator;
+import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.keys.Key;
 import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.levels.rooms.special.WeakFloorRoom;
@@ -59,6 +60,7 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.Visual;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -387,20 +389,172 @@ public class Notes {
 		}
 	}
 	
+	public enum CustomType {
+		TEXT,
+		DEPTH,
+		ITEM,
+	}
+
+	public static class CustomRecord extends Record {
+
+		protected CustomType type;
+
+		protected int ID = -1;
+		protected Class itemClass;
+
+		protected String title;
+		protected String body;
+
+		public CustomRecord() {}
+
+		public CustomRecord(String title, String desc) {
+			type = CustomType.TEXT;
+			this.title = title;
+			body = desc;
+		}
+
+		//floor notes are keyed by floor name, their depth comes from the layout
+		public CustomRecord(String levelName, String title, String desc) {
+			type = CustomType.DEPTH;
+			this.levelName = levelName;
+			this.title = title;
+			body = desc;
+		}
+
+		public CustomRecord(Item item, String title, String desc) {
+			type = CustomType.ITEM;
+			itemClass = item.getClass();
+			this.title = title;
+			body = desc;
+		}
+
+		public void assignID(){
+			if (ID == -1) {
+				ID = nextCustomID++;
+			}
+		}
+
+		public int ID(){
+			return ID;
+		}
+
+		//upstream returns 0 for text and item notes, but 0 is a real floor here
+		@Override
+		public int depth() {
+			if (type == CustomType.DEPTH){
+				return depthOf(levelName);
+			} else {
+				return UNKNOWN_DEPTH;
+			}
+		}
+
+		@Override
+		public Image icon() {
+			switch (type){
+				case TEXT: default:
+					return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_SCROLL_COLOR));
+				case DEPTH:
+					return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_STAIRS));
+				case ITEM:
+					Item i = (Item) Reflection.newInstance(itemClass);
+					return new ItemSprite(i);
+			}
+		}
+
+		@Override
+		public Visual secondIcon() {
+			switch (type){
+				case TEXT: default:
+					return null;
+				case DEPTH:
+					int depth = depth();
+					BitmapText text = new BitmapText(depth == UNKNOWN_DEPTH ? "?" : Integer.toString(depth), PixelScene.pixelFont);
+					text.measure();
+					return text;
+				case ITEM:
+					Item item = (Item) Reflection.newInstance(itemClass);
+					if (item.isIdentified() && item.icon != GeneralAsset.SOMETHING) {
+						return new Image(Asset.getAssetFilePath(item.icon));
+					}
+					return null;
+			}
+		}
+
+		@Override
+		protected int order() {
+			return 2000 + ID;
+		}
+
+		public void editText(String title, String desc){
+			this.title = title;
+			this.body = desc;
+		}
+
+		@Override
+		public String title() {
+			return title;
+		}
+
+		@Override
+		public String desc() {
+			return body;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			return obj instanceof CustomRecord && ((CustomRecord) obj).ID == ID;
+		}
+
+		private static final String TYPE        = "type";
+		private static final String ID_NUMBER   = "id_number";
+
+		private static final String ITEM_CLASS   = "item_class";
+
+		private static final String TITLE       = "title";
+		private static final String BODY        = "body";
+
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(TYPE, type);
+			bundle.put(ID_NUMBER, ID);
+			if (itemClass != null) bundle.put(ITEM_CLASS, itemClass);
+			bundle.put(TITLE, title);
+			bundle.put(BODY, body);
+		}
+
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			type = bundle.getEnum(TYPE, CustomType.class);
+			ID = bundle.getInt(ID_NUMBER);
+
+			if (bundle.contains(ITEM_CLASS)) itemClass = bundle.getClass(ITEM_CLASS);
+
+			title = bundle.getString(TITLE);
+			body = bundle.getString(BODY);
+		}
+	}
+	
 	private static ArrayList<Record> records;
 	
 	public static void reset() {
 		records = new ArrayList<>();
 	}
 	
-	private static final String RECORDS	= "records";
-	
+	private static final String RECORDS	        = "records";
+	private static final String NEXT_CUSTOM_ID	= "next_custom_id";
+
+	protected static int nextCustomID = 0;
+
 	public static void storeInBundle( Bundle bundle ) {
 		bundle.put( RECORDS, records );
+		bundle.put( NEXT_CUSTOM_ID, nextCustomID );
 	}
 	
 	public static void restoreFromBundle( Bundle bundle ) {
 		records = new ArrayList<>();
+		nextCustomID = bundle.getInt( NEXT_CUSTOM_ID );
 		for (Bundlable rec : bundle.getCollection( RECORDS ) ) {
 			records.add( (Record) rec );
 		}
@@ -461,8 +615,22 @@ public class Notes {
 		}
 	}
 	
-	public static ArrayList<Record> getRecords(){
-		return getRecords(Record.class);
+	public static boolean add( CustomRecord rec ){
+		rec.assignID();
+		if (!records.contains(rec)){
+			boolean result = records.add(rec);
+			Collections.sort(records, comparator);
+			return result;
+		}
+		return false;
+	}
+
+	public static boolean remove( CustomRecord rec ){
+		if (records.contains(rec)){
+			records.remove(rec);
+			return true;
+		}
+		return false;
 	}
 	
 	public static <T extends Record> ArrayList<T> getRecords( Class<T> recordType ){
@@ -478,7 +646,7 @@ public class Notes {
 	public static ArrayList<Record> getRecords( String levelName ){
 		ArrayList<Record> filtered = new ArrayList<>();
 		for (Record rec : records){
-			if (levelName != null && levelName.equals(rec.levelName())){
+			if (!(rec instanceof CustomRecord) && levelName != null && levelName.equals(rec.levelName())){
 				filtered.add(rec);
 			}
 		}
@@ -488,8 +656,26 @@ public class Notes {
 		return filtered;
 	}
 	
-	public static void remove( Record rec ){
-		records.remove(rec);
+	public static CustomRecord findCustomRecord( int ID ){
+		for (Record rec : records){
+			if (rec instanceof CustomRecord && ((CustomRecord) rec).ID == ID) {
+				return (CustomRecord) rec;
+			}
+		}
+		return null;
+	}
+
+	public static CustomRecord findCustomRecord( Class itemClass ){
+		for (Record rec : records){
+			if (rec instanceof CustomRecord && ((CustomRecord) rec).itemClass == itemClass) {
+				return (CustomRecord) rec;
+			}
+		}
+		return null;
+	}
+
+	public static int customRecordLimit(){
+		return 5;
 	}
 
 	private static final Comparator<Record> comparator = new Comparator<Record>() {

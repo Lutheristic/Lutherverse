@@ -89,15 +89,14 @@ class FeelingIconsPortTest {
 	}
 
 	/**
-	 * CRC32 over the pixels in row order, each as 4 bytes A, R, G, B. A fully transparent pixel
-	 * counts as 0 so the hidden colour under alpha 0 does not matter.
+	 * CRC32 over the pixels in row order, each as 4 bytes A, R, G, B. The colour under a fully
+	 * transparent pixel counts too, so a re-cut must keep the v2.5.4 bytes exactly.
 	 */
 	private static long pixelCrc(BufferedImage img) {
 		CRC32 crc = new CRC32();
 		for (int y = 0; y < img.getHeight(); y++) {
 			for (int x = 0; x < img.getWidth(); x++) {
 				int argb = img.getRGB(x, y);
-				if ((argb >>> 24) == 0) argb = 0;
 				crc.update(argb >>> 24);
 				crc.update(argb >>> 16);
 				crc.update(argb >>> 8);
@@ -132,6 +131,6 @@ class FeelingIconsPortTest {
 		assertIcon(GeneralAsset.ICON_STAIRS_LARGE, "interfaces/icons/stairs_large.png", 15, 16, 0x67932be7L);
 		assertIcon(GeneralAsset.ICON_STAIRS_TRAPS, "interfaces/icons/stairs_traps.png", 15, 16, 0xe900be75L);
 		assertIcon(GeneralAsset.ICON_STAIRS_SECRETS, "interfaces/icons/stairs_secrets.png", 15, 16, 0xfb8f055cL);
-		assertIcon(GeneralAsset.ICON_DISTANT_WELL, "interfaces/icons/distant_well.png", 16, 16, 0xc23adb1cL);
+		assertIcon(GeneralAsset.ICON_DISTANT_WELL, "interfaces/icons/distant_well.png", 16, 16, 0xee49dc2eL);
 	}
 }

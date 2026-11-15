@@ -310,9 +310,15 @@ public class MenuPane extends Component {
 			keyIcon.am = journalIcon.am = 1;
 			if (flashingPage != null){
 				if (flashingDoc == Document.ALCHEMY_GUIDE){
-					WndJournal.last_index = 1;
+					WndJournal.last_index = 2;
 					GameScene.show( new WndJournal() );
 				} else if (flashingDoc.pageNames().contains(flashingPage)){
+					if (flashingDoc == Document.ADVENTURERS_GUIDE){
+						WndJournal.last_index = 1;
+					} else if (flashingDoc.isLoreDoc()){
+						WndJournal.last_index = 3;
+						WndJournal.CatalogTab.currentItemIdx = 3;
+					}
 					GameScene.show( new WndStory( flashingDoc.pageSprite(flashingPage),
 							flashingDoc.pageTitle(flashingPage),
 							flashingDoc.pageBody(flashingPage) ){

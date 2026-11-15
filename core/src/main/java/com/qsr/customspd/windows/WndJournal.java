@@ -122,25 +122,40 @@ public class WndJournal extends WndTabbed {
 		catalogTab.updateList();
 
 		Tab[] tabs = {
+				new IconTab( new Image(Asset.getAssetFilePath(GeneralAsset.ICON_JOURNAL)) ) {
+					protected void select( boolean value ) {
+						super.select( value );
+						notesTab.active = notesTab.visible = value;
+						if (value) last_index = 0;
+					}
+
+					@Override
+					protected String hoverText() {
+						return Messages.get(notesTab, "title");
+					}
+				},
 				new IconTab( new ItemSprite(GeneralAsset.MASTERY, null) ) {
 					protected void select( boolean value ) {
 						super.select( value );
 						guideTab.active = guideTab.visible = value;
-						if (value) last_index = 0;
+						if (value) last_index = 1;
+					}
+
+					@Override
+					protected String hoverText() {
+						return Messages.get(guideTab, "title");
 					}
 				},
-				new IconTab( new ItemSprite(GeneralAsset.ALCH_PAGE, null) ) {
+				new IconTab( new Image(Asset.getAssetFilePath(GeneralAsset.ICON_ALCHEMY)) ) {
 					protected void select( boolean value ) {
 						super.select( value );
 						alchemyTab.active = alchemyTab.visible = value;
-						if (value) last_index = 1;
-					}
-				},
-				new IconTab( new Image(Asset.getAssetFilePath(GeneralAsset.ICON_STAIRS)) ) {
-					protected void select( boolean value ) {
-						super.select( value );
-						notesTab.active = notesTab.visible = value;
 						if (value) last_index = 2;
+					}
+
+					@Override
+					protected String hoverText() {
+						return Messages.get(alchemyTab, "title");
 					}
 				},
 				new IconTab( new Image(Asset.getAssetFilePath(GeneralAsset.ICON_CATALOG)) ) {
@@ -148,6 +163,11 @@ public class WndJournal extends WndTabbed {
 						super.select( value );
 						catalogTab.active = catalogTab.visible = value;
 						if (value) last_index = 3;
+					}
+
+					@Override
+					protected String hoverText() {
+						return Messages.get(catalogTab, "title");
 					}
 				}
 		};

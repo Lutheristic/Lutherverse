@@ -535,3 +535,8 @@ WndJournal.LoreTab#layout()
 WndJournal.LoreTab#updateList()
 WndJournal.LoreTab#onClick(float, float)
 WndJournal#WndJournal()
+
+# --- Journal notes grid (1 entry), reviewed 2026-11-15 ---
+# Upstream dd9f90c37 renames Landmark.desc() to title(); the record's desc() now holds the
+# longer text. v2.5.4's Landmark enum has no desc().
+Notes.Landmark#desc()

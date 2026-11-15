@@ -22,28 +22,82 @@
 package com.qsr.customspd.journal;
 
 import com.qsr.customspd.Dungeon;
+import com.qsr.customspd.assets.Asset;
+import com.qsr.customspd.assets.GeneralAsset;
+import com.qsr.customspd.items.Generator;
 import com.qsr.customspd.items.keys.Key;
 import com.qsr.customspd.messages.Messages;
+import com.qsr.customspd.modding.LevelScheme;
+import com.qsr.customspd.scenes.PixelScene;
+import com.qsr.customspd.sprites.BlacksmithSprite;
+import com.qsr.customspd.sprites.GhostSprite;
+import com.qsr.customspd.sprites.ImpSprite;
+import com.qsr.customspd.sprites.ItemSprite;
+import com.qsr.customspd.sprites.SpawnerSprite;
+import com.qsr.customspd.sprites.StatueSprite;
+import com.qsr.customspd.sprites.WandmakerSprite;
+import com.watabou.noosa.BitmapText;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.Visual;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 public class Notes {
 	
-	public static abstract class Record implements Bundlable {
+	//floors are keyed by name; a floor that is not in the current layout has no depth
+	public static final int UNKNOWN_DEPTH = Integer.MIN_VALUE;
+
+	public static int depthOf( String levelName ){
+		if (levelName == null || Dungeon.layout == null) return UNKNOWN_DEPTH;
+		LevelScheme scheme = Dungeon.layout.getDungeon().get(levelName);
+		if (scheme == null) return UNKNOWN_DEPTH;
+		return scheme.getDepth();
+	}
+
+	//deepest floor first, floors outside the layout last, then by name
+	public static int compareFloors( String a, String b ){
+		int result = Integer.compare(depthOf(b), depthOf(a));
+		if (result != 0) return result;
+		if (a == null) return b == null ? 0 : 1;
+		if (b == null) return -1;
+		return a.compareTo(b);
+	}
+
+	public static abstract class Record implements Comparable<Record>, Bundlable {
 		
 		protected String levelName;
 
 		public String levelName(){
 			return levelName;
 		}
+
+		public int depth(){
+			return depthOf(levelName());
+		}
+
+		public Image icon() { return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_STAIRS)); }
+
+		public Visual secondIcon() { return null; }
+
+		public int quantity() { return 1; }
+
+		protected abstract int order();
+
+		public abstract String title();
 		
 		public abstract String desc();
 		
 		@Override
 		public abstract boolean equals(Object obj);
+
+		@Override
+		public int compareTo( Record another ) {
+			return compareFloors(levelName(), another.levelName());
+		}
 		
 		private static final String LEVEL_NAME = "levelName";
 		
@@ -74,7 +128,7 @@ public class Notes {
 
 		DEMON_SPAWNER;
 		
-		public String desc() {
+		public String title() {
 			return Messages.get(this, name());
 		}
 	}
@@ -91,8 +145,53 @@ public class Notes {
 		}
 		
 		@Override
+		public Image icon(){
+			switch (landmark){
+				default:
+					return super.icon();
+
+				case WELL_OF_HEALTH:
+					return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_WELL_HEALTH));
+				case WELL_OF_AWARENESS:
+					return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_WELL_AWARENESS));
+				case ALCHEMY:
+					return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_ALCHEMY));
+				case GARDEN:
+					return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_GRASS));
+				case STATUE:
+					return new Image(new StatueSprite());
+				case SACRIFICIAL_FIRE:
+					return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_SACRIFICE_ALTAR));
+				case SHOP:
+					return new Image(Asset.getAssetFilePath(GeneralAsset.ICON_GOLD));
+
+				case GHOST:
+					return new Image(new GhostSprite());
+				case WANDMAKER:
+					return new Image(new WandmakerSprite());
+				case TROLL:
+					return new Image(new BlacksmithSprite());
+				case IMP:
+					return new Image(new ImpSprite());
+
+				case DEMON_SPAWNER:
+					return new Image(new SpawnerSprite());
+			}
+		}
+
+		@Override
+		public String title() {
+			return landmark.title();
+		}
+
+		@Override
 		public String desc() {
-			return landmark.desc();
+			return "";
+		}
+
+		@Override
+		protected int order(){
+			return landmark.ordinal();
 		}
 		
 		@Override
@@ -133,14 +232,41 @@ public class Notes {
 		}
 		
 		@Override
-		public String desc() {
+		public Image icon() {
+			return new ItemSprite(key);
+		}
+
+		@Override
+		public Visual secondIcon() {
+			if (quantity() > 1){
+				BitmapText text = new BitmapText(Integer.toString(quantity()), PixelScene.pixelFont);
+				text.measure();
+				return text;
+			} else {
+				return null;
+			}
+		}
+
+		@Override
+		public String title() {
 			return key.title();
+		}
+
+		@Override
+		public String desc() {
+			return key.desc();
 		}
 		
 		public Class<? extends Key> type(){
 			return key.getClass();
 		}
+
+		@Override
+		protected int order() {
+			return 1000 + Generator.Category.order(key);
+		}
 		
+		@Override
 		public int quantity(){
 			return key.quantity();
 		}
@@ -193,7 +319,7 @@ public class Notes {
 		LandmarkRecord l = new LandmarkRecord( landmark, Dungeon.levelName );
 		if (!records.contains(l)) {
 			boolean result = records.add(new LandmarkRecord(landmark, Dungeon.levelName));
-//			Collections.sort(records);
+			Collections.sort(records, comparator);
 			return result;
 		}
 		return false;
@@ -207,7 +333,7 @@ public class Notes {
 		KeyRecord k = new KeyRecord(key);
 		if (!records.contains(k)){
 			boolean result = records.add(k);
-//			Collections.sort(records);
+			Collections.sort(records, comparator);
 			return result;
 		} else {
 			k = (KeyRecord) records.get(records.indexOf(k));
@@ -254,8 +380,28 @@ public class Notes {
 		return filtered;
 	}
 	
+	public static ArrayList<Record> getRecords( String levelName ){
+		ArrayList<Record> filtered = new ArrayList<>();
+		for (Record rec : records){
+			if (levelName != null && levelName.equals(rec.levelName())){
+				filtered.add(rec);
+			}
+		}
+
+		Collections.sort(filtered, comparator);
+
+		return filtered;
+	}
+	
 	public static void remove( Record rec ){
 		records.remove(rec);
 	}
+
+	private static final Comparator<Record> comparator = new Comparator<Record>() {
+		@Override
+		public int compare(Record r1, Record r2) {
+			return r1.order() - r2.order();
+		}
+	};
 	
 }

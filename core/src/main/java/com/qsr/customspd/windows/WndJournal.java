@@ -438,7 +438,7 @@ public class WndJournal extends WndTabbed {
 				for(Notes.Record rec : keys){
 					ScrollingListPane.ListItem item = new ScrollingListPane.ListItem( new Image(Asset.getAssetFilePath(GeneralAsset.ICON_STAIRS)),
 							rec.levelName(),
-							Messages.titleCase(rec.desc()));
+							Messages.titleCase(rec.title()));
 					if (Dungeon.levelName.equals(rec.levelName())) item.hardlight(TITLE_COLOR);
 					list.addItem(item);
 				}
@@ -453,7 +453,7 @@ public class WndJournal extends WndTabbed {
 				for (Notes.Record rec : landmarks) {
 					ScrollingListPane.ListItem item = new ScrollingListPane.ListItem( new Image(Asset.getAssetFilePath(GeneralAsset.ICON_STAIRS)),
 							rec.levelName(),
-							Messages.titleCase(rec.desc()));
+							Messages.titleCase(rec.title()));
 					if (Dungeon.levelName.equals(rec.levelName())) item.hardlight(TITLE_COLOR);
 					list.addItem(item);
 				}

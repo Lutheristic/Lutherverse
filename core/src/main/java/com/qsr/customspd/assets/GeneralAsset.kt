@@ -716,6 +716,8 @@ enum class GeneralAsset(override val path: String) : Asset {
     STONE_HOLDER("sprites/items/stone_holder.png"),
     ELIXIR_HOLDER("sprites/items/elixir_holder.png"),
     SPELL_HOLDER("sprites/items/spell_holder.png"),
+    MOB_HOLDER("sprites/items/mob_holder.png"),
+    DOCUMENT_HOLDER("sprites/items/document_holder.png"),
     GOLD("sprites/items/gold.png"),
     ENERGY("sprites/items/energy.png"),
     DEWDROP("sprites/items/dewdrop.png"),

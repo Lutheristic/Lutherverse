@@ -14,7 +14,9 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -24,8 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * The level respawner moved from the nested Level.Respawner into MobSpawner (upstream 16977c418).
  * Saves made before the move name the old class, so the pre-v2.5.0 alias has to carry them over.
- * The rotation snapshot was captured from the old spawn object before the move, so the levelgen
- * RNG draw order is pinned too.
+ * Both rotation snapshots were captured from the old spawn object before the move. The short one
+ * pins exact rotations; the long one runs enough rotations that rare mobs and alt swaps fire, so
+ * the order of the rare-mob and alt-swap draws is pinned as well.
  */
 class MobSpawnerAliasTest {
 
@@ -108,6 +111,45 @@ class MobSpawnerAliasTest {
 					Random.popGenerator();
 				}
 				assertEquals(Arrays.asList(floor).subList(1, floor.length), actual, "rotation on floor " + floor[0]);
+			}
+		}
+	}
+
+	@Test
+	void longRotationRunMatchesThePreRenameSnapshot() {
+		// captured on the tree before the rename, from the old Kotlin spawn object:
+		// floor, hashCode of 200 joined rotations, mob counts over those rotations
+		String[][] expected = {
+				{"4", "1242551104",
+						"{Swarm=200, Crab=400, HexwardMoth=200, Gnoll=200, Slime=390, CausticSlime=10, Thief=5}"},
+				{"9", "-260781056",
+						"{DM100=400, Thief=194, Necromancer=388, Skeleton=200, Guard=400, SpectralNecromancer=12, Bandit=6, Bat=6}"},
+				{"14", "742929268",
+						"{PurpleShaman=84, DM200=394, Spinner=400, BlueShaman=144, Bat=200, Brute=195, RedShaman=172, DM201=6, ArmoredBrute=5, Ghoul=4}"},
+				{"19", "-1935309713",
+						"{Warlock=400, Golem=600, Monk=388, FrostElemental=79, Senior=12, ShockElemental=34, FireElemental=82, Succubus=9, ChaosElemental=5}"},
+		};
+		try (HeadlessRun run = HeadlessRun.start(20261114L)) {
+			for (String[] floor : expected) {
+				run.generate(floor[0]);
+				StringBuilder all = new StringBuilder();
+				Map<String, Integer> counts = new LinkedHashMap<>();
+				Random.pushGenerator(777L);
+				try {
+					for (int i = 0; i < 200; i++) {
+						for (Class<? extends Mob> c : MobSpawner.getMobRotation()) {
+							String name = c.getSimpleName();
+							all.append(name).append(' ');
+							Integer n = counts.get(name);
+							counts.put(name, n == null ? 1 : n + 1);
+						}
+						all.append('|');
+					}
+				} finally {
+					Random.popGenerator();
+				}
+				assertEquals(floor[2], counts.toString(), "mob counts on floor " + floor[0]);
+				assertEquals(floor[1], String.valueOf(all.toString().hashCode()), "rotation digest on floor " + floor[0]);
 			}
 		}
 	}

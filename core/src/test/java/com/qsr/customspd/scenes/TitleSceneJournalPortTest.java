@@ -7,8 +7,10 @@ import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.modding.TileMapCompilationManager;
 import com.qsr.customspd.test.HeadlessRun;
 import com.qsr.customspd.ui.Button;
+import com.qsr.customspd.ui.RenderedTextBlock;
 import com.qsr.customspd.ui.StyledButton;
 import com.qsr.customspd.windows.WndMessage;
+import com.qsr.customspd.windows.WndMods;
 import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.Game;
@@ -28,6 +30,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -169,6 +172,15 @@ class TitleSceneJournalPortTest {
 		return found;
 	}
 
+	private static List<String> texts(Group group) throws Exception {
+		List<String> found = new ArrayList<>();
+		for (Gizmo g : members(group)) {
+			if (g instanceof RenderedTextBlock) found.add(((RenderedTextBlock) g).text());
+			else if (g instanceof Group) found.addAll(texts((Group) g));
+		}
+		return found;
+	}
+
 	private static Properties englishScenes() throws Exception {
 		Properties p = new Properties();
 		InputStream in = new FileInputStream("messages/scenes/scenes.properties");
@@ -208,6 +220,8 @@ class TitleSceneJournalPortTest {
 		click(journal);
 
 		assertEquals(1, messages(scene).size(), "the journal shows the wait message while tiles compile");
+		assertEquals(Arrays.asList(Messages.get(WndMods.class, "wait")), texts(messages(scene).get(0)),
+				"the message is the tile compilation wait text");
 		assertNull(requestedScene(), "the journal does not open while tiles compile");
 	}
 

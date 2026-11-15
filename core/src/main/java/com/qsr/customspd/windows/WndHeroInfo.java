@@ -21,7 +21,6 @@
 
 package com.qsr.customspd.windows;
 
-import com.qsr.customspd.Assets;
 import com.qsr.customspd.Badges;
 import com.qsr.customspd.actors.hero.HeroClass;
 import com.qsr.customspd.actors.hero.HeroSubClass;
@@ -189,7 +188,7 @@ public class WndHeroInfo extends WndTabbed {
 					break;
 				case HUNTRESS:
 					icons = new Image[]{ new ItemSprite(GeneralAsset.SPIRIT_BOW),
-							new Image(Assets.Environment.TILES_SEWERS, 80, 96, 16, 16), //DungeonTileSheet.FLAT_HIGH_GRASS (slot 101)
+							new Image(Asset.getAssetFilePath(GeneralAsset.ICON_GRASS)),
 							new ItemSprite(GeneralAsset.GLOVES),
 							new ItemSprite(GeneralAsset.SCROLL_ISAZ)};
 					break;

@@ -27,7 +27,6 @@ import com.qsr.customspd.actors.Char;
 import com.qsr.customspd.actors.buffs.MagicImmune;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.effects.particles.ShadowParticle;
-import com.qsr.customspd.items.journal.Guidebook;
 import com.qsr.customspd.journal.Document;
 import com.qsr.customspd.messages.Messages;
 import com.qsr.customspd.scenes.GameScene;
@@ -56,7 +55,6 @@ public abstract class EquipableItem extends Item {
 	public boolean doPickUp(Hero hero, int pos) {
 		if (super.doPickUp(hero, pos)){
 			if (!isIdentified() && !Document.ADVENTURERS_GUIDE.isPageRead(Document.GUIDE_IDING)){
-				GLog.p(Messages.get(Guidebook.class, "hint"));
 				GameScene.flashForDocument(Document.ADVENTURERS_GUIDE, Document.GUIDE_IDING);
 			}
 			return true;

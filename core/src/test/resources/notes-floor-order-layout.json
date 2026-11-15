@@ -1,0 +1,9 @@
+{
+  "start": "z0",
+  "dungeon": {
+    "z0": { "depth": 0, "type": "regular", "layout": "SewerLevel", "entrances": ["surface"], "exits": ["a5"], "chasm": "a5", "passage": "z0" },
+    "a5": { "depth": 5, "type": "regular", "layout": "SewerLevel", "entrances": ["z0"], "exits": ["b5"], "chasm": "b5", "passage": "z0" },
+    "b5": { "depth": 5, "type": "regular", "layout": "SewerLevel", "entrances": ["a5"], "exits": ["x6"], "chasm": "x6", "passage": "z0" },
+    "x6": { "depth": 6, "type": "regular", "layout": "SewerLevel", "entrances": ["b5"], "exits": [], "chasm": "x6", "passage": "z0" }
+  }
+}

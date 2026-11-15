@@ -26,7 +26,6 @@ import com.qsr.customspd.Dungeon;
 import com.qsr.customspd.SPDSettings;
 import com.qsr.customspd.actors.hero.Hero;
 import com.qsr.customspd.assets.Asset;
-import com.qsr.customspd.items.journal.Guidebook;
 import com.qsr.customspd.items.scrolls.exotic.ScrollOfChallenge;
 import com.qsr.customspd.journal.Document;
 import com.qsr.customspd.messages.Messages;
@@ -104,7 +103,6 @@ public class Hunger extends Buff implements Hero.Doom {
 					GLog.w( Messages.get(this, "onhungry") );
 
 					if (!Document.ADVENTURERS_GUIDE.isPageRead(Document.GUIDE_FOOD)){
-						GLog.p(Messages.get(Guidebook.class, "hint"));
 						GameScene.flashForDocument(Document.ADVENTURERS_GUIDE, Document.GUIDE_FOOD);
 					}
 

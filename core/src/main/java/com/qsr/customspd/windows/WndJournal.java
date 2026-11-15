@@ -66,12 +66,17 @@ import com.watabou.input.KeyEvent;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.Visual;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.RectF;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 
 public class WndJournal extends WndTabbed {
 
@@ -117,25 +122,40 @@ public class WndJournal extends WndTabbed {
 		catalogTab.updateList();
 
 		Tab[] tabs = {
+				new IconTab( new Image(Asset.getAssetFilePath(GeneralAsset.ICON_JOURNAL)) ) {
+					protected void select( boolean value ) {
+						super.select( value );
+						notesTab.active = notesTab.visible = value;
+						if (value) last_index = 0;
+					}
+
+					@Override
+					protected String hoverText() {
+						return Messages.get(notesTab, "title");
+					}
+				},
 				new IconTab( new ItemSprite(GeneralAsset.MASTERY, null) ) {
 					protected void select( boolean value ) {
 						super.select( value );
 						guideTab.active = guideTab.visible = value;
-						if (value) last_index = 0;
+						if (value) last_index = 1;
+					}
+
+					@Override
+					protected String hoverText() {
+						return Messages.get(guideTab, "title");
 					}
 				},
-				new IconTab( new ItemSprite(GeneralAsset.ALCH_PAGE, null) ) {
+				new IconTab( new Image(Asset.getAssetFilePath(GeneralAsset.ICON_ALCHEMY)) ) {
 					protected void select( boolean value ) {
 						super.select( value );
 						alchemyTab.active = alchemyTab.visible = value;
-						if (value) last_index = 1;
-					}
-				},
-				new IconTab( new Image(Asset.getAssetFilePath(GeneralAsset.ICON_STAIRS)) ) {
-					protected void select( boolean value ) {
-						super.select( value );
-						notesTab.active = notesTab.visible = value;
 						if (value) last_index = 2;
+					}
+
+					@Override
+					protected String hoverText() {
+						return Messages.get(alchemyTab, "title");
 					}
 				},
 				new IconTab( new Image(Asset.getAssetFilePath(GeneralAsset.ICON_CATALOG)) ) {
@@ -143,6 +163,11 @@ public class WndJournal extends WndTabbed {
 						super.select( value );
 						catalogTab.active = catalogTab.visible = value;
 						if (value) last_index = 3;
+					}
+
+					@Override
+					protected String hoverText() {
+						return Messages.get(catalogTab, "title");
 					}
 				}
 		};
@@ -415,52 +440,79 @@ public class WndJournal extends WndTabbed {
 
 	private static class NotesTab extends Component {
 
-		private ScrollingListPane list;
+		private ScrollingGridPane grid;
 
 		@Override
 		protected void createChildren() {
-			list = new ScrollingListPane();
-			add( list );
+			grid = new ScrollingGridPane();
+			add(grid);
 		}
 
 		@Override
 		protected void layout() {
 			super.layout();
-			list.setRect( x, y, width, height);
+			grid.setRect( x, y, width, height);
 		}
 
 		private void updateList(){
-			//Keys
-			ArrayList<Notes.KeyRecord> keys = Notes.getRecords(Notes.KeyRecord.class);
-			if (!keys.isEmpty()){
-				list.addTitle(Messages.get(this, "keys"));
 
-				for(Notes.Record rec : keys){
-					ScrollingListPane.ListItem item = new ScrollingListPane.ListItem( new Image(Asset.getAssetFilePath(GeneralAsset.ICON_STAIRS)),
-							rec.levelName(),
-							Messages.titleCase(rec.desc()));
-					if (Dungeon.levelName.equals(rec.levelName())) item.hardlight(TITLE_COLOR);
-					list.addItem(item);
+			grid.addHeader("_" + Messages.get(this, "title") + "_", 9, true);
+
+			grid.addHeader(Messages.get(this, "desc"), 6, true);
+
+			//every visited floor, deepest first; floors that left the layout go last
+			LinkedHashSet<String> floorSet = new LinkedHashSet<>();
+			if (Dungeon.visited != null) floorSet.addAll(Arrays.asList(Dungeon.visited));
+			if (Dungeon.levelName != null) floorSet.add(Dungeon.levelName);
+			for (Notes.Record rec : Notes.getRecords(Notes.Record.class)){
+				if (rec.levelName() != null) floorSet.add(rec.levelName());
+			}
+			ArrayList<String> floors = new ArrayList<>(floorSet);
+			Collections.sort(floors, new Comparator<String>() {
+				@Override
+				public int compare(String a, String b) {
+					return Notes.compareFloors(a, b);
+				}
+			});
+
+			for (String floor : floors){
+
+				ArrayList<Notes.Record> recs = Notes.getRecords(floor);
+
+				int depth = Notes.depthOf(floor);
+				String header = depth == Notes.UNKNOWN_DEPTH ? floor : Messages.get(this, "floor_header", depth);
+				if (floor.equals(Dungeon.levelName)) {
+					grid.addHeader("_" + header + "_");
+				} else {
+					grid.addHeader(header);
+				}
+				for( Notes.Record rec : recs){
+
+					ScrollingGridPane.GridItem gridItem = new ScrollingGridPane.GridItem(rec.icon()){
+						@Override
+						public boolean onClick(float x, float y) {
+							if (inside(x, y)) {
+								GameScene.show(new WndJournalItem(rec.icon(),
+										Messages.titleCase(rec.title()),
+										rec.desc()));
+								return true;
+							} else {
+								return false;
+							}
+						}
+					};
+
+					Visual secondIcon = rec.secondIcon();
+					if (secondIcon != null){
+						gridItem.addSecondIcon( secondIcon );
+					}
+
+					grid.addItem(gridItem);
 				}
 			}
 
-			//Landmarks
-			ArrayList<Notes.LandmarkRecord> landmarks = Notes.getRecords(Notes.LandmarkRecord.class);
-			if (!landmarks.isEmpty()){
+			grid.setRect(x, y, width, height);
 
-				list.addTitle(Messages.get(this, "landmarks"));
-
-				for (Notes.Record rec : landmarks) {
-					ScrollingListPane.ListItem item = new ScrollingListPane.ListItem( new Image(Asset.getAssetFilePath(GeneralAsset.ICON_STAIRS)),
-							rec.levelName(),
-							Messages.titleCase(rec.desc()));
-					if (Dungeon.levelName.equals(rec.levelName())) item.hardlight(TITLE_COLOR);
-					list.addItem(item);
-				}
-
-			}
-
-			list.setRect(x, y, width, height);
 		}
 
 	}

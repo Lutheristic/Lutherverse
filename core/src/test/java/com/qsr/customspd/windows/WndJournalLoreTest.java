@@ -296,10 +296,10 @@ class WndJournalLoreTest {
 		assertEquals(3, WndJournal.CatalogTab.currentItemIdx, "at its lore section");
 
 		WndJournal.CatalogTab.currentItemIdx = 0;
-		assertEquals(1, pickUp(new AlchemyPage()), "an alchemy page still opens the alchemy tab");
+		assertEquals(2, pickUp(new AlchemyPage()), "an alchemy page still opens the alchemy tab");
 		assertEquals(0, WndJournal.CatalogTab.currentItemIdx);
 		WndJournal.last_index = 3;
-		assertEquals(0, pickUp(new GuidePage()), "a guide page still opens the guide tab");
+		assertEquals(1, pickUp(new GuidePage()), "a guide page still opens the guide tab");
 		assertEquals(0, WndJournal.CatalogTab.currentItemIdx);
 	}
 }

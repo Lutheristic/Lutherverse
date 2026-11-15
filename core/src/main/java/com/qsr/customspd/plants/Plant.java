@@ -36,6 +36,7 @@ import com.qsr.customspd.effects.CellEmitter;
 import com.qsr.customspd.effects.particles.LeafParticle;
 import com.qsr.customspd.items.Item;
 import com.qsr.customspd.items.wands.WandOfRegrowth;
+import com.qsr.customspd.journal.Bestiary;
 import com.qsr.customspd.journal.Catalog;
 import com.qsr.customspd.levels.Level;
 import com.qsr.customspd.levels.Terrain;
@@ -73,6 +74,8 @@ public abstract class Plant implements Bundlable {
 
 		wither();
 		activate( ch );
+		Bestiary.setSeen(getClass());
+		Bestiary.countEncounter(getClass());
 	}
 	
 	public abstract void activate( Char ch );

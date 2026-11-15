@@ -59,6 +59,7 @@ import com.qsr.customspd.items.journal.Guidebook;
 import com.qsr.customspd.items.potions.Potion;
 import com.qsr.customspd.items.scrolls.ScrollOfTeleportation;
 import com.qsr.customspd.items.weapon.melee.MeleeWeapon;
+import com.qsr.customspd.journal.Bestiary;
 import com.qsr.customspd.journal.Document;
 import com.qsr.customspd.journal.Journal;
 import com.qsr.customspd.levels.Level;
@@ -1535,8 +1536,12 @@ public class GameScene extends PixelScene {
 			GameScene.show(new WndInfoItem((Heap)o));
 		} else if ( o instanceof Plant ){
 			GameScene.show( new WndInfoPlant((Plant) o) );
+			//plants can be harmful to trample, so let the player ID just by examine
+			Bestiary.setSeen(o.getClass());
 		} else if ( o instanceof Trap ){
 			GameScene.show( new WndInfoTrap((Trap) o));
+			//traps are often harmful to trigger, so let the player ID just by examine
+			Bestiary.setSeen(o.getClass());
 		} else {
 			GameScene.show( new WndMessage( Messages.get(GameScene.class, "dont_know") ) ) ;
 		}

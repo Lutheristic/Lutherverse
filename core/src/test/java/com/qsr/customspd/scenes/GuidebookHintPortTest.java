@@ -19,6 +19,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -58,6 +59,8 @@ class GuidebookHintPortTest {
 		assertEquals("Guidebook", Messages.get(Guidebook.class, "hint_status"));
 		assertEquals("java.lang.object.hint", Messages.get(Guidebook.class, "hint"),
 				"the old single hint key must be gone (Messages falls back to the bare key)");
+		assertNotEquals("Your guidebook has advice for you!", Messages.get(Guidebook.class, "hint"),
+				"the old single hint text must not resolve");
 	}
 
 	@Test

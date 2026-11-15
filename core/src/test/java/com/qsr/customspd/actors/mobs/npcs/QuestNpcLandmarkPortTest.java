@@ -95,34 +95,37 @@ class QuestNpcLandmarkPortTest {
 
 	@Test
 	void visitedQuestNpcsNoLongerRecordThemselvesInAct() {
-		Ghost ghost = new Ghost();
-		Imp imp = new Imp();
-		Wandmaker wandmaker = new Wandmaker();
-		Blacksmith smith = new Blacksmith();
-		for (Mob npc : new Mob[]{ghost, imp, wandmaker, smith}) {
-			int cell = quietCell();
-			npc.pos = cell;
-			level.mobs.add(npc);
-			level.visited[cell] = true;
-			level.heroFOV[cell] = true;
-		}
-		//the old act() recorded a visited wandmaker only while his quest wands existed
-		Wandmaker.Quest.wand1 = new com.qsr.customspd.items.wands.WandOfMagicMissile();
+		final Ghost ghost = new Ghost();
+		final Imp imp = new Imp();
+		final Wandmaker wandmaker = new Wandmaker();
+		final Blacksmith smith = new Blacksmith();
+		Mob[] npcs = {ghost, imp, wandmaker, smith};
 		Runnable[] acts = {
 				new Runnable() { public void run() { ghost.act(); } },
 				new Runnable() { public void run() { imp.act(); } },
 				new Runnable() { public void run() { wandmaker.act(); } },
 				new Runnable() { public void run() { smith.act(); } }
 		};
-		for (Runnable act : acts) {
-			try {
-				act.run();
-			} catch (NullPointerException withoutAScene) {
-				//wandering and yelling need the game scene; the journal check below still holds
+		//the old act() recorded a visited wandmaker only while his quest wands existed
+		Wandmaker.Quest.wand1 = new com.qsr.customspd.items.wands.WandOfMagicMissile();
+		try {
+			for (Mob npc : npcs) {
+				int cell = quietCell();
+				npc.pos = cell;
+				level.mobs.add(npc);
+				level.visited[cell] = true;
+				level.heroFOV[cell] = true;
+				StubSprite.attach(npc);
 			}
+			for (int i = 0; i < npcs.length; i++) {
+				//no catch: an act() that threw early would skip the old record line unseen
+				acts[i].run();
+				assertTrue(Notes.getRecords().isEmpty(),
+						npcs[i].getClass().getSimpleName() + ".act() must not record a landmark any more");
+			}
+		} finally {
+			Wandmaker.Quest.wand1 = null;
 		}
-		Wandmaker.Quest.wand1 = null;
-		assertTrue(Notes.getRecords().isEmpty(), "act() must not record a landmark any more");
 	}
 
 	@Test
